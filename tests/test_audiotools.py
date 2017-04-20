@@ -3,7 +3,6 @@ import numpy as np
 import numpy.testing as testing
 
 def test_pad_for_fft():
-
     signal1 = np.ones(100)
     padded = audio.pad_for_fft(signal1)
 
@@ -72,3 +71,12 @@ def test_delay_signal():
 
     error = np.abs(shifted[:] - delayed[:-2, 1])
     assert np.max(error[10:-10]) <= 1e-3
+
+def test_zero_buffer():
+    signal = audio.generate_tone(1, 1, 1e3)
+
+    buffered = audio.zero_buffer(signal, 10)
+
+    assert len(buffered) - len(signal)  == 20
+    assert np.array_equal(buffered[:10], buffered[-10:])
+    assert np.array_equal(buffered[:10], np.zeros(10))

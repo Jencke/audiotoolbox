@@ -113,6 +113,29 @@ def cosine_fade_window(signal, rise_time, fs):
     window[-r:] = flank[::-1]
     return window
 
+def zero_buffer(signal, number):
+    '''Add a number of zeros to both sides of a signal
+
+    Parameters:
+    -----------
+    signal: ndarray
+        The input Signal
+    number : int
+        The number of zeros that should be added
+
+    Returns:
+    --------
+    ndarray : The bufferd signal
+
+    '''
+    assert isinstance(number, int)
+
+    buf = np.zeros(number)
+    signal = np.concatenate([buf, signal, buf])
+
+    return signal
+
+
 def delay_signal(signal, delay, fs):
     '''Delay by phase shifting in the frequncy domain.
 
