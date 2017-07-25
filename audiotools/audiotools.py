@@ -142,8 +142,8 @@ def delay_signal(signal, delay, fs):
     This function delays a given signal in the frequncy domain
     allowing for subsample time shifts.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     signal : ndarray
         The signal to shift
     delay : scalar
@@ -151,8 +151,8 @@ def delay_signal(signal, delay, fs):
     fs :  scalar
         The signals sampling rate in Hz
 
-    Returns:
-    --------
+    Returns
+    -------
      ndarray : A array of shape [N, 2] where N is the length of the
          input signal. [:, 0] is the 0 padded original signal, [:, 1]
          the delayed signal
@@ -190,3 +190,86 @@ def delay_signal(signal, delay, fs):
     # cut away the buffering
     both = both[n_pad:len_sig + 2 * n_pad, :]
     return both
+
+def to_dbspl_val(signal, dbspl_val):
+
+    rms_val = np.sqrt(np.mean(signal**2))
+    p0 = 20e-6 #ref_value
+
+    factor = (p0 * 10**(float(dbspl_val) / 20)) / rms_val
+
+    return factor
+
+def get_bark_limits():
+    '''Limits of the Bark scale
+
+    Returns the limit of the Bark scale as defined in [1]_.
+
+
+    Returns
+    -------
+    list : Limits of the Bark scale
+
+    References
+    ----------
+    .. [1] Zwicker, E. (1961). Subdivision of the audible frequency range into
+           critical bands (frequenzgruppen). The Journal of the Acoustical
+           Society of America, 33(2),
+           248-248. http://dx.doi.org/10.1121/1.1908630
+
+    '''
+    bark_table = [20, 100, 200, 300, 400, 510, 630, 770, 920, 1080,
+                  1270, 1480, 1720, 2000, 2320, 2700, 3150, 3700,
+                  4400, 5300, 6400, 7700, 9500, 12000, 15500]
+    return bark_table
+
+def freq_to_bark(frequency, use_table=False):
+    '''Frequency to Bark conversion
+
+    Converts a given sound frequency in Hz into the Bark scale using
+    The equation by [2]_ or the original table by [1]_.
+
+    Parameters
+    ----------
+    frequency: scalar or ndarray
+        The frequency in Hz. Value has to be between 20 and 15500 Hz
+    use_table: bool
+        If True, the original table by [1]_ instead of the equation by [2]_
+        is used. This also results in the CB beeing returned as integers.
+        (Default = False)
+
+    Returns
+    -------
+    scalar or ndarray : The Critical Bandwith in bark
+
+    References
+    ----------
+    .. [1] Zwicker, E. (1961). Subdivision of the audible frequency range into
+           critical bands (frequenzgruppen). The Journal of the Acoustical
+           Society of America, 33(2),
+           248-248. http://dx.doi.org/10.1121/1.19086f30
+    .. [2] Traunmueller, H. (1990). Analytical expressions for the tonotopic
+           sensory scale. The Journal of the Acoustical Society of America,
+           88(1), 97-100. http://dx.doi.org/10.1121/1.399849
+
+    '''
+    assert np.all(frequency >= 20)
+    assert np.all(frequency < 15500)
+    if use_table:
+        #Only use the table with no intermdiate values
+        bark_table = np.array(get_bark_limits())
+        scale_limits = zip(bark_table[:-1], bark_table[1:])
+        i = 0
+        cb_val = np.zeros(len(frequency))
+        for lower, upper in scale_limits:
+            in_border = (frequency >= lower) & (frequency < upper)
+            cb_val[in_border] = i
+            i += 1
+        return cb_val
+    else:
+        cb_val = (26.81 * frequency / (1960 + frequency)) - 0.53
+        if min(cb_val) < 2.0:
+            cb_val[cb_val < 2.0] += 0.15 * (2 - cb_val[cb_val < 2.0])
+        if max(cb_val) > 20.1:
+            cb_val[cb_val > 20.1] += 0.22 * (cb_val[cb_val > 20.1] - 20.1)
+        return cb_val

@@ -80,3 +80,15 @@ def test_zero_buffer():
     assert len(buffered) - len(signal)  == 20
     assert np.array_equal(buffered[:10], buffered[-10:])
     assert np.array_equal(buffered[:10], np.zeros(10))
+
+def test_bark():
+    # Compare the tabled values to the ones resulting from the equation
+
+    scale = np.array(audio.get_bark_limits()[:-1])
+    calc_vals = audio.freq_to_bark(scale)
+
+    assert np.abs(calc_vals - np.arange(len(scale))).max() <= 0.08
+
+    scale = np.array(audio.get_bark_limits())
+    calc_vals = audio.freq_to_bark(scale[:-1], True)
+    assert np.array_equal(np.arange(0, 24), calc_vals)
