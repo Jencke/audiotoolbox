@@ -11,18 +11,61 @@ def pad_for_fft(signal):
 
        Parameters:
        -----------
-       signal: ndarray
+       signal : ndarray
            The input signal
 
        Returns:
        --------
-       ndarray: The zero bufferd output signal.
+       ndarray : The zero bufferd output signal.
+
     '''
     exponent = np.ceil(np.log2(len(signal)))
     n_out = 2**exponent
     out_signal = np.zeros(int(n_out))
     out_signal[:len(signal)] = signal
     return out_signal
+
+def sin_amp_modulate(signal, freq_modulator, fs, mod_index=1):
+    time = get_time(signal, fs)
+    n_samp = len(time)
+
+    modulator = 1 + mod_index * np.cos(2 * np.pi * freq_modulator * time)
+
+    return modulator
+
+def time2phase(time, frequency):
+    '''Time to phase for a given frequency
+
+    Parameters:
+    -----------
+    time : ndarray
+        The time values to convert
+
+    Returns:
+    --------
+    ndarray : converted phase values
+
+    '''
+
+    phase = time * frequency * (2 * np.pi)
+    return phase
+
+def phase2time(phase, frequency):
+    '''Pase to Time for a given frequency
+
+    Parameters:
+    -----------
+    phase : ndarray
+        The phase values to convert
+
+    Returns:
+    --------
+    ndarray : converted time values
+
+    '''
+
+    time = phase / (2 * np.pi) / frequency
+    return time
 
 
 def generate_tone(frequency, duration, fs, start_phase=0, endpoint=False):
