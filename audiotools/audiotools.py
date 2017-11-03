@@ -1,9 +1,11 @@
+
+
 import numpy as np
 import matplotlib.pyplot as plt
 
 def pad_for_fft(signal):
     '''Zero buffer a signal with zeros so that it reaches the next closest
-       2^n length.
+       :math`$2^n$` length.
 
        This Function attaches zeros to a signal to adjust the length of the signal
        to a multiple of 2 for efficent FFT calculation.
@@ -46,8 +48,10 @@ def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1):
     '''Cosinus amplitude modulator
 
     Returns a cosinus amplitude modulator following the equation:
-    $1 + m * \cos{2 * \pi * f_m * t}$ where m is the modulation
-    depth, f_m is the modualtion frequency and t is the
+    ..math:: 1 + m * \cos{2 * \pi * f_m * t}
+
+    where m is the modulation depth, f_m is the modualtion frequency
+    and t is the
 
     Parameters:
     -----------
