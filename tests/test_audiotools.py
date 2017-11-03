@@ -56,21 +56,6 @@ def test_get_time():
     #Test duration
     assert time[-1] == 1 - 1./1e3
 
-def test_sin_amp_modulate():
-    import matplotlib.pyplot as plt
-    fs = 10.3e3
-
-    tone = audio.generate_tone(100, 100, fs)
-    modulator = audio.sin_amp_modulate(tone, 5, fs, 1)
-    signal = modulator * tone
-    window = audio.cosine_fade_window(signal, 10e-3, fs)
-    padded_sig = audio.pad_for_fft(window * signal)
-
-    freq_amp = np.abs(np.fft.fft(padded_sig))
-    freq = np.fft.fftfreq(len(freq_amp), 1/5e3)
-    plt.plot(freq, freq_amp / len(freq_amp) * 2)
-
-
 def test_cosine_fade_window():
     window = audio.cosine_fade_window(np.zeros(1000), 100e-3, 1e3)
     n_window = 100
@@ -150,3 +135,25 @@ def test_phase2time():
     calc_time = audio.phase2time(phase, f)
 
     testing.assert_array_almost_equal(time, calc_time)
+
+def test_cos_amp_modulator():
+
+    fs = 100e3
+    signal = audio.generate_tone(100, 1, fs)
+    mod = audio.cos_amp_modulator(signal, 5, fs)
+    assert max(mod) == 2.0
+
+    mod = audio.cos_amp_modulator(signal, 5, fs, 0.5)
+    assert mod[0] == 1.5
+
+
+def test_calc_dbspl():
+
+    assert audio.calc_dbspl(20e-6) == 0
+    assert audio.calc_dbspl(2e-3) == 40.0
+
+def test_set_dbsl():
+    fs = 100e3
+    signal = audio.generate_tone(100, 1, fs)
+    signal = audio.set_dbspl(signal, 22)
+    assert audio.calc_dbspl(signal) == 22

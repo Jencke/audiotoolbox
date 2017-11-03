@@ -25,11 +25,42 @@ def pad_for_fft(signal):
     out_signal[:len(signal)] = signal
     return out_signal
 
-def sin_amp_modulate(signal, freq_modulator, fs, mod_index=1):
-    time = get_time(signal, fs)
-    n_samp = len(time)
+def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1):
+    '''Cosinus amplitude modulator
 
-    modulator = 1 + mod_index * np.cos(2 * np.pi * freq_modulator * time)
+    Returns a cosinus amplitude modulator following the equation:
+    $1 + m * \cos{2 * \pi * f_m * t}$ where m is the modulation
+    depth, f_m is the modualtion frequency and t is the
+
+    Parameters:
+    -----------
+    signal : ndarray
+        An input array that is used to determine the length of the
+        modulator.
+
+    modulator_freq : float
+        The frequency of the cosine modulator.
+
+    fs : float
+        The sample frequency of the input signal.
+
+    mod_index: float
+        The modulation index. (Default = 1)
+
+    Returns:
+    --------
+    ndarray : The modulator
+
+    '''
+
+    if isinstance(signal, np.ndarray):
+        time = get_time(signal, fs)
+    elif isinstance(signal, int):
+        time = get_time(np.zeros(signal), fs)
+    else:
+        raise TypeError("Signal must be numpy ndarray or int")
+
+    modulator = 1 + mod_index * np.cos(2 * np.pi * modulator_freq * time)
 
     return modulator
 
@@ -234,14 +265,50 @@ def delay_signal(signal, delay, fs):
     both = both[n_pad:len_sig + 2 * n_pad, :]
     return both
 
-def to_dbspl_val(signal, dbspl_val):
+def calc_dbspl(signal):
+    '''Calculate the dB (SPL) value of a given signal.
+
+    Parameters:
+    -----------
+    signal : ndarray
+        The input signal
+
+    Returns:
+    --------
+    float :
+        The dB (SPL) value
+
+    '''
+
+    p0 = 20e-6
+    rms_val = np.sqrt(np.mean(signal**2))
+    dbspl_val = 20 * np.log10(rms_val / p0)
+
+    return dbspl_val
+
+def set_dbspl(signal, dbspl_val):
+    '''Adjust signal amplitude to a given dbspl value.
+
+    Parameters:
+    -----------
+    signal : ndarray
+        The input signal
+    dbspl_val : float
+        The dbspl value to reach
+
+    Returns:
+    --------
+    ndarray :
+        The amplitude adjusted signal
+
+    '''
 
     rms_val = np.sqrt(np.mean(signal**2))
     p0 = 20e-6 #ref_value
 
     factor = (p0 * 10**(float(dbspl_val) / 20)) / rms_val
 
-    return factor
+    return signal * factor
 
 def get_bark_limits():
     '''Limits of the Bark scale
@@ -298,6 +365,7 @@ def freq_to_bark(frequency, use_table=False):
     '''
     assert np.all(frequency >= 20)
     assert np.all(frequency < 15500)
+
     if use_table:
         #Only use the table with no intermdiate values
         bark_table = np.array(get_bark_limits())
