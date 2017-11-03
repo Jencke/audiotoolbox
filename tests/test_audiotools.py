@@ -42,6 +42,20 @@ def test_get_time():
     #Test duration
     assert time[-1] == 1 - 1./1e3
 
+    tone1 = audio.generate_tone(1, 1, 1e3)
+    tone2 = audio.generate_tone(1, 1, 1e3)
+
+    tone_two_channel = np.column_stack([tone1, tone2])
+
+    time = audio.get_time(tone, 1e3)
+
+    assert len(time) == len(tone_two_channel)
+    #Test sampling rate
+    assert time[2] - time[1] == 1./1e3
+
+    #Test duration
+    assert time[-1] == 1 - 1./1e3
+
 def test_cosine_fade_window():
     window = audio.cosine_fade_window(np.zeros(1000), 100e-3, 1e3)
     n_window = 100
@@ -92,3 +106,54 @@ def test_bark():
     scale = np.array(audio.get_bark_limits())
     calc_vals = audio.freq_to_bark(scale[:-1], True)
     assert np.array_equal(np.arange(0, 24), calc_vals)
+
+def test_time2phase():
+
+    # two simple conversion tests
+    f = 1e3
+    time = 1e-3
+    phase = audio.time2phase(time, f)
+    assert phase == (2 * np.pi)
+
+    f = 500
+    time = 1e-3
+    phase = audio.time2phase(time, f)
+    assert phase == (np.pi)
+
+def test_phase2time():
+    # simple conversion test
+    f = 1e3
+    phase = 2 * np.pi
+    time = audio.phase2time(phase, f)
+    assert time == 1e-3
+
+    # test that phase2time inverts time2phase and that both work on
+    # arrays
+    f = 1e3
+    time = np.linspace(0.1e-3, 1e-3, 100)
+    phase = audio.time2phase(time, f)
+    calc_time = audio.phase2time(phase, f)
+
+    testing.assert_array_almost_equal(time, calc_time)
+
+def test_cos_amp_modulator():
+
+    fs = 100e3
+    signal = audio.generate_tone(100, 1, fs)
+    mod = audio.cos_amp_modulator(signal, 5, fs)
+    assert max(mod) == 2.0
+
+    mod = audio.cos_amp_modulator(signal, 5, fs, 0.5)
+    assert mod[0] == 1.5
+
+
+def test_calc_dbspl():
+
+    assert audio.calc_dbspl(20e-6) == 0
+    assert audio.calc_dbspl(2e-3) == 40.0
+
+def test_set_dbsl():
+    fs = 100e3
+    signal = audio.generate_tone(100, 1, fs)
+    signal = audio.set_dbspl(signal, 22)
+    assert audio.calc_dbspl(signal) == 22
