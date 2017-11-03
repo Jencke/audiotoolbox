@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 def pad_for_fft(signal):
     '''Zero buffer a signal with zeros so that it reaches the next closest
        2^n length.
@@ -24,6 +23,24 @@ def pad_for_fft(signal):
     out_signal[:len(signal)] = signal
     return out_signal
 
+def zeropad(signal, number):
+    '''Add a number of zeros to both sides of a signal.
+
+    Parameters:
+    -----------
+    signal : ndarray
+        The input signal.
+    number: int
+        The number of zeros to add to the signal
+
+    Returns:
+    --------
+    ndarray : The zero bufferd input signal
+
+'''
+    zeros = np.zeros(number)
+    signal_out = np.concatenate([zeros, signal, zeros])
+    return signal_out
 
 def generate_tone(frequency, duration, fs, start_phase=0, endpoint=False):
     '''Sine tone with a given frequency, duration and sampling rate.
