@@ -1,0 +1,72 @@
+'''
+Some helper function dealing with statistics that might arise
+during psychoacousic experiments
+'''
+
+import numpy as np
+from scipy.special import binom
+
+def logistic_function(x, x0, k, fmin=0, fmax=1):
+    ''' Logistic function.
+
+    Evaluates the input data using a Logistic function of the form:
+    ..math:: y = \frac{f_{max} - f_{min}}{ 1 + e^{-k(x - x0)}} + f_{min}
+
+    Parameters:
+    -----------
+    x : scalar or nd_array
+      The input values for the logistic function
+    x0 : scalar
+      The location of the functions midpoint
+    k : scalar
+      Defines the slope of the function
+    fmin : scalar, optional
+      The minimum of the function (Default=0)
+    fmax : scalar, optional
+      The maximum of the function (Default=1)
+
+    Returns:
+    --------
+    scalar or nd_array
+      The evaluated output data
+    '''
+
+    exp_factor = -k * (x - x0)
+    res =  (fmax - fmin) / (1 + np.exp(exp_factor)) + fmin
+    return res
+
+
+def calc_binom_log_likelyhood(y_i, y_func, n):
+    ''' log likelyhood for a binomial distribution
+
+    Parameters:
+    -----------
+    y_i : scalar or nd_array
+      The observed fraction or correct trials
+    y_func : scalar or nd_array
+      The fraction of sucessfull trials to check against
+    n : the number of pres
+      the number of observations
+
+    Returns:
+    --------
+    float : The log likelyhood to observe y_i given a success rate of y_func
+
+    '''
+    #calculate the number of occuarnces
+    n1 = n * y_i
+    # calculate the number of not occurance
+    n2 = (1 - y_i) * n
+    log_l = np.log(binom(n, n1)  * y_func**(n1) *(1 - y_func)**(n2))
+    return np.sum(log_l)
+
+def calc_binom_llh_deviance(yi, model, n):
+    ''' Deviance for goodnes of fit estimations
+
+    This returns the Deviance for a binomially distributed parameter
+
+    '''
+    llh_saturated = calc_binom_log_likelyhood(yi, yi, n)
+    ll_data = calc_binom_log_likelyhood(yi, model, n)
+    deviance = 2 * (llh_saturated - ll_data)
+    return deviance
