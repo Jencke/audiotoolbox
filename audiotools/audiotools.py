@@ -1,7 +1,8 @@
-
+'''
+Some simple helper functions for dealing with audiosignals
+'''
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 def pad_for_fft(signal):
     '''Zero buffer a signal with zeros so that it reaches the next closest
@@ -65,7 +66,7 @@ def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1):
     fs : float
         The sample frequency of the input signal.
 
-    mod_index: float
+    mod_index: float, optional
         The modulation index. (Default = 1)
 
     Returns:
@@ -138,9 +139,9 @@ def generate_tone(frequency, duration, fs, start_phase=0, endpoint=False):
         The tone duration in seconds.
     fs : scalar
         The sampling rate for the tone.
-    start_phase : scalar
+    start_phase : scalar, optional
         The starting phase of the sine tone.
-    endpoint : bool
+    endpoint : bool, optional
         Whether to generate an additional sample so that
         duration = time at last sample.
 
