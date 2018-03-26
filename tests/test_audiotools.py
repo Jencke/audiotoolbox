@@ -56,6 +56,12 @@ def test_get_time():
     #Test duration
     assert time[-1] == 1 - 1./1e3
 
+    # Test appearence of extra sample due to numerics
+    fs = 48e3
+    left = np.linspace(0, 1, 50976)
+    time = audio.get_time(left, fs)
+    assert len(left) == len(time)
+
 def test_cosine_fade_window():
     window = audio.cosine_fade_window(np.zeros(1000), 100e-3, 1e3)
     n_window = 100
@@ -94,6 +100,9 @@ def test_zero_buffer():
     assert len(buffered) - len(signal)  == 20
     assert np.array_equal(buffered[:10], buffered[-10:])
     assert np.array_equal(buffered[:10], np.zeros(10))
+
+    buffered = audio.zero_buffer(signal, 0)
+    assert len(buffered) == len(signal)
 
 def test_bark():
     # Compare the tabled values to the ones resulting from the equation

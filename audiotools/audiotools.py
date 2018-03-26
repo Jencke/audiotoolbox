@@ -177,10 +177,15 @@ def get_time(signal, fs):
     dt = 1. / fs
     max_time = len(signal) * dt
     time = np.arange(0, max_time , dt)
+
+    # Sometimes, due to numerics arange creates an extra sample which
+    # needs to be removed
+    if len(time) == len(signal) + 1:
+        time = time[:-1]
     return time
 
 
-def cosine_fade_window(signal, rise_time, fs):
+def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
     '''Cosine fade-in and fade-out window.
 
     This function generates a window function with a cosine fade in
@@ -196,16 +201,24 @@ def cosine_fade_window(signal, rise_time, fs):
     fs : scalar
         The sampling rate in Hz
 
+    n_zeros : int
+        Number of zeros to add at the end and at the beginning of the window.
+
     Returns:
     --------
     ndarray : The fading window
 
     '''
+
+    assert isinstance(n_zeros, int)
+
     r = int(np.round(rise_time * fs))
-    window = np.ones(len(signal))
+    window = np.ones(len(signal) - 2 * n_zeros)
     flank = 0.5 * (1 + np.cos(np.pi / r * (np.arange(r) - r)))
     window[:r] = flank
     window[-r:] = flank[::-1]
+
+    window = zero_buffer(window, n_zeros)
     return window
 
 def zero_buffer(signal, number):
@@ -364,10 +377,10 @@ def freq_to_bark(frequency, use_table=False):
     ----------
     frequency: scalar or ndarray
         The frequency in Hz. Value has to be between 20 and 15500 Hz
-    use_table: bool
+    use_table: bool, optional
         If True, the original table by [1]_ instead of the equation by [2]_
         is used. This also results in the CB beeing returned as integers.
-        (Default = False)
+        (default = False)
 
     Returns
     -------
