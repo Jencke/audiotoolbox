@@ -221,6 +221,44 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
     window = zero_buffer(window, n_zeros)
     return window
 
+def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
+    '''Gausian fade-in and fade-out window.
+
+    This function generates a window function with a gausian fade in
+    and fade out. The gausian slope is cut at the level defined by the
+    cutoff parameter
+
+    Parameters:
+    -----------
+    signal: ndarray
+        The length of the array will be used to determin the window length.
+    rise_time : scalar
+        Duration of the gaussian fade in and fade out in seconds. The
+        value is measured from the cutof level until reaching a value
+        of 1. The number of samples is determined via rounding to the
+        nearest integer value.
+    fs : scalar
+        The sampling rate in Hz
+    cutoff : scalar
+        The level at which the gausian slope is cut (default = -60dB)
+
+    Returns:
+    --------
+    ndarray : The fading window
+
+    '''
+    cutoff_val = 10**(cutoff/ 20) # value at which to cut gaussian
+    r = int(np.round(rise_time * fs)) #number of values in window
+    window = np.ones(len(signal))
+    win_time = np.linspace(0, rise_time, r)
+    sigma = np.sqrt((-(rise_time)**2 / np.log(cutoff_val)) / 2)
+    flank = np.exp(-(win_time - rise_time)**2 / (2 * sigma**2))
+
+    # Set the beginning and and to the window to equal the flank
+    window[:r-1] = flank[:-1]
+    window[-r:] = flank[::-1]
+    return window
+
 def zero_buffer(signal, number):
     '''Add a number of zeros to both sides of a signal
 

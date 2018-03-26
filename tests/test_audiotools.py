@@ -77,6 +77,21 @@ def test_cosine_fade_window():
     sin = (0.5 * audio.generate_tone(5, 0.2, 1e3, endpoint=True, start_phase=1.5 * np.pi)) + 0.5
     testing.assert_array_almost_equal(cos_curve, sin)
 
+
+def test_gaus_fade_window():
+    window = audio.gaussian_fade_window(np.zeros(1000), 100e-3, 1e3)
+    n_window = 100
+
+    #test symmentry
+    assert np.array_equal(window[:100], window[-100:][::-1])
+
+    #test starts at -60dB
+    testing.assert_almost_equal(window[0], 0.001)
+
+    #test setting cutoff
+    window = audio.gaussian_fade_window(np.zeros(1000), 100e-3, 1e3, cutoff=-20)
+    testing.assert_almost_equal(window[0], 0.1)
+
 def test_delay_signal():
     signal = audio.generate_tone(1, 1, 1e3)
     signal += audio.generate_tone(2, 1, 1e3)
