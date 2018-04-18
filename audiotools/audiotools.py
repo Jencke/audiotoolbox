@@ -4,6 +4,9 @@ Some simple helper functions for dealing with audiosignals
 
 import numpy as np
 
+COLOR_R = '#d65c5c'
+COLOR_L = '#5c5cd6'
+
 def pad_for_fft(signal):
     '''Zero buffer a signal with zeros so that it reaches the next closest
        :math`$2^n$` length.
@@ -200,9 +203,8 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
         is determined via rounding to the nearest integer value.
     fs : scalar
         The sampling rate in Hz
-
-    n_zeros : int
-        Number of zeros to add at the end and at the beginning of the window.
+    n_zeros : int, optional
+        Number of zeros to add at the end and at the beginning of the window. (Default = 0)
 
     Returns:
     --------
@@ -239,7 +241,7 @@ def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
         nearest integer value.
     fs : scalar
         The sampling rate in Hz
-    cutoff : scalar
+    cutoff : scalar, optional
         The level at which the gausian slope is cut (default = -60dB)
 
     Returns:

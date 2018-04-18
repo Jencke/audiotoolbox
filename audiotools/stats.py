@@ -36,6 +36,37 @@ def logistic_function(x, x0, k, fmin=0, fmax=1):
     return res
 
 
+def weibull_function(x, thr, k, fmin=0, fmax=1, fthr=0.75):
+    ''' Weibull Psychometric Function
+
+    Parameters:
+    -----------
+    x : scaler or nd_array
+      The input values for the weibull function
+    thr : scalar
+      The threshold value at which y(thr)=p_thr
+    k : scaler
+      Defines the slope of the function
+    fthr : scaler
+      The probability which is to be used at threshold
+    fmin : scalar, optional
+      The response probability at zero (default = 0.5)
+    fmax : scaler, optional
+      The maximum probability (default = 1)
+
+    Returns:
+    --------
+    scalar or nd_array
+      The evaluated output data
+
+'''
+    l = thr / (np.log((fmin - fmax) / (fthr - fmax)))**(1 / k)
+    y = fmax - (fmax - fmin) * np.exp(-(x / l)**k)
+
+    return y
+
+
+
 def calc_binom_log_likelyhood(y_i, y_func, n):
     ''' log likelyhood for a binomial distribution
 
