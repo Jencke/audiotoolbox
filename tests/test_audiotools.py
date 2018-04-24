@@ -1,6 +1,7 @@
 import audiotools as audio
 import numpy as np
 import numpy.testing as testing
+import pytest
 
 def test_pad_for_fft():
     signal1 = np.ones(100)
@@ -181,3 +182,38 @@ def test_set_dbsl():
     signal = audio.generate_tone(100, 1, fs)
     signal = audio.set_dbspl(signal, 22)
     assert audio.calc_dbspl(signal) == 22
+
+def test_phon_to_dbspl():
+    # Test some specific Values
+    l_pressure = audio.phon_to_dbspl(160, 30)
+    assert np.round(l_pressure, 1) == 48.4
+    l_pressure = audio.phon_to_dbspl(315, 60)
+    assert np.round(l_pressure, 1) == 65.4
+    l_pressure = audio.phon_to_dbspl(10000, 80)
+    assert np.round(l_pressure, 1) == 91.7
+
+    # Compare interpolated values with default values
+    l_int = audio.phon_to_dbspl(10000, 80, interpolate=True)
+    l_tab = audio.phon_to_dbspl(10000, 80, interpolate=False)
+    testing.assert_almost_equal(l_int, l_tab)
+
+    l_int = audio.phon_to_dbspl(100, 30, interpolate=True)
+    l_tab = audio.phon_to_dbspl(100, 30, interpolate=False)
+    testing.assert_almost_equal(l_int, l_tab)
+
+    # Test Limits
+    with pytest.raises(AssertionError):
+        audio.phon_to_dbspl(10000, 90)
+        audio.phon_to_dbspl(10000, 10)
+
+    audio.phon_to_dbspl(10000, 10, limit=False)
+
+def test_dbspl_to_phon():
+    # Test some specific Values
+    l_pressure = audio.phon_to_dbspl(160, 30)
+    l_phon = audio.dbspl_to_phon(160, l_pressure)
+    assert(np.round(l_phon, 1) == 30)
+
+    l_pressure = audio.phon_to_dbspl(1238, 78, interpolate=True)
+    l_phon = audio.dbspl_to_phon(1238, l_pressure, interpolate=True)
+    assert(np.round(l_phon, 1) == 78)
