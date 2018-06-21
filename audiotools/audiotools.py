@@ -29,6 +29,7 @@ def pad_for_fft(signal):
     n_out = 2**exponent
     out_signal = np.zeros(int(n_out))
     out_signal[:len(signal)] = signal
+
     return out_signal
 
 
