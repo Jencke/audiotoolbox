@@ -223,6 +223,10 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
     window[-r:] = flank[::-1]
 
     window = zero_buffer(window, n_zeros)
+
+    if signal.ndim > 1:
+        window = np.column_stack([window] * signal.shape[1])
+
     return window
 
 def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
@@ -261,6 +265,10 @@ def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
     # Set the beginning and and to the window to equal the flank
     window[:r-1] = flank[:-1]
     window[-r:] = flank[::-1]
+
+    if signal.ndim > 1:
+        window = np.column_stack([window] * signal.shape[1])
+
     return window
 
 def zero_buffer(signal, number):
@@ -280,7 +288,11 @@ def zero_buffer(signal, number):
     '''
     assert isinstance(number, int)
 
-    buf = np.zeros(number)
+    if signal.ndim == 1:
+        buf = np.zeros(number)
+    else:
+        buf = np.zeros([number, signal.shape[1]])
+
     signal = np.concatenate([buf, signal, buf])
 
     return signal
