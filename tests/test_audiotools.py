@@ -78,8 +78,13 @@ def test_cosine_fade_window():
     sin = (0.5 * audio.generate_tone(5, 0.2, 1e3, endpoint=True, start_phase=1.5 * np.pi)) + 0.5
     testing.assert_array_almost_equal(cos_curve, sin)
 
+    # Test multichannel window
+    window = audio.cosine_fade_window(np.zeros([1000, 2]), 100e-3, 1e3)
+    assert np.array_equal(window[:, 0], window[:, 1])
+    assert np.array_equal(window[:100, 0], window[-100:, 0][::-1])
 
-def test_gaus_fade_window():
+
+def test_gauss_fade_window():
     window = audio.gaussian_fade_window(np.zeros(1000), 100e-3, 1e3)
     n_window = 100
 
@@ -92,6 +97,12 @@ def test_gaus_fade_window():
     #test setting cutoff
     window = audio.gaussian_fade_window(np.zeros(1000), 100e-3, 1e3, cutoff=-20)
     testing.assert_almost_equal(window[0], 0.1)
+
+    # Test multichannel window
+    window = audio.gaussian_fade_window(np.zeros([1000, 2]), 100e-3, 1e3)
+    assert np.array_equal(window[:, 0], window[:, 1])
+    assert np.array_equal(window[:100, 0], window[-100:, 0][::-1])
+
 
 def test_delay_signal():
     signal = audio.generate_tone(1, 1, 1e3)
@@ -119,6 +130,13 @@ def test_zero_buffer():
 
     buffered = audio.zero_buffer(signal, 0)
     assert len(buffered) == len(signal)
+
+    # Test multichannel signal
+    signal = audio.generate_tone(1, 1, 1e3)
+    mc_signal = np.column_stack([signal, signal])
+    mc_buffered = audio.zero_buffer(mc_signal, 10)
+    assert np.array_equal(mc_buffered[:10, 0], mc_buffered[-10:, 1])
+
 
 def test_bark():
     # Compare the tabled values to the ones resulting from the equation
