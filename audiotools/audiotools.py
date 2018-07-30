@@ -32,7 +32,6 @@ def pad_for_fft(signal):
 
     return out_signal
 
-
 def zeropad(signal, number):
     '''Add a number of zeros to both sides of a signal.
 
@@ -421,6 +420,111 @@ def get_bark_limits():
                   4400, 5300, 6400, 7700, 9500, 12000, 15500]
     return bark_table
 
+def freqspace(min_frequency, max_frequency, n, scale='bark'):
+    '''Calculate a given number of frequencies that eare equally spaced on the bark or erb scale.
+
+    Returns n frequencies between min_frequency and max_frequency that are
+    equally spaced on the bark or erb scale.
+
+    Parameters
+    ----------
+    min_frequency: float
+      minimal frequency in Hz
+
+    max_frequency: float
+      maximal frequency in Hz
+
+    n: int
+      Number of equally spaced frequencies
+
+    scale: str
+      scale to use 'bark' or 'erb'. (default='bark')
+
+    Returns
+    -------
+    ndarray: n frequencies equally spaced in bark or erb
+    '''
+
+    if scale == 'bark':
+        min_bark, max_bark = freq_to_bark(np.array([min_frequency, max_frequency]))
+        barks = np.linspace(min_bark, max_bark, n)
+        freqs = bark_to_freq(barks)
+    elif scale == 'erb':
+        min_erb, max_erb = freq_to_erb(np.array([min_frequency, max_frequency]))
+        erbs = np.linspace(min_erb, max_erb, n)
+        freqs = erb_to_freq(erbs)
+    else:
+        raise NotImplementedError('only ERB and Bark implemented')
+
+    return freqs
+
+
+def freqarange(min_frequency, max_frequency, step=1, scale='bark'):
+    '''Calculate a of frequencies with a predifined spacing on the bark or erb scale.
+
+    Returns frequencies between min_frequency and max_frequency with
+    the stepsize step on the bark or erb scale.
+
+    Parameters
+    ----------
+    min_frequency: float
+      minimal frequency in Hz
+
+    max_frequency: float
+      maximal frequency in Hz
+
+    step: float
+      stepsize on the erb or bark scale
+
+    scale: str
+      scale to use 'bark' or 'erb'. (default='bark')
+
+    Returns
+    -------
+    ndarray: frequencies spaced following step on bark or erb scale
+
+    '''
+    if scale == 'bark':
+        min_bark, max_bark = freq_to_bark(np.array([min_frequency, max_frequency]))
+        bark = np.arange(min_bark, max_bark, step)
+        freqs = bark_to_freq(bark)
+    elif scale == 'erb':
+        min_erb, max_erb = freq_to_erb(np.array([min_frequency, max_frequency]))
+        erbs = np.arange(min_erb, max_erb, step)
+        freqs = erb_to_freq(erbs)
+    else:
+        raise NotImplementedError('only ERB and Bark implemented')
+
+    return freqs
+
+def bark_to_freq(bark):
+    '''Bark to frequency conversion
+
+    Converts a given value on the bark scale into frequency using the
+    equation by [1]_
+
+    Parameters
+    ----------
+    bark: scalar or ndarray
+      The bark values
+
+    Returns
+    -------
+    scalar or ndarray: The frequency in Hz
+
+    References
+    ----------
+    ..[1] Traunmueller, H. (1990). Analytical expressions for the tonotopic
+           sensory scale. The Journal of the Acoustical Society of America,
+           88(1), 97-100. http://dx.doi.org/10.1121/1.399849
+    '''
+
+    #reverse apply corrections
+    bark[bark < 2.0] = (bark[bark < 2.0] - 0.3) / 0.85
+    bark[bark > 20.1] = (bark[bark > 20.1] + 4.422) / 1.22
+    f = 1960 * (bark + 0.53) / (26.28 - bark)
+    return f
+
 def freq_to_bark(frequency, use_table=False):
     '''Frequency to Bark conversion
 
@@ -442,11 +546,11 @@ def freq_to_bark(frequency, use_table=False):
 
     References
     ----------
-    .. [1] Zwicker, E. (1961). Subdivision of the audible frequency range into
+    ..[1] Zwicker, E. (1961). Subdivision of the audible frequency range into
            critical bands (frequenzgruppen). The Journal of the Acoustical
            Society of America, 33(2),
            248-248. http://dx.doi.org/10.1121/1.19086f30
-    .. [2] Traunmueller, H. (1990). Analytical expressions for the tonotopic
+    ..[2] Traunmueller, H. (1990). Analytical expressions for the tonotopic
            sensory scale. The Journal of the Acoustical Society of America,
            88(1), 97-100. http://dx.doi.org/10.1121/1.399849
 
@@ -473,6 +577,57 @@ def freq_to_bark(frequency, use_table=False):
             cb_val[cb_val > 20.1] += 0.22 * (cb_val[cb_val > 20.1] - 20.1)
         return cb_val
 
+def freq_to_erb(frequency):
+    '''Frequency to number of ERBs conversion
+
+    Calculates the number of erbs for a given sound frequency in Hz using the
+    equation by [1]_
+
+    Parameters
+    ----------
+    frequency: scalar or ndarray
+        The frequency in Hz.
+
+    Returns
+    -------
+    scalar or ndarray : The number of erbs corresponding to the frequency
+
+    References
+    ----------
+    ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of auditory
+          filter shapes from notched-noise data. Hearing Research, 47(1-2),
+          103-138.
+    '''
+
+    n_erb = (1000. / (24.7 * 4.37)) * np.log(4.37 * frequency / 1000 + 1)
+    return n_erb
+
+def erb_to_freq(n_erb):
+    '''number of ERBs to Frequency conversion
+
+    Calculates the frequency from a given number of ERBs using
+    equation by [1]_
+
+    Parameters
+    ----------
+    n_erb: scalar or ndarray
+        The number of ERBs
+
+    Returns
+    -------
+    scalar or ndarray : The corresponding frequency
+
+    References
+    ----------
+    ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of auditory
+          filter shapes from notched-noise data. Hearing Research, 47(1-2),
+          103-138.
+    '''
+    fkhz = (np.exp(n_erb * (24.7 * 4.37) / 1000) - 1) / 4.37
+    return fkhz * 1000
+
+
+
 def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
     '''Sound pressure levels from loudness level (following DIN ISO 226:2006-04)
 
@@ -488,7 +643,7 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
 
     Values for other frequencies can be interpolated (cubic spline) by setting the
     parameter interpolate to True. The check for correct sound pressure levels can be
-    switched off by setting limit=False. In poth cases, the results are not covered by
+    switched off by setting limit=False. In both cases, the results are not covered by
     the DIN ISO norm
 
     Parameters
@@ -503,7 +658,6 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
         (default = False)
     limit : bool, optional
         Defines whether the limits of the norm should be checked (default = True)
-
 
     Returns
     -------
@@ -583,7 +737,6 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
 
     return l_pressure
 
-
 def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
     '''loudness levels from sound pressure level (following DIN ISO 226:2006-04)
 
@@ -620,7 +773,6 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
     scalar : The loudnes level level in dB SPL
 
     '''
-
     # Equation Parameters
     frequency_list = np.array([20, 25, 31.5,
                                40, 50, 63,

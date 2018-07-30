@@ -150,8 +150,74 @@ def test_bark():
     calc_vals = audio.freq_to_bark(scale[:-1], True)
     assert np.array_equal(np.arange(0, 24), calc_vals)
 
-def test_time2phase():
+def test_bark_to_freq():
+    # test inversion between freq_to_bark and bark_to_freq
+    freqs = np.linspace(100, 15e3, 10)
+    barks = audio.freq_to_bark(freqs)
+    rev_freqs = audio.bark_to_freq(barks)
 
+    testing.assert_array_almost_equal(freqs, rev_freqs)
+
+def test_freqspace():
+    freqs = audio.freqspace(100, 12000, 23)
+    barks = audio.freq_to_bark(freqs)
+    diff =  np.diff(barks)
+
+    # should be very close to one bark distance
+    assert np.round(diff[0], 2) == 1.0
+
+    # check if the array is equally spaced in barks
+    testing.assert_array_almost_equal(diff, diff[::-1])
+
+    freqs = audio.freqspace(100, 1200, 22, scale='erb')
+    erbs = audio.freq_to_erb(freqs)
+    diff = np.diff(erbs)
+
+    # check if really equally spaced in erbs
+    testing.assert_array_almost_equal(diff, diff[::-1])
+
+
+def test_freq_to_erb():
+    # test that scale starts with 0
+    assert audio.freq_to_erb(0) == 0
+
+    # compare results with original equation
+    freq = np.array([100., 1000, 10000])
+    nerb =  audio.freq_to_erb(freq)
+    nerb2 = (1000 / (24.7 * 4.37)) * np.log(4.37 * (freq / 1000) + 1)
+    assert np.array_equal(nerb, nerb2)
+
+def test_freqarange():
+    freqs = audio.freqarange(100, 1200, 1, scale='erb')
+    erbs = audio.freq_to_erb(freqs)
+    diff = np.diff(erbs)
+    testing.assert_almost_equal(diff, diff[::-1])
+
+    freqs = audio.freqarange(100, 1200, 0.5, scale='erb')
+    erbs = audio.freq_to_erb(freqs)
+    diff = np.diff(erbs)
+    testing.assert_almost_equal(diff[0], 0.5)
+
+
+    freqs = audio.freqarange(100, 1200, 1)
+    barks = audio.freq_to_bark(freqs)
+    diff = np.diff(barks)
+    testing.assert_almost_equal(diff, diff[::-1])
+
+    freqs = audio.freqarange(100, 1200, 0.5)
+    barks = audio.freq_to_bark(freqs)
+    diff = np.diff(barks)
+    testing.assert_almost_equal(diff[0], 0.5)
+
+def test_erb_to_freq():
+    # Test by inversion from freq_to_erb
+    freq = np.array([100., 1000, 10000])
+    nerb = audio.freq_to_erb(freq)
+
+    freq2 = audio.erb_to_freq(nerb)
+    np.array_equal(freq2, freq)
+
+def test_time2phase():
     # two simple conversion tests
     f = 1e3
     time = 1e-3
