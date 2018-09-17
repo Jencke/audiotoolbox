@@ -124,6 +124,39 @@ def phase2time(phase, frequency):
     time = phase / (2 * np.pi) / frequency
     return time
 
+def nsamples(duration, fs, endpoint=False):
+    '''Calculates number of samples in a signal with a given duration.
+
+    This function calculates the number of samples that will be
+    returned when generating a signal with a certain duration and
+    sampling rates.  The number is determined by multiplying the
+    sampling rate with the duration and rounding to the next integer.
+
+    Parameters:
+    -----------
+    frequency : scalar
+        The tone frequency in Hz.
+    duration : scalar
+        The tone duration in seconds.
+    fs : scalar
+        The sampling rate for the tone.
+    start_phase : scalar, optional
+        The starting phase of the sine tone.
+    endpoint : bool, optional
+        Whether to generate an additional sample so that
+        duration = time at last sample.
+
+    Returns:
+    --------
+    int : number of samples in the signal
+
+    '''
+    len_signal = int(np.round(duration * fs))
+    len_signal += 1 if endpoint else 0
+    return len_signal
+
+
+
 def generate_tone(frequency, duration, fs, start_phase=0, endpoint=False):
     '''Sine tone with a given frequency, duration and sampling rate.
 
@@ -154,8 +187,7 @@ def generate_tone(frequency, duration, fs, start_phase=0, endpoint=False):
     ndarray : The sine tone
 
     '''
-    len_signal = int(np.round(duration * fs))
-    len_signal += 1 if endpoint else 0
+    len_signal = nsamples(duration, fs, endpoint)
     time = np.linspace(0, duration, len_signal, endpoint)
     tone = np.sin(2 * np.pi * frequency * time + start_phase)
     return tone
@@ -295,7 +327,6 @@ def zero_buffer(signal, number):
     signal = np.concatenate([buf, signal, buf])
 
     return signal
-
 
 def delay_signal(signal, delay, fs):
     '''Delay by phase shifting in the frequncy domain.
