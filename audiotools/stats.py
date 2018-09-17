@@ -5,6 +5,7 @@ during psychoacousic experiments
 
 import numpy as np
 from scipy.special import binom
+from scipy.stats import norm
 
 def logistic_function(x, x0, k, fmin=0, fmax=1):
     ''' Logistic function.
@@ -101,3 +102,29 @@ def calc_binom_llh_deviance(yi, model, n):
     ll_data = calc_binom_log_likelyhood(yi, model, n)
     deviance = 2 * (llh_saturated - ll_data)
     return deviance
+
+def calc_dprime_2afc(pc):
+    '''d' value calculated from the percent correct score of a 2AFC
+
+    Calculates the seperability index d' (d prime) from the percent
+    correct value of a 2AFC task using the equation
+
+    ..math:: d' = z(P_c)\sqrt{2}
+
+    where z is the inverse of the cumulative distribution function of
+    the Gaussian distribution.
+
+    Parameters:
+    -----------
+    pc : int or nd_array
+      The percent correct value
+
+    Returns:
+    --------
+    int or ndarray: The d' values
+
+    '''
+
+    dprime = norm.ppf(pc) * np.sqrt(2)
+
+    return dprime

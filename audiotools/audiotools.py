@@ -3,6 +3,7 @@ Some simple helper functions for dealing with audiosignals
 '''
 
 import numpy as np
+from scipy.interpolate import interp1d
 
 COLOR_R = '#d65c5c'
 COLOR_L = '#5c5cd6'
@@ -28,8 +29,8 @@ def pad_for_fft(signal):
     n_out = 2**exponent
     out_signal = np.zeros(int(n_out))
     out_signal[:len(signal)] = signal
-    return out_signal
 
+    return out_signal
 
 def zeropad(signal, number):
     '''Add a number of zeros to both sides of a signal.
@@ -253,6 +254,10 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
     window[-r:] = flank[::-1]
 
     window = zero_buffer(window, n_zeros)
+
+    if signal.ndim > 1:
+        window = np.column_stack([window] * signal.shape[1])
+
     return window
 
 def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
@@ -291,6 +296,10 @@ def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
     # Set the beginning and and to the window to equal the flank
     window[:r-1] = flank[:-1]
     window[-r:] = flank[::-1]
+
+    if signal.ndim > 1:
+        window = np.column_stack([window] * signal.shape[1])
+
     return window
 
 def zero_buffer(signal, number):
@@ -310,7 +319,11 @@ def zero_buffer(signal, number):
     '''
     assert isinstance(number, int)
 
-    buf = np.zeros(number)
+    if signal.ndim == 1:
+        buf = np.zeros(number)
+    else:
+        buf = np.zeros([number, signal.shape[1]])
+
     signal = np.concatenate([buf, signal, buf])
 
     return signal
@@ -438,6 +451,111 @@ def get_bark_limits():
                   4400, 5300, 6400, 7700, 9500, 12000, 15500]
     return bark_table
 
+def freqspace(min_frequency, max_frequency, n, scale='bark'):
+    '''Calculate a given number of frequencies that eare equally spaced on the bark or erb scale.
+
+    Returns n frequencies between min_frequency and max_frequency that are
+    equally spaced on the bark or erb scale.
+
+    Parameters
+    ----------
+    min_frequency: float
+      minimal frequency in Hz
+
+    max_frequency: float
+      maximal frequency in Hz
+
+    n: int
+      Number of equally spaced frequencies
+
+    scale: str
+      scale to use 'bark' or 'erb'. (default='bark')
+
+    Returns
+    -------
+    ndarray: n frequencies equally spaced in bark or erb
+    '''
+
+    if scale == 'bark':
+        min_bark, max_bark = freq_to_bark(np.array([min_frequency, max_frequency]))
+        barks = np.linspace(min_bark, max_bark, n)
+        freqs = bark_to_freq(barks)
+    elif scale == 'erb':
+        min_erb, max_erb = freq_to_erb(np.array([min_frequency, max_frequency]))
+        erbs = np.linspace(min_erb, max_erb, n)
+        freqs = erb_to_freq(erbs)
+    else:
+        raise NotImplementedError('only ERB and Bark implemented')
+
+    return freqs
+
+
+def freqarange(min_frequency, max_frequency, step=1, scale='bark'):
+    '''Calculate a of frequencies with a predifined spacing on the bark or erb scale.
+
+    Returns frequencies between min_frequency and max_frequency with
+    the stepsize step on the bark or erb scale.
+
+    Parameters
+    ----------
+    min_frequency: float
+      minimal frequency in Hz
+
+    max_frequency: float
+      maximal frequency in Hz
+
+    step: float
+      stepsize on the erb or bark scale
+
+    scale: str
+      scale to use 'bark' or 'erb'. (default='bark')
+
+    Returns
+    -------
+    ndarray: frequencies spaced following step on bark or erb scale
+
+    '''
+    if scale == 'bark':
+        min_bark, max_bark = freq_to_bark(np.array([min_frequency, max_frequency]))
+        bark = np.arange(min_bark, max_bark, step)
+        freqs = bark_to_freq(bark)
+    elif scale == 'erb':
+        min_erb, max_erb = freq_to_erb(np.array([min_frequency, max_frequency]))
+        erbs = np.arange(min_erb, max_erb, step)
+        freqs = erb_to_freq(erbs)
+    else:
+        raise NotImplementedError('only ERB and Bark implemented')
+
+    return freqs
+
+def bark_to_freq(bark):
+    '''Bark to frequency conversion
+
+    Converts a given value on the bark scale into frequency using the
+    equation by [1]_
+
+    Parameters
+    ----------
+    bark: scalar or ndarray
+      The bark values
+
+    Returns
+    -------
+    scalar or ndarray: The frequency in Hz
+
+    References
+    ----------
+    ..[1] Traunmueller, H. (1990). Analytical expressions for the tonotopic
+           sensory scale. The Journal of the Acoustical Society of America,
+           88(1), 97-100. http://dx.doi.org/10.1121/1.399849
+    '''
+
+    #reverse apply corrections
+    bark[bark < 2.0] = (bark[bark < 2.0] - 0.3) / 0.85
+    bark[bark > 20.1] = (bark[bark > 20.1] + 4.422) / 1.22
+    f = 1960 * (bark + 0.53) / (26.28 - bark)
+    return f
+
 def freq_to_bark(frequency, use_table=False):
     '''Frequency to Bark conversion
 
@@ -459,11 +577,11 @@ def freq_to_bark(frequency, use_table=False):
 
     References
     ----------
-    .. [1] Zwicker, E. (1961). Subdivision of the audible frequency range into
+    ..[1] Zwicker, E. (1961). Subdivision of the audible frequency range into
            critical bands (frequenzgruppen). The Journal of the Acoustical
            Society of America, 33(2),
            248-248. http://dx.doi.org/10.1121/1.19086f30
-    .. [2] Traunmueller, H. (1990). Analytical expressions for the tonotopic
+    ..[2] Traunmueller, H. (1990). Analytical expressions for the tonotopic
            sensory scale. The Journal of the Acoustical Society of America,
            88(1), 97-100. http://dx.doi.org/10.1121/1.399849
 
@@ -489,3 +607,273 @@ def freq_to_bark(frequency, use_table=False):
         if max(cb_val) > 20.1:
             cb_val[cb_val > 20.1] += 0.22 * (cb_val[cb_val > 20.1] - 20.1)
         return cb_val
+
+def freq_to_erb(frequency):
+    '''Frequency to number of ERBs conversion
+
+    Calculates the number of erbs for a given sound frequency in Hz using the
+    equation by [1]_
+
+    Parameters
+    ----------
+    frequency: scalar or ndarray
+        The frequency in Hz.
+
+    Returns
+    -------
+    scalar or ndarray : The number of erbs corresponding to the frequency
+
+    References
+    ----------
+    ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of auditory
+          filter shapes from notched-noise data. Hearing Research, 47(1-2),
+          103-138.
+    '''
+
+    n_erb = (1000. / (24.7 * 4.37)) * np.log(4.37 * frequency / 1000 + 1)
+    return n_erb
+
+def erb_to_freq(n_erb):
+    '''number of ERBs to Frequency conversion
+
+    Calculates the frequency from a given number of ERBs using
+    equation by [1]_
+
+    Parameters
+    ----------
+    n_erb: scalar or ndarray
+        The number of ERBs
+
+    Returns
+    -------
+    scalar or ndarray : The corresponding frequency
+
+    References
+    ----------
+    ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of auditory
+          filter shapes from notched-noise data. Hearing Research, 47(1-2),
+          103-138.
+    '''
+    fkhz = (np.exp(n_erb * (24.7 * 4.37) / 1000) - 1) / 4.37
+    return fkhz * 1000
+
+
+
+def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
+    '''Sound pressure levels from loudness level (following DIN ISO 226:2006-04)
+
+    Calulates the sound pressure level at a given frequency that is necessary to
+    reach a specific loudness level following DIN ISO 226:2006-04
+
+    The normed values are tabulated for the following frequencies and sound pressure levels:
+     1. 20phon to 90phon
+       * 20, 25, 31.5, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315,
+       * 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000
+     2. 20phon to 80phon
+       *5000, 6300, 8000, 10000, 12500
+
+    Values for other frequencies can be interpolated (cubic spline) by setting the
+    parameter interpolate to True. The check for correct sound pressure levels can be
+    switched off by setting limit=False. In both cases, the results are not covered by
+    the DIN ISO norm
+
+    Parameters
+    ----------
+    frequency : scalar
+        The frequency in Hz. must be one of the tabulated values above if interpolate = False
+    l_phon : scalar
+        loudness level that should be converted
+    interpolate : bool, optional
+        Defines whether the tabulated values from the norm should be interpolated.
+        If set to True, the tabulated values will be interpolated using a cubic spline
+        (default = False)
+    limit : bool, optional
+        Defines whether the limits of the norm should be checked (default = True)
+
+    Returns
+    -------
+    scalar : The soundpressure level in dB SPL
+    '''
+    if limit:
+        # Definition only valid starting from 20 phon
+        assert l_phon >= 20
+
+        if 20 <= frequency <= 4500:
+            assert l_phon <= 90
+        elif 4500 < frequency <= 12500:
+            assert l_phon <= 80
+
+    # Equation Parameters
+    frequency_list = np.array([20, 25, 31.5,
+                               40, 50, 63,
+                               80, 100, 125,
+                               160, 200, 250,
+                               315, 400, 500,
+                               630, 800, 1000,
+                               1250, 1600, 2000,
+                               2500, 3150, 4000,
+                               5000, 6300, 8000,
+                               10000, 12500])
+
+    alpha_f_list = np.array([0.532, 0.506, 0.480,
+                             0.455, 0.432, 0.409,
+                             0.387, 0.367, 0.349,
+                             0.330, 0.315, 0.301,
+                             0.288, 0.276, 0.267,
+                             0.259, 0.253, 0.250,
+                             0.246, 0.244, 0.243,
+                             0.243, 0.243, 0.242,
+                             0.242, 0.245, 0.254,
+                             0.271, 0.301])
+
+    # transfer function normed at 1000Hz
+    l_u_list = np.array([-31.6, -27.2, -23.0,
+                         -19.1, -15.9, -13.0,
+                         -10.3, -8.1, -6.2,
+                         -4.5, -3.1, -2.0,
+                         -1.1, -0.4, 0.0,
+                         0.3, 0.5, 0.0,
+                         -2.7, -4.1, -1.0,
+                         1.7, 2.5, 1.2,
+                         -2.1, -7.1, -11.2,
+                         -10.7, -3.1])
+
+    # Hearing threshold t_f
+    t_f_list = np.array([78.5, 68.7, 59.5,
+                         51.1, 44.0, 37.5,
+                         31.5, 26.5, 22.1,
+                         17.9, 14.4, 11.4,
+                         8.6, 6.2, 4.4,
+                         3.0, 2.2, 2.4,
+                         3.5, 1.7, -1.3,
+                         -4.2, -6.0, -5.4,
+                         -1.5, 6.0, 12.6,
+                         13.9, 12.3])
+
+    if interpolate == False:
+        assert frequency in frequency_list
+        n_param = np.where(frequency_list == frequency)[0][0]
+
+        alpha_f = alpha_f_list[n_param]
+        l_u = l_u_list[n_param]
+        t_f = t_f_list[n_param]
+    else :
+        i_type = 'cubic'
+        alpha_f = interp1d(frequency_list, alpha_f_list, kind=i_type)(frequency)
+        l_u = interp1d(frequency_list, l_u_list, kind=i_type)(frequency)
+        t_f = interp1d(frequency_list, t_f_list, kind=i_type)(frequency)
+
+    a_f = 4.47e-3 * (10**(0.025 * l_phon) - 1.15) + (0.4 * 10**((t_f + l_u) / 10 -9))**alpha_f
+    l_pressure = 10 / alpha_f * np.log10(a_f) - l_u + 94
+
+    return l_pressure
+
+def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
+    '''loudness levels from sound pressure level (following DIN ISO 226:2006-04)
+
+    Calulates the loudness level at a given frequency from the sound
+    pressure level following DIN ISO 226:2006-04
+
+    The normed values are tabulated for the following frequencies and sound pressure levels:
+     1. 20phon to 90phon
+       * 20, 25, 31.5, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315,
+       * 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000
+     2. 20phon to 80phon
+       *5000, 6300, 8000, 10000, 12500
+
+    Values for other frequencies can be interpolated (cubic spline) by setting the
+    parameter interpolate to True. The check for correct sound pressure levels can be
+    switched off by setting limit=False. In poth cases, the results are not covered by
+    the DIN ISO norm
+
+    Parameters
+    ----------
+    frequency : scalar
+        The frequency in Hz. must be one of the tabulated values above if interpolate = False
+    l_dbspl : scalar
+        sound pressure level that should be converted
+    interpolate : bool, optional
+        Defines whether the tabulated values from the norm should be interpolated.
+        If set to True, the tabulated values will be interpolated using a cubic spline
+        (default = False)
+    limit : bool, optional
+        Defines whether the limits of the norm should be checked (default = True)
+
+    Returns
+    -------
+    scalar : The loudnes level level in dB SPL
+
+    '''
+    # Equation Parameters
+    frequency_list = np.array([20, 25, 31.5,
+                               40, 50, 63,
+                               80, 100, 125,
+                               160, 200, 250,
+                               315, 400, 500,
+                               630, 800, 1000,
+                               1250, 1600, 2000,
+                               2500, 3150, 4000,
+                               5000, 6300, 8000,
+                               10000, 12500])
+
+    alpha_f_list = np.array([0.532, 0.506, 0.480,
+                             0.455, 0.432, 0.409,
+                             0.387, 0.367, 0.349,
+                             0.330, 0.315, 0.301,
+                             0.288, 0.276, 0.267,
+                             0.259, 0.253, 0.250,
+                             0.246, 0.244, 0.243,
+                             0.243, 0.243, 0.242,
+                             0.242, 0.245, 0.254,
+                             0.271, 0.301])
+
+    # transfer function normed at 1000Hz
+    l_u_list = np.array([-31.6, -27.2, -23.0,
+                         -19.1, -15.9, -13.0,
+                         -10.3, -8.1, -6.2,
+                         -4.5, -3.1, -2.0,
+                         -1.1, -0.4, 0.0,
+                         0.3, 0.5, 0.0,
+                         -2.7, -4.1, -1.0,
+                         1.7, 2.5, 1.2,
+                         -2.1, -7.1, -11.2,
+                         -10.7, -3.1])
+
+    # Hearing threshold t_f
+    t_f_list = np.array([78.5, 68.7, 59.5,
+                         51.1, 44.0, 37.5,
+                         31.5, 26.5, 22.1,
+                         17.9, 14.4, 11.4,
+                         8.6, 6.2, 4.4,
+                         3.0, 2.2, 2.4,
+                         3.5, 1.7, -1.3,
+                         -4.2, -6.0, -5.4,
+                         -1.5, 6.0, 12.6,
+                         13.9, 12.3])
+
+    if interpolate == False:
+        assert frequency in frequency_list
+        n_param = np.where(frequency_list == frequency)[0][0]
+
+        alpha_f = alpha_f_list[n_param]
+        l_u = l_u_list[n_param]
+        t_f = t_f_list[n_param]
+    else:
+        i_type = 'cubic'
+        alpha_f = interp1d(frequency_list, alpha_f_list, kind=i_type)(frequency)
+        l_u = interp1d(frequency_list, l_u_list, kind=i_type)(frequency)
+        t_f = interp1d(frequency_list, t_f_list, kind=i_type)(frequency)
+
+    b_f = (0.4 * 10**((l_dbspl + l_u) / 10 - 9))**alpha_f - (0.4 * 10**((t_f + l_u) / 10 -9))**alpha_f + 0.005135
+    l_phon = 40 * np.log10(b_f) + 94
+
+    if limit:
+        # Definition only valid starting from 20 phon
+        assert l_phon >= 20
+
+        if 20 <= frequency <= 4500:
+            assert l_phon <= 90
+        elif 4500 < frequency <= 12500:
+            assert l_phon <= 80
+
+    return l_phon

@@ -1,6 +1,7 @@
 import audiotools as audio
 import numpy as np
 import numpy.testing as testing
+import pytest
 
 def test_pad_for_fft():
     signal1 = np.ones(100)
@@ -77,8 +78,13 @@ def test_cosine_fade_window():
     sin = (0.5 * audio.generate_tone(5, 0.2, 1e3, endpoint=True, start_phase=1.5 * np.pi)) + 0.5
     testing.assert_array_almost_equal(cos_curve, sin)
 
+    # Test multichannel window
+    window = audio.cosine_fade_window(np.zeros([1000, 2]), 100e-3, 1e3)
+    assert np.array_equal(window[:, 0], window[:, 1])
+    assert np.array_equal(window[:100, 0], window[-100:, 0][::-1])
 
-def test_gaus_fade_window():
+
+def test_gauss_fade_window():
     window = audio.gaussian_fade_window(np.zeros(1000), 100e-3, 1e3)
     n_window = 100
 
@@ -91,6 +97,12 @@ def test_gaus_fade_window():
     #test setting cutoff
     window = audio.gaussian_fade_window(np.zeros(1000), 100e-3, 1e3, cutoff=-20)
     testing.assert_almost_equal(window[0], 0.1)
+
+    # Test multichannel window
+    window = audio.gaussian_fade_window(np.zeros([1000, 2]), 100e-3, 1e3)
+    assert np.array_equal(window[:, 0], window[:, 1])
+    assert np.array_equal(window[:100, 0], window[-100:, 0][::-1])
+
 
 def test_delay_signal():
     signal = audio.generate_tone(1, 1, 1e3)
@@ -119,6 +131,13 @@ def test_zero_buffer():
     buffered = audio.zero_buffer(signal, 0)
     assert len(buffered) == len(signal)
 
+    # Test multichannel signal
+    signal = audio.generate_tone(1, 1, 1e3)
+    mc_signal = np.column_stack([signal, signal])
+    mc_buffered = audio.zero_buffer(mc_signal, 10)
+    assert np.array_equal(mc_buffered[:10, 0], mc_buffered[-10:, 1])
+
+
 def test_bark():
     # Compare the tabled values to the ones resulting from the equation
 
@@ -131,8 +150,74 @@ def test_bark():
     calc_vals = audio.freq_to_bark(scale[:-1], True)
     assert np.array_equal(np.arange(0, 24), calc_vals)
 
-def test_time2phase():
+def test_bark_to_freq():
+    # test inversion between freq_to_bark and bark_to_freq
+    freqs = np.linspace(100, 15e3, 10)
+    barks = audio.freq_to_bark(freqs)
+    rev_freqs = audio.bark_to_freq(barks)
 
+    testing.assert_array_almost_equal(freqs, rev_freqs)
+
+def test_freqspace():
+    freqs = audio.freqspace(100, 12000, 23)
+    barks = audio.freq_to_bark(freqs)
+    diff =  np.diff(barks)
+
+    # should be very close to one bark distance
+    assert np.round(diff[0], 2) == 1.0
+
+    # check if the array is equally spaced in barks
+    testing.assert_array_almost_equal(diff, diff[::-1])
+
+    freqs = audio.freqspace(100, 1200, 22, scale='erb')
+    erbs = audio.freq_to_erb(freqs)
+    diff = np.diff(erbs)
+
+    # check if really equally spaced in erbs
+    testing.assert_array_almost_equal(diff, diff[::-1])
+
+
+def test_freq_to_erb():
+    # test that scale starts with 0
+    assert audio.freq_to_erb(0) == 0
+
+    # compare results with original equation
+    freq = np.array([100., 1000, 10000])
+    nerb =  audio.freq_to_erb(freq)
+    nerb2 = (1000 / (24.7 * 4.37)) * np.log(4.37 * (freq / 1000) + 1)
+    assert np.array_equal(nerb, nerb2)
+
+def test_freqarange():
+    freqs = audio.freqarange(100, 1200, 1, scale='erb')
+    erbs = audio.freq_to_erb(freqs)
+    diff = np.diff(erbs)
+    testing.assert_almost_equal(diff, diff[::-1])
+
+    freqs = audio.freqarange(100, 1200, 0.5, scale='erb')
+    erbs = audio.freq_to_erb(freqs)
+    diff = np.diff(erbs)
+    testing.assert_almost_equal(diff[0], 0.5)
+
+
+    freqs = audio.freqarange(100, 1200, 1)
+    barks = audio.freq_to_bark(freqs)
+    diff = np.diff(barks)
+    testing.assert_almost_equal(diff, diff[::-1])
+
+    freqs = audio.freqarange(100, 1200, 0.5)
+    barks = audio.freq_to_bark(freqs)
+    diff = np.diff(barks)
+    testing.assert_almost_equal(diff[0], 0.5)
+
+def test_erb_to_freq():
+    # Test by inversion from freq_to_erb
+    freq = np.array([100., 1000, 10000])
+    nerb = audio.freq_to_erb(freq)
+
+    freq2 = audio.erb_to_freq(nerb)
+    np.array_equal(freq2, freq)
+
+def test_time2phase():
     # two simple conversion tests
     f = 1e3
     time = 1e-3
@@ -181,3 +266,38 @@ def test_set_dbsl():
     signal = audio.generate_tone(100, 1, fs)
     signal = audio.set_dbspl(signal, 22)
     assert audio.calc_dbspl(signal) == 22
+
+def test_phon_to_dbspl():
+    # Test some specific Values
+    l_pressure = audio.phon_to_dbspl(160, 30)
+    assert np.round(l_pressure, 1) == 48.4
+    l_pressure = audio.phon_to_dbspl(315, 60)
+    assert np.round(l_pressure, 1) == 65.4
+    l_pressure = audio.phon_to_dbspl(10000, 80)
+    assert np.round(l_pressure, 1) == 91.7
+
+    # Compare interpolated values with default values
+    l_int = audio.phon_to_dbspl(10000, 80, interpolate=True)
+    l_tab = audio.phon_to_dbspl(10000, 80, interpolate=False)
+    testing.assert_almost_equal(l_int, l_tab)
+
+    l_int = audio.phon_to_dbspl(100, 30, interpolate=True)
+    l_tab = audio.phon_to_dbspl(100, 30, interpolate=False)
+    testing.assert_almost_equal(l_int, l_tab)
+
+    # Test Limits
+    with pytest.raises(AssertionError):
+        audio.phon_to_dbspl(10000, 90)
+        audio.phon_to_dbspl(10000, 10)
+
+    audio.phon_to_dbspl(10000, 10, limit=False)
+
+def test_dbspl_to_phon():
+    # Test some specific Values
+    l_pressure = audio.phon_to_dbspl(160, 30)
+    l_phon = audio.dbspl_to_phon(160, l_pressure)
+    assert(np.round(l_phon, 1) == 30)
+
+    l_pressure = audio.phon_to_dbspl(1238, 78, interpolate=True)
+    l_phon = audio.dbspl_to_phon(1238, l_pressure, interpolate=True)
+    assert(np.round(l_phon, 1) == 78)
