@@ -35,8 +35,9 @@ def pad_for_fft(signal):
 def zeropad(signal, number):
     '''Add a number of zeros to both sides of a signal.
 
+    signal : ndarray
         The input signal.
-    number: int
+    number : int
         The number of zeros to add to the signal
 
     Returns:
@@ -155,6 +156,28 @@ def nsamples(duration, fs, endpoint=False):
     len_signal += 1 if endpoint else 0
     return len_signal
 
+def generate_noise(duration, fs, cf=None, bw=None, seed=None):
+    len_signal = nsamples(duration, fs)
+
+    # Seed random number genarator
+    np.random.seed(seed)
+    noise = 2 * np.random.random(len_signal) - 1
+
+    if cf:
+        assert bw
+
+        low_f = cf - 0.5 * bw
+        high_f = cf + 0.5 * bw
+
+        spec = np.fft.fft(noise)
+        freqs = np.fft.fftfreq(len(noise), 1. / fs)
+        sel_freq = ~((np.abs(freqs) <= high_f) & (np.abs(freqs) >= low_f))
+        spec[sel_freq] = 0
+        filtered_noise = np.fft.ifft(spec)
+        filtered_noise = np.real_if_close(filtered_noise, 1000)
+        noise = filtered_noise
+
+    return noise
 
 
 def generate_tone(frequency, duration, fs, start_phase=0, endpoint=False):
@@ -352,7 +375,11 @@ def delay_signal(signal, delay, fs):
     '''
 
     #Only Positive Delays allowed
-    assert delay >= 0
+    if delay < 0:
+        neg_delay = True
+        delay = np.abs(delay)
+    else:
+        neg_delay = False
 
     # save the original length of the signal
     len_sig = len(signal)
@@ -381,6 +408,11 @@ def delay_signal(signal, delay, fs):
 
     # cut away the buffering
     both = both[n_pad:len_sig + 2 * n_pad, :]
+
+    # If negative delay then just invert the two signals
+    if neg_delay:
+        both = both[:,::-1]
+
     return both
 
 def calc_dbspl(signal):
