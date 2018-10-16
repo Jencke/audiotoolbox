@@ -129,3 +129,23 @@ def calc_dprime_2afc(pc):
     dprime = norm.ppf(pc) * np.sqrt(2)
 
     return dprime
+
+def calc_pc_dprime(dprime):
+    '''Percent correct score from d' for 2AFC
+
+    Calculates the percent correct score from a given seperability index
+    d' assuming a 2AFC task.
+
+    Parameters:
+    -----------
+    dprime : int or nd_array
+      the d' value
+
+    Returns:
+    --------
+    int or ndarray: the percent correct scores
+
+    '''
+    pc = norm.cdf(dprime / np.sqrt(2))
+
+    return pc
