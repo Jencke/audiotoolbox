@@ -119,6 +119,14 @@ def test_delay_signal():
     error = np.abs(shifted[:] - delayed[:-2, 1])
     assert np.max(error[10:-10]) <= 1e-3
 
+
+    # Check if a negative delay results in inverted channels
+    delayed_negative = audio.delay_signal(signal, -1.5e-3, 1e3)
+
+    assert np.array_equal(delayed[:, 0], delayed_negative[:, 1])
+    assert np.array_equal(delayed[:, 1], delayed_negative[:, 0])
+
+
 def test_zero_buffer():
     signal = audio.generate_tone(1, 1, 1e3)
 
