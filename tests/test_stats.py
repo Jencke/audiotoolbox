@@ -29,3 +29,9 @@ def test_logistic_function():
     # check center on changed min and max params
     center_out = stats.logistic_function(0, 0, 10, 4, 6)
     assert  center_out == 5
+
+def test_weibull_funciton():
+
+    #check unshifted center
+    center_out = stats.logistic_function(0, 0, 10)
+    assert center_out == 0.5
