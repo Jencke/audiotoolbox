@@ -48,8 +48,9 @@ def weibull_function(x, thr, k, fmin=0, fmax=1, fthr=0.75):
       The threshold value at which y(thr)=p_thr
     k : scaler
       Defines the slope of the function
-    fthr : scaler
+    fthr : scaler, optional
       The probability which is to be used at threshold
+      (default = 0.75)
     fmin : scalar, optional
       The response probability at zero (default = 0.5)
     fmax : scaler, optional
