@@ -309,3 +309,97 @@ def test_dbspl_to_phon():
     l_pressure = audio.phon_to_dbspl(1238, 78, interpolate=True)
     l_phon = audio.dbspl_to_phon(1238, l_pressure, interpolate=True)
     assert(np.round(l_phon, 1) == 78)
+
+
+def test_audfilter_bw():
+
+    cf = np.array([200, 1000])
+    bws = audio.calc_bandwidth(cf)
+    bws2 = 25 + 75 * (1 + 1.4 * (cf / 1000.)**2)**0.69
+    assert np.array_equal(bws, bws2)
+
+    bws = audio.calc_bandwidth(cf, 'erb')
+    bws2 = 24.7 * (4.37 * (cf/ 1000.) + 1)
+    assert np.array_equal(bws, bws2)
+
+    bw = audio.calc_bandwidth(1000.)
+    bw2 = audio.calc_bandwidth(1000, 'cbw')
+
+    #default is cbw and type is float for both
+    assert type(bw) == type(float())
+    assert bw == bw2
+
+    #test that the function also works if providing integer input
+    bw = audio.calc_bandwidth(555.)
+    bw2 = audio.calc_bandwidth(555)
+    assert bw == bw2
+
+    bw = audio.calc_bandwidth(555., 'erb')
+    bw2 = audio.calc_bandwidth(555, 'erb')
+    assert bw == bw2
+
+def test_generate_noise():
+    duration = 1
+    fs = 100e3
+
+    noise = audio.generate_noise(duration, fs)
+    assert len(noise) == audio.nsamples(duration, fs)
+    assert np.abs(noise.mean()) <= 1e-2
+
+    # Test for whole spectrum
+    assert np.all(~np.isclose(np.abs(np.fft.fft(noise)), 0))
+
+    # Test bandpass
+    noise2 = audio.generate_noise(duration, fs, 500, 100)
+    spec2 = np.abs(np.fft.fft(noise2))
+    noise3 = audio.filter.brickwall(noise, fs, 450, 550)
+    spec3 = np.abs(np.fft.fft(noise3))
+    assert np.array_equal(np.isclose(spec2, 0), np.isclose(spec3, 0))
+
+def test_generate_corr_noise():
+    from scipy.stats import pearsonr
+
+    duration = 1
+    fs = 100e3
+    noise1, noise2 = audio.generate_corr_noise(duration, fs)
+    power1 = np.mean(noise1**2)
+    power2 = np.mean(noise2**2)
+
+    # Test for whole spectrum
+    assert np.all(~np.isclose(np.abs(np.fft.fft(noise1)), 0))
+    assert np.all(~np.isclose(np.abs(np.fft.fft(noise2)), 0))
+
+    # Test amplitude normalization
+    assert 0.98 < noise1.max() <= 1
+    assert 0.98 < noise2.max() <= 1
+    assert -0.98 > noise1.min() >= -1
+    assert -0.98 > noise2.min() >= -1
+
+    # Test equal Power assumption
+    testing.assert_almost_equal(power1, power2)
+
+    # Test orthogonality
+    corr_val = []
+    for i in range(100):
+        noise1, noise2 = audio.generate_corr_noise(duration, fs)
+        corr_val.append(pearsonr(noise1, noise2)[0])
+
+    assert np.max(corr_val) < 1e-4
+    assert np.median(corr_val) < 1e-6
+
+    # Test definition of covariance
+    corr_val = []
+    for i in range(100):
+        noise1, noise2 = audio.generate_corr_noise(duration, fs, corr=0.5)
+        corr_val.append(pearsonr(noise1, noise2)[0] - 0.5)
+    assert np.max(corr_val) < 1e-4
+    assert np.median(corr_val) < 1e-6
+
+
+    # Test bandpass
+    noise1, noise2 = audio.generate_corr_noise(duration, fs, cf=500, bw=100)
+    spec1 = np.abs(np.fft.fft(noise1))
+    spec2 = np.abs(np.fft.fft(noise2))
+
+
+    return spec1, spec2

@@ -1,6 +1,6 @@
 import numpy as np
 
-def audfilter_bw(fc, scale='cbw'):
+def calc_bandwidth(fc, scale='cbw'):
     '''Calculate auditory filter bandwidth using different scales
 
     This Function calculates aproximations for the auditory filter
