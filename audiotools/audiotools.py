@@ -4,6 +4,7 @@ Some simple helper functions for dealing with audiosignals
 
 import numpy as np
 from scipy.interpolate import interp1d
+from filter import brickwall
 
 COLOR_R = '#d65c5c'
 COLOR_L = '#5c5cd6'
@@ -165,20 +166,37 @@ def generate_noise(duration, fs, cf=None, bw=None, seed=None):
 
     if cf:
         assert bw
-
         low_f = cf - 0.5 * bw
         high_f = cf + 0.5 * bw
-
-        spec = np.fft.fft(noise)
-        freqs = np.fft.fftfreq(len(noise), 1. / fs)
-        sel_freq = ~((np.abs(freqs) <= high_f) & (np.abs(freqs) >= low_f))
-        spec[sel_freq] = 0
-        filtered_noise = np.fft.ifft(spec)
-        filtered_noise = np.real_if_close(filtered_noise, 1000)
-        noise = filtered_noise
-
+        noise = brickwall(noise, fs, low_f, high_f)
     return noise
 
+def generate_corr_noise(duration, fs, corr=0, cf=None, bw=None, seed=None):
+    # generate two noise vectors
+    noise_a = generate_noise(duration, fs, seed=seed)
+    noise_b = generate_noise(duration, fs, seed=seed)
+
+    # use Gram-Schmidt to generate orthogonal noise. This makes shure
+    # that the two noise vectors are of equal power.
+    Q, R = np.linalg.qr(np.column_stack([noise_a, noise_b]))
+    noise_a = Q[:, 0] / np.abs(Q).max()
+    noise_b = Q[:, 1] / np.abs(Q).max()
+
+    alpha = corr
+    beta = np.sqrt(1 - corr**2)
+
+    # Generate partially corelated noise using the two channel method
+    if corr > 0:
+        noise_b = alpha * noise_a + beta * noise_b
+
+    if cf:
+        assert bw
+        low_f = cf - 0.5 * bw
+        high_f = cf + 0.5 * bw
+        noise_a = brickwall(noise_a, fs, low_f, high_f)
+        noise_b = brickwall(noise_b, fs, low_f, high_f)
+
+    return noise_a, noise_b
 
 def generate_tone(frequency, duration, fs, start_phase=0, endpoint=False):
     '''Sine tone with a given frequency, duration and sampling rate.
