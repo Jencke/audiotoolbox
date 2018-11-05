@@ -4,6 +4,7 @@ Some simple helper functions for dealing with audiosignals
 
 import numpy as np
 from scipy.interpolate import interp1d
+from scipy.signal import hilbert
 from filter import brickwall
 
 COLOR_R = '#d65c5c'
@@ -970,3 +971,64 @@ def calc_bandwidth(fc, scale='cbw'):
         bw = 24.7 * (4.37 * (fc / 1000.) + 1)
 
     return bw
+
+def extract_binaural_differences(signal1, signal2, log_levels=True):
+    '''Extract the binaural differences between two narrowband signals
+
+    This function extimates the binaural evelope difference as well as the
+    phase difference by applying the hilbert transform.
+
+    The envelope difference is defined as the hilbert envelope of the
+    first signal minus the hilbert envelope of the second signal while
+    the phase difference is defined as the hilbert phase of the first
+    minus the hilbert phase of the second.
+
+    Due to the use of a hilbert transform, this approach should only be used on signals
+    with a relatively narrow bandwidth.
+
+    Parameters:
+    -----------
+    signal1 : ndarray
+        The first input signal
+    signal2 : ndarray
+        The second input signal
+    log_levels : bool, optional
+        Defines whether the envelope difference is returned in db
+        default = True
+
+    Returns
+    -------
+    ipd : ndarray
+        The phase difference
+    env_diff : ndarray
+        The envelope difference
+
+    '''
+
+    trans1 = hilbert(signal1)
+    trans2 = hilbert(signal2)
+    env1 = np.abs(trans1)
+    env2 = np.abs(trans2)
+    phase1 = np.angle(trans1)
+    phase2 = np.angle(trans2)
+
+    ipd = phase1 - phase2
+
+    if log_levels:
+        env_diff = 20*(np.log10(env1) - np.log10(env2))
+    else:
+        env_diff = env1 - env2
+
+    # Phase wrap if phase difference larger then +- pi
+    while np.abs(ipd).max() > np.pi:
+        first_occ = np.where(np.abs(ipd) > np.pi)[0][0]
+        sign = np.sign(ipd[first_occ])
+        ipd[first_occ:] = -2 * np.pi * sign + ipd[first_occ:]
+
+    # If the signal envelopes are close to zero the ipd should be
+    # zero. this fixes some instabilities with the hilbert transform
+    # that result in phase jumps when the two signals only differ from
+    # zero due to numerics
+    is_zero = np.isclose(env1, 0, atol=1e-6) & np.isclose(env2, 0, atol=1e-6)
+    ipd[is_zero] = 0
+    return ipd, env_diff

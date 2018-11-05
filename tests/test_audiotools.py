@@ -403,3 +403,46 @@ def test_generate_corr_noise():
 
 
     return spec1, spec2
+
+
+def test_extract_binaural_differences():
+
+    from scipy.signal import hilbert
+
+    # Check phase_difference
+    fs = 48000
+    signal1 = audio.generate_tone(500, 1, fs)
+    signal2 = audio.generate_tone(500, 1, fs, start_phase=0.5 * np.pi)
+    ipd, env_diff = audio.extract_binaural_differences(signal1, signal2)
+
+    assert len(ipd) == len(signal1)
+    assert np.all(np.isclose(env_diff, 0))
+    assert np.all(np.isclose(ipd, -np.pi * 0.5))
+
+    # check log level difference
+    signal1 = audio.set_dbspl(audio.generate_tone(500, 1, fs), 50)
+    signal2 = audio.set_dbspl(audio.generate_tone(500, 1, fs), 60)
+    ipd, env_diff = audio.extract_binaural_differences(signal1, signal2)
+
+    assert np.all(np.isclose(env_diff, -10))
+
+    # check amplitude difference
+    fs = 48000
+    signal1 = audio.generate_tone(500, 1, fs)
+    signal2 = audio.generate_tone(500, 1, fs) * 0.5
+    ipd, env_diff = audio.extract_binaural_differences(signal1, signal2,
+                                                       log_levels=False)
+
+    assert np.all(np.isclose(env_diff, 0.5))
+    assert np.all(np.isclose(ipd, 0))
+
+    #Test that phase is wrapped to +pi -pi
+    signal = audio.generate_corr_noise(1, fs, corr=0.5, cf=500, bw=50)
+    signal1 = signal[0]
+    signal2 = signal[1]
+    n_buf = int(48000 * 100e-3)
+    win = audio.cosine_fade_window(signal1, 100e-3, fs, n_buf)
+    signal1 *= win
+    signal2 *= win
+    ipd, env_diff = audio.extract_binaural_differences(signal[0], signal[1])
+    assert np.max(np.abs(ipd) <= np.pi)
