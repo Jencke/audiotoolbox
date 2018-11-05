@@ -914,7 +914,8 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
         l_u = interp1d(frequency_list, l_u_list, kind=i_type)(frequency)
         t_f = interp1d(frequency_list, t_f_list, kind=i_type)(frequency)
 
-    b_f = (0.4 * 10**((l_dbspl + l_u) / 10 - 9))**alpha_f - (0.4 * 10**((t_f + l_u) / 10 -9))**alpha_f + 0.005135
+    b_f = ((0.4 * 10**((l_dbspl + l_u) / 10 - 9))**alpha_f
+           - (0.4 * 10**((t_f + l_u) / 10 -9))**alpha_f + 0.005135)
     l_phon = 40 * np.log10(b_f) + 94
 
     if limit:
@@ -937,23 +938,29 @@ def calc_bandwidth(fc, scale='cbw'):
      - cbw: Use the critical bandwidth concept following [1]_
      - erb: Use the equivalent rectangular bandwith concept following [2]_
 
-Parameters:
------------
-fc : float or ndarray
-  center frequency in Hz
+    Equation used for critical bandwidth:
+    .. math:: B = 25 + 75 (1 + 1.4 \frac{f_c}{1000}^2)^0.69
 
-scale : str
-  String indicating the scale that should be used possible values:
-  'cbw' or 'erb'. (default='cbw')
+    Equation used for critical equivalent rectangular bandwith:
+    .. math:: B = 24.7 (4.37 \frac{f_c}{1000} + 1)
 
-    ..[1] Zwicker, E., & Terhardt, E. (1980). Analytical expressions for
-          critical-band rate and critical bandwidth as a function of
-          frequency. The Journal of the Acoustical Society of America,
-          68(5), 1523-1525.
+    Parameters:
+    -----------
+    fc : float or ndarray
+      center frequency in Hz
 
-    ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of auditory
-          filter shapes from notched-noise data. Hearing Research, 47(1-2),
-          103-138.
+    scale : str
+      String indicating the scale that should be used possible values:
+      'cbw' or 'erb'. (default='cbw')
+
+        ..[1] Zwicker, E., & Terhardt, E. (1980). Analytical expressions for
+              critical-band rate and critical bandwidth as a function of
+              frequency. The Journal of the Acoustical Society of America,
+              68(5), 1523-1525.
+
+        ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of auditory
+              filter shapes from notched-noise data. Hearing Research, 47(1-2),
+              103-138.
 
     '''
 
