@@ -51,6 +51,7 @@ def test_get_time():
     time = audio.get_time(tone, 1e3)
 
     assert len(time) == len(tone_two_channel)
+
     #Test sampling rate
     assert time[2] - time[1] == 1./1e3
 
@@ -62,6 +63,14 @@ def test_get_time():
     left = np.linspace(0, 1, 50976)
     time = audio.get_time(left, fs)
     assert len(left) == len(time)
+
+    # Test using integer input value
+    fs = 1e3
+    tone = audio.generate_tone(1, 1, fs)
+    nsamp = len(tone2)
+    time1 = audio.get_time(tone, fs)
+    time2 = audio.get_time(nsamp, fs)
+    testing.assert_equal(time1, time2)
 
 def test_cosine_fade_window():
     window = audio.cosine_fade_window(np.zeros(1000), 100e-3, 1e3)

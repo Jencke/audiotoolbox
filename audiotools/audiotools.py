@@ -242,8 +242,10 @@ def get_time(signal, fs):
 
     Parameters:
     -----------
-    signal : ndarray
-        The input signal for which to generate the time axis
+    signal : ndarray or int
+        The input signal for which to generate the time axis, or the
+        number of samples for which to calculate the time axis
+
     fs : scalar
         The sampling rate in Hz
 
@@ -252,13 +254,23 @@ def get_time(signal, fs):
     ndarray : The time axis in seconds
 
     '''
+
     dt = 1. / fs
-    max_time = len(signal) * dt
+
+    if isinstance(signal, np.ndarray):
+        max_time = len(signal) * dt
+        nsamp = len(signal)
+    elif isinstance(signal, int):
+        max_time = signal * dt
+        nsamp = signal
+    else:
+        raise TypeError('Signal must be int or ndarray')
+
     time = np.arange(0, max_time , dt)
 
     # Sometimes, due to numerics arange creates an extra sample which
     # needs to be removed
-    if len(time) == len(signal) + 1:
+    if len(time) == nsamp + 1:
         time = time[:-1]
     return time
 
