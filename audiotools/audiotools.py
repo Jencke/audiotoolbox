@@ -229,8 +229,8 @@ def generate_tone(frequency, duration, fs, start_phase=0, endpoint=False):
     ndarray : The sine tone
 
     '''
-    len_signal = nsamples(duration, fs, endpoint)
-    time = np.linspace(0, duration, len_signal, endpoint)
+    nsamp = nsamples(duration, fs, endpoint)
+    time = get_time(nsamp, fs)
     tone = np.sin(2 * np.pi * frequency * time + start_phase)
     return tone
 
