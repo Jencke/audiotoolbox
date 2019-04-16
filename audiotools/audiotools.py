@@ -127,7 +127,7 @@ def phase2time(phase, frequency):
     time = phase / (2 * np.pi) / frequency
     return time
 
-def nsamples(duration, fs, endpoint=False):
+def nsamples(duration, fs):
     '''Calculates number of samples in a signal with a given duration.
 
     This function calculates the number of samples that will be
@@ -145,9 +145,6 @@ def nsamples(duration, fs, endpoint=False):
         The sampling rate for the tone.
     start_phase : scalar, optional
         The starting phase of the sine tone.
-    endpoint : bool, optional
-        Whether to generate an additional sample so that
-        duration = time at last sample.
 
     Returns:
     --------
@@ -155,7 +152,7 @@ def nsamples(duration, fs, endpoint=False):
 
     '''
     len_signal = int(np.round(duration * fs))
-    len_signal += 1 if endpoint else 0
+
     return len_signal
 
 def generate_noise(duration, fs, cf=None, bw=None, seed=None):
@@ -199,16 +196,12 @@ def generate_corr_noise(duration, fs, corr=0, cf=None, bw=None, seed=None):
 
     return noise_a, noise_b
 
-def generate_tone(frequency, duration, fs, start_phase=0, endpoint=False):
+def generate_tone(frequency, duration, fs, start_phase=0):
     '''Sine tone with a given frequency, duration and sampling rate.
 
     This function will generate a pure tone with of a given duration
     at a given sampling rate. By default, the first sample will be
     evaluated at 0 and the duration will be the real stimulus duration.
-
-    if endpoint is set to True, the duration will be considerd
-    as the maxium point in time so that the function calculates one
-    more sample. The stimulus duration is now duration + (1. / fs)
 
     Parameters:
     -----------
@@ -220,16 +213,13 @@ def generate_tone(frequency, duration, fs, start_phase=0, endpoint=False):
         The sampling rate for the tone.
     start_phase : scalar, optional
         The starting phase of the sine tone.
-    endpoint : bool, optional
-        Whether to generate an additional sample so that
-        duration = time at last sample.
 
     Returns:
     --------
     ndarray : The sine tone
 
     '''
-    nsamp = nsamples(duration, fs, endpoint)
+    nsamp = nsamples(duration, fs)
     time = get_time(nsamp, fs)
     tone = np.sin(2 * np.pi * frequency * time + start_phase)
     return tone
@@ -258,14 +248,13 @@ def get_time(signal, fs):
     dt = 1. / fs
 
     if isinstance(signal, np.ndarray):
-        max_time = len(signal) * dt
         nsamp = len(signal)
     elif isinstance(signal, int):
-        max_time = signal * dt
         nsamp = signal
     else:
         raise TypeError('Signal must be int or ndarray')
 
+    max_time = nsamp * dt
     time = np.arange(0, max_time , dt)
 
     # Sometimes, due to numerics arange creates an extra sample which
@@ -301,7 +290,7 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
 
     assert isinstance(n_zeros, int)
 
-    r = int(np.round(rise_time * fs))
+    r = nsamples(rise_time, fs)
     window = np.ones(len(signal) - 2 * n_zeros)
     flank = 0.5 * (1 + np.cos(np.pi / r * (np.arange(r) - r)))
     window[:r] = flank
@@ -309,6 +298,8 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
 
     window = zero_buffer(window, n_zeros)
 
+    # If the signal has multiple channels, extend the window to match
+    # the shape
     if signal.ndim > 1:
         window = np.column_stack([window] * signal.shape[1])
 
@@ -341,7 +332,7 @@ def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
 
     '''
     cutoff_val = 10**(cutoff/ 20) # value at which to cut gaussian
-    r = int(np.round(rise_time * fs)) #number of values in window
+    r = int(np.round(rise_time * fs)) + 1 #number of values in window
     window = np.ones(len(signal))
     win_time = np.linspace(0, rise_time, r)
     sigma = np.sqrt((-(rise_time)**2 / np.log(cutoff_val)) / 2)

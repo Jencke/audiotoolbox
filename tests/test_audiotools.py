@@ -20,12 +20,6 @@ def test_generate_tone():
     tone2 = audio.generate_tone(2, 0.5, 2e3)
     assert np.array_equal(tone1, tone2)
 
-    # test endpoint
-    tone = audio.generate_tone(1, 1, 1e3)
-    assert tone[-1] != 0
-    tone = audio.generate_tone(1, 1, 1e3, endpoint=True)
-    testing.assert_almost_equal(tone[-1], 0)
-
     #test phaseshift
     tone = audio.generate_tone(1, 1, 1e3, start_phase=np.pi / 2)
     assert tone[0] == 1.0
@@ -82,10 +76,22 @@ def test_cosine_fade_window():
     #test starts with 0
     assert window[0] == 0
 
+    window = audio.cosine_fade_window(np.zeros(1000), 100e-3, 1e3)
+    n_window = 100
+
     #test if the window is a cosine curve of the right type
     cos_curve = np.concatenate([window[:100], window[-101:]])
-    sin = (0.5 * audio.generate_tone(5, 0.2, 1e3, endpoint=True, start_phase=1.5 * np.pi)) + 0.5
+    sin = (0.5 * audio.generate_tone(5, 0.2 + 1. / 1e3, 1e3, start_phase=1.5 * np.pi)) + 0.5
     testing.assert_array_almost_equal(cos_curve, sin)
+
+    # Test that the last sample in the window is not equal to 1
+    nsamp = audio.nsamples(200e-3, 1e3)
+    window = audio.cosine_fade_window(np.zeros(nsamp + 1), 100e-3 , 1e3)
+    n_window = 100
+    assert window[nsamp / 2] == 1
+    assert window[nsamp / 2 - 1] != 1
+    assert window[nsamp / 2 + 1] != 1
+    assert window[nsamp / 2 + 1] == window[nsamp / 2 - 1]
 
     # Test multichannel window
     window = audio.cosine_fade_window(np.zeros([1000, 2]), 100e-3, 1e3)
@@ -106,6 +112,16 @@ def test_gauss_fade_window():
     #test setting cutoff
     window = audio.gaussian_fade_window(np.zeros(1000), 100e-3, 1e3, cutoff=-20)
     testing.assert_almost_equal(window[0], 0.1)
+
+    # Test that the last sample in the window is not equal to 1
+    nsamp = audio.nsamples(200e-3, 1e3)
+    window = audio.gaussian_fade_window(np.zeros(nsamp + 1), 100e-3 , 1e3)
+    n_window = 100
+
+    assert window[nsamp / 2] == 1
+    assert window[nsamp / 2 - 1] != 1
+    assert window[nsamp / 2 + 1] != 1
+    assert window[nsamp / 2 + 1] == window[nsamp / 2 - 1]
 
     # Test multichannel window
     window = audio.gaussian_fade_window(np.zeros([1000, 2]), 100e-3, 1e3)
@@ -128,13 +144,20 @@ def test_delay_signal():
     error = np.abs(shifted[:] - delayed[:-2, 1])
     assert np.max(error[10:-10]) <= 1e-3
 
-
     # Check if a negative delay results in inverted channels
     delayed_negative = audio.delay_signal(signal, -1.5e-3, 1e3)
 
     assert np.array_equal(delayed[:, 0], delayed_negative[:, 1])
     assert np.array_equal(delayed[:, 1], delayed_negative[:, 0])
 
+    # Test with noise and full sample shift
+    duration = 100e-3
+    fs = 48e3
+    noise = audio.generate_noise(duration, fs)
+    noise *= audio.cosine_fade_window(noise, 20e-3, fs)
+    dt = 1. / fs
+    delayed = audio.delay_signal(noise, dt * 5, fs)
+    testing.assert_almost_equal(delayed[5:, 1], delayed[:-5, 0])
 
 def test_zero_buffer():
     signal = audio.generate_tone(1, 1, 1e3)
@@ -263,7 +286,6 @@ def test_phase2time():
     testing.assert_array_almost_equal(time, calc_time)
 
 def test_cos_amp_modulator():
-
     fs = 100e3
     signal = audio.generate_tone(100, 1, fs)
     mod = audio.cos_amp_modulator(signal, 5, fs)
@@ -274,7 +296,6 @@ def test_cos_amp_modulator():
 
 
 def test_calc_dbspl():
-
     assert audio.calc_dbspl(20e-6) == 0
     assert audio.calc_dbspl(2e-3) == 40.0
 
