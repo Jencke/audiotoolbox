@@ -5,7 +5,7 @@ Some simple helper functions for dealing with audiosignals
 import numpy as np
 from scipy.interpolate import interp1d
 from scipy.signal import hilbert
-from filter import brickwall
+from .filter import brickwall
 
 COLOR_R = '#d65c5c'
 COLOR_L = '#5c5cd6'

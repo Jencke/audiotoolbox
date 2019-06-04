@@ -88,10 +88,10 @@ def test_cosine_fade_window():
     nsamp = audio.nsamples(200e-3, 1e3)
     window = audio.cosine_fade_window(np.zeros(nsamp + 1), 100e-3 , 1e3)
     n_window = 100
-    assert window[nsamp / 2] == 1
-    assert window[nsamp / 2 - 1] != 1
-    assert window[nsamp / 2 + 1] != 1
-    assert window[nsamp / 2 + 1] == window[nsamp / 2 - 1]
+    assert window[int(nsamp / 2)] == 1
+    assert window[int(nsamp / 2 - 1)] != 1
+    assert window[int(nsamp / 2 + 1)] != 1
+    assert window[int(nsamp / 2 + 1)] == window[int(nsamp / 2 - 1)]
 
     # Test multichannel window
     window = audio.cosine_fade_window(np.zeros([1000, 2]), 100e-3, 1e3)
@@ -118,10 +118,10 @@ def test_gauss_fade_window():
     window = audio.gaussian_fade_window(np.zeros(nsamp + 1), 100e-3 , 1e3)
     n_window = 100
 
-    assert window[nsamp / 2] == 1
-    assert window[nsamp / 2 - 1] != 1
-    assert window[nsamp / 2 + 1] != 1
-    assert window[nsamp / 2 + 1] == window[nsamp / 2 - 1]
+    assert window[int(nsamp / 2)] == 1
+    assert window[int(nsamp / 2 - 1)] != 1
+    assert window[int(nsamp / 2 + 1)] != 1
+    assert window[int(nsamp / 2 + 1)] == window[int(nsamp / 2 - 1)]
 
     # Test multichannel window
     window = audio.gaussian_fade_window(np.zeros([1000, 2]), 100e-3, 1e3)
