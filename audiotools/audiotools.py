@@ -199,9 +199,10 @@ def generate_corr_noise(duration, fs, corr=0, cf=None, bw=None, seed=None):
 def generate_tone(frequency, duration, fs, start_phase=0):
     '''Sine tone with a given frequency, duration and sampling rate.
 
-    This function will generate a pure tone with of a given duration
-    at a given sampling rate. By default, the first sample will be
-    evaluated at 0 and the duration will be the real stimulus duration.
+    This function will generate a pure tone following the equation:
+    .. math:: cos(2\pi f t + \phi_0)
+    where f is the frequency, t is the time and phi_0 the starting phase.
+    The first evulated timepoint is 0.
 
     Parameters:
     -----------
@@ -221,7 +222,7 @@ def generate_tone(frequency, duration, fs, start_phase=0):
     '''
     nsamp = nsamples(duration, fs)
     time = get_time(nsamp, fs)
-    tone = np.sin(2 * np.pi * frequency * time + start_phase)
+    tone = np.cos(2 * np.pi * frequency * time + start_phase)
     return tone
 
 def get_time(signal, fs):
