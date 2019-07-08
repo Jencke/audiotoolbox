@@ -1037,3 +1037,44 @@ def extract_binaural_differences(signal1, signal2, log_levels=True):
     is_zero = np.isclose(env1, 0, atol=1e-6) & np.isclose(env2, 0, atol=1e-6)
     ipd[is_zero] = 0
     return ipd, env_diff
+
+
+def schroeder_phase(harmonics, amplitudes, phi0=0.):
+    '''Phases for a schroeder phase harmonic complex
+
+    This function calculates the phases for a schroeder phase harmonic
+    comlex following eq. 11 of [1]_
+
+
+    Parameters:
+    -----------
+    harmonics : ndarray
+        A vector of harmonics for which the schroeder phases should be
+        calculated
+    amplitudes : ndarray
+        A vector of amplitudes for the given harmonics
+    phi0 : scalar
+        The starting phase of the first harmonic (default = 0)
+
+    Returns:
+    --------
+    ndarray :
+        The phase values for the harmonic compontents
+
+    ..[1] Schroeder, M. (1970). Synthesis of low-peak-factor signals and
+          binary sequences with low autocorrelation (corresp.). IEEE
+          Transactions on Information Theory, 16(1),
+          85–89.
+
+    '''
+    harmonics = np.array(harmonics)
+    amplitudes = np.array(amplitudes)
+    power = 0.5 * amplitudes**2
+    power /= power.sum()
+
+    phi_schroeder = np.zeros(len(harmonics))
+    for i_n, n in enumerate(harmonics):
+        phi_shift = 2 * pi * np.sum((n - harmonics[:i_n]) * power[:i_n])
+        phi_schroeder[i_n] = phi0 - phi_shift
+
+    return phi_schroeder
