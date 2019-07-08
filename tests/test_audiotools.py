@@ -22,9 +22,9 @@ def test_generate_tone():
 
     #test phaseshift
     tone = audio.generate_tone(1, 1, 1e3, start_phase=np.pi / 2)
-    assert tone[0] == 1.0
-    tone = audio.generate_tone(1, 1, 1e3, start_phase=1.5 * np.pi)
-    assert tone[0] == -1.0
+    testing.assert_almost_equal(tone[0], 0)
+    tone = audio.generate_tone(1, 1, 1e3, start_phase=1 * np.pi)
+    testing.assert_almost_equal(tone[0], -1)
 
 def test_get_time():
 
@@ -81,7 +81,8 @@ def test_cosine_fade_window():
 
     #test if the window is a cosine curve of the right type
     cos_curve = np.concatenate([window[:100], window[-101:]])
-    sin = (0.5 * audio.generate_tone(5, 0.2 + 1. / 1e3, 1e3, start_phase=1.5 * np.pi)) + 0.5
+    sin = (0.5 * audio.generate_tone(5, 0.2 + 1. / 1e3, 1e3,
+                                     start_phase=np.pi)) + 0.5
     testing.assert_array_almost_equal(cos_curve, sin)
 
     # Test that the last sample in the window is not equal to 1
@@ -130,13 +131,14 @@ def test_gauss_fade_window():
 
 
 def test_delay_signal():
-    signal = audio.generate_tone(1, 1, 1e3)
-    signal += audio.generate_tone(2, 1, 1e3)
+
+    signal = audio.generate_tone(1, 1, 1e3, start_phase = 0.5 * np.pi)
+    signal += audio.generate_tone(2, 1, 1e3, start_phase = 0.5 * np.pi)
 
     delayed = audio.delay_signal(signal, 1.5e-3, 1e3)
 
-    phase1 = 1.5e-3 * 1 * 2 * np.pi
-    phase2 = 1.5e-3 * 2 * 2 * np.pi
+    phase1 = 1.5e-3 * 1 * 2 * np.pi - 0.5 * np.pi
+    phase2 = 1.5e-3 * 2 * 2 * np.pi - 0.5 * np.pi
 
     shifted = audio.generate_tone(1, 1, 1e3, start_phase=-phase1)
     shifted += audio.generate_tone(2, 1, 1e3, start_phase=-phase2)
