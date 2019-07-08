@@ -476,3 +476,17 @@ def test_extract_binaural_differences():
     signal2 *= win
     ipd, env_diff = audio.extract_binaural_differences(signal[0], signal[1])
     assert np.max(np.abs(ipd) <= np.pi)
+
+
+def test_crest_factor():
+
+    # Test that c for sine is equal to sqrt(2)
+    signal = audio.generate_tone(100, 1, 100e3)
+    c = audio.crest_factor(signal)
+    testing.assert_almost_equal(c, np.sqrt(2))
+
+    # test that c for half wave rect. sine is 2
+    signal = audio.generate_tone(100, 1, 100e3)
+    signal[signal < 0] = 0
+    c = audio.crest_factor(signal)
+    testing.assert_almost_equal(c, 2)

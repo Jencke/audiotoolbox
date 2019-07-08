@@ -1078,3 +1078,32 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.):
         phi_schroeder[i_n] = phi0 - phi_shift
 
     return phi_schroeder
+
+def crest_factor(signal):
+    '''Calculate crest factor
+
+    Calculates the crest factor over the first dimension of the input
+    signal. The crest factor is defined as:
+
+    .. math:: C = \frac{|x_{peak}|}{x_{rms}}
+
+    where :math:`x_{peak}` is the maximum of the absolute value and
+    :math:`x{rms}` is the effective value of the signal.
+
+    Parameters:
+    -----------
+    signal : ndarray
+        The input signal
+
+    Returns:
+    --------
+    scalar :
+        The crest factor
+
+    '''
+    a_effective = np.sqrt(np.mean(signal**2, axis = 0))
+    a_max = np.max(np.abs(signal), axis = 0)
+
+    crest_factor = a_max / a_effective
+
+    return crest_factor
