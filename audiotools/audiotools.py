@@ -3,6 +3,7 @@ Some simple helper functions for dealing with audiosignals
 '''
 
 import numpy as np
+from numpy import pi
 from scipy.interpolate import interp1d
 from scipy.signal import hilbert
 from .filter import brickwall
@@ -89,7 +90,7 @@ def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1):
     else:
         raise TypeError("Signal must be numpy ndarray or int")
 
-    modulator = 1 + mod_index * np.cos(2 * np.pi * modulator_freq * time)
+    modulator = 1 + mod_index * np.cos(2 * pi * modulator_freq * time)
 
     return modulator
 
@@ -107,7 +108,7 @@ def time2phase(time, frequency):
 
     '''
 
-    phase = time * frequency * (2 * np.pi)
+    phase = time * frequency * (2 * pi)
     return phase
 
 def phase2time(phase, frequency):
@@ -124,7 +125,7 @@ def phase2time(phase, frequency):
 
     '''
 
-    time = phase / (2 * np.pi) / frequency
+    time = phase / (2 * pi) / frequency
     return time
 
 def nsamples(duration, fs):
@@ -222,7 +223,7 @@ def generate_tone(frequency, duration, fs, start_phase=0):
     '''
     nsamp = nsamples(duration, fs)
     time = get_time(nsamp, fs)
-    tone = np.cos(2 * np.pi * frequency * time + start_phase)
+    tone = np.cos(2 * pi * frequency * time + start_phase)
     return tone
 
 def get_time(signal, fs):
@@ -293,7 +294,7 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
 
     r = nsamples(rise_time, fs)
     window = np.ones(len(signal) - 2 * n_zeros)
-    flank = 0.5 * (1 + np.cos(np.pi / r * (np.arange(r) - r)))
+    flank = 0.5 * (1 + np.cos(pi / r * (np.arange(r) - r)))
     window[:r] = flank
     window[-r:] = flank[::-1]
 
@@ -420,7 +421,7 @@ def delay_signal(signal, delay, fs):
     #Calculate the phases need for shifting and apply them to the
     #spectrum
     freqs = np.fft.fftfreq(len(ft_signal), 1. / fs)
-    ft_signal *= np.exp(-1j * 2 * np.pi * delay * freqs)
+    ft_signal *= np.exp(-1j * 2 * pi * delay * freqs)
 
     #Inverse transform the spectrum and leave away the imag. part if
     #it is really small
@@ -1024,10 +1025,10 @@ def extract_binaural_differences(signal1, signal2, log_levels=True):
         env_diff = env1 - env2
 
     # Phase wrap if phase difference larger then +- pi
-    while np.abs(ipd).max() > np.pi:
-        first_occ = np.where(np.abs(ipd) > np.pi)[0][0]
+    while np.abs(ipd).max() > pi:
+        first_occ = np.where(np.abs(ipd) > pi)[0][0]
         sign = np.sign(ipd[first_occ])
-        ipd[first_occ:] = -2 * np.pi * sign + ipd[first_occ:]
+        ipd[first_occ:] = -2 * pi * sign + ipd[first_occ:]
 
     # If the signal envelopes are close to zero the ipd should be
     # zero. this fixes some instabilities with the hilbert transform
