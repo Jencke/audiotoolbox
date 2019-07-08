@@ -1104,6 +1104,6 @@ def crest_factor(signal):
     a_effective = np.sqrt(np.mean(signal**2, axis = 0))
     a_max = np.max(np.abs(signal), axis = 0)
 
-    crest_factor = a_max / a_effective
+    crest_factor = 20*np.log10(a_max / a_effective)
 
     return crest_factor
