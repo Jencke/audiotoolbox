@@ -1,5 +1,48 @@
 import numpy as np
 from scipy.stats import norm
+from numpy import pi
+from . import gammatone_filt as gt
+
+def gammatone(signal, fs, cf, bw, order=4, attenuation_db=-3):
+    """Apply a gammatone filter to the signal
+
+    Applys a gammatone filter following [1]_ to the input signal
+    and returns the filtered signal.
+
+
+    Parameters
+    ----------
+    signal : ndarray
+        The input signal
+    fs : int
+      The sample frequency in Hz
+    cf : scalar
+      The center frequency of the filter in Hz
+    bw : scalar
+      The bandwidth of the filter in Hz
+    order : int
+      The filter order (default = 4)
+    attenuation_db: scalar
+      The attenuation at half bandwidth in dB (default = -3)
+
+
+    Returns
+    -------
+    ndarray :
+      The filtered signal.
+
+    References
+    ----------
+    ..[1] Hohmann, V., Frequency analysis and synthesis using a
+          Gammatone filterbank, Acta Acustica, Vol 88 (2002), 43 -3442
+
+    """
+
+    b, a = gt.design_gammatone(cf, bw, fs, order, attenuation_db)
+    out_signal, state = gt.gammatonefos_apply(signal, b, a, order)
+
+    return out_signal
+
 
 def brickwall(signal, fs, low_f, high_f):
     '''Brickwall bandpass filter in frequency domain.
@@ -88,3 +131,36 @@ def gauss(signal, fs, low_f, high_f):
     filtered_signal = np.real_if_close(filtered_signal, 1000)
 
     return filtered_signal
+
+
+
+
+# def middle_ear_filter(signal, fs):
+#     f1 = 4000 / fs
+#     f2 = 1000 / fs
+#     q = 2 - np.cos(2 * pi * f1) - np.sqrt((np.cos(2 * pi * f1)-2)**2-1)
+#     r = 2 - np.cos(2 * pi * f2) - np.sqrt((np.cos(2 * pi * f2)-2)**2-1)
+
+#     sig_len = len(signal) + 2
+#     n_channels = signal.shape[1]
+#     y = np.zeros((sig_len, n_channels))
+#     x = np.zeros((sig_len, n_channels))
+#     x[2:] = signal
+
+#     for i in range(2, sig_len):
+#         y[i] = (+ (1 - q) * r * x[i]
+#                 - (1 - q) * r * x[i - 1]
+#                 - (q + r) * y[i - 1]
+#                 - (q * r) * y[i - 2])
+#     return y[2:]
+
+
+# import matplotlib.pyplot as plt
+
+# signal = np.random.random([1000000, 2])
+# signal -= 0.5
+# out = middle_ear_filter(signal, 100e3)
+
+# plt.plot(np.abs(np.fft.fft(signal[:, 0])))
+
+# plt.plot(np.abs(np.fft.fft(out[:, 0])) / np.abs(np.fft.fft(signal[:, 0])))
