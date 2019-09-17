@@ -1035,7 +1035,6 @@ def extract_binaural_differences(signal1, signal2, log_levels=True):
     ipd[is_zero] = 0
     return ipd, env_diff
 
-
 def schroeder_phase(harmonics, amplitudes, phi0=0.):
     '''Phases for a schroeder phase harmonic complex
 
@@ -1076,11 +1075,11 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.):
 
     return phi_schroeder
 
-def crest_factor(signal):
+def crest_factor(signal, axis=0):
     '''Calculate crest factor
 
-    Calculates the crest factor over the first dimension of the input
-    signal. The crest factor is defined as:
+    Calculates the crest factor of the input signal. The crest factor
+    is defined as:
 
     .. math:: C = \frac{|x_{peak}|}{x_{rms}}
 
@@ -1091,6 +1090,8 @@ def crest_factor(signal):
     -----------
     signal : ndarray
         The input signal
+    axis : int
+        The axis for which to calculate the crest factor (default = 0)
 
     Returns:
     --------
@@ -1098,8 +1099,8 @@ def crest_factor(signal):
         The crest factor
 
     '''
-    a_effective = np.sqrt(np.mean(signal**2, axis = 0))
-    a_max = np.max(np.abs(signal), axis = 0)
+    a_effective = np.sqrt(np.mean(signal**2, axis = axis))
+    a_max = np.max(np.abs(signal), axis = axis)
 
     crest_factor = 20*np.log10(a_max / a_effective)
 
