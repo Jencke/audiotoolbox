@@ -161,22 +161,22 @@ def test_delay_signal():
     delayed = audio.delay_signal(noise, dt * 5, fs)
     testing.assert_almost_equal(delayed[5:, 1], delayed[:-5, 0])
 
-def test_zero_buffer():
+def test_zeropad():
     signal = audio.generate_tone(1, 1, 1e3)
 
-    buffered = audio.zero_buffer(signal, 10)
+    buffered = audio.zeropad(signal, 10)
 
     assert len(buffered) - len(signal)  == 20
     assert np.array_equal(buffered[:10], buffered[-10:])
     assert np.array_equal(buffered[:10], np.zeros(10))
 
-    buffered = audio.zero_buffer(signal, 0)
+    buffered = audio.zeropad(signal, 0)
     assert len(buffered) == len(signal)
 
     # Test multichannel signal
     signal = audio.generate_tone(1, 1, 1e3)
     mc_signal = np.column_stack([signal, signal])
-    mc_buffered = audio.zero_buffer(mc_signal, 10)
+    mc_buffered = audio.zeropad(mc_signal, 10)
     assert np.array_equal(mc_buffered[:10, 0], mc_buffered[-10:, 1])
 
 
