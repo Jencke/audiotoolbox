@@ -1,11 +1,14 @@
 '''
 Some simple helper functions for dealing with audiosignals
 '''
+from warnings import warn
 
 import numpy as np
 from numpy import pi
+
 from scipy.interpolate import interp1d
 from scipy.signal import hilbert
+
 from .filter import brickwall
 
 COLOR_R = '#d65c5c'
@@ -34,24 +37,6 @@ def pad_for_fft(signal):
     out_signal[:len(signal)] = signal
 
     return out_signal
-
-def zeropad(signal, number):
-    '''Add a number of zeros to both sides of a signal.
-
-    signal : ndarray
-        The input signal.
-    number : int
-        The number of zeros to add to the signal
-
-    Returns:
-    --------
-    ndarray : The zero bufferd input signal
-
-    '''
-    zeros = np.zeros(number)
-    signal_out = np.concatenate([zeros, signal, zeros])
-    return signal_out
-
 
 def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1):
     '''Cosinus amplitude modulator
@@ -298,7 +283,7 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
     window[:r] = flank
     window[-r:] = flank[::-1]
 
-    window = zero_buffer(window, n_zeros)
+    window = zeropad(window, n_zeros)
 
     # If the signal has multiple channels, extend the window to match
     # the shape
@@ -349,7 +334,7 @@ def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
 
     return window
 
-def zero_buffer(signal, number):
+def zeropad(signal, number):
     '''Add a number of zeros to both sides of a signal
 
     Parameters:
@@ -371,8 +356,20 @@ def zero_buffer(signal, number):
     else:
         buf = np.zeros([number, signal.shape[1]])
 
-    signal = np.concatenate([buf, signal, buf])
+    signal_out = np.concatenate([buf, signal, buf])
 
+    return signal_out
+
+
+def zero_buffer(signal, number):
+    '''Depricated use zeropad instead
+
+    '''
+
+    warn("zero_buffer is deprecated, use zeropad instead",
+         DeprecationWarning)
+
+    signal = zeropad(signal, number)
     return signal
 
 def delay_signal(signal, delay, fs):
