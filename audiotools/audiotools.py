@@ -8,6 +8,7 @@ from numpy import pi
 
 from scipy.interpolate import interp1d
 from scipy.signal import hilbert
+from scipy.signal.windows import hann
 
 from .filter import brickwall
 
