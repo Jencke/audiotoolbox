@@ -14,6 +14,17 @@ def test_pad_for_fft():
     assert np.array_equal(padded[100:], np.zeros(28))
     assert np.array_equal(padded[:100], signal1)
 
+    signal1 = np.ones([100, 2])
+    padded = audio.pad_for_fft(signal1)
+    #check correct length
+    assert len(padded) == 128
+
+    #check zeros in the end and unchanged in beginning
+    assert np.array_equal(padded[100:, :], np.zeros([28, 2]))
+    assert np.array_equal(padded[:100, :], signal1)
+
+
+
 def test_generate_tone():
     # test frequency, sampling rate and duration
     tone1 = audio.generate_tone(1, 1, 1e3)
@@ -129,6 +140,53 @@ def test_gauss_fade_window():
     assert np.array_equal(window[:, 0], window[:, 1])
     assert np.array_equal(window[:100, 0], window[-100:, 0][::-1])
 
+def test_shift_signal():
+
+    signal = np.ones(10)
+    sig = audio.shift_signal(signal, 10, mode='zeros')
+    assert len(sig) == 20
+    assert np.all(sig[10:] == 1)
+    assert np.all(sig[:10] == 0)
+
+    signal = np.ones(10)
+    signal[-2:] = 0
+    sig = audio.shift_signal(signal, 2, mode='cyclic')
+    assert len(sig) == 10
+    assert np.all(sig[:2] == 0)
+    assert np.all(sig[2:] == 1)
+
+    signal = np.ones(10)
+    signal[:2] = 0
+    sig = audio.shift_signal(signal, -2, mode='cyclic')
+    assert len(sig) == 10
+    assert np.all(sig[:2] == 1)
+    assert np.all(sig[-2:] == 0)
+
+
+def test_fftshift_signal():
+    fs = 48e3
+    delay = lambda x: x * 1./fs
+
+    signal = np.ones(10)
+    sig = audio.fftshift_signal(signal, delay(10), fs, mode='zeros')
+    assert len(sig) == 20
+    testing.assert_allclose(sig[10:], 1)
+    assert np.all(sig[:10] < np.finfo(signal.dtype).resolution)
+
+    signal = np.ones(10)
+    signal[-2:] = 0
+    sig = audio.fftshift_signal(signal, delay(2), fs , mode='cyclic')
+    assert len(sig) == 10
+    assert np.all(sig[:2] < np.finfo(signal.dtype).resolution)
+    testing.assert_allclose(sig[2:], 1)
+
+    signal = np.ones(10)
+    signal[:2] = 0
+    sig = audio.fftshift_signal(signal, delay(-2),fs , mode='cyclic')
+    assert len(sig) == 10
+    testing.assert_allclose(sig[:2], 1)
+    assert np.all(sig[-2:] < np.finfo(signal.dtype).resolution)
+
 
 def test_delay_signal():
 
@@ -178,6 +236,14 @@ def test_zeropad():
     mc_signal = np.column_stack([signal, signal])
     mc_buffered = audio.zeropad(mc_signal, 10)
     assert np.array_equal(mc_buffered[:10, 0], mc_buffered[-10:, 1])
+
+    # Test different start and end zeros
+    signal = audio.generate_tone(1, 1, 1e3)
+    mc_signal = np.column_stack([signal, signal])
+    mc_buffered = audio.zeropad(mc_signal, (10, 5))
+    assert np.all(mc_buffered[:10] == 0)
+    assert np.all(mc_buffered[-5:] == 0)
+
 
 
 def test_bark():
@@ -298,8 +364,8 @@ def test_cos_amp_modulator():
 
 
 def test_calc_dbspl():
-    assert audio.calc_dbspl(20e-6) == 0
-    assert audio.calc_dbspl(2e-3) == 40.0
+    assert audio.calc_dbspl(np.array([20e-6])) == 0
+    assert audio.calc_dbspl(np.array([2e-3])) == 40.0
 
 def test_set_dbsl():
     fs = 100e3
@@ -393,7 +459,9 @@ def test_generate_corr_noise():
 
     duration = 1
     fs = 100e3
-    noise1, noise2 = audio.generate_corr_noise(duration, fs)
+    noise = audio.generate_corr_noise(duration, fs)
+    noise1 = noise[:, 0]
+    noise2 = noise[:, 1]
     power1 = np.mean(noise1**2)
     power2 = np.mean(noise2**2)
 
@@ -413,7 +481,9 @@ def test_generate_corr_noise():
     # Test orthogonality
     corr_val = []
     for i in range(100):
-        noise1, noise2 = audio.generate_corr_noise(duration, fs)
+        noise = audio.generate_corr_noise(duration, fs)
+        noise1 = noise[:, 0]
+        noise2 = noise[:, 1]
         corr_val.append(pearsonr(noise1, noise2)[0])
 
     assert np.max(corr_val) < 1e-4
@@ -422,14 +492,18 @@ def test_generate_corr_noise():
     # Test definition of covariance
     corr_val = []
     for i in range(100):
-        noise1, noise2 = audio.generate_corr_noise(duration, fs, corr=0.5)
+        noise = audio.generate_corr_noise(duration, fs, corr=0.5)
+        noise1 = noise[:, 0]
+        noise2 = noise[:, 1]
         corr_val.append(pearsonr(noise1, noise2)[0] - 0.5)
     assert np.max(corr_val) < 1e-4
     assert np.median(corr_val) < 1e-6
 
 
     # Test bandpass
-    noise1, noise2 = audio.generate_corr_noise(duration, fs, cf=500, bw=100)
+    noise = audio.generate_corr_noise(duration, fs, cf=500, bw=100)
+    noise1 = noise[:, 0]
+    noise2 = noise[:, 1]
     spec1 = np.abs(np.fft.fft(noise1))
     spec2 = np.abs(np.fft.fft(noise2))
 
@@ -470,8 +544,8 @@ def test_extract_binaural_differences():
 
     #Test that phase is wrapped to +pi -pi
     signal = audio.generate_corr_noise(1, fs, corr=0.5, cf=500, bw=50)
-    signal1 = signal[0]
-    signal2 = signal[1]
+    signal1 = signal[:, 0]
+    signal2 = signal[:, 1]
     n_buf = int(48000 * 100e-3)
     win = audio.cosine_fade_window(signal1, 100e-3, fs, n_buf)
     signal1 *= win
@@ -492,3 +566,24 @@ def test_crest_factor():
     signal[signal < 0] = 0
     c = audio.crest_factor(signal)
     testing.assert_almost_equal(c, 20*np.log10(2))
+
+
+def test_phaseshift():
+    signal = audio.generate_tone(100, 1, 100e3)
+    signal2 = audio.generate_tone(100, 1, 100e3, np.pi)
+    signal3 = audio.phase_shift(signal, np.pi, 100e3)
+    testing.assert_almost_equal(signal2, signal3)
+
+    signal1 = audio.generate_tone(100, 1, 100e3)
+    signal2 = audio.generate_tone(200, 1, 100e3, np.pi)
+    signal = np.column_stack([signal1, signal2])
+    signal = audio.phase_shift(signal, np.pi, 100e3)
+
+    # testing.assert_almost_equal(signal2, signal3)
+
+
+
+# fs = 48000
+# signal = audio.generate_corr_noise(1, fs, corr=0.5, cf=500, bw=50)
+# signal1 = signal[0]
+# signal2 = signal[1]
