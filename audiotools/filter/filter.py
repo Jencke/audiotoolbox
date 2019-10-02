@@ -39,7 +39,15 @@ def gammatone(signal, fs, cf, bw, order=4, attenuation_db=-3):
     """
 
     b, a = gt.design_gammatone(cf, bw, fs, order, attenuation_db)
-    out_signal, state = gt.gammatonefos_apply(signal, b, a, order)
+
+    out_signal = np.zeros_like(signal, complex)
+
+    if signal.ndim > 1:
+        n_channel = signal.shape[1]
+        for i_c in range(n_channel):
+            out_signal[:, i_c], _ = gt.gammatonefos_apply(signal[:, i_c], b, a, order)
+    else:
+        out_signal[:], _ = gt.gammatonefos_apply(signal, b, a, order)
 
     return out_signal
 
@@ -68,11 +76,12 @@ def brickwall(signal, fs, low_f, high_f):
 
     '''
 
-    spec = np.fft.fft(signal)
+
+    spec = np.fft.fft(signal, axis=0)
     freqs = np.fft.fftfreq(len(signal), 1. / fs)
     sel_freq = ~((np.abs(freqs) <= high_f) & (np.abs(freqs) >= low_f))
     spec[sel_freq] = 0
-    filtered_signal = np.fft.ifft(spec)
+    filtered_signal = np.fft.ifft(spec, axis=0)
     filtered_signal = np.real_if_close(filtered_signal, 1000)
 
     return filtered_signal
