@@ -1153,3 +1153,50 @@ def crest_factor(signal, axis=0):
     crest_factor = 20*np.log10(a_max / a_effective)
 
     return crest_factor
+
+def phase_shift(signal, phase, fs):
+    '''Shifts all frequency components of a signal by a constant phase.
+
+    Shift all frequency components of a given signal by a constant
+    phase by means of fFT transformation, phase shifting and inverse
+    transformation.
+
+    Parameters:
+    -----------
+    signal : ndarray
+        The input signal
+    phase : scalar
+        The phase in rad by which the signal is shifted.
+
+    Returns:
+    --------
+    ndarray :
+        The phase shifted signal
+
+    '''
+
+    if signal.ndim == 1:
+        n_channels = 1
+    else:
+        n_channels = signal.shape[1]
+
+    n_signal = len(signal)
+    signal = pad_for_fft(signal)
+    i_signal = np.zeros([signal.shape[0], n_channels])
+
+    for i in range(n_channels):
+        if n_channels == 1:
+            spec = np.fft.fft(signal)
+        else:
+            spec = np.fft.fft(signal[:, i])
+        freqs = np.fft.fftfreq(len(signal), 1. / fs)
+
+        shift_val = np.exp(1j * phase * np.sign(freqs))
+        spec *= shift_val
+        i_signal[:, i] = np.real_if_close(np.fft.ifft(spec), 3000)
+
+    if n_channels == 1:
+        ret = i_signal[:n_signal, 0]
+    else:
+        ret = i_signal[:n_signal, :]
+    return  ret
