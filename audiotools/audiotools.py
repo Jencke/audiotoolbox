@@ -301,6 +301,45 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
 
     return window
 
+def hann_fade_window(signal, rise_time, fs):
+    '''Hann fade-in and fade-out window.
+
+    This function generates a window function with a hann fade in
+    and fade out.
+
+    Parameters:
+    -----------
+    signal: ndarray
+        The length of the array will be used to determin the window length.
+    rise_time : scalar
+        Duration of the hann fade in and fade out in seconds. The
+        number of samples is determined via rounding to the nearest
+        integer value.
+    fs : scalar
+        The sampling rate in Hz
+
+    Returns:
+    --------
+    ndarray : The fading window
+
+    '''
+
+    n_samp = len(signal)
+    window = np.ones(n_samp)
+    n_rise = nsamples(rise_time, fs)
+    flanks = hann(2 * n_rise)
+    rise = flanks[:n_rise]
+    decay = flanks[n_rise:]
+    window[:n_rise] = rise
+    window[-n_rise:] = decay
+
+    if signal.ndim > 1:
+        window = np.column_stack([window] * signal.shape[1])
+
+    return window
+
+
+
 def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
     '''Gausian fade-in and fade-out window.
 
