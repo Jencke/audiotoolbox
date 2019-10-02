@@ -398,16 +398,23 @@ def zeropad(signal, number):
     Returns:
     --------
     ndarray : The bufferd signal
-
     '''
-    assert isinstance(number, int)
+
 
     if signal.ndim == 1:
-        buf = np.zeros(number)
+        if not np.isscalar(number):
+            buf_s = np.zeros(number[0])
+            buf_e = np.zeros(number[1])
+        else:
+            buf_s = buf_e = np.zeros(number)
     else:
-        buf = np.zeros([number, signal.shape[1]])
+        if not np.isscalar(number):
+            buf_s = np.zeros([number[0], signal.shape[1]])
+            buf_e = np.zeros([number[1], signal.shape[1]])
+        else:
+            buf_s = buf_e = np.zeros([number, signal.shape[1]])
 
-    signal_out = np.concatenate([buf, signal, buf])
+    signal_out = np.concatenate([buf_s, signal, buf_e])
 
     return signal_out
 
