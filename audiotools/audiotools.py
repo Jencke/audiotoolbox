@@ -423,11 +423,148 @@ def zero_buffer(signal, number):
     signal = zeropad(signal, number)
     return signal
 
-def delay_signal(signal, delay, fs):
-    '''Delay by phase shifting in the frequncy domain.
+def shift_signal(signal, nr_samples, mode='zeros'):
+    '''Shift `signal` by `nr_samples` samples.
 
-    This function delays a given signal in the frequncy domain
-    allowing for subsample time shifts.
+    Shift a signal by a given number of samples. Depending on the
+    `mode` this is done cyclically or by attaching zeros to the start
+    of the signal.
+
+    Parameters:
+    ----------
+    signal : array_like
+        Input signal
+    nr_samples : int
+        The number of samples that the signal should be shifted. Must
+        be positive if `mode` is 'zeros'.
+    mode : {'zeros', 'cyclic'} optional
+        'zeros':
+          The signals length increase due to shifting is buffered with
+          zeros
+        'cyclic':
+          The signal is shifted cyclically
+
+    Returns:
+    --------
+    res : ndarray
+        The shifted signal
+
+    See Also:
+    ---------
+    delay_signal : A high level delaying / shifting function.
+    fftshift_signal : Shift a signal in frequency space.
+
+    '''
+    assert isinstance(nr_samples, int)
+
+    if nr_samples == 0:
+        return signal
+
+    if mode == 'zeros':
+        if nr_samples < 0:
+            raise(ValueError, 'Negative delays not possible with zeros mode')
+        shape = list(signal.shape)
+        shape[0] += np.abs(nr_samples)
+        sig = np.zeros(shape, dtype = signal.dtype)
+        if nr_samples > 0:
+            sig[:-nr_samples] = signal
+        elif nr_samples < 0:
+            sig[nr_samples:] = signal
+    if mode == 'cyclic':
+        sig = signal
+
+    sig = np.roll(sig, nr_samples, axis=0)
+
+    return sig
+
+def fftshift_signal(signal, delay, fs, mode='zeros'):
+    '''Delay the `signal` by time `delay` in the frequncy domain.
+
+    Delays a signal by introducing a linear phaseshift in the
+    frequency domain. Depending on the `mode` this is done cyclically
+    or by zero zeros buffering the start of the signal.
+
+    Parameters:
+    ----------
+    signal : array_like
+        Input signal
+    delay : scalar
+        The delay in seconds. Must be positive if `mode` is 'zeros'.
+    fs : scalar
+        The sampling rate in Hz.
+    mode : {'zeros', 'cyclic'} optional
+        'zeros':
+          The signals length increase due to shifting is buffered with
+          zeros
+        'cyclic':
+          The signal is shifted cyclically
+
+    Returns:
+    --------
+    res : ndarray
+        The shifted signal
+
+    See Also:
+    ---------
+    delay_signal : A high level delaying / shifting function.
+    shift_signal : Shift a signal by whole samples.
+
+    '''
+    if delay == 0:
+        return
+
+    if mode == 'zeros':
+        if delay < 0:
+            raise(ValueError, 'Negative delays not possible with zeros mode')
+        #due to the cyclic nature of the shift, pad the signal with
+        #enough zeros
+        n_pad = np.int(np.ceil(np.abs(delay * fs)))
+        pad = np.zeros(n_pad)
+        signal = np.concatenate([pad, signal, pad])
+        len_sig = len(signal)
+        # In the zeros case we can also make sure to use the FFT by pading
+        # to the next multiple of 2
+        signal = pad_for_fft(signal)
+    if mode == 'cyclic':
+        n_pad = 0
+        len_sig = len(signal)
+
+    #Apply FFT
+    ft_signal = np.fft.fft(signal)
+
+    #Calculate the phases need for shifting and apply them to the
+    #spectrum
+    freqs = np.fft.fftfreq(len(ft_signal), 1. / fs)
+    ft_signal *= np.exp(-1j * 2 * pi * delay * freqs)
+
+    #Inverse transform the spectrum and leave away the imag. part if
+    #it is really small
+    shifted_signal = np.fft.ifft(ft_signal)
+    shifted_signal = np.real_if_close(shifted_signal, 1000)
+
+    # Clip the zeros from the signal
+    if delay > 0:
+        shifted_signal = shifted_signal[n_pad:len_sig]
+    if delay < 0:
+        shifted_signal = shifted_signal[:len_sig + n_pad]
+
+    return shifted_signal
+
+def delay_signal(signal, delay, fs, method='fft', mode='zeros'):
+    '''Time delay a Signal.
+
+    This function delays a given signal. Using the default `method`
+    'fft' this is done by introducing frequency depending phase shifts
+    in the frequency domain. This allowes shifting with sub sample
+    resolution. If the `method` 'sample' is chosen, the delay is
+    introduced by shifting the signal by the number of full samples.
+    If 'delay' is a multiple of samples, the signal is allways shifted
+    using the 'sample' method.
+
+    If the mode 'zeros' is selected, the length of the returned signal
+    will increase by ceil(fs * delay) and the corresponding samples at
+    the end or beginning of the array will be buffered with zeros.
+
 
     Parameters
     ----------
@@ -437,6 +574,19 @@ def delay_signal(signal, delay, fs):
         The delay in seconds
     fs :  scalar
         The signals sampling rate in Hz
+    method : {'fft', 'shift'}, optional
+        'the':
+          fft signal is delayed by phase shifting in the
+          frequency domain.
+
+        'sample':
+          The signal is delayed by shifting the samples
+    mode : {'zeros', 'cyclic'} optional
+        'zeros':
+          The signals length increase due to shifting is buffered with
+          zeros
+        'cyclic':
+          The signal is shifted cyclically
 
     Returns
     -------
