@@ -190,7 +190,9 @@ def generate_corr_noise(duration, fs, corr=0, cf=None, bw=None, seed=None):
         noise_a = brickwall(noise_a, fs, low_f, high_f)
         noise_b = brickwall(noise_b, fs, low_f, high_f)
 
-    return noise_a, noise_b
+    out_sig = np.column_stack([noise_a, noise_b])
+
+    return out_sig
 
 def generate_tone(frequency, duration, fs, start_phase=0):
     '''Sine tone with a given frequency, duration and sampling rate.
