@@ -31,9 +31,18 @@ def pad_for_fft(signal):
        ndarray : The zero bufferd output signal.
 
     '''
+
+    if signal.ndim == 1:
+        n_channels = 1
+    else:
+        n_channels = signal.shape[1]
+
     exponent = np.ceil(np.log2(len(signal)))
     n_out = 2**exponent
-    out_signal = np.zeros(int(n_out))
+    if n_channels == 1:
+        out_signal = np.zeros(int(n_out))
+    else:
+        out_signal = np.zeros([int(n_out), n_channels])
     out_signal[:len(signal)] = signal
 
     return out_signal
