@@ -651,9 +651,8 @@ def calc_dbspl(signal):
         The dB (SPL) value
 
     '''
-
     p0 = 20e-6
-    rms_val = np.sqrt(np.mean(signal**2))
+    rms_val = np.sqrt(np.mean(signal**2, axis=0))
     dbspl_val = 20 * np.log10(rms_val / p0)
 
     return dbspl_val
@@ -675,7 +674,7 @@ def set_dbspl(signal, dbspl_val):
 
     '''
 
-    rms_val = np.sqrt(np.mean(signal**2))
+    rms_val = np.sqrt(np.mean(signal**2, axis=0))
     p0 = 20e-6 #ref_value
 
     factor = (p0 * 10**(float(dbspl_val) / 20)) / rms_val
