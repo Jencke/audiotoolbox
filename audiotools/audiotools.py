@@ -1260,7 +1260,7 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.):
     ..[1] Schroeder, M. (1970). Synthesis of low-peak-factor signals and
           binary sequences with low autocorrelation (corresp.). IEEE
           Transactions on Information Theory, 16(1),
-          85–89.
+          85-89
 
     '''
     harmonics = np.array(harmonics)
