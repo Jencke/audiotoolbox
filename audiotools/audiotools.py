@@ -564,52 +564,7 @@ def fftshift_signal(signal, delay, fs, mode='zeros'):
     return shifted_signal
 
 def delay_signal(signal, delay, fs, method='fft', mode='zeros'):
-    '''Time delay a Signal.
 
-    This function delays a given signal. Using the default `method`
-    'fft' this is done by introducing frequency depending phase shifts
-    in the frequency domain. This allowes shifting with sub sample
-    resolution. If the `method` 'sample' is chosen, the delay is
-    introduced by shifting the signal by the number of full samples.
-    If 'delay' is a multiple of samples, the signal is allways shifted
-    using the 'sample' method.
-
-    If the mode 'zeros' is selected, the length of the returned signal
-    will increase by ceil(fs * delay) and the corresponding samples at
-    the end or beginning of the array will be buffered with zeros.
-
-
-    Parameters
-    ----------
-    signal : ndarray
-        The signal to shift
-    delay : scalar
-        The delay in seconds
-    fs :  scalar
-        The signals sampling rate in Hz
-    method : {'fft', 'shift'}, optional
-        'the':
-          fft signal is delayed by phase shifting in the
-          frequency domain.
-
-        'sample':
-          The signal is delayed by shifting the samples
-    mode : {'zeros', 'cyclic'} optional
-        'zeros':
-          The signals length increase due to shifting is buffered with
-          zeros
-        'cyclic':
-          The signal is shifted cyclically
-
-    Returns
-    -------
-     ndarray : A array of shape [N, 2] where N is the length of the
-         input signal. [:, 0] is the 0 padded original signal, [:, 1]
-         the delayed signal
-
-    '''
-
-    #Only Positive Delays allowed
     if delay < 0:
         neg_delay = True
         delay = np.abs(delay)
