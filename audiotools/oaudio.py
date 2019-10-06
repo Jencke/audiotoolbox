@@ -1,6 +1,7 @@
 import numpy as np
 import audiotools as audio
 from audiotools.filter import brickwall
+from audiotools import wav
 import copy
 
 
