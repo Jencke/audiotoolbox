@@ -1,5 +1,6 @@
 import audiotools as audio
 import audiotools.filter as filter
+import audiotools.filter.gammatone_filt as gt
 import numpy as np
 import numpy.testing as testing
 from scipy.stats import norm
@@ -60,3 +61,46 @@ def test_gauss():
 
     assert np.round(lnorm_spec[np.where(freqs[mask] == flow)], 1) == -3
     assert np.round(lnorm_spec[np.where(freqs[mask] == fhigh)], 1) == -3
+
+
+
+def test_gammatone():
+    # Check that gammatone function is the same as the individual one
+    b, a = gt.design_gammatone(500, 75, 48000)
+    noise = audio.generate_noise(100e-3, 48000)
+    out, states = gt.gammatonefos_apply(noise, b, a, 4)
+    out2 = filter.gammatone(noise, 48000, 500, 75)
+    # testing.assert_equal(out, out2)
+
+def test_gammatone_coefficients():
+    # Compare with results from AMT toolbox
+    b, a = gt.design_gammatone(500, 75, 48000)
+    amt_a = 0.98664066847502018831050918379333 + 0.064667845966194278939376260950667j
+    amt_b = 0.000000031948804250169196536011229472021
+
+    testing.assert_almost_equal(b, amt_b)
+    testing.assert_almost_equal(a[1].imag, -amt_a.imag)
+    testing.assert_almost_equal(a[1].real, -amt_a.real)
+
+def test_gammatonefos_apply():
+    # Check amplitude with on frequency tone
+    b, a = gt.design_gammatone(500, 75, 48000)
+    tone = audio.generate_tone(500, 100e-3, 48000)
+    out, states = gt.gammatonefos_apply(tone, b, a, 4)
+    assert (out.real[3000:].max() - 1) <= 5e-5
+    assert (out.real[3000:].min() + 1) <= 5e-5
+
+    # Check magnitude with tone at corner frequency
+    b, a = gt.design_gammatone(500, 75, 48000)
+    tone = audio.generate_tone(500 - 75 / 2, 100e-3, 48000)
+    out, states = gt.gammatonefos_apply(tone, b, a, 4)
+    # max should be - 3dB
+    assert (20*np.log10(out.real[3000:].max()) + 3) < 0.5e-3
+
+
+    # Check magnitude with tone at corner frequency
+    b, a = gt.design_gammatone(500, 200, 48000)
+    tone = audio.generate_tone(500 - 200 / 2, 100e-3, 48000)
+    out, states = gt.gammatonefos_apply(tone, b, a, 4)
+    # max should be - 3dB
+    assert (20*np.log10(out.real[3000:].max()) + 3) < 0.05

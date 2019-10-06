@@ -1,4 +1,5 @@
 from .audiotools import *
 from . import stats
-# import audio_interface
-# import wav
+from . oaudio import Signal
+# from . import audio_interface
+# from . import wav

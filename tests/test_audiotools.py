@@ -14,6 +14,17 @@ def test_pad_for_fft():
     assert np.array_equal(padded[100:], np.zeros(28))
     assert np.array_equal(padded[:100], signal1)
 
+    signal1 = np.ones([100, 2])
+    padded = audio.pad_for_fft(signal1)
+    #check correct length
+    assert len(padded) == 128
+
+    #check zeros in the end and unchanged in beginning
+    assert np.array_equal(padded[100:, :], np.zeros([28, 2]))
+    assert np.array_equal(padded[:100, :], signal1)
+
+
+
 def test_generate_tone():
     # test frequency, sampling rate and duration
     tone1 = audio.generate_tone(1, 1, 1e3)
@@ -22,9 +33,9 @@ def test_generate_tone():
 
     #test phaseshift
     tone = audio.generate_tone(1, 1, 1e3, start_phase=np.pi / 2)
-    assert tone[0] == 1.0
-    tone = audio.generate_tone(1, 1, 1e3, start_phase=1.5 * np.pi)
-    assert tone[0] == -1.0
+    testing.assert_almost_equal(tone[0], 0)
+    tone = audio.generate_tone(1, 1, 1e3, start_phase=1 * np.pi)
+    testing.assert_almost_equal(tone[0], -1)
 
 def test_get_time():
 
@@ -81,7 +92,8 @@ def test_cosine_fade_window():
 
     #test if the window is a cosine curve of the right type
     cos_curve = np.concatenate([window[:100], window[-101:]])
-    sin = (0.5 * audio.generate_tone(5, 0.2 + 1. / 1e3, 1e3, start_phase=1.5 * np.pi)) + 0.5
+    sin = (0.5 * audio.generate_tone(5, 0.2 + 1. / 1e3, 1e3,
+                                     start_phase=np.pi)) + 0.5
     testing.assert_array_almost_equal(cos_curve, sin)
 
     # Test that the last sample in the window is not equal to 1
@@ -128,15 +140,63 @@ def test_gauss_fade_window():
     assert np.array_equal(window[:, 0], window[:, 1])
     assert np.array_equal(window[:100, 0], window[-100:, 0][::-1])
 
+def test_shift_signal():
+
+    signal = np.ones(10)
+    sig = audio.shift_signal(signal, 10, mode='zeros')
+    assert len(sig) == 20
+    assert np.all(sig[10:] == 1)
+    assert np.all(sig[:10] == 0)
+
+    signal = np.ones(10)
+    signal[-2:] = 0
+    sig = audio.shift_signal(signal, 2, mode='cyclic')
+    assert len(sig) == 10
+    assert np.all(sig[:2] == 0)
+    assert np.all(sig[2:] == 1)
+
+    signal = np.ones(10)
+    signal[:2] = 0
+    sig = audio.shift_signal(signal, -2, mode='cyclic')
+    assert len(sig) == 10
+    assert np.all(sig[:2] == 1)
+    assert np.all(sig[-2:] == 0)
+
+
+def test_fftshift_signal():
+    fs = 48e3
+    delay = lambda x: x * 1./fs
+
+    signal = np.ones(10)
+    sig = audio.fftshift_signal(signal, delay(10), fs, mode='zeros')
+    assert len(sig) == 20
+    testing.assert_allclose(sig[10:], 1)
+    assert np.all(sig[:10] < np.finfo(signal.dtype).resolution)
+
+    signal = np.ones(10)
+    signal[-2:] = 0
+    sig = audio.fftshift_signal(signal, delay(2), fs , mode='cyclic')
+    assert len(sig) == 10
+    assert np.all(sig[:2] < np.finfo(signal.dtype).resolution)
+    testing.assert_allclose(sig[2:], 1)
+
+    signal = np.ones(10)
+    signal[:2] = 0
+    sig = audio.fftshift_signal(signal, delay(-2),fs , mode='cyclic')
+    assert len(sig) == 10
+    testing.assert_allclose(sig[:2], 1)
+    assert np.all(sig[-2:] < np.finfo(signal.dtype).resolution)
+
 
 def test_delay_signal():
-    signal = audio.generate_tone(1, 1, 1e3)
-    signal += audio.generate_tone(2, 1, 1e3)
+
+    signal = audio.generate_tone(1, 1, 1e3, start_phase = 0.5 * np.pi)
+    signal += audio.generate_tone(2, 1, 1e3, start_phase = 0.5 * np.pi)
 
     delayed = audio.delay_signal(signal, 1.5e-3, 1e3)
 
-    phase1 = 1.5e-3 * 1 * 2 * np.pi
-    phase2 = 1.5e-3 * 2 * 2 * np.pi
+    phase1 = 1.5e-3 * 1 * 2 * np.pi - 0.5 * np.pi
+    phase2 = 1.5e-3 * 2 * 2 * np.pi - 0.5 * np.pi
 
     shifted = audio.generate_tone(1, 1, 1e3, start_phase=-phase1)
     shifted += audio.generate_tone(2, 1, 1e3, start_phase=-phase2)
@@ -159,23 +219,31 @@ def test_delay_signal():
     delayed = audio.delay_signal(noise, dt * 5, fs)
     testing.assert_almost_equal(delayed[5:, 1], delayed[:-5, 0])
 
-def test_zero_buffer():
+def test_zeropad():
     signal = audio.generate_tone(1, 1, 1e3)
 
-    buffered = audio.zero_buffer(signal, 10)
+    buffered = audio.zeropad(signal, 10)
 
     assert len(buffered) - len(signal)  == 20
     assert np.array_equal(buffered[:10], buffered[-10:])
     assert np.array_equal(buffered[:10], np.zeros(10))
 
-    buffered = audio.zero_buffer(signal, 0)
+    buffered = audio.zeropad(signal, 0)
     assert len(buffered) == len(signal)
 
     # Test multichannel signal
     signal = audio.generate_tone(1, 1, 1e3)
     mc_signal = np.column_stack([signal, signal])
-    mc_buffered = audio.zero_buffer(mc_signal, 10)
+    mc_buffered = audio.zeropad(mc_signal, 10)
     assert np.array_equal(mc_buffered[:10, 0], mc_buffered[-10:, 1])
+
+    # Test different start and end zeros
+    signal = audio.generate_tone(1, 1, 1e3)
+    mc_signal = np.column_stack([signal, signal])
+    mc_buffered = audio.zeropad(mc_signal, (10, 5))
+    assert np.all(mc_buffered[:10] == 0)
+    assert np.all(mc_buffered[-5:] == 0)
+
 
 
 def test_bark():
@@ -289,15 +357,22 @@ def test_cos_amp_modulator():
     fs = 100e3
     signal = audio.generate_tone(100, 1, fs)
     mod = audio.cos_amp_modulator(signal, 5, fs)
+    test = audio.generate_tone(5, 1, fs)
+    testing.assert_array_almost_equal(mod, test + 1)
     assert max(mod) == 2.0
 
     mod = audio.cos_amp_modulator(signal, 5, fs, 0.5)
     assert mod[0] == 1.5
 
+    mod = audio.cos_amp_modulator(signal, 5, fs, start_phase=np.pi)
+    test = audio.generate_tone(5, 1, fs, start_phase=np.pi)
+    testing.assert_array_almost_equal(mod, test + 1)
+
+
 
 def test_calc_dbspl():
-    assert audio.calc_dbspl(20e-6) == 0
-    assert audio.calc_dbspl(2e-3) == 40.0
+    assert audio.calc_dbspl(np.array([20e-6])) == 0
+    assert audio.calc_dbspl(np.array([2e-3])) == 40.0
 
 def test_set_dbsl():
     fs = 100e3
@@ -391,7 +466,9 @@ def test_generate_corr_noise():
 
     duration = 1
     fs = 100e3
-    noise1, noise2 = audio.generate_corr_noise(duration, fs)
+    noise = audio.generate_corr_noise(duration, fs)
+    noise1 = noise[:, 0]
+    noise2 = noise[:, 1]
     power1 = np.mean(noise1**2)
     power2 = np.mean(noise2**2)
 
@@ -411,7 +488,9 @@ def test_generate_corr_noise():
     # Test orthogonality
     corr_val = []
     for i in range(100):
-        noise1, noise2 = audio.generate_corr_noise(duration, fs)
+        noise = audio.generate_corr_noise(duration, fs)
+        noise1 = noise[:, 0]
+        noise2 = noise[:, 1]
         corr_val.append(pearsonr(noise1, noise2)[0])
 
     assert np.max(corr_val) < 1e-4
@@ -420,14 +499,18 @@ def test_generate_corr_noise():
     # Test definition of covariance
     corr_val = []
     for i in range(100):
-        noise1, noise2 = audio.generate_corr_noise(duration, fs, corr=0.5)
+        noise = audio.generate_corr_noise(duration, fs, corr=0.5)
+        noise1 = noise[:, 0]
+        noise2 = noise[:, 1]
         corr_val.append(pearsonr(noise1, noise2)[0] - 0.5)
     assert np.max(corr_val) < 1e-4
     assert np.median(corr_val) < 1e-6
 
 
     # Test bandpass
-    noise1, noise2 = audio.generate_corr_noise(duration, fs, cf=500, bw=100)
+    noise = audio.generate_corr_noise(duration, fs, cf=500, bw=100)
+    noise1 = noise[:, 0]
+    noise2 = noise[:, 1]
     spec1 = np.abs(np.fft.fft(noise1))
     spec2 = np.abs(np.fft.fft(noise2))
 
@@ -468,11 +551,37 @@ def test_extract_binaural_differences():
 
     #Test that phase is wrapped to +pi -pi
     signal = audio.generate_corr_noise(1, fs, corr=0.5, cf=500, bw=50)
-    signal1 = signal[0]
-    signal2 = signal[1]
+    signal1 = signal[:, 0]
+    signal2 = signal[:, 1]
     n_buf = int(48000 * 100e-3)
     win = audio.cosine_fade_window(signal1, 100e-3, fs, n_buf)
     signal1 *= win
     signal2 *= win
     ipd, env_diff = audio.extract_binaural_differences(signal[0], signal[1])
     assert np.max(np.abs(ipd) <= np.pi)
+
+
+def test_crest_factor():
+
+    # Test that c for sine is equal to sqrt(2)
+    signal = audio.generate_tone(100, 1, 100e3)
+    c = audio.crest_factor(signal)
+    testing.assert_almost_equal(c, 20*np.log10(np.sqrt(2)))
+
+    # test that c for half wave rect. sine is 2
+    signal = audio.generate_tone(100, 1, 100e3)
+    signal[signal < 0] = 0
+    c = audio.crest_factor(signal)
+    testing.assert_almost_equal(c, 20*np.log10(2))
+
+
+def test_phaseshift():
+    signal = audio.generate_tone(100, 1, 100e3)
+    signal2 = audio.generate_tone(100, 1, 100e3, np.pi)
+    signal3 = audio.phase_shift(signal, np.pi, 100e3)
+    testing.assert_almost_equal(signal2, signal3)
+
+    signal1 = audio.generate_tone(100, 1, 100e3)
+    signal2 = audio.generate_tone(200, 1, 100e3, np.pi)
+    signal = np.column_stack([signal1, signal2])
+    signal = audio.phase_shift(signal, np.pi, 100e3)

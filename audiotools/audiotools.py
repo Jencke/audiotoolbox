@@ -1,10 +1,15 @@
 '''
 Some simple helper functions for dealing with audiosignals
 '''
+from warnings import warn
 
 import numpy as np
+from numpy import pi
+
 from scipy.interpolate import interp1d
 from scipy.signal import hilbert
+from scipy.signal.windows import hann
+
 from .filter import brickwall
 
 COLOR_R = '#d65c5c'
@@ -27,32 +32,23 @@ def pad_for_fft(signal):
        ndarray : The zero bufferd output signal.
 
     '''
+
+    if signal.ndim == 1:
+        n_channels = 1
+    else:
+        n_channels = signal.shape[1]
+
     exponent = np.ceil(np.log2(len(signal)))
     n_out = 2**exponent
-    out_signal = np.zeros(int(n_out))
+    if n_channels == 1:
+        out_signal = np.zeros(int(n_out))
+    else:
+        out_signal = np.zeros([int(n_out), n_channels])
     out_signal[:len(signal)] = signal
 
     return out_signal
 
-def zeropad(signal, number):
-    '''Add a number of zeros to both sides of a signal.
-
-    signal : ndarray
-        The input signal.
-    number : int
-        The number of zeros to add to the signal
-
-    Returns:
-    --------
-    ndarray : The zero bufferd input signal
-
-    '''
-    zeros = np.zeros(number)
-    signal_out = np.concatenate([zeros, signal, zeros])
-    return signal_out
-
-
-def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1):
+def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
     '''Cosinus amplitude modulator
 
     Returns a cosinus amplitude modulator following the equation:
@@ -84,12 +80,18 @@ def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1):
 
     if isinstance(signal, np.ndarray):
         time = get_time(signal, fs)
+        ndim = signal.ndim
     elif isinstance(signal, int):
         time = get_time(np.zeros(signal), fs)
+        ndim = 1
     else:
         raise TypeError("Signal must be numpy ndarray or int")
 
-    modulator = 1 + mod_index * np.cos(2 * np.pi * modulator_freq * time)
+    modulator = 1 + mod_index * np.cos(2 * pi * modulator_freq * time
+                                       + start_phase)
+
+    if ndim > 1:
+        modulator = np.tile(modulator, (ndim, 1)).T
 
     return modulator
 
@@ -107,7 +109,7 @@ def time2phase(time, frequency):
 
     '''
 
-    phase = time * frequency * (2 * np.pi)
+    phase = time * frequency * (2 * pi)
     return phase
 
 def phase2time(phase, frequency):
@@ -124,7 +126,7 @@ def phase2time(phase, frequency):
 
     '''
 
-    time = phase / (2 * np.pi) / frequency
+    time = phase / (2 * pi) / frequency
     return time
 
 def nsamples(duration, fs):
@@ -194,14 +196,17 @@ def generate_corr_noise(duration, fs, corr=0, cf=None, bw=None, seed=None):
         noise_a = brickwall(noise_a, fs, low_f, high_f)
         noise_b = brickwall(noise_b, fs, low_f, high_f)
 
-    return noise_a, noise_b
+    out_sig = np.column_stack([noise_a, noise_b])
+
+    return out_sig
 
 def generate_tone(frequency, duration, fs, start_phase=0):
     '''Sine tone with a given frequency, duration and sampling rate.
 
-    This function will generate a pure tone with of a given duration
-    at a given sampling rate. By default, the first sample will be
-    evaluated at 0 and the duration will be the real stimulus duration.
+    This function will generate a pure tone following the equation:
+    .. math:: cos(2\pi f t + \phi_0)
+    where f is the frequency, t is the time and phi_0 the starting phase.
+    The first evulated timepoint is 0.
 
     Parameters:
     -----------
@@ -221,7 +226,7 @@ def generate_tone(frequency, duration, fs, start_phase=0):
     '''
     nsamp = nsamples(duration, fs)
     time = get_time(nsamp, fs)
-    tone = np.sin(2 * np.pi * frequency * time + start_phase)
+    tone = np.cos(2 * pi * frequency * time + start_phase)
     return tone
 
 def get_time(signal, fs):
@@ -292,11 +297,11 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
 
     r = nsamples(rise_time, fs)
     window = np.ones(len(signal) - 2 * n_zeros)
-    flank = 0.5 * (1 + np.cos(np.pi / r * (np.arange(r) - r)))
+    flank = 0.5 * (1 + np.cos(pi / r * (np.arange(r) - r)))
     window[:r] = flank
     window[-r:] = flank[::-1]
 
-    window = zero_buffer(window, n_zeros)
+    window = zeropad(window, n_zeros)
 
     # If the signal has multiple channels, extend the window to match
     # the shape
@@ -304,6 +309,45 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
         window = np.column_stack([window] * signal.shape[1])
 
     return window
+
+def hann_fade_window(signal, rise_time, fs):
+    '''Hann fade-in and fade-out window.
+
+    This function generates a window function with a hann fade in
+    and fade out.
+
+    Parameters:
+    -----------
+    signal: ndarray
+        The length of the array will be used to determin the window length.
+    rise_time : scalar
+        Duration of the hann fade in and fade out in seconds. The
+        number of samples is determined via rounding to the nearest
+        integer value.
+    fs : scalar
+        The sampling rate in Hz
+
+    Returns:
+    --------
+    ndarray : The fading window
+
+    '''
+
+    n_samp = len(signal)
+    window = np.ones(n_samp)
+    n_rise = nsamples(rise_time, fs)
+    flanks = hann(2 * n_rise)
+    rise = flanks[:n_rise]
+    decay = flanks[n_rise:]
+    window[:n_rise] = rise
+    window[-n_rise:] = decay
+
+    if signal.ndim > 1:
+        window = np.column_stack([window] * signal.shape[1])
+
+    return window
+
+
 
 def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
     '''Gausian fade-in and fade-out window.
@@ -347,7 +391,7 @@ def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
 
     return window
 
-def zero_buffer(signal, number):
+def zeropad(signal, number):
     '''Add a number of zeros to both sides of a signal
 
     Parameters:
@@ -360,43 +404,167 @@ def zero_buffer(signal, number):
     Returns:
     --------
     ndarray : The bufferd signal
-
     '''
-    assert isinstance(number, int)
+
 
     if signal.ndim == 1:
-        buf = np.zeros(number)
+        if not np.isscalar(number):
+            buf_s = np.zeros(number[0])
+            buf_e = np.zeros(number[1])
+        else:
+            buf_s = buf_e = np.zeros(number)
     else:
-        buf = np.zeros([number, signal.shape[1]])
+        if not np.isscalar(number):
+            buf_s = np.zeros([number[0], signal.shape[1]])
+            buf_e = np.zeros([number[1], signal.shape[1]])
+        else:
+            buf_s = buf_e = np.zeros([number, signal.shape[1]])
 
-    signal = np.concatenate([buf, signal, buf])
+    signal_out = np.concatenate([buf_s, signal, buf_e])
 
-    return signal
+    return signal_out
 
-def delay_signal(signal, delay, fs):
-    '''Delay by phase shifting in the frequncy domain.
 
-    This function delays a given signal in the frequncy domain
-    allowing for subsample time shifts.
-
-    Parameters
-    ----------
-    signal : ndarray
-        The signal to shift
-    delay : scalar
-        The delay in seconds
-    fs :  scalar
-        The signals sampling rate in Hz
-
-    Returns
-    -------
-     ndarray : A array of shape [N, 2] where N is the length of the
-         input signal. [:, 0] is the 0 padded original signal, [:, 1]
-         the delayed signal
+def zero_buffer(signal, number):
+    '''Depricated use zeropad instead
 
     '''
 
-    #Only Positive Delays allowed
+    warn("zero_buffer is deprecated, use zeropad instead",
+         DeprecationWarning)
+
+    signal = zeropad(signal, number)
+    return signal
+
+def shift_signal(signal, nr_samples, mode='zeros'):
+    '''Shift `signal` by `nr_samples` samples.
+
+    Shift a signal by a given number of samples. Depending on the
+    `mode` this is done cyclically or by attaching zeros to the start
+    of the signal.
+
+    Parameters:
+    ----------
+    signal : array_like
+        Input signal
+    nr_samples : int
+        The number of samples that the signal should be shifted. Must
+        be positive if `mode` is 'zeros'.
+    mode : {'zeros', 'cyclic'} optional
+        'zeros':
+          The signals length increase due to shifting is buffered with
+          zeros
+        'cyclic':
+          The signal is shifted cyclically
+
+    Returns:
+    --------
+    res : ndarray
+        The shifted signal
+
+    See Also:
+    ---------
+    delay_signal : A high level delaying / shifting function.
+    fftshift_signal : Shift a signal in frequency space.
+
+    '''
+    assert isinstance(nr_samples, int)
+
+    if nr_samples == 0:
+        return signal
+
+    if mode == 'zeros':
+        if nr_samples < 0:
+            raise(ValueError, 'Negative delays not possible with zeros mode')
+        shape = list(signal.shape)
+        shape[0] += np.abs(nr_samples)
+        sig = np.zeros(shape, dtype = signal.dtype)
+        if nr_samples > 0:
+            sig[:-nr_samples] = signal
+        elif nr_samples < 0:
+            sig[nr_samples:] = signal
+    if mode == 'cyclic':
+        sig = signal
+
+    sig = np.roll(sig, nr_samples, axis=0)
+
+    return sig
+
+def fftshift_signal(signal, delay, fs, mode='zeros'):
+    '''Delay the `signal` by time `delay` in the frequncy domain.
+
+    Delays a signal by introducing a linear phaseshift in the
+    frequency domain. Depending on the `mode` this is done cyclically
+    or by zero zeros buffering the start of the signal.
+
+    Parameters:
+    ----------
+    signal : array_like
+        Input signal
+    delay : scalar
+        The delay in seconds. Must be positive if `mode` is 'zeros'.
+    fs : scalar
+        The sampling rate in Hz.
+    mode : {'zeros', 'cyclic'} optional
+        'zeros':
+          The signals length increase due to shifting is buffered with
+          zeros
+        'cyclic':
+          The signal is shifted cyclically
+
+    Returns:
+    --------
+    res : ndarray
+        The shifted signal
+
+    See Also:
+    ---------
+    delay_signal : A high level delaying / shifting function.
+    shift_signal : Shift a signal by whole samples.
+
+    '''
+    if delay == 0:
+        return
+
+    if mode == 'zeros':
+        if delay < 0:
+            raise(ValueError, 'Negative delays not possible with zeros mode')
+        #due to the cyclic nature of the shift, pad the signal with
+        #enough zeros
+        n_pad = np.int(np.ceil(np.abs(delay * fs)))
+        pad = np.zeros(n_pad)
+        signal = np.concatenate([pad, signal, pad])
+        len_sig = len(signal)
+        # In the zeros case we can also make sure to use the FFT by pading
+        # to the next multiple of 2
+        signal = pad_for_fft(signal)
+    if mode == 'cyclic':
+        n_pad = 0
+        len_sig = len(signal)
+
+    #Apply FFT
+    ft_signal = np.fft.fft(signal)
+
+    #Calculate the phases need for shifting and apply them to the
+    #spectrum
+    freqs = np.fft.fftfreq(len(ft_signal), 1. / fs)
+    ft_signal *= np.exp(-1j * 2 * pi * delay * freqs)
+
+    #Inverse transform the spectrum and leave away the imag. part if
+    #it is really small
+    shifted_signal = np.fft.ifft(ft_signal)
+    shifted_signal = np.real_if_close(shifted_signal, 1000)
+
+    # Clip the zeros from the signal
+    if delay > 0:
+        shifted_signal = shifted_signal[n_pad:len_sig]
+    if delay < 0:
+        shifted_signal = shifted_signal[:len_sig + n_pad]
+
+    return shifted_signal
+
+def delay_signal(signal, delay, fs, method='fft', mode='zeros'):
+
     if delay < 0:
         neg_delay = True
         delay = np.abs(delay)
@@ -419,7 +587,7 @@ def delay_signal(signal, delay, fs):
     #Calculate the phases need for shifting and apply them to the
     #spectrum
     freqs = np.fft.fftfreq(len(ft_signal), 1. / fs)
-    ft_signal *= np.exp(-1j * 2 * np.pi * delay * freqs)
+    ft_signal *= np.exp(-1j * 2 * pi * delay * freqs)
 
     #Inverse transform the spectrum and leave away the imag. part if
     #it is really small
@@ -451,9 +619,8 @@ def calc_dbspl(signal):
         The dB (SPL) value
 
     '''
-
     p0 = 20e-6
-    rms_val = np.sqrt(np.mean(signal**2))
+    rms_val = np.sqrt(np.mean(signal**2, axis=0))
     dbspl_val = 20 * np.log10(rms_val / p0)
 
     return dbspl_val
@@ -475,7 +642,7 @@ def set_dbspl(signal, dbspl_val):
 
     '''
 
-    rms_val = np.sqrt(np.mean(signal**2))
+    rms_val = np.sqrt(np.mean(signal**2, axis=0))
     p0 = 20e-6 #ref_value
 
     factor = (p0 * 10**(float(dbspl_val) / 20)) / rms_val
@@ -1023,10 +1190,10 @@ def extract_binaural_differences(signal1, signal2, log_levels=True):
         env_diff = env1 - env2
 
     # Phase wrap if phase difference larger then +- pi
-    while np.abs(ipd).max() > np.pi:
-        first_occ = np.where(np.abs(ipd) > np.pi)[0][0]
+    while np.abs(ipd).max() > pi:
+        first_occ = np.where(np.abs(ipd) > pi)[0][0]
         sign = np.sign(ipd[first_occ])
-        ipd[first_occ:] = -2 * np.pi * sign + ipd[first_occ:]
+        ipd[first_occ:] = -2 * pi * sign + ipd[first_occ:]
 
     # If the signal envelopes are close to zero the ipd should be
     # zero. this fixes some instabilities with the hilbert transform
@@ -1035,3 +1202,121 @@ def extract_binaural_differences(signal1, signal2, log_levels=True):
     is_zero = np.isclose(env1, 0, atol=1e-6) & np.isclose(env2, 0, atol=1e-6)
     ipd[is_zero] = 0
     return ipd, env_diff
+
+def schroeder_phase(harmonics, amplitudes, phi0=0.):
+    '''Phases for a schroeder phase harmonic complex
+
+    This function calculates the phases for a schroeder phase harmonic
+    comlex following eq. 11 of [1]_
+
+
+    Parameters:
+    -----------
+    harmonics : ndarray
+        A vector of harmonics for which the schroeder phases should be
+        calculated
+    amplitudes : ndarray
+        A vector of amplitudes for the given harmonics
+    phi0 : scalar
+        The starting phase of the first harmonic (default = 0)
+
+    Returns:
+    --------
+    ndarray :
+        The phase values for the harmonic compontents
+
+    ..[1] Schroeder, M. (1970). Synthesis of low-peak-factor signals and
+          binary sequences with low autocorrelation (corresp.). IEEE
+          Transactions on Information Theory, 16(1),
+          85-89
+
+    '''
+    harmonics = np.array(harmonics)
+    amplitudes = np.array(amplitudes)
+    power = 0.5 * amplitudes**2
+    power /= power.sum()
+
+    phi_schroeder = np.zeros(len(harmonics))
+    for i_n, n in enumerate(harmonics):
+        phi_shift = 2 * pi * np.sum((n - harmonics[:i_n]) * power[:i_n])
+        phi_schroeder[i_n] = phi0 - phi_shift
+
+    return phi_schroeder
+
+def crest_factor(signal, axis=0):
+    '''Calculate crest factor
+
+    Calculates the crest factor of the input signal. The crest factor
+    is defined as:
+
+    .. math:: C = \frac{|x_{peak}|}{x_{rms}}
+
+    where :math:`x_{peak}` is the maximum of the absolute value and
+    :math:`x{rms}` is the effective value of the signal.
+
+    Parameters:
+    -----------
+    signal : ndarray
+        The input signal
+    axis : int
+        The axis for which to calculate the crest factor (default = 0)
+
+    Returns:
+    --------
+    scalar :
+        The crest factor
+
+    '''
+    a_effective = np.sqrt(np.mean(signal**2, axis = axis))
+    a_max = np.max(np.abs(signal), axis = axis)
+
+    crest_factor = 20*np.log10(a_max / a_effective)
+
+    return crest_factor
+
+def phase_shift(signal, phase, fs):
+    '''Shifts all frequency components of a signal by a constant phase.
+
+    Shift all frequency components of a given signal by a constant
+    phase by means of fFT transformation, phase shifting and inverse
+    transformation.
+
+    Parameters:
+    -----------
+    signal : ndarray
+        The input signal
+    phase : scalar
+        The phase in rad by which the signal is shifted.
+
+    Returns:
+    --------
+    ndarray :
+        The phase shifted signal
+
+    '''
+
+    if signal.ndim == 1:
+        n_channels = 1
+    else:
+        n_channels = signal.shape[1]
+
+    n_signal = len(signal)
+    signal = pad_for_fft(signal)
+    i_signal = np.zeros([signal.shape[0], n_channels])
+
+    for i in range(n_channels):
+        if n_channels == 1:
+            spec = np.fft.fft(signal)
+        else:
+            spec = np.fft.fft(signal[:, i])
+        freqs = np.fft.fftfreq(len(signal), 1. / fs)
+
+        shift_val = np.exp(1j * phase * np.sign(freqs))
+        spec *= shift_val
+        i_signal[:, i] = np.real_if_close(np.fft.ifft(spec), 3000)
+
+    if n_channels == 1:
+        ret = i_signal[:n_signal, 0]
+    else:
+        ret = i_signal[:n_signal, :]
+    return  ret
