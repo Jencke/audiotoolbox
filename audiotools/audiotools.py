@@ -48,7 +48,7 @@ def pad_for_fft(signal):
 
     return out_signal
 
-def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1):
+def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
     '''Cosinus amplitude modulator
 
     Returns a cosinus amplitude modulator following the equation:
