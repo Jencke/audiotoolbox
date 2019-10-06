@@ -348,3 +348,23 @@ class test_oaudio(unittest.TestCase):
         test = np.column_stack([test1, test2])
 
         testing.assert_almost_equal(sig.waveform, test)
+
+    def test_cos_amp_modulator(self):
+        fs = 48000
+        sig = Signal().init_signal(1, 1, fs).add_tone(100)
+        sig.add_cos_modulator(5, 1)
+
+        test = audio.generate_tone(100, 1, fs)
+        test *= audio.cos_amp_modulator(test, 5, fs)
+
+        testing.assert_array_equal(sig.waveform, test)
+
+        fs = 48000
+        sig = Signal().init_signal(2, 1, fs).add_tone(100)
+        sig.add_cos_modulator(5, 1)
+
+        test = audio.generate_tone(100, 1, fs)
+        test *= audio.cos_amp_modulator(test, 5, fs)
+
+        testing.assert_array_equal(sig.waveform[:, 0], test)
+        testing.assert_array_equal(sig.waveform[:, 1], test)

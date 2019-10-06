@@ -400,6 +400,61 @@ class Signal(object):
 
         return self
 
+    def add_cos_modulator(self, frequency, m, start_phase=0):
+        '''Multiply a cosinus amplitude modulator to the signal
+
+        Multiplies a cosinus amplitude modulator following the equation:
+        ..math:: 1 + m * \cos{2 * \pi * f_m * t + \phi_{0}}
+
+        where m is the modulation depth, f_m is the modualtion frequency
+        and t is the time. \phi_0 is the start phase
+
+        Parameters:
+        -----------
+        frequency : float
+          The frequency of the cosine modulator.
+        m : float, optional
+          The modulation index. (Default = 1)
+        start_phase : float
+          The starting phase of the cosine in radiant.
+
+        Returns:
+        --------
+        Signal : Returns itself
+
+        '''
+        mod = audio.cos_amp_modulator(signal=self.waveform,
+                                      modulator_freq=frequency,
+                                      fs=self.fs,
+                                      mod_index=m)
+
+        wv = self.waveform * mod
+        self.set_waveform(wv)
+        return self
+
+    # def delay(self, delay, channels, method='fft', mode='zeros'):
+
+    #     nshift = audio.nsamples(delay, self.fs)
+
+    #     # Allways use the sample algorithm if the delay is a full
+    #     # multiple of the time resolution
+    #     if nshift % i == 0:
+    #         method = 'sample'
+
+    #     if method == 'sample':
+    #         to_delay = self.waveform[:, channels]
+    #         shifted = audio.shift_signal(to_delay, nshift, mode)
+
+    #         # In cyclic mode, there is no change in the output length
+    #         # but for the zero mode, the length of the whole waveform
+    #         # has to be changed
+    #         if mode == 'cyclic':
+    #             self.waveform[:, channels] = shifted
+    #         else:
+    #             buf = np.zeros((len(shifted), self.n_channel))
+    #             self.waveform = np.concatenate([self.waveform, buf])
+    #             self.waveform[:, channels] = shifted
+
     def phase_shift(self, phase):
         '''Shifts all frequency components of a signal by a constant phase.
 
