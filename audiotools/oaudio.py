@@ -6,7 +6,7 @@ import copy
 
 
 class Signal(object):
-    """
+    r"""
     Attributes:
     -----------
     waveform : ndarray
@@ -140,7 +140,7 @@ class Signal(object):
 
 
     def add_tone(self, frequency, amplitude=1, start_phase=0):
-        """Add a sine tone with a given frequency, amplitude and start_phase
+        r"""Add a sine tone with a given frequency, amplitude and start_phase
 
         This function will add a pure tone to the current
         waveform. following the equation:
@@ -203,6 +203,36 @@ class Signal(object):
 
         return self
 
+    def set_dbfs(self, dbfs):
+        """Normalize the signal to a given dBFS RMS value.
+
+        Parameters:
+        -----------
+        dbfs : float
+            The dBFS RMS value
+
+        Returns:
+        --------
+        Signal : Returns itself
+
+        """
+
+        nwv = audio.set_dbfs(self.waveform, dbfs)
+        self.set_waveform(nwv)
+
+        return self
+
+    def calc_dbfs(self):
+        """Calculate the dBFS RMS value for the signal
+
+        Returns:
+        --------
+        float : The dBFS RMS value
+
+        """
+        dbfs = audio.calc_dbfs(self.waveform)
+        return dbfs
+
     def bandpass(self, f_center, bw, ftype):
         if ftype == 'brickwall':
             f_low = f_center - 0.5 * bw
@@ -220,7 +250,7 @@ class Signal(object):
 
         Returns:
         --------
-        float : The sound breeure level in dB
+        float : The sound pressure level in dB
 
         """
         dbspl = audio.calc_dbspl(self.waveform)
@@ -402,7 +432,7 @@ class Signal(object):
         return self
 
     def add_cos_modulator(self, frequency, m, start_phase=0):
-        '''Multiply a cosinus amplitude modulator to the signal
+        r"""Multiply a cosinus amplitude modulator to the signal
 
         Multiplies a cosinus amplitude modulator following the equation:
         ..math:: 1 + m * \cos{2 * \pi * f_m * t + \phi_{0}}
@@ -423,7 +453,8 @@ class Signal(object):
         --------
         Signal : Returns itself
 
-        '''
+        """
+
         mod = audio.cos_amp_modulator(signal=self.waveform,
                                       modulator_freq=frequency,
                                       fs=self.fs,
@@ -457,7 +488,7 @@ class Signal(object):
     #             self.waveform[:, channels] = shifted
 
     def phase_shift(self, phase):
-        '''Shifts all frequency components of a signal by a constant phase.
+        """Shifts all frequency components of a signal by a constant phase.
 
         Shift all frequency components of a given signal by a constant
         phase by means of fFT transformation, phase shifting and inverse
@@ -475,7 +506,7 @@ class Signal(object):
         ndarray :
             The phase shifted signal
 
-        '''
+        """
         wv = audio.phase_shift(self.waveform, phase, self.fs)
         self.set_waveform(wv)
 
@@ -493,6 +524,12 @@ class Signal(object):
         self.init_signal(n_channels, duration, fs)
         self.set_waveform(wv)
 
+    def play(self, bitdepth=32, buffsize=1024):
+        wv = self.waveform
+        audio.interfaces.play(signal=wv,
+                              fs=self.fs,
+                              bitdepth=bitdepth,
+                              buffsize=buffsize)
 
     def mean(self, axis=0):
         mean = self.waveform.mean(axis=axis)

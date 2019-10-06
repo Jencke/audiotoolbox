@@ -108,6 +108,18 @@ class test_oaudio(unittest.TestCase):
 
         assert db == 50
 
+    def test_setdbfs_calcdbfs(self):
+        fs = 48000
+        duration = 100e-3
+
+        sig = Signal()
+        sig.init_signal(1, duration, fs)
+        sig.add_tone(100).set_dbfs(-5)
+
+        assert(audio.calc_dbfs(sig.waveform) == -5)
+        assert(sig.calc_dbfs() == -5)
+
+
     def test_zeropad(self):
         fs = 48000
         duration = 100e-3
