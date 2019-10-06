@@ -357,10 +357,17 @@ def test_cos_amp_modulator():
     fs = 100e3
     signal = audio.generate_tone(100, 1, fs)
     mod = audio.cos_amp_modulator(signal, 5, fs)
+    test = audio.generate_tone(5, 1, fs)
+    testing.assert_array_almost_equal(mod, test + 1)
     assert max(mod) == 2.0
 
     mod = audio.cos_amp_modulator(signal, 5, fs, 0.5)
     assert mod[0] == 1.5
+
+    mod = audio.cos_amp_modulator(signal, 5, fs, start_phase=np.pi)
+    test = audio.generate_tone(5, 1, fs, start_phase=np.pi)
+    testing.assert_array_almost_equal(mod, test + 1)
+
 
 
 def test_calc_dbspl():
@@ -578,12 +585,3 @@ def test_phaseshift():
     signal2 = audio.generate_tone(200, 1, 100e3, np.pi)
     signal = np.column_stack([signal1, signal2])
     signal = audio.phase_shift(signal, np.pi, 100e3)
-
-    # testing.assert_almost_equal(signal2, signal3)
-
-
-
-# fs = 48000
-# signal = audio.generate_corr_noise(1, fs, corr=0.5, cf=500, bw=50)
-# signal1 = signal[0]
-# signal2 = signal[1]
