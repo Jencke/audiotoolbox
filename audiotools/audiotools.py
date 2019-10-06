@@ -80,12 +80,18 @@ def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1):
 
     if isinstance(signal, np.ndarray):
         time = get_time(signal, fs)
+        ndim = signal.ndim
     elif isinstance(signal, int):
         time = get_time(np.zeros(signal), fs)
+        ndim = 1
     else:
         raise TypeError("Signal must be numpy ndarray or int")
 
-    modulator = 1 + mod_index * np.cos(2 * pi * modulator_freq * time)
+    modulator = 1 + mod_index * np.cos(2 * pi * modulator_freq * time
+                                       + start_phase)
+
+    if ndim > 1:
+        modulator = np.tile(modulator, (ndim, 1)).T
 
     return modulator
 
