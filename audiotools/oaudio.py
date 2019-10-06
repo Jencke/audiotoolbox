@@ -480,6 +480,19 @@ class Signal(object):
 
         return self
 
+    def from_wav(self, filename, fullscale=True):
+        wv, fs = wav.readwav(filename, fullscale)
+
+        if wv.ndim > 1:
+            n_channels = wv.shape[1]
+        else:
+            n_channels = 1
+
+        duration = wv.shape[0] / fs
+        self.init_signal(n_channels, duration, fs)
+        self.set_waveform(wv)
+
+
     def mean(self, axis=0):
         mean = self.waveform.mean(axis=axis)
         return mean
