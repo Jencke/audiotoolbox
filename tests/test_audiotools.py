@@ -380,6 +380,29 @@ def test_set_dbsl():
     signal = audio.set_dbspl(signal, 22)
     assert audio.calc_dbspl(signal) == 22
 
+def test_calc_dbfs():
+    signal = audio.generate_tone(1000, 1, 48000)
+    testing.assert_almost_equal(audio.calc_dbfs(signal), 0)
+
+    signal = np.concatenate([-np.ones(10), np.ones(10)])
+    signal = np.tile(signal, 100)
+    rms_rect = 20 * np.log10(np.sqrt(2))
+    testing.assert_almost_equal(audio.calc_dbfs(signal), rms_rect)
+
+def test_set_dbfs():
+    signal = audio.generate_tone(1000, 1, 48000)
+    signal = audio.set_dbfs(signal, -5)
+    assert(audio.calc_dbfs(signal) == -5)
+
+    # RMS value of a -5 db sine
+    m = (10**(-5 / 20)) / np.sqrt(2)
+
+    signal = np.concatenate([-np.ones(10), np.ones(10)])
+    signal = np.tile(signal, 100)
+    signal = audio.set_dbfs(signal, -5)
+    assert(signal.max() == m)
+
+
 def test_phon_to_dbspl():
     # Test some specific Values
     l_pressure = audio.phon_to_dbspl(160, 30)

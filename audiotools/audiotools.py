@@ -649,6 +649,55 @@ def set_dbspl(signal, dbspl_val):
 
     return signal * factor
 
+def set_dbfs(signal, dbfs_val):
+    '''Full scale normalization of the signal.
+
+    Adjust signal peak amplitude to a given dB value relative to 1
+
+    Parameters:
+    -----------
+    signal : ndarray
+        The input signal
+    dbfs_val : float
+        The db full scale value to reach
+
+    Returns:
+    --------
+    ndarray :
+        The amplitude adjusted signal
+
+    '''
+
+    rms0 = 1 / np.sqrt(2)
+    rms_val = np.sqrt(np.mean(signal**2, axis=0))
+
+    factor = (rms0 * 10**(float(dbfs_val) / 20)) / rms_val
+
+    return signal * factor
+
+def calc_dbfs(signal):
+    '''Calculate the dBFS RMS value of a given signal.
+
+
+    Parameters:
+    -----------
+    signal : ndarray
+        The input signal
+
+    Returns:
+    --------
+    float :
+        The dBFS RMS value
+
+    '''
+
+    rms0 = 1 / np.sqrt(2)
+    rms_val = np.sqrt(np.mean(signal**2, axis=0))
+    dbfs = 20 * np.log10(rms_val / rms0)
+
+    return dbfs
+
+
 def get_bark_limits():
     '''Limits of the Bark scale
 
