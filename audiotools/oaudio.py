@@ -184,6 +184,14 @@ class Signal(object):
 
         return self
 
+    def add_corr_noise(self, corr=1, channels=[0, 1], seed=None):
+        noise = audio.generate_corr_noise(self.duration, self.fs, corr, seed=seed)
+        for i_c, n_c in enumerate(channels):
+            summed_wv = self[n_c].waveform + noise[:, i_c]
+            self[n_c].set_waveform(summed_wv)
+
+        return self
+
     def set_dbspl(self, dbspl):
         """Normalize the signal to a given sound pressure level in dB.
 
@@ -300,6 +308,8 @@ class Signal(object):
         return self
 
     def fade_window(self, rise_time, type='cos'):
+        return self.add_fade_window(rise_time, type)
+    def add_fade_window(self, rise_time, type='cos'):
         """Add a fade in/out window to the signal
 
         This function multiplies a fade window with a given rise time
@@ -464,28 +474,31 @@ class Signal(object):
         self.set_waveform(wv)
         return self
 
-    # def delay(self, delay, channels, method='fft', mode='zeros'):
+    def delay(self, delay, channels, method='fft', mode='zeros'):
 
-    #     nshift = audio.nsamples(delay, self.fs)
+        nshift = delay * self.fs
 
-    #     # Allways use the sample algorithm if the delay is a full
-    #     # multiple of the time resolution
-    #     if nshift % i == 0:
-    #         method = 'sample'
+        if delay == 0: return self
 
-    #     if method == 'sample':
-    #         to_delay = self.waveform[:, channels]
-    #         shifted = audio.shift_signal(to_delay, nshift, mode)
+        # Allways use the sample algorithm if the delay is a full
+        # multiple of the time resolution
+        if nshift % 1 == 0:
+            method = 'sample'
 
-    #         # In cyclic mode, there is no change in the output length
-    #         # but for the zero mode, the length of the whole waveform
-    #         # has to be changed
-    #         if mode == 'cyclic':
-    #             self.waveform[:, channels] = shifted
-    #         else:
-    #             buf = np.zeros((len(shifted), self.n_channel))
-    #             self.waveform = np.concatenate([self.waveform, buf])
-    #             self.waveform[:, channels] = shifted
+        to_delay = self.waveform[:, channels]
+        if method == 'sample':
+            nshift = int(np.round(nshift))
+            shifted = audio.shift_signal(to_delay, nshift, mode)
+        elif method == 'fft':
+            shifted = audio.fftshift_signal(to_delay, delay, self.fs, mode)
+
+        if mode =='cyclic':
+            self.waveform[:, channels] = shifted
+        else:
+            self.waveform[:, channels] = shifted[:self.n_samples, :]
+
+        return self
+
 
     def phase_shift(self, phase):
         """Shifts all frequency components of a signal by a constant phase.
@@ -531,6 +544,15 @@ class Signal(object):
                               bitdepth=bitdepth,
                               buffsize=buffsize)
 
+    def plot(self, ax=None):
+        import matplotlib.pyplot as plt
+        if ax:
+            ax.plot(self.time, self.waveform)
+        else:
+            fig, ax = plt.subplots(1, 1)
+            ax.plot(self.time, self.waveform)
+        return fig, ax
+
     def mean(self, axis=0):
         mean = self.waveform.mean(axis=axis)
         return mean
@@ -538,6 +560,33 @@ class Signal(object):
     def rms(self, axis=0):
         rms = np.sqrt(np.mean(self.waveform**2, axis=axis))
         return rms
+
+    def append(self, signal):
+        """Shifts all frequency components of a signal by a constant phase.
+
+        Shift all frequency components of a given signal by a constant
+        phase by means of fFT transformation, phase shifting and inverse
+        transformation.
+
+        Parameters:
+        -----------
+        signal : ndarray
+            The input signal
+        phase : scalar
+            The phase in rad by which the signal is shifted.
+
+        Returns:
+        --------
+        ndarray :
+            The phase shifted signal
+
+        """
+
+        if isinstance(signal, Signal):
+            new_wv = np.concatenate([self.waveform, signal.waveform])
+        self.waveform = new_wv
+
+        return self
 
     def __repr__(self):
         repr = "Signal(channels={channels}, samples={samples}, fs={fs} Hz, duration={duration} s)".format(channels=self.n_channels, fs=self.fs, duration=self.duration, samples=self.n_samples)
