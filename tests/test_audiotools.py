@@ -477,12 +477,8 @@ def test_generate_noise():
     # Test for whole spectrum
     assert np.all(~np.isclose(np.abs(np.fft.fft(noise)), 0))
 
-    # Test bandpass
-    noise2 = audio.generate_noise(duration, fs, 500, 100)
-    spec2 = np.abs(np.fft.fft(noise2))
-    noise3 = audio.filter.brickwall(noise, fs, 450, 550)
-    spec3 = np.abs(np.fft.fft(noise3))
-    assert np.array_equal(np.isclose(spec2, 0), np.isclose(spec3, 0))
+    # Test no offset
+    testing.assert_almost_equal(noise.mean(), 0)
 
 def test_generate_corr_noise():
     from scipy.stats import pearsonr
@@ -498,12 +494,6 @@ def test_generate_corr_noise():
     # Test for whole spectrum
     assert np.all(~np.isclose(np.abs(np.fft.fft(noise1)), 0))
     assert np.all(~np.isclose(np.abs(np.fft.fft(noise2)), 0))
-
-    # Test amplitude normalization
-    assert 0.98 < noise1.max() <= 1
-    assert 0.98 < noise2.max() <= 1
-    assert -0.98 > noise1.min() >= -1
-    assert -0.98 > noise2.min() >= -1
 
     # Test equal Power assumption
     testing.assert_almost_equal(power1, power2)
@@ -528,17 +518,6 @@ def test_generate_corr_noise():
         corr_val.append(pearsonr(noise1, noise2)[0] - 0.5)
     assert np.max(corr_val) < 1e-4
     assert np.median(corr_val) < 1e-6
-
-
-    # Test bandpass
-    noise = audio.generate_corr_noise(duration, fs, cf=500, bw=100)
-    noise1 = noise[:, 0]
-    noise2 = noise[:, 1]
-    spec1 = np.abs(np.fft.fft(noise1))
-    spec2 = np.abs(np.fft.fft(noise2))
-
-
-    return spec1, spec2
 
 
 def test_extract_binaural_differences():
@@ -573,7 +552,7 @@ def test_extract_binaural_differences():
     assert np.all(np.isclose(ipd, 0))
 
     #Test that phase is wrapped to +pi -pi
-    signal = audio.generate_corr_noise(1, fs, corr=0.5, cf=500, bw=50)
+    signal = audio.generate_corr_noise(1, fs, corr=0.5)
     signal1 = signal[:, 0]
     signal2 = signal[:, 1]
     n_buf = int(48000 * 100e-3)

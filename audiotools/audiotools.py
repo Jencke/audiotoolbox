@@ -38,8 +38,7 @@ def pad_for_fft(signal):
     else:
         n_channels = signal.shape[1]
 
-    exponent = np.ceil(np.log2(len(signal)))
-    n_out = 2**exponent
+    n_out = nextpower2(len(signal))
     if n_channels == 1:
         out_signal = np.zeros(int(n_out))
     else:
@@ -48,8 +47,13 @@ def pad_for_fft(signal):
 
     return out_signal
 
+def nextpower2(num):
+    exponent = np.ceil(np.log2(num))
+    n_out = int(2**exponent)
+    return n_out
+
 def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
-    '''Cosinus amplitude modulator
+    r'''Cosinus amplitude modulator
 
     Returns a cosinus amplitude modulator following the equation:
     ..math:: 1 + m * \cos{2 * \pi * f_m * t}
@@ -157,51 +161,79 @@ def nsamples(duration, fs):
 
     return len_signal
 
-def generate_noise(duration, fs, cf=None, bw=None, seed=None):
-    len_signal = nsamples(duration, fs)
+def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
 
-    # Seed random number genarator
     np.random.seed(seed)
-    noise = 2 * np.random.random(len_signal) - 1
 
-    if cf:
-        assert bw
-        low_f = cf - 0.5 * bw
-        high_f = cf + 0.5 * bw
-        noise = brickwall(noise, fs, low_f, high_f)
-    return noise
+    # Calculate length and number of fft samples
+    len_signal = nsamples(duration, fs)
+    nfft = nextpower2(len_signal)
 
-def generate_corr_noise(duration, fs, corr=0, cf=None, bw=None, seed=None):
+    df = fs/nfft                # Frequency resolution
+    nybin = nfft // 2 + 2       # nyquist bin
+
+    lowbin = 1               # no offset start at one
+    highbin = nybin
+
+    freqs = np.arange(0, nybin) * df;
+
+    f_weights = np.zeros(nfft)
+    if ntype == 'white':
+        f_weights[:] = 1
+    elif ntype == 'pink':
+        f_weights[lowbin:highbin] = 1. / np.sqrt(freqs[lowbin:])
+    elif ntype == 'brown':
+        f_weights[lowbin:highbin] = 1. / freqs[lowbin:]
+
+    # generate noise
+    a = np.zeros([nfft, n_channels])
+    b = np.zeros([nfft, n_channels])
+    a[lowbin:highbin, :] = np.random.randn(highbin - lowbin, n_channels)
+    b[lowbin:highbin, :] = np.random.randn(highbin - lowbin, n_channels)
+    fspec = a + 1j *b;
+
+    # Frequency weighting
+    fspec *= f_weights[:, None]
+
+    noise = np.fft.ifft(fspec, axis=0)
+    noise = np.real(noise)
+
+    #  clip and remove offset due to clipping
+    noise = noise[:len_signal]
+    noise -= noise.mean()
+
+    # Normalize the signal by its rms
+    noise = noise / np.sqrt(np.mean(noise**2, axis=0))
+
+    # # Seed random number genarator
+    # np.random.seed(seed)
+    # noise = np.random.randn(len_signal)
+
+    return noise[:len_signal]
+
+def generate_corr_noise(duration, fs, corr=0, seed=None):
     # generate two noise vectors
-    noise_a = generate_noise(duration, fs, seed=seed)
-    noise_b = generate_noise(duration, fs, seed=seed)
+    np.random.seed(seed)
+    # nsamp = nsamples(duration, fs)
+    # noise = np.random.randn(nsamp, 2)
+    noise = generate_noise(duration, fs, n_channels=2, seed=seed)
 
     # use Gram-Schmidt to generate orthogonal noise. This makes shure
     # that the two noise vectors are of equal power.
-    Q, R = np.linalg.qr(np.column_stack([noise_a, noise_b]))
-    noise_a = Q[:, 0] / np.abs(Q).max()
-    noise_b = Q[:, 1] / np.abs(Q).max()
+    Q, R = np.linalg.qr(noise)
+    noise = Q / np.abs(Q).max()
 
     alpha = corr
     beta = np.sqrt(1 - corr**2)
 
     # Generate partially corelated noise using the two channel method
     if corr > 0:
-        noise_b = alpha * noise_a + beta * noise_b
+        noise[:, 1] = alpha * noise[:, 0] + beta * noise[:, 1]
 
-    if cf:
-        assert bw
-        low_f = cf - 0.5 * bw
-        high_f = cf + 0.5 * bw
-        noise_a = brickwall(noise_a, fs, low_f, high_f)
-        noise_b = brickwall(noise_b, fs, low_f, high_f)
-
-    out_sig = np.column_stack([noise_a, noise_b])
-
-    return out_sig
+    return noise
 
 def generate_tone(frequency, duration, fs, start_phase=0):
-    '''Sine tone with a given frequency, duration and sampling rate.
+    r'''Sine tone with a given frequency, duration and sampling rate.
 
     This function will generate a pure tone following the equation:
     .. math:: cos(2\pi f t + \phi_0)
