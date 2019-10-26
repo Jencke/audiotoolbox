@@ -162,7 +162,30 @@ def nsamples(duration, fs):
     return len_signal
 
 def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
+    """Generate Noise
 
+    Generate noise with different spectral shape.
+
+    Parameters
+    ----------
+    duration : scalar
+        Noise duration in seconds
+    fs : int
+        Sampling frequency
+    ntype : {'white', 'pink', 'brown'}
+        spectral shape of the noise
+    n_channels : int
+        number of indipendant noise channels
+    seed :
+        seed for the random number generator
+
+    Results
+    ---------
+    ndarray
+        noise vector of the shape (NxM) where N is the number of samples
+        and M >the number of channels
+
+    """
     np.random.seed(seed)
 
     # Calculate length and number of fft samples
@@ -170,20 +193,20 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
     nfft = nextpower2(len_signal)
 
     df = fs/nfft                # Frequency resolution
-    nybin = nfft // 2 + 2       # nyquist bin
+    nybin = nfft // 2 + 1       # nyquist bin
 
     lowbin = 1               # no offset start at one
     highbin = nybin
 
     freqs = np.arange(0, nybin) * df;
 
-    f_weights = np.zeros(nfft)
+    f_weights = np.zeros([nfft, n_channels])
     if ntype == 'white':
-        f_weights[:] = 1
+        f_weights[:, :] = 1
     elif ntype == 'pink':
-        f_weights[lowbin:highbin] = 1. / np.sqrt(freqs[lowbin:])
+        f_weights[lowbin:highbin, :] = 1. / np.sqrt(freqs[lowbin:, None])
     elif ntype == 'brown':
-        f_weights[lowbin:highbin] = 1. / freqs[lowbin:]
+        f_weights[lowbin:highbin, :] = 1. / freqs[lowbin:, None]
 
     # generate noise
     a = np.zeros([nfft, n_channels])
@@ -193,7 +216,7 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
     fspec = a + 1j *b;
 
     # Frequency weighting
-    fspec *= f_weights[:, None]
+    fspec *= f_weights
 
     noise = np.fft.ifft(fspec, axis=0)
     noise = np.real(noise)
