@@ -175,10 +175,11 @@ class Signal(object):
 
         return self
 
-    def add_noise(self, seed=None):
-        noise = np.random.randn(self.n_samples)
-        if self.n_channels > 1:
-            noise = np.tile(noise, [self.n_channels, 1]).T
+    def add_noise(self, ntype='white', seed=None):
+        noise = audio.generate_noise(self.duration, self.fs,
+                                     ntype=ntype, n_channels=2,
+                                     seed=seed)
+
         summed_wv = self.waveform + noise
         self.set_waveform(summed_wv)
 
