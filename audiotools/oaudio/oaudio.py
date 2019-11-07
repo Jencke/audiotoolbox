@@ -176,8 +176,28 @@ class Signal(object):
         return self
 
     def add_noise(self, ntype='white', seed=None):
+        r"""Add uncorrelated noise to the signal
+
+        Add uncorrelated noise of a given spectral shape to all
+        channels of the signal. Possible spectral shapes are 'white',
+        'pink' (1 / f) and 'brown' (1 / f^2).
+
+
+        Parameters:
+        -----------
+        ntype : {'white', 'pink', 'brown'}
+            spectral shape of the noise
+        seed : int or 1-d array_like, optional
+            Seed for `RandomState`.
+            Must be convertible to 32 bit unsigned integers.
+
+        Returns:
+        --------
+        Signal : Returns itself
+
+        """
         noise = audio.generate_noise(self.duration, self.fs,
-                                     ntype=ntype, n_channels=2,
+                                     ntype=ntype, n_channels=self.n_channels,
                                      seed=seed)
 
         summed_wv = self.waveform + noise
@@ -547,10 +567,12 @@ class Signal(object):
 
     def plot(self, ax=None):
         import matplotlib.pyplot as plt
-        if ax:
-            ax.plot(self.time, self.waveform)
-        else:
+        if not ax:
             fig, ax = plt.subplots(1, 1)
+        if self.n_channels == 2:
+            ax.plot(self.time, self[0].waveform, color=audio.COLOR_L)
+            ax.plot(self.time, self[1].waveform, color=audio.COLOR_R)
+        else:
             ax.plot(self.time, self.waveform)
         return fig, ax
 
@@ -561,6 +583,49 @@ class Signal(object):
     def rms(self, axis=0):
         rms = np.sqrt(np.mean(self.waveform**2, axis=axis))
         return rms
+
+    def amplitude_spectrum(self, single_sided=False, nfft=None):
+        nfft = nfft if nfft else self.n_samples
+        spec = np.fft.fft(self.waveform, n=nfft, axis=0) / nfft
+        freq = np.fft.fftfreq(nfft, 1.0 / self.fs)
+        spec = np.fft.fftshift(spec, axes=0)
+        freq = np.fft.fftshift(freq, axes= 0)
+
+        if single_sided:
+            freq = freq[nfft // 2:, ...]
+            spec = spec[nfft // 2:, ...]
+            spec *= 2
+            spec[0, ...] /= 2 # do not double dc
+            if not nfft % 2:
+                spec[-1, ...] /= 2       # nyquist bin should also not be doubled
+
+        return freq, spec
+
+    def phase_spectrum(self, nfft=None):
+        nfft = nfft if nfft else self.n_samples
+        freq, spec = self.amplitude_spectrum(nfft)
+        phase = np.angle(spec)
+        phase = phase[..., nfft // 2:]
+        freq = freq[..., nfft // 2:]
+        return freq, phase
+
+    def autopower_spectrum(self, nfft=None):
+        nfft = nfft if nfft else self.n_samples
+        freq, spec = self.amplitude_spectrum(nfft)
+        auto_spec = np.real_if_close(spec * spec.conj())
+
+        return freq, auto_spec
+
+    def power_spectrum(self, nfft=None):
+        nfft = nfft if nfft else self.n_samples
+        freq, spec = self.autopower_spectrum(nfft)
+        freq = freq[nfft // 2:, ...]
+        spec = spec[nfft // 2:, ...]
+        spec *= 2
+        spec[0, ...] /= 2 # do not double dc
+        if not nfft % 2:
+            spec[-1, ...] /= 2       # nyquist bin should also not be doubled
+        return freq, spec
 
     def append(self, signal):
         """Shifts all frequency components of a signal by a constant phase.

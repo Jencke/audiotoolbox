@@ -200,12 +200,16 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
 
     freqs = np.arange(0, nybin) * df;
 
+    # amplitude weighting factor
     f_weights = np.zeros([nfft, n_channels])
     if ntype == 'white':
+        # equal power
         f_weights[:, :] = 1
     elif ntype == 'pink':
+        # Power proportinal to 1 / f
         f_weights[lowbin:highbin, :] = 1. / np.sqrt(freqs[lowbin:, None])
     elif ntype == 'brown':
+        # Power proportional to 1 / f**2
         f_weights[lowbin:highbin, :] = 1. / freqs[lowbin:, None]
 
     # generate noise
