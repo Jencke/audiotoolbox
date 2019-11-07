@@ -475,7 +475,9 @@ def test_generate_noise():
     assert np.abs(noise.mean()) <= 1e-2
 
     # Test for whole spectrum
-    assert np.all(~np.isclose(np.abs(np.fft.fft(noise)), 0))
+    assert np.all(~np.isclose(np.abs(np.fft.fft(noise))[1:], 0))
+    # offset has to be zero
+    assert np.all(np.isclose(np.abs(np.fft.fft(noise))[0], 0))
 
     # Test no offset
     testing.assert_almost_equal(noise.mean(), 0)
