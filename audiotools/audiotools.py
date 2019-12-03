@@ -52,6 +52,31 @@ def nextpower2(num):
     n_out = int(2**exponent)
     return n_out
 
+def band2rms(bandlevel, bw):
+    """Convert bandlevel to rms level
+
+    Assuming a white spectrum, this functions converts a Bandlevel in
+    dB/Hz into the corresponding RMS levle in dB
+
+    """
+
+    rmslevel = bandlevel + 10 * np.log10(bw)
+
+    return rmslevel
+
+def rms2band(rmslevel, bw):
+    """Convert bandlevel to rms level
+
+    Assuming a white spectrum, this functions converts a rms level in db into
+    into the corresponding bandlevel
+
+    """
+
+    bandlevel = rmslevel - 10 * np.log10(bw)
+
+    return bandlevel
+
+
 def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
     r'''Cosinus amplitude modulator
 

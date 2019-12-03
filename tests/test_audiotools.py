@@ -589,3 +589,17 @@ def test_phaseshift():
     signal2 = audio.generate_tone(200, 1, 100e3, np.pi)
     signal = np.column_stack([signal1, signal2])
     signal = audio.phase_shift(signal, np.pi, 100e3)
+
+
+def test_band2rms():
+
+    band = audio.band2rms(50, 1)
+    assert band == 50
+    band = audio.band2rms(50, 20)
+    assert(band == 50 + 10 * np.log10(20))
+
+
+    band = audio.rms2band(50, 1)
+    assert band == 50
+    band = audio.rms2band(50, 20)
+    assert(band == 50 - 10 * np.log10(20))
