@@ -1,6 +1,6 @@
 import numpy as np
 import audiotools as audio
-from audiotools.filter import brickwall
+from audiotools.filter import brickwall, gammatone
 from audiotools import wav
 import copy
 
@@ -206,6 +206,7 @@ class Signal(object):
         return self
 
     def add_corr_noise(self, corr=1, channels=[0, 1], seed=None):
+
         noise = audio.generate_corr_noise(self.duration, self.fs, corr, seed=seed)
         for i_c, n_c in enumerate(channels):
             summed_wv = self[n_c].waveform + noise[:, i_c]
@@ -214,7 +215,10 @@ class Signal(object):
         return self
 
     def set_dbspl(self, dbspl):
-        """Normalize the signal to a given sound pressure level in dB.
+        """Set sound pressure level in dB
+
+        Normalizes the signal to a given sound pressure level in dB
+        relative 20e-6 Pa.
 
         Parameters:
         -----------
@@ -262,13 +266,38 @@ class Signal(object):
         dbfs = audio.calc_dbfs(self.waveform)
         return dbfs
 
+    def calc_crest_factor(self):
+        """Calculate crest factor
+
+        Calculates the crest factor of the input signal. The crest factor
+            is defined as:
+
+        .. math:: C = \frac{|x_{peak}|}{x_{rms}}
+
+        where :math:`x_{peak}` is the maximum of the absolute value and
+        :math:`x{rms}` is the effective value of the signal.
+
+        Returns:
+        --------
+        scalar :
+            The crest factor
+
+        """
+        crest_factor = audio.crest_factor(self.waveform)
+        return crest_factor
+
+
     def bandpass(self, f_center, bw, ftype):
         if ftype == 'brickwall':
             f_low = f_center - 0.5 * bw
             f_high = f_center + 0.5 * bw
             filt_signal = brickwall(self.waveform, self.fs, f_low, f_high)
+        elif ftype == 'gammatone':
+            # f_low = f_center - 0.5 * bw
+            # f_high = f_center + 0.5 * bw
+            filt_signal = gammatone(self.waveform, self.fs, f_center, bw)
         else:
-            raise NotImplementedError('Filter type %s not implemented' % type(value))
+            raise NotImplementedError('Filter type %s not implemented' % ftype)
 
         self.set_waveform(filt_signal)
 
@@ -577,14 +606,25 @@ class Signal(object):
         return fig, ax
 
     def mean(self, axis=0):
+        """ Mean amplitude for each channel
+
+        """
         mean = self.waveform.mean(axis=axis)
         return mean
 
-    def rms(self, axis=0):
-        rms = np.sqrt(np.mean(self.waveform**2, axis=axis))
+    def rms(self):
+        """Root mean square for each channel
+
+        """
+
+        rms = np.sqrt(np.mean(self.waveform**2, axis=0))
         return rms
 
     def amplitude_spectrum(self, single_sided=False, nfft=None):
+        """Amplitude spectrum of the signal
+
+        """
+
         nfft = nfft if nfft else self.n_samples
         spec = np.fft.fft(self.waveform, n=nfft, axis=0) / nfft
         freq = np.fft.fftfreq(nfft, 1.0 / self.fs)

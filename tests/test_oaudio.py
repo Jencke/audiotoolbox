@@ -380,3 +380,19 @@ class test_oaudio(unittest.TestCase):
 
         testing.assert_array_equal(sig.waveform[:, 0], test)
         testing.assert_array_equal(sig.waveform[:, 1], test)
+
+    def test_add_noise(self):
+        fs = 48000
+        sig = Signal().init_signal(1, 1, 48000).add_noise()
+
+    def test_amplitude_spectrum(self):
+        fs = 48000
+        sig = Signal().init_signal(1, 1, 48000).add_tone(1e3)
+
+        df = fs / sig.n_samples
+        n_1000 = (sig.n_samples // 2) + int(1000 / df)
+
+        a, b = sig.amplitude_spectrum()
+
+        assert a[n_1000] == 1000
+        testing.assert_almost_equal(np.abs(b[n_1000]), 0.5)
