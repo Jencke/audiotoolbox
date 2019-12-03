@@ -261,7 +261,12 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
     # np.random.seed(seed)
     # noise = np.random.randn(len_signal)
 
-    return noise[:len_signal]
+    noise = noise[:len_signal]
+
+    if n_channels == 1:
+        noise = noise[:, 0]
+
+    return noise
 
 def generate_corr_noise(duration, fs, corr=0, seed=None):
     # generate two noise vectors
@@ -569,8 +574,7 @@ def shift_signal(signal, nr_samples, mode='zeros'):
             sig[nr_samples:] = signal
     if mode == 'cyclic':
         sig = signal
-
-    sig = np.roll(sig, nr_samples, axis=0)
+        sig = np.roll(sig, nr_samples, axis=0)
 
     return sig
 
