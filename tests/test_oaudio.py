@@ -396,3 +396,9 @@ class test_oaudio(unittest.TestCase):
 
         assert a[n_1000] == 1000
         testing.assert_almost_equal(np.abs(b[n_1000]), 0.5)
+
+    def test_crest_factor(self):
+        sig = Signal().init_signal(1, 1, 48000).add_tone(1e3)
+        cfac = sig.calc_crest_factor()
+
+        testing.assert_almost_equal(cfac, np.sqrt(2))

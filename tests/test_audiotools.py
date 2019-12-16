@@ -603,3 +603,12 @@ def test_band2rms():
     assert band == 50
     band = audio.rms2band(50, 20)
     assert(band == 50 - 10 * np.log10(20))
+
+def test_crest_factor():
+    signal = audio.generate_tone(100, 1, 100e3)
+    cfac = audio.crest_factor(signal)
+    testing.assert_almost_equal(cfac, np.sqrt(2))
+
+    signal[signal < 0] = 0
+    cfac = audio.crest_factor(signal)
+    testing.assert_almost_equal(cfac, 2)
