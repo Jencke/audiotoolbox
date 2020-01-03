@@ -186,6 +186,52 @@ def nsamples(duration, fs):
 
     return len_signal
 
+def generate_low_noise_noise(duration, fs, low_f, high_f, n_rep=10, seed=None):
+    """Low-noise Noise
+
+    Generate Low-noise noise as defined in [1]_.
+
+    Parameters:
+    -----------
+    duration : scalar
+        Noise duration in seconds
+    fs : int
+        Sampling frequency
+    low_f : float
+        Lower cut-off frequency
+    high_f : float
+        Higher cut-off frequency.
+    n_rep : int
+        Number of low-noise noise iterations (default=10)
+    seed :
+        seed for the random number generator.
+
+    References
+    ----------
+
+    .. [1] Kohlrausch, A., Fassel, R., van der Heijden, M., Kortekaas,
+           R., van de Par, S., Oxenham, A.J. and Püschel, D.,
+           1997. Detection of tones in low-noise noise: Further
+           evidence for the role of envelope fluctuations. Acta
+           Acustica united with Acustica, 83(4), pp.659-669.
+
+    """
+
+    # Generate initial noise
+    noise = generate_noise(duration, fs, ntype='white')
+    noise = brickwall(noise, fs, low_f, high_f)
+
+    for i in range(n_rep):
+        hilb = hilbert(noise)
+        env = abs(hilb)
+
+        #diveide through envelope and restrict
+        noise /= env
+        noise = brickwall(noise, fs, low_f, high_f)
+
+    return noise
+
+
 def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
     """Generate Noise
 
