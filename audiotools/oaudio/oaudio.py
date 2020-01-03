@@ -105,6 +105,8 @@ class Signal(object):
         else:
             self.waveform[:] = waveform
 
+        return self
+
     def init_signal(self, n_channels, duration, fs):
         """Initialize a signal with zeros
 
