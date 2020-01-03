@@ -445,6 +445,38 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
 
     return window
 
+def cossquare_fade_window(signal, rise_time, fs, n_zeros=0):
+    '''Cosine fade-in and fade-out window.
+
+    This function generates a window function with a cosine fade in
+    and fade out.
+
+    Parameters:
+    -----------
+    signal: ndarray
+        The length of the array will be used to determin the window length.
+    rise_time : scalar
+        Duration of the cosine fade in and fade out in seconds. The number of samples
+        is determined via rounding to the nearest integer value.
+    fs : scalar
+        The sampling rate in Hz
+    n_zeros : int, optional
+        Number of zeros to add at the end and at the beginning of the window. (Default = 0)
+
+    Returns:
+    --------
+    ndarray : The fading window
+
+    '''
+
+
+    window = cosine_fade_window(signal, rise_time, fs, n_zeros)
+    window = window**2
+    return window
+
+
+
+
 def hann_fade_window(signal, rise_time, fs):
     '''Hann fade-in and fade-out window.
 

@@ -397,6 +397,9 @@ class Signal(object):
         elif type == 'cos':
             win = audio.cosine_fade_window(self.waveform, rise_time,
                                            self.fs)
+        elif type == 'cos2':
+            win = audio.cossquare_fade_window(self.waveform, rise_time,
+                                           self.fs)
         elif type == 'hann':
             win = audio.hann_fade_window(self.waveform, rise_time,
                                          self.fs)
