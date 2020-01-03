@@ -175,6 +175,15 @@ class Signal(object):
 
         return self
 
+    def add_low_noise_noise(low_f, high_f, n_rep=10, seed=None):
+        noise = audio.generate_low_noise_noise(duration=self.duration,
+                                               fs=self.fs,
+                                               low_f=low_f,
+                                               high_f=high_f,
+                                               n_rep=n_rep,
+                                               seed=seed)
+
+
     def add_noise(self, ntype='white', seed=None):
         r"""Add uncorrelated noise to the signal
 
