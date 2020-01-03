@@ -206,10 +206,14 @@ class Signal(object):
 
         """
         noise = audio.generate_noise(self.duration, self.fs,
-                                     ntype=ntype, n_channels=self.n_channels,
+                                     ntype=ntype, n_channels=1,
                                      seed=seed)
 
-        summed_wv = self.waveform + noise
+        if self.n_channels > 1:
+            summed_wv = self.waveform + noise[:, None]
+        else:
+            summed_wv = self.waveform + noise
+
         self.set_waveform(summed_wv)
 
         return self
