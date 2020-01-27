@@ -319,7 +319,27 @@ class Signal(object):
         elif ftype == 'gammatone':
             # f_low = f_center - 0.5 * bw
             # f_high = f_center + 0.5 * bw
-            filt_signal = gammatone(self.waveform, self.fs, f_center, bw)
+            filt_signal = gammatone(self.waveform, self.fs, f_center, bw).real
+        else:
+            raise NotImplementedError('Filter type %s not implemented' % ftype)
+
+        self.set_waveform(filt_signal)
+
+        return self
+
+    def lowpass(self, f_cut, ftype):
+        if ftype == 'brickwall':
+            filt_signal = brickwall(self.waveform, self.fs, 0, f_cut)
+        else:
+            raise NotImplementedError('Filter type %s not implemented' % ftype)
+
+        self.set_waveform(filt_signal)
+
+        return self
+
+    def highpass(self, f_cut, ftype):
+        if ftype == 'brickwall':
+            filt_signal = brickwall(self.waveform, self.fs, f_cut, np.inf)
         else:
             raise NotImplementedError('Filter type %s not implemented' % ftype)
 
