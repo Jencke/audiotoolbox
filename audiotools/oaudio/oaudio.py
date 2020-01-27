@@ -372,8 +372,6 @@ class Signal(object):
         self.waveform = wv
         return self
 
-    def fade_window(self, rise_time, type='cos'):
-        return self.add_fade_window(rise_time, type)
     def add_fade_window(self, rise_time, type='cos'):
         """Add a fade in/out window to the signal
 
