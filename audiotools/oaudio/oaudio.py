@@ -177,13 +177,22 @@ class Signal(object):
 
         return self
 
-    def add_low_noise_noise(low_f, high_f, n_rep=10, seed=None):
+    def add_low_noise_noise(self, low_f, high_f, n_rep=10, seed=None):
         noise = audio.generate_low_noise_noise(duration=self.duration,
                                                fs=self.fs,
                                                low_f=low_f,
                                                high_f=high_f,
                                                n_rep=n_rep,
                                                seed=seed)
+        if self.n_channels > 1:
+            summed_wv = self.waveform + noise[:, None]
+        else:
+            summed_wv = self.waveform + noise
+
+        self.set_waveform(summed_wv)
+
+        return self
+
 
 
     def add_noise(self, ntype='white', seed=None):
