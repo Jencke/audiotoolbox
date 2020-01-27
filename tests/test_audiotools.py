@@ -380,6 +380,29 @@ def test_set_dbsl():
     signal = audio.set_dbspl(signal, 22)
     assert audio.calc_dbspl(signal) == 22
 
+def test_calc_dbfs():
+    signal = audio.generate_tone(1000, 1, 48000)
+    testing.assert_almost_equal(audio.calc_dbfs(signal), 0)
+
+    signal = np.concatenate([-np.ones(10), np.ones(10)])
+    signal = np.tile(signal, 100)
+    rms_rect = 20 * np.log10(np.sqrt(2))
+    testing.assert_almost_equal(audio.calc_dbfs(signal), rms_rect)
+
+def test_set_dbfs():
+    signal = audio.generate_tone(1000, 1, 48000)
+    signal = audio.set_dbfs(signal, -5)
+    assert(audio.calc_dbfs(signal) == -5)
+
+    # RMS value of a -5 db sine
+    m = (10**(-5 / 20)) / np.sqrt(2)
+
+    signal = np.concatenate([-np.ones(10), np.ones(10)])
+    signal = np.tile(signal, 100)
+    signal = audio.set_dbfs(signal, -5)
+    assert(signal.max() == m)
+
+
 def test_phon_to_dbspl():
     # Test some specific Values
     l_pressure = audio.phon_to_dbspl(160, 30)
@@ -452,14 +475,12 @@ def test_generate_noise():
     assert np.abs(noise.mean()) <= 1e-2
 
     # Test for whole spectrum
-    assert np.all(~np.isclose(np.abs(np.fft.fft(noise)), 0))
+    assert np.all(~np.isclose(np.abs(np.fft.fft(noise))[1:], 0))
+    # offset has to be zero
+    assert np.all(np.isclose(np.abs(np.fft.fft(noise))[0], 0))
 
-    # Test bandpass
-    noise2 = audio.generate_noise(duration, fs, 500, 100)
-    spec2 = np.abs(np.fft.fft(noise2))
-    noise3 = audio.filter.brickwall(noise, fs, 450, 550)
-    spec3 = np.abs(np.fft.fft(noise3))
-    assert np.array_equal(np.isclose(spec2, 0), np.isclose(spec3, 0))
+    # Test no offset
+    testing.assert_almost_equal(noise.mean(), 0)
 
 def test_generate_corr_noise():
     from scipy.stats import pearsonr
@@ -475,12 +496,6 @@ def test_generate_corr_noise():
     # Test for whole spectrum
     assert np.all(~np.isclose(np.abs(np.fft.fft(noise1)), 0))
     assert np.all(~np.isclose(np.abs(np.fft.fft(noise2)), 0))
-
-    # Test amplitude normalization
-    assert 0.98 < noise1.max() <= 1
-    assert 0.98 < noise2.max() <= 1
-    assert -0.98 > noise1.min() >= -1
-    assert -0.98 > noise2.min() >= -1
 
     # Test equal Power assumption
     testing.assert_almost_equal(power1, power2)
@@ -505,17 +520,6 @@ def test_generate_corr_noise():
         corr_val.append(pearsonr(noise1, noise2)[0] - 0.5)
     assert np.max(corr_val) < 1e-4
     assert np.median(corr_val) < 1e-6
-
-
-    # Test bandpass
-    noise = audio.generate_corr_noise(duration, fs, cf=500, bw=100)
-    noise1 = noise[:, 0]
-    noise2 = noise[:, 1]
-    spec1 = np.abs(np.fft.fft(noise1))
-    spec2 = np.abs(np.fft.fft(noise2))
-
-
-    return spec1, spec2
 
 
 def test_extract_binaural_differences():
@@ -550,7 +554,7 @@ def test_extract_binaural_differences():
     assert np.all(np.isclose(ipd, 0))
 
     #Test that phase is wrapped to +pi -pi
-    signal = audio.generate_corr_noise(1, fs, corr=0.5, cf=500, bw=50)
+    signal = audio.generate_corr_noise(1, fs, corr=0.5)
     signal1 = signal[:, 0]
     signal2 = signal[:, 1]
     n_buf = int(48000 * 100e-3)
@@ -585,3 +589,26 @@ def test_phaseshift():
     signal2 = audio.generate_tone(200, 1, 100e3, np.pi)
     signal = np.column_stack([signal1, signal2])
     signal = audio.phase_shift(signal, np.pi, 100e3)
+
+
+def test_band2rms():
+
+    band = audio.band2rms(50, 1)
+    assert band == 50
+    band = audio.band2rms(50, 20)
+    assert(band == 50 + 10 * np.log10(20))
+
+
+    band = audio.rms2band(50, 1)
+    assert band == 50
+    band = audio.rms2band(50, 20)
+    assert(band == 50 - 10 * np.log10(20))
+
+def test_crest_factor():
+    signal = audio.generate_tone(100, 1, 100e3)
+    cfac = audio.crest_factor(signal)
+    testing.assert_almost_equal(cfac, np.sqrt(2))
+
+    signal[signal < 0] = 0
+    cfac = audio.crest_factor(signal)
+    testing.assert_almost_equal(cfac, 2)

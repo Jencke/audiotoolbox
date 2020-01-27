@@ -38,8 +38,7 @@ def pad_for_fft(signal):
     else:
         n_channels = signal.shape[1]
 
-    exponent = np.ceil(np.log2(len(signal)))
-    n_out = 2**exponent
+    n_out = nextpower2(len(signal))
     if n_channels == 1:
         out_signal = np.zeros(int(n_out))
     else:
@@ -48,8 +47,38 @@ def pad_for_fft(signal):
 
     return out_signal
 
+def nextpower2(num):
+    exponent = np.ceil(np.log2(num))
+    n_out = int(2**exponent)
+    return n_out
+
+def band2rms(bandlevel, bw):
+    """Convert bandlevel to rms level
+
+    Assuming a white spectrum, this functions converts a Bandlevel in
+    dB/Hz into the corresponding RMS levle in dB
+
+    """
+
+    rmslevel = bandlevel + 10 * np.log10(bw)
+
+    return rmslevel
+
+def rms2band(rmslevel, bw):
+    """Convert bandlevel to rms level
+
+    Assuming a white spectrum, this functions converts a rms level in db into
+    into the corresponding bandlevel
+
+    """
+
+    bandlevel = rmslevel - 10 * np.log10(bw)
+
+    return bandlevel
+
+
 def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
-    '''Cosinus amplitude modulator
+    r'''Cosinus amplitude modulator
 
     Returns a cosinus amplitude modulator following the equation:
     ..math:: 1 + m * \cos{2 * \pi * f_m * t}
@@ -157,51 +186,157 @@ def nsamples(duration, fs):
 
     return len_signal
 
-def generate_noise(duration, fs, cf=None, bw=None, seed=None):
-    len_signal = nsamples(duration, fs)
+def generate_low_noise_noise(duration, fs, low_f, high_f, n_rep=10, seed=None):
+    """Low-noise Noise
 
-    # Seed random number genarator
-    np.random.seed(seed)
-    noise = 2 * np.random.random(len_signal) - 1
+    Generate Low-noise noise as defined in [1]_.
 
-    if cf:
-        assert bw
-        low_f = cf - 0.5 * bw
-        high_f = cf + 0.5 * bw
+    Parameters:
+    -----------
+    duration : scalar
+        Noise duration in seconds
+    fs : int
+        Sampling frequency
+    low_f : float
+        Lower cut-off frequency
+    high_f : float
+        Higher cut-off frequency.
+    n_rep : int
+        Number of low-noise noise iterations (default=10)
+    seed :
+        seed for the random number generator.
+
+    References
+    ----------
+
+    .. [1] Kohlrausch, A., Fassel, R., van der Heijden, M., Kortekaas,
+           R., van de Par, S., Oxenham, A.J. and Püschel, D.,
+           1997. Detection of tones in low-noise noise: Further
+           evidence for the role of envelope fluctuations. Acta
+           Acustica united with Acustica, 83(4), pp.659-669.
+
+    """
+
+    # Generate initial noise
+    noise = generate_noise(duration, fs, ntype='white')
+    noise = brickwall(noise, fs, low_f, high_f)
+
+    for i in range(n_rep):
+        hilb = hilbert(noise)
+        env = abs(hilb)
+
+        #diveide through envelope and restrict
+        noise /= env
         noise = brickwall(noise, fs, low_f, high_f)
+
     return noise
 
-def generate_corr_noise(duration, fs, corr=0, cf=None, bw=None, seed=None):
+
+def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
+    """Generate Noise
+
+    Generate noise with different spectral shape.
+
+    Parameters
+    ----------
+    duration : scalar
+        Noise duration in seconds
+    fs : int
+        Sampling frequency
+    ntype : {'white', 'pink', 'brown'}
+        spectral shape of the noise
+    n_channels : int
+        number of indipendant noise channels
+    seed :
+        seed for the random number generator
+
+    Results
+    ---------
+    ndarray
+        noise vector of the shape (NxM) where N is the number of samples
+        and M >the number of channels
+
+    """
+    np.random.seed(seed)
+
+    # Calculate length and number of fft samples
+    len_signal = nsamples(duration, fs)
+    nfft = nextpower2(len_signal)
+
+    df = fs/nfft                # Frequency resolution
+    nybin = nfft // 2 + 1       # nyquist bin
+
+    lowbin = 1               # no offset start at one
+    highbin = nybin
+
+    freqs = np.arange(0, nybin) * df;
+
+    # amplitude weighting factor
+    f_weights = np.zeros([nfft, n_channels])
+    if ntype == 'white':
+        # equal power
+        f_weights[:, :] = 1
+    elif ntype == 'pink':
+        # Power proportinal to 1 / f
+        f_weights[lowbin:highbin, :] = 1. / np.sqrt(freqs[lowbin:, None])
+    elif ntype == 'brown':
+        # Power proportional to 1 / f**2
+        f_weights[lowbin:highbin, :] = 1. / freqs[lowbin:, None]
+
+    # generate noise
+    a = np.zeros([nfft, n_channels])
+    b = np.zeros([nfft, n_channels])
+    a[lowbin:highbin, :] = np.random.randn(highbin - lowbin, n_channels)
+    b[lowbin:highbin, :] = np.random.randn(highbin - lowbin, n_channels)
+    fspec = a + 1j *b;
+
+    # Frequency weighting
+    fspec *= f_weights
+
+    noise = np.fft.ifft(fspec, axis=0)
+    noise = np.real(noise)
+
+    #  clip and remove offset due to clipping
+    noise = noise[:len_signal]
+    noise -= noise.mean()
+
+    # Normalize the signal by its rms
+    noise = noise / np.sqrt(np.mean(noise**2, axis=0))
+
+    # # Seed random number genarator
+    # np.random.seed(seed)
+    # noise = np.random.randn(len_signal)
+
+    noise = noise[:len_signal]
+
+    if n_channels == 1:
+        noise = noise[:, 0]
+
+    return noise
+
+def generate_corr_noise(duration, fs, corr=0, seed=None):
     # generate two noise vectors
-    noise_a = generate_noise(duration, fs, seed=seed)
-    noise_b = generate_noise(duration, fs, seed=seed)
+    np.random.seed(seed)
+    # nsamp = nsamples(duration, fs)
+    # noise = np.random.randn(nsamp, 2)
+    noise = generate_noise(duration, fs, n_channels=2, seed=seed)
 
     # use Gram-Schmidt to generate orthogonal noise. This makes shure
     # that the two noise vectors are of equal power.
-    Q, R = np.linalg.qr(np.column_stack([noise_a, noise_b]))
-    noise_a = Q[:, 0] / np.abs(Q).max()
-    noise_b = Q[:, 1] / np.abs(Q).max()
+    Q, R = np.linalg.qr(noise)
+    noise = Q / np.abs(Q).max()
 
     alpha = corr
     beta = np.sqrt(1 - corr**2)
 
     # Generate partially corelated noise using the two channel method
     if corr > 0:
-        noise_b = alpha * noise_a + beta * noise_b
+        noise[:, 1] = alpha * noise[:, 0] + beta * noise[:, 1]
 
-    if cf:
-        assert bw
-        low_f = cf - 0.5 * bw
-        high_f = cf + 0.5 * bw
-        noise_a = brickwall(noise_a, fs, low_f, high_f)
-        noise_b = brickwall(noise_b, fs, low_f, high_f)
-
-    out_sig = np.column_stack([noise_a, noise_b])
-
-    return out_sig
+    return noise
 
 def generate_tone(frequency, duration, fs, start_phase=0):
-    '''Sine tone with a given frequency, duration and sampling rate.
+    r'''Sine tone with a given frequency, duration and sampling rate.
 
     This function will generate a pure tone following the equation:
     .. math:: cos(2\pi f t + \phi_0)
@@ -309,6 +444,38 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
         window = np.column_stack([window] * signal.shape[1])
 
     return window
+
+def cossquare_fade_window(signal, rise_time, fs, n_zeros=0):
+    '''Cosine fade-in and fade-out window.
+
+    This function generates a window function with a cosine fade in
+    and fade out.
+
+    Parameters:
+    -----------
+    signal: ndarray
+        The length of the array will be used to determin the window length.
+    rise_time : scalar
+        Duration of the cosine fade in and fade out in seconds. The number of samples
+        is determined via rounding to the nearest integer value.
+    fs : scalar
+        The sampling rate in Hz
+    n_zeros : int, optional
+        Number of zeros to add at the end and at the beginning of the window. (Default = 0)
+
+    Returns:
+    --------
+    ndarray : The fading window
+
+    '''
+
+
+    window = cosine_fade_window(signal, rise_time, fs, n_zeros)
+    window = window**2
+    return window
+
+
+
 
 def hann_fade_window(signal, rise_time, fs):
     '''Hann fade-in and fade-out window.
@@ -485,8 +652,7 @@ def shift_signal(signal, nr_samples, mode='zeros'):
             sig[nr_samples:] = signal
     if mode == 'cyclic':
         sig = signal
-
-    sig = np.roll(sig, nr_samples, axis=0)
+        sig = np.roll(sig, nr_samples, axis=0)
 
     return sig
 
@@ -648,6 +814,55 @@ def set_dbspl(signal, dbspl_val):
     factor = (p0 * 10**(float(dbspl_val) / 20)) / rms_val
 
     return signal * factor
+
+def set_dbfs(signal, dbfs_val):
+    '''Full scale normalization of the signal.
+
+    Adjust signal peak amplitude to a given dB value relative to 1
+
+    Parameters:
+    -----------
+    signal : ndarray
+        The input signal
+    dbfs_val : float
+        The db full scale value to reach
+
+    Returns:
+    --------
+    ndarray :
+        The amplitude adjusted signal
+
+    '''
+
+    rms0 = 1 / np.sqrt(2)
+    rms_val = np.sqrt(np.mean(signal**2, axis=0))
+
+    factor = (rms0 * 10**(float(dbfs_val) / 20)) / rms_val
+
+    return signal * factor
+
+def calc_dbfs(signal):
+    '''Calculate the dBFS RMS value of a given signal.
+
+
+    Parameters:
+    -----------
+    signal : ndarray
+        The input signal
+
+    Returns:
+    --------
+    float :
+        The dBFS RMS value
+
+    '''
+
+    rms0 = 1 / np.sqrt(2)
+    rms_val = np.sqrt(np.mean(signal**2, axis=0))
+    dbfs = 20 * np.log10(rms_val / rms0)
+
+    return dbfs
+
 
 def get_bark_limits():
     '''Limits of the Bark scale
@@ -1270,9 +1485,9 @@ def crest_factor(signal, axis=0):
     a_effective = np.sqrt(np.mean(signal**2, axis = axis))
     a_max = np.max(np.abs(signal), axis = axis)
 
-    crest_factor = 20*np.log10(a_max / a_effective)
+    # crest_factor = 20*np.log10(a_max / a_effective)
 
-    return crest_factor
+    return a_max / a_effective
 
 def phase_shift(signal, phase, fs):
     '''Shifts all frequency components of a signal by a constant phase.

@@ -108,6 +108,18 @@ class test_oaudio(unittest.TestCase):
 
         assert db == 50
 
+    def test_setdbfs_calcdbfs(self):
+        fs = 48000
+        duration = 100e-3
+
+        sig = Signal()
+        sig.init_signal(1, duration, fs)
+        sig.add_tone(100).set_dbfs(-5)
+
+        assert(audio.calc_dbfs(sig.waveform) == -5)
+        assert(sig.calc_dbfs() == -5)
+
+
     def test_zeropad(self):
         fs = 48000
         duration = 100e-3
@@ -368,3 +380,25 @@ class test_oaudio(unittest.TestCase):
 
         testing.assert_array_equal(sig.waveform[:, 0], test)
         testing.assert_array_equal(sig.waveform[:, 1], test)
+
+    def test_add_noise(self):
+        fs = 48000
+        sig = Signal().init_signal(1, 1, 48000).add_noise()
+
+    def test_amplitude_spectrum(self):
+        fs = 48000
+        sig = Signal().init_signal(1, 1, 48000).add_tone(1e3)
+
+        df = fs / sig.n_samples
+        n_1000 = (sig.n_samples // 2) + int(1000 / df)
+
+        a, b = sig.amplitude_spectrum()
+
+        assert a[n_1000] == 1000
+        testing.assert_almost_equal(np.abs(b[n_1000]), 0.5)
+
+    def test_crest_factor(self):
+        sig = Signal().init_signal(1, 1, 48000).add_tone(1e3)
+        cfac = sig.calc_crest_factor()
+
+        testing.assert_almost_equal(cfac, np.sqrt(2))
