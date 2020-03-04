@@ -16,9 +16,15 @@ class Signal(object):
     duration
     time
     """
-    def __init__(self):
+    def __init__(self, n_channels=None, duration=None, fs=None):
+
         self.waveform = np.array([])
         self.__fs = None
+
+        if bool(n_channels) & bool(duration) & bool(fs):
+            self.init_signal(n_channels, duration, fs)
+
+
 
     # setter and getter to handle the sample rates
     @property
