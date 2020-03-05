@@ -4,7 +4,6 @@ from audiotools.filter import brickwall, gammatone
 from audiotools import wav
 import copy
 
-
 class Signal(object):
     r"""
     Attributes:
@@ -17,9 +16,15 @@ class Signal(object):
     duration
     time
     """
-    def __init__(self):
+    def __init__(self, n_channels=None, duration=None, fs=None):
+
         self.waveform = np.array([])
         self.__fs = None
+
+        if bool(n_channels) & bool(duration) & bool(fs):
+            self.init_signal(n_channels, duration, fs)
+
+
 
     # setter and getter to handle the sample rates
     @property
@@ -711,6 +716,12 @@ class Signal(object):
         if not nfft % 2:
             spec[-1, ...] /= 2       # nyquist bin should also not be doubled
         return freq, spec
+
+    def to_freqdomain(self):
+        fd = audio.oaudio.FrequencyDomainSignal()
+        fd.from_timedomain(self)
+
+        return fd
 
     def append(self, signal):
         """Shifts all frequency components of a signal by a constant phase.
