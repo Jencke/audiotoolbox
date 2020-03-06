@@ -141,9 +141,13 @@ class Signal(object):
 
         return self
 
-    def copy(self):
+    def copy(self, empty=False):
         """Returns a deepcopy of the signal"""
-        return copy.deepcopy(self)
+        cp_signal = copy.deepcopy(self)
+        if empty:
+            cp_signal.waveform[:, ...] = 0
+        return cp_signal
+
 
 
     def add_tone(self, frequency, amplitude=1, start_phase=0):
