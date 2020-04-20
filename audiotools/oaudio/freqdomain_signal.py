@@ -40,6 +40,13 @@ class FrequencyDomainSignal(object):
                 self.__fs = fs
             elif self.__fs != fs:
                 raise ValueError('Sampling rate can\'t be changed')
+    @property
+    def n_samples(self):
+        """Get the number of samples in the signal"""
+        if np.all(np.isnan(self.waveform)):
+            return 0
+        else:
+            return self.waveform.shape[0]
 
     @property
     def real(self):
@@ -47,7 +54,7 @@ class FrequencyDomainSignal(object):
 
     @property
     def imag(self):
-        return self.waveform.real
+        return self.waveform.imag
 
     @property
     def phase(self):
