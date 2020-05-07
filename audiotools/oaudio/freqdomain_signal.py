@@ -4,8 +4,10 @@ import audiotools as audio
 class FrequencyDomainSignal(object):
     def __init__(self):
         self.waveform = np.array([], dtype=np.complex128)
+        self.wav = self.waveform
         self.__freq = np.array([], dtype=np.complex128)
         self.__fs = None
+        self.__is_norm = False #decides if the signal is normalized
 
     def from_timedomain(self, signal):
         fs = signal.fs

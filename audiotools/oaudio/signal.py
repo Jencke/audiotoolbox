@@ -19,6 +19,8 @@ class Signal(object):
     def __init__(self, n_channels=None, duration=None, fs=None):
 
         self.waveform = np.array([])
+        self.wav = self.waveform
+
         self.__fs = None
 
         if bool(n_channels) & bool(duration) & bool(fs):
