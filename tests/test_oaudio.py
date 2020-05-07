@@ -397,6 +397,14 @@ class test_oaudio(unittest.TestCase):
         assert a[n_1000] == 1000
         testing.assert_almost_equal(np.abs(b[n_1000]), 0.5)
 
+    def test_freqdomain(self):
+        fs = 48000
+        sig = Signal().init_signal(1, 1, 48000).add_noise()
+        sig_c = sig.copy()
+        sig = sig.to_freqdomain().to_timedomain()
+        testing.assert_almost_equal(sig_c.waveform, sig.waveform)
+
+
     def test_crest_factor(self):
         sig = Signal().init_signal(1, 1, 48000).add_tone(1e3)
         cfac = sig.calc_crest_factor()

@@ -32,8 +32,6 @@ def test_brickwall():
 
     assert np.array_equal(non_zero, passband)
 
-# def test_gauss():
-# import matplotlib.pyplot as plt
 
 def test_gauss():
     duration = 500e-3
