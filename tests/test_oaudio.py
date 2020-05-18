@@ -52,6 +52,11 @@ class test_oaudio(unittest.TestCase):
         assert sig.duration == 100
         assert sig.n_samples == 100
 
+        sig = Signal(1, 100, 1)
+        assert sig.fs == 1
+        assert sig.duration == 100
+        assert sig.n_samples == 100
+
 
     def test_time(self):
         sig = Signal()

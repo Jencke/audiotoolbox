@@ -30,34 +30,6 @@ class Signal(BaseSignal):
         time = audio.get_time(self.waveform, self.fs)
         return time
 
-    def init_signal(self, n_channels, duration, fs):
-        """Initialize a signal with zeros
-
-        Use this function to initialize a signal with zeros.  This
-        also overwrites the current waveform.
-
-        Parameters:
-        -----------
-        n_channels : int
-            number of channels
-        duration : float
-            Signal duration in seconds
-        fs : int
-            sampling rate
-
-        Returns:
-        --------
-        Signal : Returns itself
-
-        """
-        n_samples = audio.nsamples(duration, fs)
-        if n_channels == 1:
-            self.waveform = np.zeros([n_samples])
-        else:
-            self.waveform = np.zeros([n_samples, n_channels])
-        self._fs = fs
-
-        return self
 
     def add_tone(self, frequency, amplitude=1, start_phase=0):
         r"""Add a sine tone with a given frequency, amplitude and start_phase

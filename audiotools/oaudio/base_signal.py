@@ -218,6 +218,36 @@ class BaseSignal(object):
 
             return duration
 
+
+    def init_signal(self, n_channels, duration, fs, dtype=np.float64):
+        """Initialize a signal with zeros
+
+        Use this function to initialize a signal with zeros.  This
+        also overwrites the current waveform.
+
+        Parameters:
+        -----------
+        n_channels : int
+            number of channels
+        duration : float
+            Signal duration in seconds
+        fs : int
+            sampling rate
+
+        Returns:
+        --------
+        Signal : Returns itself
+
+        """
+        n_samples = audio.nsamples(duration, fs)
+        if n_channels == 1:
+            self.waveform = np.zeros([n_samples], dtype=dtype)
+        else:
+            self.waveform = np.zeros([n_samples, n_channels], dtype=dtype)
+        self._fs = fs
+
+        return self
+
     def set_waveform(self, waveform, fs=None):
         """Set the Waveform
 
