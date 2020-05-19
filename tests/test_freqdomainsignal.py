@@ -25,15 +25,30 @@ class test_oaudio(unittest.TestCase):
         assert sig.freq.min() == -50.0
         assert sig.duration == 1
 
-    def test_multiply(self):
-        sig = Signal(2, 1, 48e3).add_noise().to_freqdomain()
-        assert testing.assert_almost_equal(sig[0].waveform, sig[1].waveform)
+    def test_phase_shift(self):
+        sig = Signal(1, 1, 48000).to_freqdomain()
+        assert np.all(sig.phase == 0)
 
+        sig.phase_shift(0.2 * np.pi)
+        assert np.all(sig.phase == (0.2 * np.pi))
 
+        sig = sig.to_timedomain().add_noise().to_freqdomain()
+        assert ~np.all(sig.phase == 0)
 
-        # # test multiple channel signal
-        # sig = Signal()
-        # sig.set_waveform(np.zeros([100, 2]), 100)
-        # assert sig.n_channels == 2
-        # assert sig.n_samples == 100
-        # assert sig.duration == 1
+        orig_phases = sig.phase
+        shift = 0.2 * np.pi
+        sig.phase_shift(shift)
+        print((sig.phase - orig_phases) == shift)
+
+    def test_init_signal(self):
+        sig = FrequencyDomainSignal()
+        sig.init_signal(1, 100, 1)
+
+        assert sig.fs == 1
+        assert sig.duration == 100
+        assert sig.n_samples == 100
+
+        sig = FrequencyDomainSignal(1, 100, 1)
+        assert sig.fs == 1
+        assert sig.duration == 100
+        assert sig.n_samples == 100
