@@ -21,11 +21,11 @@ class BaseSignal(np.ndarray):
         n_samples = audio.nsamples(duration, fs)
 
         if n_channels == 1:
-            obj = super(C, cls).__new__(cls, shape=(n_samples),
-                                        dtype=dtype)
+            obj = super(BaseSignal, cls).__new__(cls, shape=(n_samples),
+                                                 dtype=dtype)
         else:
-            obj = super(C, cls).__new__(cls, shape=(n_samples, n_channels),
-                                        dtype=dtype)
+            obj = super(BaseSignal, cls).__new__(cls, shape=(n_samples, n_channels),
+                                                 dtype=dtype)
         obj._fs = fs
         obj.fill(0)
         return obj
