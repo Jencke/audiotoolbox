@@ -72,39 +72,37 @@ class Signal(BaseSignal):
 
         return self
 
-    # def add_noise(self, ntype='white', seed=None):
-    #     r"""Add uncorrelated noise to the signal
+    def add_noise(self, ntype='white', seed=None):
+        r"""Add uncorrelated noise to the signal
 
-    #     Add uncorrelated noise of a given spectral shape to all
-    #     channels of the signal. Possible spectral shapes are 'white',
-    #     'pink' (1 / f) and 'brown' (1 / f^2).
+        Add uncorrelated noise of a given spectral shape to all
+        channels of the signal. Possible spectral shapes are 'white',
+        'pink' (1 / f) and 'brown' (1 / f^2).
 
 
-    #     Parameters:
-    #     -----------
-    #     ntype : {'white', 'pink', 'brown'}
-    #         spectral shape of the noise
-    #     seed : int or 1-d array_like, optional
-    #         Seed for `RandomState`.
-    #         Must be convertible to 32 bit unsigned integers.
+        Parameters:
+        -----------
+        ntype : {'white', 'pink', 'brown'}
+            spectral shape of the noise
+        seed : int or 1-d array_like, optional
+            Seed for `RandomState`.
+            Must be convertible to 32 bit unsigned integers.
 
-    #     Returns:
-    #     --------
-    #     Signal : Returns itself
+        Returns:
+        --------
+        Signal : Returns itself
 
-    #     """
-    #     noise = audio.generate_noise(self.duration, self.fs,
-    #                                  ntype=ntype, n_channels=1,
-    #                                  seed=seed)
+        """
+        noise = audio.generate_noise(self.duration, self.fs,
+                                     ntype=ntype, n_channels=1,
+                                     seed=seed)
 
-    #     if self.n_channels > 1:
-    #         summed_wv = self.waveform + noise[:, None]
-    #     else:
-    #         summed_wv = self.waveform + noise
+        if self.n_channels > 1:
+            self += noise[:, None]
+        else:
+            self += noise
 
-    #     self.set_waveform(summed_wv)
-
-    #     return self
+        return self
 
     # def add_corr_noise(self, corr=1, channels=[0, 1], seed=None):
 
@@ -502,6 +500,6 @@ class Signal(BaseSignal):
 
     #     return an
 
-    def __repr__(self):
-        repr = "Signal(channels={channels}, samples={samples}, fs={fs} Hz, duration={duration} s)".format(channels=self.n_channels, fs=self.fs, duration=self.duration, samples=self.n_samples)
-        return repr
+    # def __repr__(self):
+    #     repr = "Signal(channels={channels}, samples={samples}, fs={fs} Hz, duration={duration} s)".format(channels=self.n_channels, fs=self.fs, duration=self.duration, samples=self.n_samples)
+    #     return repr
