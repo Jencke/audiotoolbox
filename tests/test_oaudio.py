@@ -104,8 +104,7 @@ class test_oaudio(unittest.TestCase):
         fs = 48000
         duration = 100e-3
 
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
+        sig = Signal(1, duration, fs)
         sig.add_tone(100).set_dbspl(50)
         db = sig.calc_dbspl()
 

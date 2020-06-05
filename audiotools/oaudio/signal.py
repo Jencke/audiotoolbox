@@ -113,27 +113,27 @@ class Signal(BaseSignal):
 
     #     return self
 
-    # def set_dbspl(self, dbspl):
-    #     """Set sound pressure level in dB
+    def set_dbspl(self, dbspl):
+        """Set sound pressure level in dB
 
-    #     Normalizes the signal to a given sound pressure level in dB
-    #     relative 20e-6 Pa.
+        Normalizes the signal to a given sound pressure level in dB
+        relative 20e-6 Pa.
 
-    #     Parameters:
-    #     -----------
-    #     dbspl : float
-    #         The sound pressure level in dB
+        Parameters:
+        -----------
+        dbspl : float
+            The sound pressure level in dB
 
-    #     Returns:
-    #     --------
-    #     Signal : Returns itself
+        Returns:
+        --------
+        Signal : Returns itself
 
-    #     """
+        """
 
-    #     nwv = audio.set_dbspl(self.waveform, dbspl)
-    #     self.set_waveform(nwv)
+        res = audio.set_dbspl(self, dbspl)
+        self[:] = res[:]
 
-    #     return self
+        return self
 
     # def set_dbfs(self, dbfs):
     #     """Normalize the signal to a given dBFS RMS value.
@@ -222,16 +222,16 @@ class Signal(BaseSignal):
 
     #     return self
 
-    # def calc_dbspl(self):
-    #     """Calculate the sound pressure level of the signal
+    def calc_dbspl(self):
+        """Calculate the sound pressure level of the signal
 
-    #     Returns:
-    #     --------
-    #     float : The sound pressure level in dB
+        Returns:
+        --------
+        float : The sound pressure level in dB
 
-    #     """
-    #     dbspl = audio.calc_dbspl(self.waveform)
-    #     return dbspl
+        """
+        dbspl = audio.calc_dbspl(self)
+        return dbspl
 
     # def zeropad(self, number=None, duration=None):
     #     """Add zeros to start and end of signal
