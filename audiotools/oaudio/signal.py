@@ -441,26 +441,26 @@ class Signal(BaseSignal):
     #     rms = np.sqrt(np.mean(self.waveform**2, axis=0))
     #     return rms
 
-    # def amplitude_spectrum(self, single_sided=False, nfft=None):
-    #     """Amplitude spectrum of the signal
+    def amplitude_spectrum(self, single_sided=False, nfft=None):
+        """Amplitude spectrum of the signal
 
-    #     """
+        """
 
-    #     nfft = nfft if nfft else self.n_samples
-    #     spec = np.fft.fft(self.waveform, n=nfft, axis=0) / nfft
-    #     freq = np.fft.fftfreq(nfft, 1.0 / self.fs)
-    #     spec = np.fft.fftshift(spec, axes=0)
-    #     freq = np.fft.fftshift(freq, axes= 0)
+        nfft = nfft if nfft else self.n_samples
+        spec = np.fft.fft(self, n=nfft, axis=0) / nfft
+        freq = np.fft.fftfreq(nfft, 1.0 / self.fs)
+        spec = np.fft.fftshift(spec, axes=0)
+        freq = np.fft.fftshift(freq, axes= 0)
 
-    #     if single_sided:
-    #         freq = freq[nfft // 2:, ...]
-    #         spec = spec[nfft // 2:, ...]
-    #         spec *= 2
-    #         spec[0, ...] /= 2 # do not double dc
-    #         if not nfft % 2:
-    #             spec[-1, ...] /= 2       # nyquist bin should also not be doubled
+        if single_sided:
+            freq = freq[nfft // 2:, ...]
+            spec = spec[nfft // 2:, ...]
+            spec *= 2
+            spec[0, ...] /= 2 # do not double dc
+            if not nfft % 2:
+                spec[-1, ...] /= 2       # nyquist bin should also not be doubled
 
-    #     return freq, spec
+        return freq, spec
 
     # def phase_spectrum(self, nfft=None):
     #     nfft = nfft if nfft else self.n_samples

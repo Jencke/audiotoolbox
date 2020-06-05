@@ -389,7 +389,7 @@ class test_oaudio(unittest.TestCase):
 
     def test_amplitude_spectrum(self):
         fs = 48000
-        sig = Signal().init_signal(1, 1, 48000).add_tone(1e3)
+        sig = Signal(1, 1, 48000).add_tone(1e3)
 
         df = fs / sig.n_samples
         n_1000 = (sig.n_samples // 2) + int(1000 / df)
