@@ -161,33 +161,29 @@ class test_oaudio(unittest.TestCase):
         fs = 48000
         duration = 100e-3
 
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
+        sig = Signal(1, duration, fs)
         sig.add_tone(100).add_fade_window(rise_time=10e-3, type='gauss')
         test = audio.generate_tone(100, duration, fs)
         test *= audio.gaussian_fade_window(test, 10e-3, fs)
-        testing.assert_equal(sig.waveform, test)
+        testing.assert_equal(sig, test)
 
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
+        sig = Signal(1, duration, fs)
         sig.add_tone(100).add_fade_window(rise_time=10e-3, type='cos')
         test = audio.generate_tone(100, duration, fs)
         test *= audio.cosine_fade_window(test, 10e-3, fs)
-        testing.assert_equal(sig.waveform, test)
+        testing.assert_equal(sig, test)
 
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
+        sig = Signal(1, duration, fs)
         sig.add_tone(100).add_fade_window(rise_time=10e-3, type='cos')
         test = audio.generate_tone(100, duration, fs)
         test *= audio.cosine_fade_window(test, 10e-3, fs)
-        testing.assert_equal(sig.waveform, test)
+        testing.assert_equal(sig, test)
 
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
+        sig = Signal(1, duration, fs)
         sig.add_tone(100).add_fade_window(rise_time=10e-3, type='hann')
         test = audio.generate_tone(100, duration, fs)
         test *= audio.hann_fade_window(test, 10e-3, fs)
-        testing.assert_equal(sig.waveform, test)
+        testing.assert_equal(sig, test)
 
     def test_add(self):
         fs = 48000
@@ -299,35 +295,30 @@ class test_oaudio(unittest.TestCase):
         duration = 100e-3
 
         # test addition of signal
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
+        sig = Signal(1, duration, fs)
         sig.add_tone(100)
-        sig2 = Signal()
-        sig2.init_signal(1, duration, fs)
+        sig2 = Signal(1, duration, fs)
         sig2.add_tone(100)
-        sig.divide(sig2)
-        testing.assert_allclose(sig.waveform, 1)
+        sig /= sig2
+        testing.assert_allclose(sig, 1)
 
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
+        sig = Signal(1, duration, fs)
         sig.add_tone(100)
-        sig.divide(2).divide(2.1)
-        test = Signal()
-        test.init_signal(1, duration, fs)
+        sig /= 2
+        sig /= 2.1
+        test = Signal(1, duration, fs)
         test.add_tone(100)
-        testing.assert_almost_equal(sig.waveform, test.waveform / 2 / 2.1)
+        testing.assert_almost_equal(sig, test / 2 / 2.1)
 
-        sig = Signal()
-        sig.init_signal(2, duration, fs)
+        sig = Signal(2, duration, fs)
         sig.add_tone(100)
-        sig.divide(np.array([1, 2]))
-        testing.assert_almost_equal(sig[1].waveform, sig[0].waveform / 2)
+        sig /= np.array([1, 2])
+        testing.assert_almost_equal(sig[:, 1], sig[:, 0] / 2)
 
-        sig = Signal()
-        sig.init_signal(2, duration, fs)
+        sig = Signal(2, duration, fs)
         sig.add_tone(100)
-        sig[1].divide(sig[0].waveform)
-        testing.assert_allclose(sig[1].waveform, 1)
+        sig[:, 1] /= sig[:, 0]
+        testing.assert_allclose(sig[:, 1], 1)
 
     def test_mean(self):
         sig = Signal()
@@ -360,23 +351,23 @@ class test_oaudio(unittest.TestCase):
 
     def test_cos_amp_modulator(self):
         fs = 48000
-        sig = Signal().init_signal(1, 1, fs).add_tone(100)
+        sig = Signal(1, 1, fs).add_tone(100)
         sig.add_cos_modulator(5, 1)
 
         test = audio.generate_tone(100, 1, fs)
         test *= audio.cos_amp_modulator(test, 5, fs)
 
-        testing.assert_array_equal(sig.waveform, test)
+        testing.assert_array_equal(sig, test)
 
         fs = 48000
-        sig = Signal().init_signal(2, 1, fs).add_tone(100)
+        sig = Signal(2, 1, fs).add_tone(100)
         sig.add_cos_modulator(5, 1)
 
         test = audio.generate_tone(100, 1, fs)
         test *= audio.cos_amp_modulator(test, 5, fs)
 
-        testing.assert_array_equal(sig.waveform[:, 0], test)
-        testing.assert_array_equal(sig.waveform[:, 1], test)
+        testing.assert_array_equal(sig[:, 0], test)
+        testing.assert_array_equal(sig[:, 1], test)
 
     def test_add_noise(self):
         fs = 48000
@@ -400,14 +391,14 @@ class test_oaudio(unittest.TestCase):
 
     def test_freqdomain(self):
         fs = 48000
-        sig = Signal().init_signal(1, 1, 48000).add_noise()
+        sig = Signal(1, 1, 48000).add_noise()
         sig_c = sig.copy()
         sig = sig.to_freqdomain().to_timedomain()
         testing.assert_almost_equal(sig_c.waveform, sig.waveform)
 
 
     def test_crest_factor(self):
-        sig = Signal().init_signal(1, 1, 48000).add_tone(1e3)
+        sig = Signal(1, 1, 48000).add_tone(1e3)
         cfac = sig.calc_crest_factor()
 
         testing.assert_almost_equal(cfac, np.sqrt(2))

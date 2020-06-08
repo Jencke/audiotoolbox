@@ -165,25 +165,25 @@ class Signal(BaseSignal):
     #     dbfs = audio.calc_dbfs(self.waveform)
     #     return dbfs
 
-    # def calc_crest_factor(self):
-    #     """Calculate crest factor
+    def calc_crest_factor(self):
+        """Calculate crest factor
 
-    #     Calculates the crest factor of the input signal. The crest factor
-    #         is defined as:
+        Calculates the crest factor of the input signal. The crest factor
+            is defined as:
 
-    #     .. math:: C = \frac{|x_{peak}|}{x_{rms}}
+        .. math:: C = \frac{|x_{peak}|}{x_{rms}}
 
-    #     where :math:`x_{peak}` is the maximum of the absolute value and
-    #     :math:`x{rms}` is the effective value of the signal.
+        where :math:`x_{peak}` is the maximum of the absolute value and
+        :math:`x{rms}` is the effective value of the signal.
 
-    #     Returns:
-    #     --------
-    #     scalar :
-    #         The crest factor
+        Returns:
+        --------
+        scalar :
+            The crest factor
 
-    #     """
-    #     crest_factor = audio.crest_factor(self.waveform)
-    #     return crest_factor
+        """
+        crest_factor = audio.crest_factor(self)
+        return crest_factor
 
 
     # def bandpass(self, f_center, bw, ftype):
@@ -276,72 +276,70 @@ class Signal(BaseSignal):
     #     self.waveform = wv
     #     return self
 
-    # def add_fade_window(self, rise_time, type='cos'):
-    #     """Add a fade in/out window to the signal
+    def add_fade_window(self, rise_time, type='cos'):
+        """Add a fade in/out window to the signal
 
-    #     This function multiplies a fade window with a given rise time
-    #     onto the signal. Possible values for `type` are 'cos' for a
-    #     cosine window, 'gauss' for a gaussian window, 'hann' for a
-    #     hann window.
+        This function multiplies a fade window with a given rise time
+        onto the signal. Possible values for `type` are 'cos' for a
+        cosine window, 'gauss' for a gaussian window, 'hann' for a
+        hann window.
 
-    #     Paramters:
-    #     ----------
-    #     rise_time : float
-    #         The rise time in seconds.
-    #     type : 'cos', 'gauss' or 'hann'
-    #         The type of the window. (default = 'cos')
+        Paramters:
+        ----------
+        rise_time : float
+            The rise time in seconds.
+        type : 'cos', 'gauss' or 'hann'
+            The type of the window. (default = 'cos')
 
-    #     """
+        """
 
-    #     if type == 'gauss':
-    #         win = audio.gaussian_fade_window(self.waveform, rise_time,
-    #                                          self.fs)
-    #     elif type == 'cos':
-    #         win = audio.cosine_fade_window(self.waveform, rise_time,
-    #                                        self.fs)
-    #     elif type == 'cos2':
-    #         win = audio.cossquare_fade_window(self.waveform, rise_time,
-    #                                        self.fs)
-    #     elif type == 'hann':
-    #         win = audio.hann_fade_window(self.waveform, rise_time,
-    #                                      self.fs)
+        if type == 'gauss':
+            win = audio.gaussian_fade_window(self, rise_time,
+                                             self.fs)
+        elif type == 'cos':
+            win = audio.cosine_fade_window(self, rise_time,
+                                           self.fs)
+        elif type == 'cos2':
+            win = audio.cossquare_fade_window(self, rise_time,
+                                           self.fs)
+        elif type == 'hann':
+            win = audio.hann_fade_window(self, rise_time,
+                                         self.fs)
 
-    #     wv = self.waveform * win
-    #     self.set_waveform(wv)
-    #     return self
+        self *= win
+        return self
 
-    # def add_cos_modulator(self, frequency, m, start_phase=0):
-    #     r"""Multiply a cosinus amplitude modulator to the signal
+    def add_cos_modulator(self, frequency, m, start_phase=0):
+        r"""Multiply a cosinus amplitude modulator to the signal
 
-    #     Multiplies a cosinus amplitude modulator following the equation:
-    #     ..math:: 1 + m * \cos{2 * \pi * f_m * t + \phi_{0}}
+        Multiplies a cosinus amplitude modulator following the equation:
+        ..math:: 1 + m * \cos{2 * \pi * f_m * t + \phi_{0}}
 
-    #     where m is the modulation depth, f_m is the modualtion frequency
-    #     and t is the time. \phi_0 is the start phase
+        where m is the modulation depth, f_m is the modualtion frequency
+        and t is the time. \phi_0 is the start phase
 
-    #     Parameters:
-    #     -----------
-    #     frequency : float
-    #       The frequency of the cosine modulator.
-    #     m : float, optional
-    #       The modulation index. (Default = 1)
-    #     start_phase : float
-    #       The starting phase of the cosine in radiant.
+        Parameters:
+        -----------
+        frequency : float
+          The frequency of the cosine modulator.
+        m : float, optional
+          The modulation index. (Default = 1)
+        start_phase : float
+          The starting phase of the cosine in radiant.
 
-    #     Returns:
-    #     --------
-    #     Signal : Returns itself
+        Returns:
+        --------
+        Signal : Returns itself
 
-    #     """
+        """
 
-    #     mod = audio.cos_amp_modulator(signal=self.waveform,
-    #                                   modulator_freq=frequency,
-    #                                   fs=self.fs,
-    #                                   mod_index=m)
+        mod = audio.cos_amp_modulator(signal=self,
+                                      modulator_freq=frequency,
+                                      fs=self.fs,
+                                      mod_index=m)
+        self *= mod
 
-    #     wv = self.waveform * mod
-    #     self.set_waveform(wv)
-    #     return self
+        return self
 
     # def delay(self, delay, channels, method='fft', mode='zeros'):
 
@@ -488,11 +486,11 @@ class Signal(BaseSignal):
     #         spec[-1, ...] /= 2       # nyquist bin should also not be doubled
     #     return freq, spec
 
-    # def to_freqdomain(self):
-    #     fd = audio.oaudio.FrequencyDomainSignal()
-    #     fd.from_timedomain(self)
+    def to_freqdomain(self):
+        fd = audio.oaudio.FrequencyDomainSignal()
+        fd.from_timedomain(self)
 
-    #     return fd
+        return fd
 
     # def to_analytical(self):
     #     an = audio.oaudio.AnalyticalSignal()
