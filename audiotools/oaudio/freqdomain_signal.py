@@ -8,9 +8,9 @@ class FrequencyDomainSignal(BaseSignal):
     _is_norm = False #decides if the signal is normalized
     _freq = np.array([])
 
-    def __init__(self, n_channels=None, duration=None, fs=None):
-        if bool(n_channels) & bool(duration) & bool(fs):
-            self.init_signal(n_channels, duration, fs, dtype=np.complex128)
+    # def __init__(self, n_channels=None, duration=None, fs=None):
+    #     if bool(n_channels) & bool(duration) & bool(fs):
+    #         self.init_signal(n_channels, duration, fs, dtype=np.complex128)
 
     def from_timedomain(self, signal, normalize=True):
         fs = signal.fs
