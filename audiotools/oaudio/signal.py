@@ -356,7 +356,7 @@ class Signal(BaseSignal):
         self.set_waveform(wv)
         return self
 
-    def delay(self, delay, channels, method='fft', mode='zeros'):
+    def delay(self, delay, channels, method='fft'):
 
         nshift = delay * self.fs
 
@@ -364,20 +364,15 @@ class Signal(BaseSignal):
 
         # Allways use the sample algorithm if the delay is a full
         # multiple of the time resolution
-        if nshift % 1 == 0:
-            method = 'sample'
 
         to_delay = self.waveform[:, channels]
         if method == 'sample':
             nshift = int(np.round(nshift))
-            shifted = audio.shift_signal(to_delay, nshift, mode)
+            shifted = audio.shift_signal(to_delay, nshift, mode='cyclic')
         elif method == 'fft':
-            shifted = audio.fftshift_signal(to_delay, delay, self.fs, mode)
+            shifted = audio.fftshift_signal(to_delay, delay, self.fs)
 
-        if mode =='cyclic':
-            self.waveform[:, channels] = shifted
-        else:
-            self.waveform[:, channels] = shifted[:self.n_samples, :]
+        self.waveform[:, channels] = shifted
 
         return self
 

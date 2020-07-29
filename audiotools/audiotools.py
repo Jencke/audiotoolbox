@@ -656,7 +656,7 @@ def shift_signal(signal, nr_samples, mode='zeros'):
 
     return sig
 
-def fftshift_signal(signal, delay, fs, mode='zeros'):
+def fftshift_signal(signal, delay, fs):
     '''Delay the `signal` by time `delay` in the frequncy domain.
 
     Delays a signal by introducing a linear phaseshift in the
@@ -671,12 +671,6 @@ def fftshift_signal(signal, delay, fs, mode='zeros'):
         The delay in seconds. Must be positive if `mode` is 'zeros'.
     fs : scalar
         The sampling rate in Hz.
-    mode : {'zeros', 'cyclic'} optional
-        'zeros':
-          The signals length increase due to shifting is buffered with
-          zeros
-        'cyclic':
-          The signal is shifted cyclically
 
     Returns:
     --------
@@ -692,40 +686,22 @@ def fftshift_signal(signal, delay, fs, mode='zeros'):
     if delay == 0:
         return
 
-    if mode == 'zeros':
-        if delay < 0:
-            raise(ValueError, 'Negative delays not possible with zeros mode')
-        #due to the cyclic nature of the shift, pad the signal with
-        #enough zeros
-        n_pad = np.int(np.ceil(np.abs(delay * fs)))
-        pad = np.zeros(n_pad)
-        signal = np.concatenate([pad, signal, pad])
-        len_sig = len(signal)
-        # In the zeros case we can also make sure to use the FFT by pading
-        # to the next multiple of 2
-        signal = pad_for_fft(signal)
-    if mode == 'cyclic':
-        n_pad = 0
-        len_sig = len(signal)
+    n_pad = 0
+    len_sig = len(signal)
 
     #Apply FFT
-    ft_signal = np.fft.fft(signal)
+    ft_signal = np.fft.fft(signal, axis=0)
 
     #Calculate the phases need for shifting and apply them to the
     #spectrum
-    freqs = np.fft.fftfreq(len(ft_signal), 1. / fs)
-    ft_signal *= np.exp(-1j * 2 * pi * delay * freqs)
+    freqs = np.fft.fftfreq(len_sig, 1. / fs)
+    phase = time2phase(delay, freqs)
+    ft_signal *= np.exp(-1j * phase)
 
     #Inverse transform the spectrum and leave away the imag. part if
     #it is really small
     shifted_signal = np.fft.ifft(ft_signal)
     shifted_signal = np.real_if_close(shifted_signal, 1000)
-
-    # Clip the zeros from the signal
-    if delay > 0:
-        shifted_signal = shifted_signal[n_pad:len_sig]
-    if delay < 0:
-        shifted_signal = shifted_signal[:len_sig + n_pad]
 
     return shifted_signal
 
