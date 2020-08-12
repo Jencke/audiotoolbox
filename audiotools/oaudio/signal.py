@@ -496,6 +496,12 @@ class Signal(BaseSignal):
             spec[-1, ...] /= 2       # nyquist bin should also not be doubled
         return freq, spec
 
+    def rectify(self):
+        """One-way rectification of the signal"""
+        self.waveform[self.waveform < 0] = 0
+        return self
+
+
     def to_freqdomain(self):
         fd = audio.oaudio.FrequencyDomainSignal()
         fd.from_timedomain(self)
