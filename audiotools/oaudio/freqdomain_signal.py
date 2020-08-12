@@ -11,6 +11,7 @@ class FrequencyDomainSignal(BaseSignal):
     def __init__(self, n_channels=None, duration=None, fs=None):
         if bool(n_channels) & bool(duration) & bool(fs):
             self.init_signal(n_channels, duration, fs, dtype=np.complex128)
+            self._freq = np.fft.fftfreq(self.n_samples, 1. / fs)
 
     def from_timedomain(self, signal, normalize=True):
         fs = signal.fs
@@ -102,8 +103,10 @@ class FrequencyDomainSignal(BaseSignal):
 
         """
         if self._is_norm:
-            self.waveform *= self.n_samples
-        wv = np.fft.ifft(self.waveform, axis=0)
+            wv = self.waveform * self.n_samples
+        else:
+            wv = self.waveform
+        wv = np.fft.ifft(wv, axis=0)
         wv = np.real_if_close(wv)
         signal = audio.Signal().set_waveform(wv, self.fs)
         return signal
