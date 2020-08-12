@@ -175,7 +175,10 @@ class BaseSignal(object):
 
     def __getitem__(self, key):
         sig = self.copy()
-        sig.waveform = self.waveform[:, key]
+        if self.n_channels != 1:
+            sig.waveform = self.waveform[:, key]
+        else:
+            sig.waveform = self.waveform
 
         return sig
 
