@@ -5,13 +5,14 @@ from copy import deepcopy
 from .base_signal import BaseSignal
 
 class FrequencyDomainSignal(BaseSignal):
-    _is_norm = False #decides if the signal is normalized
-    _freq = np.array([])
-
     def __init__(self, n_channels=None, duration=None, fs=None):
+        self._is_norm = False #decides if the signal is normalized
+        self._freq = np.array([])
+
         if bool(n_channels) & bool(duration) & bool(fs):
             self.init_signal(n_channels, duration, fs, dtype=np.complex128)
             self._freq = np.fft.fftfreq(self.n_samples, 1. / fs)
+            self._is_norm = True
 
     def from_timedomain(self, signal, normalize=True):
         fs = signal.fs
