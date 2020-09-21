@@ -350,7 +350,8 @@ class Signal(BaseSignal):
         mod = audio.cos_amp_modulator(signal=self.waveform,
                                       modulator_freq=frequency,
                                       fs=self.fs,
-                                      mod_index=m)
+                                      mod_index=m,
+                                      start_phase=start_phase)
 
         wv = self.waveform * mod
         self.set_waveform(wv)
