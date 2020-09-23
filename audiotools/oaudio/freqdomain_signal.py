@@ -25,31 +25,21 @@ class FrequencyDomainSignal(BaseSignal):
 
         return self
 
-    # @property
-    # def freq(self):
-    #     """Returns the frequencies"""
-    #     return self._freq
+    @property
+    def freq(self):
+        """Returns the frequencies"""
+        return self._freq
 
-    # @property
-    # def omega(self):
-    #     """Returns the circular frequencies"""
-    #     return self._freq * 2 * np.pi
+    @property
+    def omega(self):
+        """Returns the circular frequencies"""
+        return self._freq * 2 * np.pi
 
-    # @property
-    # def real(self):
-    #     """Retruns the real part of the waveform"""
-    #     return self.waveform.real
-
-    # @property
-    # def imag(self):
-    #     """Retruns the imaginary part of the waveform"""
-    #     return self.waveform.imag
-
-    # @property
-    # def phase(self):
-    #     """Retruns the phase of the waveform"""
-    #     return np.angle(self.waveform)
-    # angle = phase
+    @property
+    def phase(self):
+        """Retruns the phase of the waveform"""
+        return np.angle(self)
+    angle = phase
 
     # @property
     # def mag(self):
@@ -79,11 +69,11 @@ class FrequencyDomainSignal(BaseSignal):
     #         self._is_norm = True
     #     return self
 
-    # # def phase_shift(self, phase):
-    # #     shift_val = 1.0j * phase * np.sign(self.freq)
-    # #     print (shift_val)
-    # #     self.waveform *= np.exp(shift_val)
-    # #     return self
+    # def phase_shift(self, phase):
+    #     shift_val = 1.0j * phase * np.sign(self.freq)
+    #     print (shift_val)
+    #     self[:] = self * np.exp(shift_val)
+    #     return self
 
     def to_timedomain(self):
         """Convert to timedomain.

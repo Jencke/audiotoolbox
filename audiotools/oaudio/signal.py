@@ -272,7 +272,7 @@ class Signal(BaseSignal):
             else:
                 number = audio.nsamples(duration, self.fs)
 
-        # Zeropadding should only work
+        # Can only be applied to the whole signal not to a slice
         if not isinstance(self.base, type(None)):
             raise RuntimeError('Zeropad can only be applied to the whole signal')
         else:
