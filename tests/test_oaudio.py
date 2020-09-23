@@ -8,45 +8,8 @@ import pytest
 
 
 class test_oaudio(unittest.TestCase):
-
-    def test_set_waveform(self):
-        sig = Signal()
-        assert sig.n_channels == 0
-        assert sig.n_samples == 0
-        assert sig.duration == 0
-
-
-        # test set single channel signal
-        sig = Signal()
-        sig.set_waveform(np.zeros(100), 100)
-        assert sig.n_channels == 1
-        assert sig.n_samples == 100
-        assert sig.duration == 1
-
-
-        # test multiple channel signal
-        sig = Signal()
-        sig.set_waveform(np.zeros([100, 2]), 100)
-        assert sig.n_channels == 2
-        assert sig.n_samples == 100
-        assert sig.duration == 1
-
-    def test_fs(self):
-        sig = Signal()
-        assert sig.fs == None
-        sig.set_waveform(np.zeros([100, 2]), 100)
-        assert sig.fs == 100
-
-        with self.assertRaises(ValueError):
-            sig.fs = 200
-
-        sig = Signal()
-        with self.assertRaises(ValueError):
-            sig.fs = None
-
     def test_init_signal(self):
-        sig = Signal()
-        sig.init_signal(1, 100, 1)
+        sig = Signal(1, 100, 1)
 
         assert sig.fs == 1
         assert sig.duration == 100
@@ -59,8 +22,7 @@ class test_oaudio(unittest.TestCase):
 
 
     def test_time(self):
-        sig = Signal()
-        sig.init_signal(1, 100, 1)
+        sig = Signal(1, 100, 1)
         time = sig.time
 
         assert sig.time[0] == 0
@@ -91,14 +53,13 @@ class test_oaudio(unittest.TestCase):
         fs = 48000
         duration = 100e-3
 
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
+        sig = Signal(1, duration, fs)
         sig.add_tone(100).set_dbspl(50)
 
         test = audio.generate_tone(100, duration, fs)
         test = audio.set_dbspl(test, 50)
 
-        testing.assert_equal(sig.waveform, test)
+        testing.assert_equal(sig, test)
 
     def test_calcdbspl(self):
         fs = 48000
@@ -114,11 +75,10 @@ class test_oaudio(unittest.TestCase):
         fs = 48000
         duration = 100e-3
 
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
+        sig = Signal(1, duration, fs)
         sig.add_tone(100).set_dbfs(-5)
 
-        assert(audio.calc_dbfs(sig.waveform) == -5)
+        assert(audio.calc_dbfs(sig) == -5)
         assert(sig.calc_dbfs() == -5)
 
 
@@ -126,36 +86,32 @@ class test_oaudio(unittest.TestCase):
         fs = 48000
         duration = 100e-3
 
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
+        sig = Signal(1, duration, fs)
         sig.add_tone(100).zeropad(number=10)
-        wv = sig.waveform
-        assert np.all(wv[:10] == wv[-10:])
-        assert np.all(wv[:10] == 0)
+        assert np.all(sig[:10] == sig[-10:])
+        assert np.all(sig[:10] == 0)
 
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
-        sig.add_tone(100).zeropad(number=[10, 5])
-        wv = sig.waveform
-        assert np.all(wv[:10] == 0)
-        assert np.all(wv[-5:] == 0)
+        # sig = Signal(1, duration, fs)
+        # sig.add_tone(100).zeropad(number=[10, 5])
+        # assert np.all(sig[:10] == 0)
+        # assert np.all(sig[-5:] == 0)
 
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
-        sig.add_tone(100).zeropad(duration=10e-3)
-        n_zeros = audio.nsamples(10e-3, fs)
-        wv = sig.waveform
-        assert np.all(wv[:n_zeros] == 0)
-        assert np.all(wv[-n_zeros:] == 0)
+        # sig = Signal()
+        # sig.init_signal(1, duration, fs)
+        # sig.add_tone(100).zeropad(duration=10e-3)
+        # n_zeros = audio.nsamples(10e-3, fs)
+        # wv = sig.waveform
+        # assert np.all(wv[:n_zeros] == 0)
+        # assert np.all(wv[-n_zeros:] == 0)
 
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
-        sig.add_tone(100).zeropad(duration=[5e-3, 10e-3])
-        n_zeros_s = audio.nsamples(5e-3, fs)
-        n_zeros_e = audio.nsamples(10e-3, fs)
-        wv = sig.waveform
-        assert np.all(wv[:n_zeros_s] == 0)
-        assert np.all(wv[-n_zeros_e:] == 0)
+        # sig = Signal()
+        # sig.init_signal(1, duration, fs)
+        # sig.add_tone(100).zeropad(duration=[5e-3, 10e-3])
+        # n_zeros_s = audio.nsamples(5e-3, fs)
+        # n_zeros_e = audio.nsamples(10e-3, fs)
+        # wv = sig.waveform
+        # assert np.all(wv[:n_zeros_s] == 0)
+        # assert np.all(wv[-n_zeros_e:] == 0)
 
     def test_fadewindow(self):
         fs = 48000
@@ -224,35 +180,29 @@ class test_oaudio(unittest.TestCase):
         duration = 100e-3
 
         # test addition of signal
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
+        sig = Signal(1, duration, fs)
         sig.add_tone(100)
-        sig2 = Signal()
-        sig2.init_signal(1, duration, fs)
+        sig2 = Signal(1, duration, fs)
         sig2.add_tone(100)
         sig.subtract(sig2)
-        testing.assert_allclose(sig.waveform, 0)
+        testing.assert_allclose(sig, 0)
 
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
+        sig = Signal(1, duration, fs)
         sig.add_tone(100)
         sig.subtract(2).subtract(1.0)
-        test = Signal()
-        test.init_signal(1, duration, fs)
+        test = Signal(1, duration, fs)
         test.add_tone(100)
-        testing.assert_almost_equal(sig.waveform, test.waveform - 3.0)
+        testing.assert_almost_equal(sig, test - 3.0)
 
-        sig = Signal()
-        sig.init_signal(2, duration, fs)
+        sig = Signal(2, duration, fs)
         sig.add_tone(100)
         sig.subtract(np.array([1, 2]))
-        testing.assert_allclose(sig[1].waveform.mean() - sig[0].waveform.mean(), -1)
+        testing.assert_allclose(sig[:, 1].mean(0) - sig[:, 0].mean(0), -1)
 
-        sig = Signal()
-        sig.init_signal(2, duration, fs)
+        sig = Signal(2, duration, fs)
         sig.add_tone(100)
-        sig[1].subtract(2 * sig[0].waveform)
-        testing.assert_allclose(sig[1].waveform /  sig[0].waveform, -1)
+        sig[:, 1].subtract(2 * sig[:, 0])
+        testing.assert_allclose(sig[:, 1] / sig[:, 0], -1)
 
 
     def test_multiply(self):
@@ -260,35 +210,29 @@ class test_oaudio(unittest.TestCase):
         duration = 100e-3
 
         # test addition of signal
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
+        sig = Signal(1, duration, fs)
         sig.add_tone(100)
-        sig2 = Signal()
-        sig2.init_signal(1, duration, fs)
+        sig2 = Signal(1, duration, fs)
         sig2.add_tone(100)
-        sig.multiply(sig2)
-        testing.assert_almost_equal(sig.waveform, sig2.waveform**2)
+        sig *= sig2
+        testing.assert_almost_equal(sig, sig2**2)
 
-        sig = Signal()
-        sig.init_signal(1, duration, fs)
+        sig = Signal(1, duration, fs)
         sig.add_tone(100)
         sig.multiply(2).multiply(2.1)
-        test = Signal()
-        test.init_signal(1, duration, fs)
+        test = Signal(1, duration, fs)
         test.add_tone(100)
-        testing.assert_almost_equal(sig.waveform, test.waveform * 2 * 2.1)
+        testing.assert_almost_equal(sig, test * 2 * 2.1)
 
-        sig = Signal()
-        sig.init_signal(2, duration, fs)
+        sig = Signal(2, duration, fs)
         sig.add_tone(100)
         sig.multiply(np.array([1, 2]))
-        testing.assert_almost_equal(sig[1].waveform, sig[0].waveform * 2)
+        testing.assert_almost_equal(sig[:, 1], sig[:, 0] * 2)
 
-        sig = Signal()
-        sig.init_signal(2, duration, fs)
+        sig = Signal(2, duration ,fs)
         sig.add_tone(100)
-        sig[1].multiply(sig[0].waveform)
-        testing.assert_almost_equal(sig[1].waveform,  sig[0].waveform**2)
+        sig[:, 1].multiply(sig[:, 0])
+        testing.assert_almost_equal(sig[:, 1],  sig[:, 0]**2)
 
     def test_divide(self):
         fs = 48000
@@ -321,15 +265,14 @@ class test_oaudio(unittest.TestCase):
         testing.assert_allclose(sig[:, 1], 1)
 
     def test_mean(self):
-        sig = Signal()
-        sig.init_signal(2, 100e-3, 100e3)
-        sig.add_tone(100).add(np.array([1, 2]))
-        mean = sig.mean()
+        sig = Signal(2, 100e-3, 100e3)
+        sig.add_tone(100)
+        sig += np.array([1, 2])
+        mean = sig.mean(0)
         testing.assert_almost_equal(mean, np.array([1, 2]))
 
     def test_rms(self):
-        sig = Signal()
-        sig.init_signal(2, 100e-3, 100e3)
+        sig = Signal(2, 100e-3, 100e3)
         sig.add_tone(100)
         rms = sig.rms()
         testing.assert_allclose(rms, 1. / np.sqrt(2))
@@ -338,16 +281,15 @@ class test_oaudio(unittest.TestCase):
         fs = 48000
         duration = 100e-3
 
-        sig = Signal()
-        sig.init_signal(2, duration, fs)
+        sig = Signal(2, duration, fs)
         sig.add_tone(100)
-        sig[0].phase_shift(np.pi)
+        sig[:, 0].phase_shift(np.pi)
 
         test1 = audio.generate_tone(100, duration, fs, np.pi)
         test2 = audio.generate_tone(100, duration, fs)
         test = np.column_stack([test1, test2])
 
-        testing.assert_almost_equal(sig.waveform, test)
+        testing.assert_almost_equal(sig, test)
 
     def test_cos_amp_modulator(self):
         fs = 48000
@@ -393,8 +335,15 @@ class test_oaudio(unittest.TestCase):
         fs = 48000
         sig = Signal(1, 1, 48000).add_noise()
         sig_c = sig.copy()
-        sig = sig.to_freqdomain().to_timedomain()
-        testing.assert_almost_equal(sig_c.waveform, sig.waveform)
+        sig = sig.to_freqdomain()
+        sig = sig.to_timedomain()
+        testing.assert_almost_equal(sig_c, sig)
+
+        sig = Signal(1, 3, 48000).add_noise()
+        sig_c = sig.copy()
+        sig = sig.to_freqdomain()
+        sig = sig.to_timedomain()
+        testing.assert_almost_equal(sig_c, sig)
 
 
     def test_crest_factor(self):

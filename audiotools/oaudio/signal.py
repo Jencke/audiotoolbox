@@ -135,35 +135,35 @@ class Signal(BaseSignal):
 
         return self
 
-    # def set_dbfs(self, dbfs):
-    #     """Normalize the signal to a given dBFS RMS value.
+    def set_dbfs(self, dbfs):
+        """Normalize the signal to a given dBFS RMS value.
 
-    #     Parameters:
-    #     -----------
-    #     dbfs : float
-    #         The dBFS RMS value
+        Parameters:
+        -----------
+        dbfs : float
+            The dBFS RMS value
 
-    #     Returns:
-    #     --------
-    #     Signal : Returns itself
+        Returns:
+        --------
+        Signal : Returns itself
 
-    #     """
+        """
 
-    #     nwv = audio.set_dbfs(self.waveform, dbfs)
-    #     self.set_waveform(nwv)
+        nwv = audio.set_dbfs(self, dbfs)
+        self[:] = nwv
 
-    #     return self
+        return self
 
-    # def calc_dbfs(self):
-    #     """Calculate the dBFS RMS value for the signal
+    def calc_dbfs(self):
+        """Calculate the dBFS RMS value for the signal
 
-    #     Returns:
-    #     --------
-    #     float : The dBFS RMS value
+        Returns:
+        --------
+        float : The dBFS RMS value
 
-    #     """
-    #     dbfs = audio.calc_dbfs(self.waveform)
-    #     return dbfs
+        """
+        dbfs = audio.calc_dbfs(self)
+        return dbfs
 
     def calc_crest_factor(self):
         """Calculate crest factor
@@ -233,48 +233,50 @@ class Signal(BaseSignal):
         dbspl = audio.calc_dbspl(self)
         return dbspl
 
-    # def zeropad(self, number=None, duration=None):
-    #     """Add zeros to start and end of signal
+    def zeropad(self, number=None, duration=None):
+        """Add zeros to start and end of signal
 
-    #     This function adds zeros of a given number or duration to the start or
-    #     end of a signal. The same number of zeros is added to the start and
-    #     end of a signal if a scalar is given as `number` or `duration. If a
-    #     vector of two values is given, the first defines the number at the
-    #     beginning, the second the number of zeros at the end.
+        This function adds zeros of a given number or duration to the start or
+        end of a signal. The same number of zeros is added to the start and
+        end of a signal if a scalar is given as `number` or `duration. If a
+        vector of two values is given, the first defines the number at the
+        beginning, the second the number of zeros at the end.
 
-    #     Parameters:
-    #     -----------
-    #     number : scalar or vecor of len(2), optional
-    #         Number of zeros.
-    #     duration : scalar or vecor of len(2), optional
-    #         duration of zeros in seconds.
+        Parameters:
+        -----------
+        number : scalar or vecor of len(2), optional
+            Number of zeros.
+        duration : scalar or vecor of len(2), optional
+            duration of zeros in seconds.
 
-    #     Returns:
-    #     --------
-    #     Signal : Returns itself
+        Returns:
+        --------
+        Signal : Returns itself
 
-    #     """
+        """
 
-    #     #Only one number or duration must be stated
-    #     if duration == None and number == None:
-    #         raise ValueError('Must state duration or number of zeros')
-    #     elif duration == None and number == None:
-    #             raise ValueError('Must state only duration or number of zeros')
-    #             return
+        #Only one number or duration must be stated
+        if duration == None and number == None:
+            raise ValueError('Must state duration or number of zeros')
+        elif duration == None and number == None:
+                raise ValueError('Must state only duration or number of zeros')
+                return
 
-    #     # If duration instead of number is stated, calculate the
-    #     # number of samples to buffer with
-    #     elif duration != None and number == None:
-    #         if not np.isscalar(duration):
-    #             number_s = audio.nsamples(duration[0], self.fs)
-    #             number_e = audio.nsamples(duration[1], self.fs)
-    #             number = (number_s, number_e)
-    #         else:
-    #             number = audio.nsamples(duration, self.fs)
+        # If duration instead of number is stated, calculate the
+        # number of samples to buffer with
+        elif duration != None and number == None:
+            if not np.isscalar(duration):
+                number_s = audio.nsamples(duration[0], self.fs)
+                number_e = audio.nsamples(duration[1], self.fs)
+                number = (number_s, number_e)
+            else:
+                number = audio.nsamples(duration, self.fs)
 
-    #     wv = audio.zeropad(self.waveform, number)
-    #     self.waveform = wv
-    #     return self
+        wv = audio.zeropad(self, number)
+        duration = len(wv) * 1 / self.fs
+        new_sig = Signal(self.n_channels, duration, self.fs)
+        new_sig[:] = wv
+        return new_sig
 
     def add_fade_window(self, rise_time, type='cos'):
         """Add a fade in/out window to the signal
@@ -367,30 +369,30 @@ class Signal(BaseSignal):
     #     return self
 
 
-    # def phase_shift(self, phase):
-    #     """Shifts all frequency components of a signal by a constant phase.
+    def phase_shift(self, phase):
+        """Shifts all frequency components of a signal by a constant phase.
 
-    #     Shift all frequency components of a given signal by a constant
-    #     phase by means of fFT transformation, phase shifting and inverse
-    #     transformation.
+        Shift all frequency components of a given signal by a constant
+        phase by means of fFT transformation, phase shifting and inverse
+        transformation.
 
-    #     Parameters:
-    #     -----------
-    #     signal : ndarray
-    #         The input signal
-    #     phase : scalar
-    #         The phase in rad by which the signal is shifted.
+        Parameters:
+        -----------
+        signal : ndarray
+            The input signal
+        phase : scalar
+            The phase in rad by which the signal is shifted.
 
-    #     Returns:
-    #     --------
-    #     ndarray :
-    #         The phase shifted signal
+        Returns:
+        --------
+        ndarray :
+            The phase shifted signal
 
-    #     """
-    #     wv = audio.phase_shift(self.waveform, phase, self.fs)
-    #     self.set_waveform(wv)
+        """
+        wv = audio.phase_shift(self, phase, self.fs)
+        self[:] = wv
 
-    #     return self
+        return self
 
     # def from_wav(self, filename, fullscale=True):
     #     wv, fs = wav.readwav(filename, fullscale)
@@ -424,20 +426,13 @@ class Signal(BaseSignal):
     #         ax.plot(self.time, self.waveform)
     #     return fig, ax
 
-    # def mean(self, axis=0):
-    #     """ Mean amplitude for each channel
+    def rms(self, axis=0):
+        """Root mean square for each channel
 
-    #     """
-    #     mean = self.waveform.mean(axis=axis)
-    #     return mean
+        """
 
-    # def rms(self):
-    #     """Root mean square for each channel
-
-    #     """
-
-    #     rms = np.sqrt(np.mean(self.waveform**2, axis=0))
-    #     return rms
+        rms = np.sqrt(np.mean(self**2, axis=axis))
+        return rms
 
     def amplitude_spectrum(self, single_sided=False, nfft=None):
         """Amplitude spectrum of the signal
@@ -477,7 +472,7 @@ class Signal(BaseSignal):
 
     # def power_spectrum(self, nfft=None):
     #     nfft = nfft if nfft else self.n_samples
-    #     freq, spec = self.autopower_spectrum(nfft)
+    #     freq, specsubtype = self.autopower_spectrum(nfft)
     #     freq = freq[nfft // 2:, ...]
     #     spec = spec[nfft // 2:, ...]
     #     spec *= 2
@@ -487,7 +482,9 @@ class Signal(BaseSignal):
     #     return freq, spec
 
     def to_freqdomain(self):
-        fd = audio.oaudio.FrequencyDomainSignal()
+        fd = audio.oaudio.FrequencyDomainSignal(self.n_channels,
+                                                self.duration, self.fs,
+                                                dtype=complex)
         fd.from_timedomain(self)
 
         return fd

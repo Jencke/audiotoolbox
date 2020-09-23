@@ -30,6 +30,15 @@ class BaseSignal(np.ndarray):
         obj.fill(0)
         return obj
 
+    def __array_finalize__(self, obj):
+        # If called explicitely, obj = None
+        if obj is None: return
+
+        # If it was called after e.g slicing, copy
+        # copy sample rate
+        self._fs = getattr(obj, '_fs', None)
+
+
     # setter and getter to handle the sample rates
     @property
     def fs(self):
@@ -71,3 +80,15 @@ class BaseSignal(np.ndarray):
         duration = self.n_samples / self.fs
 
         return duration
+
+    def multiply(self, x):
+        self *= x
+        return self
+
+    def add(self, x):
+        self += x
+        return self
+
+    def subtract(self, x):
+        self -= x
+        return self
