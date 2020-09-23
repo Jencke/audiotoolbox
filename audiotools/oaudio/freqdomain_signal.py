@@ -69,6 +69,11 @@ class FrequencyDomainSignal(BaseSignal):
     #         self._is_norm = True
     #     return self
 
+    def timeshift(self, time):
+        phases = audio.time2phase(time, self.freq)
+        self.waveform *= np.exp(1j * phases)
+        return self
+
     # def phase_shift(self, phase):
     #     shift_val = 1.0j * phase * np.sign(self.freq)
     #     print (shift_val)

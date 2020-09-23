@@ -7,4 +7,5 @@ if not (version_info.major == 3 and version_info.minor >= 0):
 from .audiotools import *
 from . import stats
 from . oaudio import Signal
+from . oaudio import FrequencyDomainSignal
 from . import interfaces

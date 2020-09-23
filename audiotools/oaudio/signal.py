@@ -345,33 +345,21 @@ class Signal(BaseSignal):
         mod = audio.cos_amp_modulator(signal=self,
                                       modulator_freq=frequency,
                                       fs=self.fs,
-                                      mod_index=m)
+                                      mod_index=m,
+                                      start_phase=start_phase)
         self *= mod
-
         return self
 
-    # def delay(self, delay, channels, method='fft', mode='zeros'):
+    def delay(self, delay, channels, method='fft'):
 
-    #     nshift = delay * self.fs
+        to_delay = self[:, channels]
+        if method == 'sample':
+            nshift = int(np.round(nshift))
+            shifted = audio.shift_signal(to_delay, nshift, mode='cyclic')
+        elif method == 'fft':
+            shifted = audio.fftshift_signal(to_delay, delay, self.fs)
 
-    #     if delay == 0: return self
-
-    #     # Allways use the sample algorithm if the delay is a full
-    #     # multiple of the time resolution
-    #     if nshift % 1 == 0:
-    #         method = 'sample'
-
-    #     to_delay = self.waveform[:, channels]
-    #     if method == 'sample':
-    #         nshift = int(np.round(nshift))
-    #         shifted = audio.shift_signal(to_delay, nshift, mode)
-    #     elif method == 'fft':
-    #         shifted = audio.fftshift_signal(to_delay, delay, self.fs, mode)
-
-    #     if mode =='cyclic':
-    #         self.waveform[:, channels] = shifted
-    #     else:
-    #         self.waveform[:, channels] = shifted[:self.n_samples, :]
+        self.waveform[:, channels] = shifted
 
     #     return self
 
@@ -487,6 +475,12 @@ class Signal(BaseSignal):
     #     if not nfft % 2:
     #         spec[-1, ...] /= 2       # nyquist bin should also not be doubled
     #     return freq, spec
+
+    def rectify(self):
+        """One-way rectification of the signal"""
+        self.waveform[self.waveform < 0] = 0
+        return self
+
 
     def to_freqdomain(self):
         fd = audio.oaudio.FrequencyDomainSignal(self.n_channels,
