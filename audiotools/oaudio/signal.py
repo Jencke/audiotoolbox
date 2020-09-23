@@ -272,11 +272,18 @@ class Signal(BaseSignal):
             else:
                 number = audio.nsamples(duration, self.fs)
 
-        wv = audio.zeropad(self, number)
-        duration = len(wv) * 1 / self.fs
-        new_sig = Signal(self.n_channels, duration, self.fs)
-        new_sig[:] = wv
-        return new_sig
+        # Zeropadding should only work
+        if not isinstance(self.base, type(None)):
+            raise RuntimeError('Zeropad can only be applied to the whole signal')
+        else:
+            wv = audio.zeropad(self, number)
+            self.resize(wv.shape, refcheck=False)
+            self[:] = wv
+            # print('no slice')
+        # new_sig = Signal(self.n_channels, duration, self.fs)
+        # new_sig[:] = wv
+        # self = new_sig
+        return self
 
     def add_fade_window(self, rise_time, type='cos'):
         """Add a fade in/out window to the signal

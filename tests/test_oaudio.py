@@ -91,27 +91,23 @@ class test_oaudio(unittest.TestCase):
         assert np.all(sig[:10] == sig[-10:])
         assert np.all(sig[:10] == 0)
 
-        # sig = Signal(1, duration, fs)
-        # sig.add_tone(100).zeropad(number=[10, 5])
-        # assert np.all(sig[:10] == 0)
-        # assert np.all(sig[-5:] == 0)
+        sig = Signal(1, duration, fs)
+        sig.add_tone(100).zeropad(number=[10, 5])
+        assert np.all(sig[:10] == 0)
+        assert np.all(sig[-5:] == 0)
 
-        # sig = Signal()
-        # sig.init_signal(1, duration, fs)
-        # sig.add_tone(100).zeropad(duration=10e-3)
-        # n_zeros = audio.nsamples(10e-3, fs)
-        # wv = sig.waveform
-        # assert np.all(wv[:n_zeros] == 0)
-        # assert np.all(wv[-n_zeros:] == 0)
+        sig = Signal(1, duration, fs)
+        sig.add_tone(100).zeropad(duration=10e-3)
+        n_zeros = audio.nsamples(10e-3, fs)
+        assert np.all(sig[:n_zeros] == 0)
+        assert np.all(sig[-n_zeros:] == 0)
 
-        # sig = Signal()
-        # sig.init_signal(1, duration, fs)
-        # sig.add_tone(100).zeropad(duration=[5e-3, 10e-3])
-        # n_zeros_s = audio.nsamples(5e-3, fs)
-        # n_zeros_e = audio.nsamples(10e-3, fs)
-        # wv = sig.waveform
-        # assert np.all(wv[:n_zeros_s] == 0)
-        # assert np.all(wv[-n_zeros_e:] == 0)
+        sig = Signal(1, duration, fs)
+        sig.add_tone(100).zeropad(duration=[5e-3, 10e-3])
+        n_zeros_s = audio.nsamples(5e-3, fs)
+        n_zeros_e = audio.nsamples(10e-3, fs)
+        assert np.all(sig[:n_zeros_s] == 0)
+        assert np.all(sig[-n_zeros_e:] == 0)
 
     def test_fadewindow(self):
         fs = 48000
