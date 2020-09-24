@@ -684,7 +684,7 @@ def fftshift_signal(signal, delay, fs):
 
     '''
     if delay == 0:
-        return
+        return signal
 
     n_pad = 0
     len_sig = len(signal)

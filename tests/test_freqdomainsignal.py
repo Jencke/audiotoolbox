@@ -11,10 +11,28 @@ import pytest
 
 class test_oaudio(unittest.TestCase):
 
-    # def test_set_waveform(self):
-    #     sig = FrequencyDomainSignal()
-    #     assert sig.n_channels == 0
-    #     assert sig.n_samples == 0
+    def test_basics(self):
+        sig = Signal(1, 1, 100)
+        assert sig.n_channels == 1
+        sig = sig.to_freqdomain()
+        assert sig.n_channels == 1
+        assert sig.freq.min() == -50
+        assert sig.freq.max() == 49
+        assert sig.omega.max() == 49 * np.pi * 2
+
+        sig = FrequencyDomainSignal(1, 1, 100)
+        assert sig.n_channels == 1
+        assert sig.freq.min() == -50
+        assert sig.freq.max() == 49
+        assert sig.omega.max() == 49 * np.pi * 2
+
+    def test_slice(self):
+        sig = FrequencyDomainSignal(2, 1, 100)
+        assert sig._fs == 100
+        sig2 = sig[:, 0]
+        assert sig2._fs == 100
+
+
 
     #     # Test set single channel signal
     #     sig.set_waveform(np.zeros(100), 100)

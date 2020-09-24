@@ -186,21 +186,19 @@ class Signal(BaseSignal):
         return crest_factor
 
 
-    # def bandpass(self, f_center, bw, ftype):
-    #     if ftype == 'brickwall':
-    #         f_low = f_center - 0.5 * bw
-    #         f_high = f_center + 0.5 * bw
-    #         filt_signal = brickwall(self.waveform, self.fs, f_low, f_high)
-    #     elif ftype == 'gammatone':
-    #         # f_low = f_center - 0.5 * bw
-    #         # f_high = f_center + 0.5 * bw
-    #         filt_signal = gammatone(self.waveform, self.fs, f_center, bw).real
-    #     else:
-    #         raise NotImplementedError('Filter type %s not implemented' % ftype)
+    def bandpass(self, f_center, bw, ftype):
+        if ftype == 'brickwall':
+            f_low = f_center - 0.5 * bw
+            f_high = f_center + 0.5 * bw
+            filt_signal = brickwall(self, self.fs, f_low, f_high)
+        elif ftype == 'gammatone':
+            filt_signal = gammatone(self, self.fs, f_center, bw).real
+        else:
+            raise NotImplementedError('Filter type %s not implemented' % ftype)
 
-    #     self.set_waveform(filt_signal)
+        self[:] = filt_signal
 
-    #     return self
+        return self
 
     # def lowpass(self, f_cut, ftype):
     #     if ftype == 'brickwall':
@@ -359,9 +357,9 @@ class Signal(BaseSignal):
         elif method == 'fft':
             shifted = audio.fftshift_signal(to_delay, delay, self.fs)
 
-        self.waveform[:, channels] = shifted
+        self[:, channels] = shifted
 
-    #     return self
+        return self
 
 
     def phase_shift(self, phase):
@@ -478,7 +476,7 @@ class Signal(BaseSignal):
 
     def rectify(self):
         """One-way rectification of the signal"""
-        self.waveform[self.waveform < 0] = 0
+        self[self < 0] = 0
         return self
 
 
