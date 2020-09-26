@@ -9,9 +9,7 @@ class FrequencyDomainSignal(BaseSignal):
     def from_timedomain(self, signal):
         self[:] = np.fft.fft(signal, axis=0)
         self /= signal.n_samples
-
         return self
-
 
     @property
     def freq(self):
@@ -34,10 +32,6 @@ class FrequencyDomainSignal(BaseSignal):
     def mag(self):
         """Retruns the absolute value of the waveform"""
         return self.abs()
-
-    # def abs(self):
-    #     """Retruns the absolute value of the waveform"""
-    #     return np.abs(self.waveform)
 
     # def timeshift(self, time):
     #     phases = audio.time2phase(time, self.freq)
