@@ -347,3 +347,32 @@ class test_oaudio(unittest.TestCase):
         cfac = sig.calc_crest_factor()
 
         testing.assert_almost_equal(cfac, np.sqrt(2))
+
+    def test_clip(self):
+        sig = Signal(2, 1, 48000).add_noise()
+        o_sig = sig.copy()
+        sig.clip(0, 1)
+        assert sig.n_samples == o_sig.n_samples
+
+        sig = Signal(2, 1, 48000).add_noise()
+        o_sig = sig.copy()
+        sig.clip(0, 0.5)
+        assert sig.n_samples == (o_sig.n_samples // 2)
+        assert np.all(sig == o_sig[:o_sig.n_samples // 2, :])
+        assert sig.base == None
+
+        sig = Signal(2, 1, 48000).add_noise()
+        o_sig = sig.copy()
+        sig.clip(0.5)
+        assert sig.n_samples == (o_sig.n_samples // 2)
+        assert np.all(sig == o_sig[o_sig.n_samples // 2:, :])
+        assert sig.base == None
+
+        # test negative indexing
+        sig = Signal(2, 1, 48000).add_noise()
+        o_sig = sig.copy()
+        n_samples = audio.nsamples(0.9, sig.fs)
+        sig.clip(0, -0.1)
+        assert sig.n_samples == n_samples
+        assert np.all(sig == o_sig[:n_samples, :])
+        assert sig.base == None

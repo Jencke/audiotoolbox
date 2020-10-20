@@ -21,6 +21,7 @@ class test_oaudio(unittest.TestCase):
         assert sig.omega.max() == 49 * np.pi * 2
 
         sig = FrequencyDomainSignal(1, 1, 100)
+        assert sig.dtype == np.dtype('complex128')
         assert sig.n_channels == 1
         assert sig.freq.min() == -50
         assert sig.freq.max() == 49

@@ -387,17 +387,24 @@ class Signal(BaseSignal):
 
         return self
 
-    # def from_wav(self, filename, fullscale=True):
-    #     wv, fs = wav.readwav(filename, fullscale)
+    def clip(self, t_start, t_end=None):
 
-    #     if wv.ndim > 1:
-    #         n_channels = wv.shape[1]
-    #     else:
-    #         n_channels = 1
+        if not isinstance(self.base, type(None)):
+            raise RuntimeError('Clipping can not be applied to slices')
 
-    #     duration = wv.shape[0] / fs
-    #     self.init_signal(n_channels, duration, fs)
-    #     self.set_waveform(wv)
+        i_start = audio.nsamples(t_start, self.fs)
+        if t_end:
+            if t_end < 0:
+                t_end = self.duration + t_end
+            i_end = audio.nsamples(t_end, self.fs)
+        else:
+            i_end = self.n_samples
+
+        self[0:i_end-i_start, :] = self[i_start:i_end, :]
+        newsize = i_end - i_start
+        self.resize((newsize, self.n_channels), refcheck=False)
+
+        return self
 
     # def play(self, bitdepth=32, buffsize=1024):
     #     wv = self.waveform
@@ -406,18 +413,18 @@ class Signal(BaseSignal):
     #                           bitdepth=bitdepth,
     #                           buffsize=buffsize)
 
-    # def plot(self, ax=None):
-    #     import matplotlib.pyplot as plt
-    #     if not ax:
-    #         fig, ax = plt.subplots(1, 1)
-    #     else:
-    #         fig = ax.figure
-    #     if self.n_channels == 2:
-    #         ax.plot(self.time, self[0].waveform, color=audio.COLOR_L)
-    #         ax.plot(self.time, self[1].waveform, color=audio.COLOR_R)
-    #     else:
-    #         ax.plot(self.time, self.waveform)
-    #     return fig, ax
+    def plot(self, ax=None):
+        import matplotlib.pyplot as plt
+        if not ax:
+            fig, ax = plt.subplots(1, 1)
+        else:
+            fig = ax.figure
+        if self.n_channels == 2:
+            ax.plot(self.time, self[:, 0], color=audio.COLOR_L)
+            ax.plot(self.time, self[:, 1], color=audio.COLOR_R)
+        else:
+            ax.plot(self.time, self)
+        return fig, ax
 
     def rms(self, axis=0):
         """Root mean square for each channel
@@ -487,13 +494,3 @@ class Signal(BaseSignal):
         fd.from_timedomain(self)
 
         return fd
-
-    # def to_analytical(self):
-    #     an = audio.oaudio.AnalyticalSignal()
-    #     an.from_timedomain(self)
-
-    #     return an
-
-    # def __repr__(self):
-    #     repr = "Signal(channels={channels}, samples={samples}, fs={fs} Hz, duration={duration} s)".format(channels=self.n_channels, fs=self.fs, duration=self.duration, samples=self.n_samples)
-    #     return repr

@@ -6,6 +6,10 @@ from .base_signal import BaseSignal
 
 class FrequencyDomainSignal(BaseSignal):
 
+    def __new__(cls, n_channels, duration, fs, dtype=complex):
+        obj = BaseSignal.__new__(cls, n_channels, duration, fs, dtype)
+        return obj
+
     def from_timedomain(self, signal):
         self[:] = np.fft.fft(signal, axis=0)
         self /= signal.n_samples

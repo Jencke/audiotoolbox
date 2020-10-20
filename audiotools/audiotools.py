@@ -6,6 +6,7 @@ from warnings import warn
 import numpy as np
 from numpy import pi
 
+
 from scipy.interpolate import interp1d
 from scipy.signal import hilbert
 from scipy.signal.windows import hann
@@ -14,6 +15,25 @@ from .filter import brickwall
 
 COLOR_R = '#d65c5c'
 COLOR_L = '#5c5cd6'
+
+
+def from_wav(self, filename, fullscale=True):
+    from .oaudio import Signal
+    from .wav import readwav
+
+    wv, fs = readwav(filename, fullscale)
+
+    if wv.ndim > 1:
+        n_channels = wv.shape[1]
+    else:
+        n_channels = 1
+
+    duration = wv.shape[0] / fs
+    sig = Signal(n_channels, duration, fs)
+    sig = wv
+
+    return sig
+
 
 def pad_for_fft(signal):
     '''Zero buffer a signal with zeros so that it reaches the next closest
