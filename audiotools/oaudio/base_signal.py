@@ -20,12 +20,16 @@ class BaseSignal(np.ndarray):
 
         n_samples = audio.nsamples(duration, fs)
 
-        if n_channels == 1:
-            obj = super(BaseSignal, cls).__new__(cls, shape=(n_samples),
-                                                 dtype=dtype)
+        if not np.ndim(n_channels): #if channels is only an integer
+            if n_channels == 1:
+                obj = super(BaseSignal, cls).__new__(cls, shape=(n_samples),
+                                                     dtype=dtype)
+            else:
+                obj = super(BaseSignal, cls).__new__(cls, shape=(n_samples, n_channels),
+                                                     dtype=dtype)
         else:
-            obj = super(BaseSignal, cls).__new__(cls, shape=(n_samples, n_channels),
-                                                 dtype=dtype)
+            obj = super(BaseSignal, cls).__new__(cls, shape=[n_samples] + list(n_channels),
+                                                     dtype=dtype)
         obj._fs = fs
         obj.fill(0)
         return obj
@@ -67,7 +71,7 @@ class BaseSignal(np.ndarray):
         if self.ndim == 1:
             return 1
         else:
-            return self.shape[1]
+            return self.shape[1:]
 
     @property
     def n_samples(self):

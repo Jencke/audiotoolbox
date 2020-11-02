@@ -20,6 +20,11 @@ class test_oaudio(unittest.TestCase):
         assert sig.duration == 100
         assert sig.n_samples == 100
 
+    def test_multidim(self):
+        sig = Signal((200, 2), 100, 1)
+
+        assert sig.n_samples == 100
+        assert sig.n_channels == (200, 2)
 
     def test_time(self):
         sig = Signal(1, 100, 1)
