@@ -49,20 +49,6 @@ class BaseSignal(np.ndarray):
         """Get the signals sampling rate"""
 
         return self._fs
-    @fs.setter
-    def fs(self, fs):
-        """Set the signals sampling rate"""
-
-        # If no fs provided or allready defined:
-        if fs == None and self._fs == None:
-            raise ValueError('No sampling rate provided')
-
-        # If fs is defined
-        elif fs != None:
-            if self._fs == None:
-                self._fs = fs
-            elif self._fs != fs:
-                raise ValueError('Sampling rate can\'t be changed')
 
     # setter and getter to handle the number of channels in the signal
     @property
