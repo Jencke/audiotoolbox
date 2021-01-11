@@ -50,9 +50,9 @@ class Signal(BaseSignal):
                                  start_phase)
 
         # If multiple channels are defined, stack them.
-        if self.n_channels > 1:
-            wv = np.tile(wv, [self.n_channels, 1]).T
-        self += amplitude * wv
+        # if self.n_channels > 1:
+        #     wv = np.tile(wv, [self.n_channels, 1]).T
+        self[:] = (self.T + amplitude * wv.T).T
 
         return self
 
@@ -97,21 +97,18 @@ class Signal(BaseSignal):
                                      ntype=ntype, n_channels=1,
                                      seed=seed)
 
-        if self.n_channels > 1:
-            self += noise[:, None]
-        else:
-            self += noise
-
+        self[:] = (self.T + noise.T).T
         return self
 
-    # def add_corr_noise(self, corr=1, channels=[0, 1], seed=None):
+    def add_corr_noise(self, corr=1, channels=[0, 1], seed=None):
 
-    #     noise = audio.generate_corr_noise(self.duration, self.fs, corr, seed=seed)
-    #     for i_c, n_c in enumerate(channels):
-    #         summed_wv = self[n_c].waveform + noise[:, i_c]
-    #         self[n_c].set_waveform(summed_wv)
+        noise = audio.generate_corr_noise(self.duration, self.fs, corr, seed=seed)
+        for i_c, n_c in enumerate(channels):
+            self[:, n_c] += noise[:, i_c]
+            # summed_wv = self[n_c].waveform + noise[:, i_c]
+            # self[n_c].set_waveform(summed_wv)
 
-    #     return self
+        return self
 
     def set_dbspl(self, dbspl):
         """Set sound pressure level in dB
@@ -348,17 +345,14 @@ class Signal(BaseSignal):
         self *= mod
         return self
 
-    def delay(self, delay, channels, method='fft'):
-
-        to_delay = self[:, channels]
+    def delay(self, delay, method='fft'):
         if method == 'sample':
-            nshift = int(np.round(nshift))
-            shifted = audio.shift_signal(to_delay, nshift, mode='cyclic')
+            nshift = audio.nsamples(delay, self.fs)
+            shifted = audio.shift_signal(self, -nshift, mode='cyclic')
         elif method == 'fft':
-            shifted = audio.fftshift_signal(to_delay, delay, self.fs)
+            shifted = self.to_freqdomain().time_shift(delay).to_timedomain()
 
-        self[:, channels] = shifted
-
+        self[:] = shifted
         return self
 
 
@@ -382,7 +376,7 @@ class Signal(BaseSignal):
             The phase shifted signal
 
         """
-        wv = audio.phase_shift(self, phase, self.fs)
+        wv = self.to_freqdomain().phase_shift(phase).to_timedomain()
         self[:] = wv
 
         return self
@@ -401,17 +395,17 @@ class Signal(BaseSignal):
             i_end = self.n_samples
 
         self[0:i_end-i_start, :] = self[i_start:i_end, :]
-        newsize = i_end - i_start
-        self.resize((newsize, self.n_channels), refcheck=False)
+        newshape = [i_end - i_start] + list(self.n_channels)
+        self.resize(newshape, refcheck=False)
 
         return self
 
-    # def play(self, bitdepth=32, buffsize=1024):
-    #     wv = self.waveform
-    #     audio.interfaces.play(signal=wv,
-    #                           fs=self.fs,
-    #                           bitdepth=bitdepth,
-    #                           buffsize=buffsize)
+    def play(self, bitdepth=32, buffsize=1024):
+        wv = self
+        audio.interfaces.play(signal=wv,
+                              fs=self.fs,
+                              bitdepth=bitdepth,
+                              buffsize=buffsize)
 
     def plot(self, ax=None):
         import matplotlib.pyplot as plt
@@ -428,7 +422,6 @@ class Signal(BaseSignal):
 
     def rms(self, axis=0):
         """Root mean square for each channel
-
         """
 
         rms = np.sqrt(np.mean(self**2, axis=axis))
@@ -486,6 +479,8 @@ class Signal(BaseSignal):
         self[self < 0] = 0
         return self
 
+    def writewav(self, filename, bitdepth=16):
+        wav.writewav(filename, self, self.fs, bitdepth)
 
     def to_freqdomain(self):
         fd = audio.oaudio.FrequencyDomainSignal(self.n_channels,
@@ -494,3 +489,8 @@ class Signal(BaseSignal):
         fd.from_timedomain(self)
 
         return fd
+
+    def to_analytical(self):
+        fd_signal = self.to_freqdomain()
+        a_signal = fd_signal.to_analytical()
+        return a_signal
