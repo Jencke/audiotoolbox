@@ -96,3 +96,9 @@ class BaseSignal(np.ndarray):
     def subtract(self, x):
         self -= x
         return self
+
+    def abs(self):
+        return np.abs(self)
+
+    def copy(self):
+        return copy.deepcopy(self)
