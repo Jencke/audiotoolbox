@@ -70,6 +70,8 @@ class BaseSignal(np.ndarray):
         """Get the number of channels in the signal"""
         if self.ndim == 1:
             return 1
+        elif self.ndim == 2:
+            return self.shape[1]
         else:
             return self.shape[1:]
 
@@ -84,6 +86,19 @@ class BaseSignal(np.ndarray):
         duration = self.n_samples / self.fs
 
         return duration
+
+    def concatenate(self, signal):
+
+        if not isinstance(self.base, type(None)):
+            raise RuntimeError('Can only concatenate to a full signal')
+        else:
+            old_n = self.n_samples
+            new_n = old_n + signal.n_samples
+            new_shape = list(self.shape)
+            new_shape[0] = new_n
+            self.resize(new_shape, refcheck=False)
+            self[old_n:] = signal
+        return self
 
     def multiply(self, x):
         self *= x
