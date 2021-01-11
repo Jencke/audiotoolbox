@@ -15,6 +15,49 @@ class FrequencyDomainSignal(BaseSignal):
         self /= signal.n_samples
         return self
 
+    def to_timedomain(self):
+        """Convert to timedomain.
+
+        Convert to timedomain by means of inverse DFT. If the complex part
+        after DFT is small (< 222e-16), it is neglected.
+
+        Returns:
+        --------
+        Signal : The timedomain representation
+
+        """
+
+        # revert normalization
+        self *= self.n_samples
+        wv = np.fft.ifft(self, axis=0)
+        wv = np.real_if_close(wv)
+        signal = audio.Signal(self.n_channels, self.duration, self.fs)
+        signal[:] = wv
+        return signal
+
+    def to_analytical(self):
+        nsamp = self.n_samples
+
+        h = np.zeros(nsamp)
+
+        if nsamp % 2 == 0:
+            h[0] = h[nsamp // 2] = 1
+            h[1:nsamp // 2] = 2
+        else:
+            h[0] = 1
+            h[1:(nsamp + 1) // 2] = 2
+
+        if self.ndim > 1:
+            ind = [np.newaxis] * self.ndim
+            ind[0] = slice(None)
+            h = h[tuple(ind)]
+
+        signal = audio.AnalyticalSignal(self.n_channels, self.duration, self.fs,
+                                        dtype=complex)
+        signal[:] = np.fft.ifft(self.copy() * h * self.n_samples, axis=0)
+        return signal
+
+
     @property
     def freq(self):
         """Returns the frequencies"""
@@ -35,35 +78,20 @@ class FrequencyDomainSignal(BaseSignal):
     @property
     def mag(self):
         """Retruns the absolute value of the waveform"""
-        return self.abs()
+        return self.abs
 
-    # def timeshift(self, time):
-    #     phases = audio.time2phase(time, self.freq)
-    #     self.waveform *= np.exp(1j * phases)
-    #     return self
+    def time_shift(self, time):
+        phases = - self.omega * time
 
-    # def phase_shift(self, phase):
-    #     shift_val = 1.0j * phase * np.sign(self.freq)
-    #     print (shift_val)
-    #     self[:] = self * np.exp(shift_val)
-    #     return self
+        # fix the last bin in case of odd samples in order to keep the
+        # tranformed signal real
+        if not self.n_samples % 2:
+            phases[self.n_samples//2] = 0
 
-    def to_timedomain(self):
-        """Convert to timedomain.
+        self *= np.exp(1j * phases)
+        return self
 
-        Convert to timedomain by means of inverse DFT. If the complex part
-        after DFT is small (< 222e-16), it is neglected.
-
-        Returns:
-        --------
-        Signal : The timedomain representation
-
-        """
-
-        # revert normalization
-        self *= self.n_samples
-        wv = np.fft.ifft(self, axis=0)
-        wv = np.real_if_close(wv)
-        signal = audio.Signal(self.n_channels, self.duration, self.fs)
-        signal[:] = wv
-        return signal
+    def phase_shift(self, phase):
+        shift_val = - 1.0j * phase * np.sign(self.freq)
+        self *= np.exp(shift_val)
+        return self

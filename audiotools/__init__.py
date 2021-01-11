@@ -8,4 +8,5 @@ from .audiotools import *
 from . import stats
 from . oaudio import Signal
 from . oaudio import FrequencyDomainSignal
+from . oaudio import AnalyticalSignal
 from . import interfaces
