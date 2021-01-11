@@ -123,6 +123,28 @@ def array_to_byte(signal, bitdepth):
     '''
     intsignal = fullscale_to_int(signal, bitdepth)
     intsignal = intsignal.reshape(np.product(intsignal.shape))
-    bytesignal = intsignal.tostring()
+    bytesignal = intsignal.tobytes()
 
     return bytesignal
+
+def writewav(filename, signal, fs, bitdepth):
+
+    # get information
+    nchannels = 1 if np.ndim(signal) == 0 else signal.shape[1]
+    nsamples = signal.shape[0]
+
+    if  bitdepth == 8:
+        sampwidth = 1
+    elif bitdepth == 16:
+        sampwidth = 2
+
+    bytesignal = array_to_byte(signal, bitdepth)
+
+    wf = wave.open(filename, 'wb')
+
+    wf.setnchannels(nchannels)
+    wf.setframerate(fs)
+    wf.setsampwidth(sampwidth)
+    wf.writeframes(bytesignal)
+
+    wf.close()
