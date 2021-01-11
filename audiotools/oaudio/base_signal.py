@@ -100,6 +100,10 @@ class BaseSignal(np.ndarray):
             self[old_n:] = signal
         return self
 
+    @property
+    def ch(self):
+        return _chIndexer(self)
+
     def multiply(self, x):
         self *= x
         return self
@@ -117,3 +121,20 @@ class BaseSignal(np.ndarray):
 
     def copy(self):
         return copy.deepcopy(self)
+
+class _chIndexer(object):
+    def __init__(self, obj):
+        self.idx_obj = obj
+    def __getitem__(self, key):
+        # If only one index is handed over
+        if not isinstance(key, tuple):
+            key = (key, )
+        idx = (slice(None, None, None), ) + key
+        return self.idx_obj[idx]
+    def __setitem__(self, key, value):
+        # If only one index is handed over
+        if not isinstance(key, tuple):
+            key = (key, )
+        idx = (slice(None, None, None), ) + key
+        self.idx_obj[idx] = value
+        return self.idx_obj
