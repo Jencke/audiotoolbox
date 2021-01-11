@@ -618,6 +618,35 @@ def test_crest_factor():
     cfac = audio.crest_factor(signal)
     testing.assert_almost_equal(cfac, np.sqrt(2))
 
-    signal[signal < 0] = 0
-    cfac = audio.crest_factor(signal)
-    testing.assert_almost_equal(cfac, 2)
+signal[signal < 0] = 0
+cfac = audio.crest_factor(signal)
+testing.assert_almost_equal(cfac, 2)
+
+
+# generate two noise vectors
+np.random.seed(seed)
+
+# nsamp = nsamples(duration, fs)
+# noise = np.random.randn(nsamp, 2)
+
+
+spec = np.fft.fft(noise2, axis=0)
+ia = spec[:, 0] / spec[:, 1]
+c, x = np.histogram(np.angle(ia), 1000)
+plt.plot(x[:-1], c)
+
+duration = 1
+fs= 48000
+noise = audio.generate_noise(duration, fs, n_channels=2)
+noise /= np.sqrt(noise.var(axis=0))
+Q, R = np.linalg.qr(noise)
+noise2 = Q / np.sqrt(Q.var(axis=0))
+#
+import matplotlib.pyplot as plt
+bins = np.linspace(-4, 4, 100)
+co, xo = np.histogram(noise[:, 0], bins)
+c, x = np.histogram(noise2[:, 0], bins)
+c2, x2 = np.histogram(noise2[:, 1], bins)
+plt.plot(xo[:-1], co, color='k')
+plt.plot(x[:-1], c)
+plt.plot(x2[:-1], c2)

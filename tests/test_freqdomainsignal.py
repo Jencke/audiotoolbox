@@ -1,5 +1,5 @@
 import unittest
-
+#
 from audiotools.oaudio import *
 import audiotools as audio
 import numpy as np
@@ -33,43 +33,41 @@ class test_oaudio(unittest.TestCase):
         sig2 = sig[:, 0]
         assert sig2._fs == 100
 
+    def test_phaseshift(self):
+        #phase shifting a full period
+        sig = audio.Signal(2, 1, 48000).add_tone(100)
+        sig[:, 1] = sig[:, 1].to_freqdomain().phase_shift(2*np.pi).to_timedomain()
+        testing.assert_almost_equal(sig[:, 1], sig[:, 0])
 
 
-    #     # Test set single channel signal
-    #     sig.set_waveform(np.zeros(100), 100)
-    #     assert sig.n_channels == 1
-    #     assert sig.n_samples == 100
-    #     assert len(sig.freq) == sig.n_samples
-    #     assert sig.freq.max() == 49.0
-    #     assert sig.freq.min() == -50.0
-    #     assert sig.duration == 1
+        # phase shifting half a period
+        sig = audio.Signal(2, 1, 48000)
+        sig[:, 0].add_tone(100, start_phase=-0.5 * np.pi)
+        sig[:, 1].add_tone(100)
+        sig[:, 1] = sig[:, 1].to_freqdomain().phase_shift(0.5 * np.pi).to_timedomain()
+        testing.assert_almost_equal(sig[:, 1], sig[:, 0])
 
-    # def test_phase_shift(self):
-    #     sig = Signal(1, 1, 48000).to_freqdomain()
-    #     assert np.all(sig.phase == 0)
+    def test_timeshift(self):
+        #timeshift a tone by one full phase
+        sig = audio.Signal(2, 1, 48000).add_tone(100)
+        sig[:, 1] = sig[:, 1].to_freqdomain().time_shift(1. / 100).to_timedomain()
+        testing.assert_almost_equal(sig[:, 1], sig[:, 0])
 
-    #     sig.phase_shift(0.2 * np.pi)
-    #     assert np.all(sig.phase == (0.2 * np.pi))
+        shift_samples = 500
+        shift_time = shift_samples / 48000
+        sig = audio.Signal(2, 1, 48000).add_noise()
+        sig[:, 1] = sig[:, 1].to_freqdomain().time_shift(shift_time).to_timedomain()
+        testing.assert_almost_equal(sig[shift_samples:, 1], sig[:-shift_samples, 0])
 
-        # sig = sig.to_timedomain().add_noise().to_freqdomain()
-        # assert ~np.all(sig.phase == 0)
+        shift_time = 3.2e-4
+        sig = audio.Signal(2, 1.000, 48000).add_noise()
+        res =  sig[:, 1].to_freqdomain().time_shift(shift_time).to_timedomain()
+        assert np.all(np.isreal(res))
 
-        # orig_phases = sig.phase
-        # shift = 0.2 * np.pi
-        # sig.phase_shift(shift)
-        # print((sig.phase - orig_phases) == shift)
+    def test_analytical(self):
+        sig = audio.Signal(2, 1, 48000).add_tone(100).to_freqdomain()
+        asig = sig.to_analytical()
+        testing.assert_almost_equal(sig.to_timedomain(), asig.to_timedomain())
 
-    # def test_init_signal(self):
-    #     sig = FrequencyDomainSignal()
-    #     sig.init_signal(1, 100, 1)
-
-    #     assert sig.fs == 1
-    #     assert sig.duration == 100
-    #     assert sig.n_samples == 100
-
-    #     sig = FrequencyDomainSignal(1, 100, 1)
-    #     assert sig.fs == 1
-    #     assert sig.duration == 100
-    #     assert sig.n_samples == 100
-
-    pass
+        sig = audio.Signal(2, 1, 48000).add_noise().to_freqdomain()
+        sig2 = sig.to_analytical()

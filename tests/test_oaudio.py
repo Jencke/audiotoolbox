@@ -51,8 +51,24 @@ class test_oaudio(unittest.TestCase):
         sig.add_tone(100, amplitude=2)
 
         test = 2 * audio.generate_tone(100, duration, fs)
-
         testing.assert_equal(sig, test)
+
+        sig = Signal(2, duration, fs)
+        sig.add_tone(100, amplitude=2)
+
+        test = 2 * audio.generate_tone(100, duration, fs)
+        testing.assert_equal(sig[:, 0], test)
+        testing.assert_equal(sig[:, 1], test)
+
+        sig = Signal((2, 2), duration, fs)
+        sig.add_tone(100, amplitude=2)
+
+        test = 2 * audio.generate_tone(100, duration, fs)
+        testing.assert_equal(sig[:, 0, 0], test)
+        testing.assert_equal(sig[:, 1, 0], test)
+        testing.assert_equal(sig[:, 0, 1], test)
+        testing.assert_equal(sig[:, 1, 1], test)
+
 
     def test_setdbspl(self):
         fs = 48000
@@ -278,6 +294,24 @@ class test_oaudio(unittest.TestCase):
         rms = sig.rms()
         testing.assert_allclose(rms, 1. / np.sqrt(2))
 
+    def test_delay(self):
+        fs = 48000
+        duration = 100e-3
+
+        shift_samples = 500
+        shift_time = shift_samples / 48000
+        sig = Signal(2, 1, 48000).add_noise()
+        sig[:, 1].delay(shift_time, method='fft')
+        testing.assert_almost_equal(sig[:-shift_samples, 1], sig[shift_samples:, 0])
+
+        shift_samples = 500
+        shift_time = shift_samples / 48000
+        sig = Signal(2, 1, 48000).add_noise()
+        sig[:, 1].delay(shift_time, method='sample')
+        testing.assert_almost_equal(sig[:-shift_samples, 1], sig[shift_samples:, 0])
+
+
+
     def test_phaseshift(self):
         fs = 48000
         duration = 100e-3
@@ -317,6 +351,9 @@ class test_oaudio(unittest.TestCase):
         sig = Signal(1, 1, 48000).add_noise()
         assert sig.max() != 0
         sig = Signal(2, 1, 48000).add_noise()
+        assert np.all(sig.max(axis=0) != 0)
+
+        sig = Signal((2, 2), 1, 48000).add_noise()
         assert np.all(sig.max(axis=0) != 0)
 
 
@@ -359,6 +396,11 @@ class test_oaudio(unittest.TestCase):
         sig.clip(0, 1)
         assert sig.n_samples == o_sig.n_samples
 
+        sig = Signal((2, 2), 1, 48000).add_noise()
+        o_sig = sig.copy()
+        sig.clip(0, 1)
+        assert sig.n_samples == o_sig.n_samples
+
         sig = Signal(2, 1, 48000).add_noise()
         o_sig = sig.copy()
         sig.clip(0, 0.5)
@@ -373,6 +415,13 @@ class test_oaudio(unittest.TestCase):
         assert np.all(sig == o_sig[o_sig.n_samples // 2:, :])
         assert sig.base == None
 
+        sig = Signal((2, 2), 1, 48000).add_noise()
+        o_sig = sig.copy()
+        sig.clip(0.5)
+        assert sig.n_samples == (o_sig.n_samples // 2)
+        assert np.all(sig == o_sig[o_sig.n_samples // 2:, :])
+        assert sig.base == None
+
         # test negative indexing
         sig = Signal(2, 1, 48000).add_noise()
         o_sig = sig.copy()
@@ -381,3 +430,12 @@ class test_oaudio(unittest.TestCase):
         assert sig.n_samples == n_samples
         assert np.all(sig == o_sig[:n_samples, :])
         assert sig.base == None
+
+    def test_concatenate(self):
+        sig_a = Signal(2, 1, 48000).add_noise()
+        old_n = sig_a.n_samples
+        sig_b = Signal(2, 0.5, 48000).add_noise()
+
+        sig_a.concatenate(sig_b)
+        assert sig_a.n_samples == old_n + sig_b.n_samples
+        testing.assert_equal(sig_a[old_n:], sig_b)
