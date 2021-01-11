@@ -298,17 +298,32 @@ class test_oaudio(unittest.TestCase):
         fs = 48000
         duration = 100e-3
 
-        shift_samples = 500
-        shift_time = shift_samples / 48000
-        sig = Signal(2, 1, 48000).add_noise()
-        sig[:, 1].delay(shift_time, method='fft')
-        testing.assert_almost_equal(sig[:-shift_samples, 1], sig[shift_samples:, 0])
-
+        # test sample shift function
         shift_samples = 500
         shift_time = shift_samples / 48000
         sig = Signal(2, 1, 48000).add_noise()
         sig[:, 1].delay(shift_time, method='sample')
-        testing.assert_almost_equal(sig[:-shift_samples, 1], sig[shift_samples:, 0])
+        testing.assert_almost_equal(sig[:-shift_samples, 0], sig[shift_samples:, 1])
+
+        # sample shift multiple dimensions
+        shift_samples = 500
+        shift_time = shift_samples / 48000
+        sig = Signal((2, 2), 1, 48000).add_noise()
+        sig[:, 1].delay(shift_time, method='sample')
+        testing.assert_almost_equal(sig[:-shift_samples, 0], sig[shift_samples:, 1])
+
+        shift_samples = 500
+        shift_time = shift_samples / 48000
+        sig = Signal(2, 1, 48000).add_noise()
+        sig[:, 1].delay(shift_time, method='fft')
+        testing.assert_almost_equal(sig[:-shift_samples, 0], sig[shift_samples:, 1])
+
+        shift_samples = 500
+        shift_time = shift_samples / 48000
+        sig = Signal(2, 1, 48000).add_noise()
+        sig[:, 1].delay(shift_time, method='fft')
+        sig[:, 0].delay(shift_time, method='sample')
+        testing.assert_almost_equal(sig[:, 0], sig[:, 1])
 
 
 
@@ -396,6 +411,7 @@ class test_oaudio(unittest.TestCase):
         sig.clip(0, 1)
         assert sig.n_samples == o_sig.n_samples
 
+        # Test multi channel clipping (2 x 2 )
         sig = Signal((2, 2), 1, 48000).add_noise()
         o_sig = sig.copy()
         sig.clip(0, 1)
@@ -439,3 +455,7 @@ class test_oaudio(unittest.TestCase):
         sig_a.concatenate(sig_b)
         assert sig_a.n_samples == old_n + sig_b.n_samples
         testing.assert_equal(sig_a[old_n:], sig_b)
+
+
+
+#sig[:, 1].delay(shift_time, method='sample')

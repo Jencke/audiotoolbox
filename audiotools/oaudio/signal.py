@@ -346,9 +346,39 @@ class Signal(BaseSignal):
         return self
 
     def delay(self, delay, method='fft'):
+        '''Delays the signal by circular shifting
+
+        Circular shift the functions foreward to create a certain time
+        delay relative to the orginal time. E.g if shifted by an
+        equivalent of N samples, the value at sample i will move to
+        sample i + N.
+
+        Two methods can be used. Using the default method 'fft', the
+        signal is shifted by applyint a FFT transform, and phase
+        shifting each frequency accoring to the delay and applying an
+        inverse transform. This is identical to using the time_shift()
+        method of the FrequencyDomainSignal class. When using the
+        method 'sample', the signal is time delayed by circular
+        shifting the signal by the number of samples that is closest
+        to delay.
+
+        Parameters:
+        -----------
+        delay : float
+            The delay in secons
+        method : {'fft', 'samples'} optional
+            The method used to delay the signal (default: 'fft')
+
+        Returns:
+        --------
+        Signal:
+            Returns itself
+
+        '''
+
         if method == 'sample':
             nshift = audio.nsamples(delay, self.fs)
-            shifted = audio.shift_signal(self, -nshift, mode='cyclic')
+            shifted = audio.shift_signal(self, nshift, mode='cyclic')
         elif method == 'fft':
             shifted = self.to_freqdomain().time_shift(delay).to_timedomain()
 
@@ -360,20 +390,18 @@ class Signal(BaseSignal):
         """Shifts all frequency components of a signal by a constant phase.
 
         Shift all frequency components of a given signal by a constant
-        phase by means of fFT transformation, phase shifting and inverse
-        transformation.
+        phase. This is identical to calling the phase_shift method of
+        the FrequencyDomainSignal class.
 
         Parameters:
         -----------
-        signal : ndarray
-            The input signal
         phase : scalar
             The phase in rad by which the signal is shifted.
 
         Returns:
         --------
-        ndarray :
-            The phase shifted signal
+        Signal :
+            Returns itself
 
         """
         wv = self.to_freqdomain().phase_shift(phase).to_timedomain()
@@ -382,10 +410,30 @@ class Signal(BaseSignal):
         return self
 
     def clip(self, t_start, t_end=None):
+        '''Clip the signal between two points in time
+
+        removes the number of semples according to t_start and
+        t_end. This method can not be applied to a single channel or
+        slice.
+
+        Parameters:
+        -----------
+        t_start: float
+            Signal time at which the returned signal should start
+        t_end: flot or None (optional)
+           Signal time at which the signal should stop. The full remaining
+           signal is used if set to None. (default: None)
+
+        Returns:
+        --------
+        Signal:
+            Returns itself
+        '''
 
         if not isinstance(self.base, type(None)):
             raise RuntimeError('Clipping can not be applied to slices')
 
+        # calculate the indices at which the signal should be cliped
         i_start = audio.nsamples(t_start, self.fs)
         if t_end:
             if t_end < 0:
@@ -394,8 +442,12 @@ class Signal(BaseSignal):
         else:
             i_end = self.n_samples
 
+        #  store the cliped part in the signal
         self[0:i_end-i_start, :] = self[i_start:i_end, :]
-        newshape = [i_end - i_start] + list(self.n_channels)
+
+
+        newshape = list(self.shape)
+        newshape[0] = i_end - i_start
         self.resize(newshape, refcheck=False)
 
         return self
