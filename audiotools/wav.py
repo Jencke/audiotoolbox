@@ -123,7 +123,7 @@ def array_to_byte(signal, bitdepth):
     '''
     intsignal = fullscale_to_int(signal, bitdepth)
     intsignal = intsignal.reshape(np.product(intsignal.shape))
-    bytesignal = intsignal.tostring()
+    bytesignal = intsignal.tobytes()
 
     return bytesignal
 
