@@ -43,14 +43,14 @@ class BaseSignal(np.ndarray):
         self._fs = getattr(obj, '_fs', None)
 
 
-    # setter and getter to handle the sample rates
+    # getter to handle the sample rates
     @property
     def fs(self):
         """Get the signals sampling rate"""
 
         return self._fs
 
-    # setter and getter to handle the number of channels in the signal
+    # getter to handle the number of channels in the signal
     @property
     def n_channels(self):
         """Get the number of channels in the signal"""
@@ -73,6 +73,10 @@ class BaseSignal(np.ndarray):
 
         return duration
 
+    @property
+    def ch(self):
+        return _chIndexer(self)
+
     def concatenate(self, signal):
 
         if not isinstance(self.base, type(None)):
@@ -85,10 +89,6 @@ class BaseSignal(np.ndarray):
             self.resize(new_shape, refcheck=False)
             self[old_n:] = signal
         return self
-
-    @property
-    def ch(self):
-        return _chIndexer(self)
 
     def multiply(self, x):
         self *= x

@@ -57,17 +57,17 @@ class test_oaudio(unittest.TestCase):
         sig.add_tone(100, amplitude=2)
 
         test = 2 * audio.generate_tone(100, duration, fs)
-        testing.assert_equal(sig[:, 0], test)
-        testing.assert_equal(sig[:, 1], test)
+        testing.assert_equal(sig.ch[0], test)
+        testing.assert_equal(sig.ch[1], test)
 
         sig = Signal((2, 2), duration, fs)
         sig.add_tone(100, amplitude=2)
 
         test = 2 * audio.generate_tone(100, duration, fs)
-        testing.assert_equal(sig[:, 0, 0], test)
-        testing.assert_equal(sig[:, 1, 0], test)
-        testing.assert_equal(sig[:, 0, 1], test)
-        testing.assert_equal(sig[:, 1, 1], test)
+        testing.assert_equal(sig.ch[0, 0], test)
+        testing.assert_equal(sig.ch[1, 0], test)
+        testing.assert_equal(sig.ch[0, 1], test)
+        testing.assert_equal(sig.ch[1, 1], test)
 
 
     def test_setdbspl(self):
@@ -456,6 +456,15 @@ class test_oaudio(unittest.TestCase):
         assert sig_a.n_samples == old_n + sig_b.n_samples
         testing.assert_equal(sig_a[old_n:], sig_b)
 
+    def test_channel_indexing(self):
+        sig = Signal((2, 2), 1, 48000).add_noise()
+        testing.assert_equal(sig.ch[0, 0], sig[:, 0, 0])
+        testing.assert_equal(sig.ch[0], sig[:, 0])
 
+        sig = Signal(2, 1, 48000)
+        sig.ch[0] = 1
+        assert np.all(sig[:, 0] == 1)
 
-#sig[:, 1].delay(shift_time, method='sample')
+        sig.ch[1].add_tone(500)
+        tone_2 = audio.generate_tone(500, sig.duration, sig.fs)
+        testing.assert_equal(sig.ch[1], tone_2)
