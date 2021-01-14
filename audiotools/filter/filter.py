@@ -27,7 +27,6 @@ def gammatone(signal, fs, cf, bw, order=4, attenuation_db=-3, return_complex=Tru
       Whether the complex filter output or only it's real
       part is returned (default = True)
 
-
     Returns
     -------
       The filtered signal.

@@ -71,11 +71,11 @@ class BaseSignal(np.ndarray):
         Returns an indexer class which enables direct indexing and
         slicing of the channels indipendent of samples.
 
-         Examples
-         --------
-         >>> sig = audiotools.Signal((2, 3), 1, 48000).add_noise()
-         >>> print(np.all(sig.ch[1, 2] is sig[:, 1, 2]))
-         True
+        Examples
+        --------
+        >>> sig = audiotools.Signal((2, 3), 1, 48000).add_noise()
+        >>> print(np.all(sig.ch[1, 2] is sig[:, 1, 2]))
+        True
 
         """
         return _chIndexer(self)
@@ -86,12 +86,12 @@ class BaseSignal(np.ndarray):
         This method appends another signal to the end of the current
         signal.
 
-        Parameters:
+        Parameters
         -----------
         signal : signal or ndarray
             The signal to append
 
-        Returns:
+        Returns
         --------
         Returns itself
 
@@ -112,12 +112,12 @@ class BaseSignal(np.ndarray):
 
         This function allowes for in-place multiplication
 
-        Parameters:
+        Parameters
         -----------
         x : scalar or ndarray
             The value or array to muliply with the signal
 
-        Returns:
+        Returns
         --------
         Returns itself
 
@@ -136,12 +136,12 @@ class BaseSignal(np.ndarray):
 
         This function allowes for in-place summation.
 
-        Parameters:
+        Parameters
         -----------
         x : scalar or ndarray
             The value or array to add to the signal
 
-        Returns:
+        Returns
         --------
         Returns itself
 

@@ -6,15 +6,6 @@ from .base_signal import BaseSignal
 import copy
 
 class Signal(BaseSignal):
-    r"""
-    Attributes:
-    -----------
-    fs
-    n_channels
-    n_samples
-    duration
-    time
-    """
     @property
     def time(self):
         r"""The time vector for the signal"""
@@ -241,22 +232,39 @@ class Signal(BaseSignal):
         return crest_factor
 
 
-    def bandpass(self, f_center, bw, ftype):
+    def bandpass(self, f_center, bw, ftype, **kwargs):
         r"""Apply a bandpass filter
 
-        Applies a bandpass filter. The availible filters are:
+        Applies a bandpass filter to the signal. The availible filters are:
+
         - brickwall: A 'optimal' brickwall filter
         - gammatone: A real valued gammatone filter
 
-        .. math:: C = \frac{|x_{peak}|}{x_{rms}}
+        For additional filter parameters and detailed description see
+        the respective implementations:
 
-        where :math:`x_{peak}` is the maximum of the absolute value and
-        :math:`x{rms}` is the effective value of the signal.
+        - audiotools.signal.gammatone
+        - audiotools.signal.brickwall
+
+        Parameters
+        ----------
+        f_center : scalar
+            The banddpass center frequency in Hz
+        bw : scalar
+            The filter bandwidth in Hz
+        ftype : {'brickwall', 'gammatone'}
+            The filtertype
+        **kwargs :
+            Further keyword arguments are passed to the respective filter functions
 
         Returns
         --------
-        scalar :
-            The crest factor
+            Returns itself
+
+        See Also
+        --------
+        audiotools.filter.brickwall
+        audiotools.filter.gammatone
 
         """
 

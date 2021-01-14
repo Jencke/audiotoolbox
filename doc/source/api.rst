@@ -8,8 +8,9 @@ Fluent Interface API
 
 .. autoclass:: audiotools.Signal
    :members: fs, n_channels, n_samples, duration, ch, concatenate,
-             multiply, add, subtract, abs, time, add_tone, add_noise,
-             set_dbspl, calc_dbspl, set_dbfs, calc_dbfs, calc_crest_factor
+             multiply, add, abs, time, add_tone, add_noise,
+             set_dbspl, calc_dbspl, set_dbfs, calc_dbfs, calc_crest_factor,
+	     bandpass
 
 Function Based API
 ------------------
