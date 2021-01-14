@@ -4,18 +4,9 @@ from audiotools.filter import brickwall, gammatone
 import copy
 
 class BaseSignal(np.ndarray):
-    r"""
-    Attributes:
-    -----------
-    waveform : ndarray
-      The signals waveform
-    fs
-    n_channels
-    n_samples
-    duration
-    time
-    """
+    r""" Basic Signal class inherited by all Signal representations
 
+    """
     def __new__(cls, n_channels, duration, fs, dtype=float):
 
         n_samples = audio.nsamples(duration, fs)
@@ -46,14 +37,14 @@ class BaseSignal(np.ndarray):
     # getter to handle the sample rates
     @property
     def fs(self):
-        """Get the signals sampling rate"""
+        """Sampling rate of the signal in Hz"""
 
         return self._fs
 
     # getter to handle the number of channels in the signal
     @property
     def n_channels(self):
-        """Get the number of channels in the signal"""
+        """Number of channels in the signal"""
         if self.ndim == 1:
             return 1
         elif self.ndim == 2:
@@ -63,22 +54,48 @@ class BaseSignal(np.ndarray):
 
     @property
     def n_samples(self):
-        """Get the number of samples in the signal"""
+        """Number of samples in the signal"""
         return self.shape[0]
 
     @property
     def duration(self):
-        """Get the duration of the signal in seconds"""
+        """Duration of the signal in seconds"""
         duration = self.n_samples / self.fs
 
         return duration
 
     @property
     def ch(self):
+        r"""Direct channel indexer
+
+        Returns an indexer class which enables direct indexing and
+        slicing of the channels indipendent of samples.
+
+         Examples
+         --------
+         >>> sig = audiotools.Signal((2, 3), 1, 48000).add_noise()
+         >>> print(np.all(sig.ch[1, 2] is sig[:, 1, 2]))
+         True
+
+        """
         return _chIndexer(self)
 
     def concatenate(self, signal):
+        '''Concatenate another signal or array
 
+        This method appends another signal to the end of the current
+        signal.
+
+        Parameters:
+        -----------
+        signal : signal or ndarray
+            The signal to append
+
+        Returns:
+        --------
+        Returns itself
+
+        '''
         if not isinstance(self.base, type(None)):
             raise RuntimeError('Can only concatenate to a full signal')
         else:
@@ -91,22 +108,61 @@ class BaseSignal(np.ndarray):
         return self
 
     def multiply(self, x):
+        """In-place multiplication
+
+        This function allowes for in-place multiplication
+
+        Parameters:
+        -----------
+        x : scalar or ndarray
+            The value or array to muliply with the signal
+
+        Returns:
+        --------
+        Returns itself
+
+        Examples
+        --------
+        >>> sig = audiotools.Signal(1, 1, 48000).add_tone(500).multiply(2)
+        >>> print(sig.max())
+        2.0
+
+        """
         self *= x
         return self
 
     def add(self, x):
+        """In-place summation
+
+        This function allowes for in-place summation.
+
+        Parameters:
+        -----------
+        x : scalar or ndarray
+            The value or array to add to the signal
+
+        Returns:
+        --------
+        Returns itself
+
+        Examples
+        --------
+        >>> sig = audiotools.Signal(1, 1, 48000).add_tone(500).add(2)
+        >>> print(sig.mean())
+        2.0
+
+        """
+
         self += x
         return self
 
-    def subtract(self, x):
-        self -= x
-        return self
-
     def abs(self):
-        return np.abs(self)
+        """ Absolute value
 
-    def copy(self):
-        return copy.deepcopy(self)
+        Calculates the absolute value or modulus of all values of the signal
+
+        """
+        return np.abs(self)
 
 class _chIndexer(object):
     def __init__(self, obj):

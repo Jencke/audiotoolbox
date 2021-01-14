@@ -192,36 +192,6 @@ class test_oaudio(unittest.TestCase):
         testing.assert_allclose(sig[:,1] /  sig[:,0], 2)
 
 
-    def test_subtract(self):
-        fs = 48000
-        duration = 100e-3
-
-        # test addition of signal
-        sig = Signal(1, duration, fs)
-        sig.add_tone(100)
-        sig2 = Signal(1, duration, fs)
-        sig2.add_tone(100)
-        sig.subtract(sig2)
-        testing.assert_allclose(sig, 0)
-
-        sig = Signal(1, duration, fs)
-        sig.add_tone(100)
-        sig.subtract(2).subtract(1.0)
-        test = Signal(1, duration, fs)
-        test.add_tone(100)
-        testing.assert_almost_equal(sig, test - 3.0)
-
-        sig = Signal(2, duration, fs)
-        sig.add_tone(100)
-        sig.subtract(np.array([1, 2]))
-        testing.assert_allclose(sig[:, 1].mean(0) - sig[:, 0].mean(0), -1)
-
-        sig = Signal(2, duration, fs)
-        sig.add_tone(100)
-        sig[:, 1].subtract(2 * sig[:, 0])
-        testing.assert_allclose(sig[:, 1] / sig[:, 0], -1)
-
-
     def test_multiply(self):
         fs = 48000
         duration = 100e-3
@@ -250,36 +220,6 @@ class test_oaudio(unittest.TestCase):
         sig.add_tone(100)
         sig[:, 1].multiply(sig[:, 0])
         testing.assert_almost_equal(sig[:, 1],  sig[:, 0]**2)
-
-    def test_divide(self):
-        fs = 48000
-        duration = 100e-3
-
-        # test addition of signal
-        sig = Signal(1, duration, fs)
-        sig.add_tone(100)
-        sig2 = Signal(1, duration, fs)
-        sig2.add_tone(100)
-        sig /= sig2
-        testing.assert_allclose(sig, 1)
-
-        sig = Signal(1, duration, fs)
-        sig.add_tone(100)
-        sig /= 2
-        sig /= 2.1
-        test = Signal(1, duration, fs)
-        test.add_tone(100)
-        testing.assert_almost_equal(sig, test / 2 / 2.1)
-
-        sig = Signal(2, duration, fs)
-        sig.add_tone(100)
-        sig /= np.array([1, 2])
-        testing.assert_almost_equal(sig[:, 1], sig[:, 0] / 2)
-
-        sig = Signal(2, duration, fs)
-        sig.add_tone(100)
-        sig[:, 1] /= sig[:, 0]
-        testing.assert_allclose(sig[:, 1], 1)
 
     def test_mean(self):
         sig = Signal(2, 100e-3, 100e3)
@@ -370,6 +310,10 @@ class test_oaudio(unittest.TestCase):
 
         sig = Signal((2, 2), 1, 48000).add_noise()
         assert np.all(sig.max(axis=0) != 0)
+
+        sig = Signal((2, 2), 1, 48000).add_noise(variance = 2)
+        assert np.var(sig.ch[0]) == np.var(sig.ch[1])
+        testing.assert_almost_equal(np.var(sig), 2)
 
 
     def test_amplitude_spectrum(self):
