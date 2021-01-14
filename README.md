@@ -7,7 +7,7 @@ A python package for creating acoustic stimuli primariliy aimed at auditory rese
 ## How to install audiotools
  * Clone the repository: `git clone https://github.com/Jencke/audiotools.git`
  * Install the package: `pip install ./`
- * Optionally: Run the tests: `pytest`
+ * Optionally run the tests: `pytest`
 
 ## Documentation
 The package documentation can be found at: https://audiotools.readthedocs.io/en/latest/
