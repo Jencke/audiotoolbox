@@ -29,7 +29,7 @@ author = 'Jörg Encke'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
-    'numpydoc']
+    'sphinx.ext.napoleon']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
