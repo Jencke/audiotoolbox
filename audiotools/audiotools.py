@@ -279,11 +279,13 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
         spectral shape of the noise
     n_channels : int
         number of indipendant noise channels
-    seed :
-        seed for the random number generator
+    seed : int or 1-d array_like, optional
+        Seed for `RandomState`.
+        Must be convertible to 32 bit unsigned integers.
+
 
     Results
-    --------
+    -------
     ndarray
         noise vector of the shape (NxM) where N is the number of samples
         and M >the number of channels
@@ -865,19 +867,34 @@ def set_dbspl(signal, dbspl_val):
 def set_dbfs(signal, dbfs_val):
     r"""Full scale normalization of the signal.
 
-    Adjust signal peak amplitude to a given dB value relative to 1
+    Normalizes the signal to dB Fullscale
+    for this, the Signal is multiplied with the factor :math:`A`
 
-    Parameters:
-    -----------
+    .. math:: A = \frac{1}{\sqrt{2}\sigma} 10^\frac{L}{20}
+
+    where :math:`L` is the goal Level, and :math:`\sigma` is the
+    RMS of the signal.
+
+    Parameters
+    ----------
     signal : ndarray
         The input signal
     dbfs_val : float
         The db full scale value to reach
 
-    Returns:
-    --------
+    Returns
+    -------
     ndarray :
         The amplitude adjusted signal
+
+    See Also
+    --------
+    audiotools.set_dbspl
+    audiotools.set_dbfs
+    audiotools.calc_dbfs
+    audiotools.Signal.set_dbspl
+    audiotools.Signal.calc_dbspl
+    audiotools.Signal.calc_dbfs
 
     """
 
@@ -891,14 +908,17 @@ def set_dbfs(signal, dbfs_val):
 def calc_dbfs(signal):
     r"""Calculate the dBFS RMS value of a given signal.
 
+    .. math:: L = 20 \log_10\left(\sqrt{2}\sigma\right)
 
-    Parameters:
-    -----------
+    where :math:`\sigma` is the signals RMS.
+
+    Parameters
+    ----------
     signal : ndarray
         The input signal
 
-    Returns:
-    --------
+    Returns
+    -------
     float :
         The dBFS RMS value
 
