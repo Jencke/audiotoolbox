@@ -17,21 +17,24 @@ class Signal(BaseSignal):
     """
     @property
     def time(self):
-        """Get the time assigned to each sample of the signal"""
+        """The time vector for the signal"""
         time = audio.get_time(self, self.fs)
         return time
 
     def add_tone(self, frequency, amplitude=1, start_phase=0):
-        r"""Add a sine tone with a given frequency, amplitude and start_phase
+        r"""Add a cosine to the signal
 
         This function will add a pure tone to the current
         waveform. following the equation:
-        .. math:: x = x + cos(2\pi f t + \phi_0)
-        where x is the waveform, f is the frequency, t is the time and
-        phi_0 the starting phase.  The first evulated timepoint is 0.
 
-        Parameters:
-        -----------
+        .. math:: x = x + cos(2\pi f t + \phi_0)
+
+        where :math:`x` is the waveform, :math:`f` is the frequency,
+        :math`t` is the time and :math:`\phi_0` the starting phase.
+        The first evulated timepoint is 0.
+
+        Parameters
+        ----------
         frequency : scalar
             The tone frequency in Hz.
         amplitude : scalar, optional
@@ -39,9 +42,13 @@ class Signal(BaseSignal):
         start_phase : scalar, optional
             The starting phase of the cosine. (default = 0)
 
-        Returns:
+        Returns
+        -------
+        Returns itself
+
+        See Also
         --------
-        Signal : Returns itself
+        audiotools.generate_tone
 
         """
         wv = audio.generate_tone(frequency,
@@ -72,32 +79,46 @@ class Signal(BaseSignal):
 
         return self
 
-    def add_noise(self, ntype='white', seed=None):
+    def add_noise(self, ntype='white', variance=1, seed=None):
         r"""Add uncorrelated noise to the signal
 
-        Add uncorrelated noise of a given spectral shape to all
-        channels of the signal. Possible spectral shapes are 'white',
-        'pink' (1 / f) and 'brown' (1 / f^2).
+        add gaussian noise with a defined variance and different
+        spectral shapes. The noise is generated in the frequency domain
+        using the gaussian pseudorandom generator ``numpy.random.randn``.
+        The real and imaginary part of each frequency component is set
+        using the psudorandom generator. Each frequency bin is then
+        weighted dependent on the spectral shape. The resulting spektrum
+        is then transformed into the time domain using ``numpy.fft.ifft``
 
+        Weighting functions:
 
-        Parameters:
-        -----------
+         - white: :math:`w(f) = 1`
+         - pink: :math:`w(f) = \frac{1}{\sqrt{f}}`
+         - brown: :math:`w(f) = \frac{1}{f}`
+
+        Parameters
+        ----------
         ntype : {'white', 'pink', 'brown'}
             spectral shape of the noise
+        variance : scalar, optional
+            The Variance of the noise
         seed : int or 1-d array_like, optional
             Seed for `RandomState`.
             Must be convertible to 32 bit unsigned integers.
 
-        Returns:
-        --------
-        Signal : Returns itself
+        Returns
+        -------
+        Returns itself
 
+        See Also
+        --------
+        audiotools.generate_noise
         """
         noise = audio.generate_noise(self.duration, self.fs,
                                      ntype=ntype, n_channels=1,
                                      seed=seed)
 
-        self[:] = (self.T + noise.T).T
+        self[:] = (self.T + noise.T * np.sqrt(variance)).T
         return self
 
     def add_corr_noise(self, corr=1, channels=[0, 1], seed=None):
@@ -111,20 +132,36 @@ class Signal(BaseSignal):
         return self
 
     def set_dbspl(self, dbspl):
-        """Set sound pressure level in dB
+        r"""Set sound pressure level in dB
 
         Normalizes the signal to a given sound pressure level in dB
         relative 20e-6 Pa.
 
-        Parameters:
-        -----------
+        Normalizes the signal to a given sound pressure level in dB
+        relative 20e-6 Pa.
+        for this, the Signal is multiplied with the factor :math:`A`
+
+        .. math:: A = \frac{p_0}{\sigma} 10^{L / 20}
+
+        where :math:`L` is the goal SPL, :math:`p_0=20\mu Pa` and
+        :math:`\sigma` is the RMS of the signal.
+
+
+        Parameters
+        ----------
         dbspl : float
             The sound pressure level in dB
 
-        Returns:
-        --------
+        Returns
+        -------
         Signal : Returns itself
 
+        See Also
+        --------
+        audiotools.set_dbspl
+        audiotools.Signal.calc_dbspl
+        audiotools.Signal.set_dbfs
+        audiotools.Signal.calc_dbfs
         """
 
         res = audio.set_dbspl(self, dbspl)
@@ -218,7 +255,13 @@ class Signal(BaseSignal):
     #     return self
 
     def calc_dbspl(self):
-        """Calculate the sound pressure level of the signal
+        r"""Calculate the sound pressure level of the signal
+
+
+        .. math:: L = 20  \log_{10}\left(\frac{\sigma}{p_o}\right)
+
+        where :math:`L` is the SPL, :math:`p_0=20\mu Pa` and
+        :math:`\sigma` is the RMS of the signal.
 
         Returns:
         --------
