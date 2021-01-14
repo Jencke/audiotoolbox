@@ -5,3 +5,13 @@
 
 A python package for crating acoustic stimuli primariliy aimed at
 auditory research.
+
+
+## How to install audiotools
+ * Clone the repository: `git clone https://github.com/Jencke/audiotools.git`
+ * Install the dependencies: `pip install -r ./requirements.txt `
+ * Install the package: `pip install ./`
+ * Optionally: Run the tests: `pytest`
+
+## Documentation
+The Documentation for the package can be found on at https://audiotools.readthedocs.io/en/latest/
