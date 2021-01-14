@@ -11,7 +11,7 @@ Oaudio provides an easy to use fluent interface to most of the
 functionality implemented in the function based interface.
 
 ```python
-stim = Signal().init_signal(1, 1, 48000)
+stim = Signal(1, 1, 4800)
 sitm.add_noise()
 stim.bandpass(500, 200, 'brickwall')
 stim.set_dbspl(60).add_fade_window(50e-3, 'cos')
