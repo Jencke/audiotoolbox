@@ -224,7 +224,7 @@ class Signal(BaseSignal):
         r"""Calculate crest factor
 
         Calculates the crest factor of the input signal. The crest factor
-            is defined as:
+        is defined as:
 
         .. math:: C = \frac{|x_{peak}|}{x_{rms}}
 
@@ -242,6 +242,24 @@ class Signal(BaseSignal):
 
 
     def bandpass(self, f_center, bw, ftype):
+        r"""Apply a bandpass filter
+
+        Applies a bandpass filter. The availible filters are:
+        - brickwall: A 'optimal' brickwall filter
+        - gammatone: A real valued gammatone filter
+
+        .. math:: C = \frac{|x_{peak}|}{x_{rms}}
+
+        where :math:`x_{peak}` is the maximum of the absolute value and
+        :math:`x{rms}` is the effective value of the signal.
+
+        Returns
+        --------
+        scalar :
+            The crest factor
+
+        """
+
         if ftype == 'brickwall':
             f_low = f_center - 0.5 * bw
             f_high = f_center + 0.5 * bw
