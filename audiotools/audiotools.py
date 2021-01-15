@@ -42,7 +42,7 @@ def pad_for_fft(signal):
        This Function attaches zeros to a signal to adjust the length of the signal
        to a multiple of 2 for efficent FFT calculation.
 
-       Parameters:
+       Parameters
        -----------
        signal : ndarray
            The input signal
@@ -106,7 +106,7 @@ def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
     where m is the modulation depth, f_m is the modualtion frequency
     and t is the
 
-    Parameters:
+    Parameters
     -----------
     signal : ndarray
         An input array that is used to determine the length of the
@@ -147,7 +147,7 @@ def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
 def time2phase(time, frequency):
     r"""Time to phase for a given frequency
 
-    Parameters:
+    Parameters
     -----------
     time : ndarray
         The time values to convert
@@ -164,7 +164,7 @@ def time2phase(time, frequency):
 def phase2time(phase, frequency):
     r"""Pase to Time for a given frequency
 
-    Parameters:
+    Parameters
     -----------
     phase : ndarray
         The phase values to convert
@@ -186,7 +186,7 @@ def nsamples(duration, fs):
     sampling rates.  The number is determined by multiplying the
     sampling rate with the duration and rounding to the next integer.
 
-    Parameters:
+    Parameters
     -----------
     frequency : scalar
         The tone frequency in Hz.
@@ -211,7 +211,7 @@ def generate_low_noise_noise(duration, fs, low_f, high_f, n_rep=10, seed=None):
 
     Generate Low-noise noise as defined in [1]_.
 
-    Parameters:
+    Parameters
     -----------
     duration : scalar
         Noise duration in seconds
@@ -263,7 +263,7 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
     weighted dependent on the spectral shape. The resulting spektrum
     is then transformed into the time domain using ``numpy.fft.ifft``
 
-    Weighting functions:
+    Weighting functions
 
      - white: :math:`w(f) = 1`
      - pink: :math:`w(f) = \frac{1}{\sqrt{f}}`
@@ -279,11 +279,12 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
         spectral shape of the noise
     n_channels : int
         number of indipendant noise channels
-    seed :
-        seed for the random number generator
+    seed : int or 1-d array_like, optional
+        Seed for `RandomState`.
+        Must be convertible to 32 bit unsigned integers.
 
-    Results
-    --------
+    Returns
+    -------
     ndarray
         noise vector of the shape (NxM) where N is the number of samples
         and M >the number of channels
@@ -413,7 +414,7 @@ def get_time(signal, fs):
     This function generates a time axis for a given signal at a given
     sample rate.
 
-    Parameters:
+    Parameters
     -----------
     signal : ndarray or int
         The input signal for which to generate the time axis, or the
@@ -453,7 +454,7 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
     This function generates a window function with a cosine fade in
     and fade out.
 
-    Parameters:
+    Parameters
     -----------
     signal: ndarray
         The length of the array will be used to determin the window length.
@@ -494,7 +495,7 @@ def cossquare_fade_window(signal, rise_time, fs, n_zeros=0):
     This function generates a window function with a cosine fade in
     and fade out.
 
-    Parameters:
+    Parameters
     -----------
     signal: ndarray
         The length of the array will be used to determin the window length.
@@ -526,7 +527,7 @@ def hann_fade_window(signal, rise_time, fs):
     This function generates a window function with a hann fade in
     and fade out.
 
-    Parameters:
+    Parameters
     -----------
     signal: ndarray
         The length of the array will be used to determin the window length.
@@ -566,7 +567,7 @@ def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
     and fade out. The gausian slope is cut at the level defined by the
     cutoff parameter
 
-    Parameters:
+    Parameters
     -----------
     signal: ndarray
         The length of the array will be used to determin the window length.
@@ -604,7 +605,7 @@ def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
 def zeropad(signal, number):
     r"""Add a number of zeros to both sides of a signal
 
-    Parameters:
+    Parameters
     -----------
     signal: ndarray
         The input Signal
@@ -653,7 +654,7 @@ def shift_signal(signal, nr_samples, mode='zeros'):
     `mode` this is done cyclically or by attaching zeros to the start
     of the signal.
 
-    Parameters:
+    Parameters
     ----------
     signal : array_like
         Input signal
@@ -706,7 +707,7 @@ def fftshift_signal(signal, delay, fs):
     frequency domain. Depending on the `mode` this is done cyclically
     or by zero zeros buffering the start of the signal.
 
-    Parameters:
+    Parameters
     ----------
     signal : array_like
         Input signal
@@ -834,15 +835,15 @@ def set_dbspl(signal, dbspl_val):
     where :math:`L` is the goal SPL, :math:`p_0=20\mu Pa` and
     :math:`\sigma` is the RMS of the signal.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     signal : ndarray
         The input signal
     dbspl_val : float
         The dbspl value to reach
 
-    Returns:
-    --------
+    Returns
+    -------
     ndarray :
         The amplitude adjusted signal
 
@@ -865,19 +866,34 @@ def set_dbspl(signal, dbspl_val):
 def set_dbfs(signal, dbfs_val):
     r"""Full scale normalization of the signal.
 
-    Adjust signal peak amplitude to a given dB value relative to 1
+    Normalizes the signal to dB Fullscale
+    for this, the Signal is multiplied with the factor :math:`A`
 
-    Parameters:
-    -----------
+    .. math:: A = \frac{1}{\sqrt{2}\sigma} 10^\frac{L}{20}
+
+    where :math:`L` is the goal Level, and :math:`\sigma` is the
+    RMS of the signal.
+
+    Parameters
+    ----------
     signal : ndarray
         The input signal
     dbfs_val : float
         The db full scale value to reach
 
-    Returns:
-    --------
+    Returns
+    -------
     ndarray :
         The amplitude adjusted signal
+
+    See Also
+    --------
+    audiotools.set_dbspl
+    audiotools.set_dbfs
+    audiotools.calc_dbfs
+    audiotools.Signal.set_dbspl
+    audiotools.Signal.calc_dbspl
+    audiotools.Signal.calc_dbfs
 
     """
 
@@ -891,14 +907,17 @@ def set_dbfs(signal, dbfs_val):
 def calc_dbfs(signal):
     r"""Calculate the dBFS RMS value of a given signal.
 
+    .. math:: L = 20 \log_10\left(\sqrt{2}\sigma\right)
 
-    Parameters:
-    -----------
+    where :math:`\sigma` is the signals RMS.
+
+    Parameters
+    ----------
     signal : ndarray
         The input signal
 
-    Returns:
-    --------
+    Returns
+    -------
     float :
         The dBFS RMS value
 
@@ -1377,7 +1396,7 @@ def calc_bandwidth(fc, scale='cbw'):
     Equation used for critical equivalent rectangular bandwith:
     .. math:: B = 24.7 (4.37 \frac{f_c}{1000} + 1)
 
-    Parameters:
+    Parameters
     -----------
     fc : float or ndarray
       center frequency in Hz
@@ -1418,7 +1437,7 @@ def extract_binaural_differences(signal1, signal2, log_levels=True):
     Due to the use of a hilbert transform, this approach should only be used on signals
     with a relatively narrow bandwidth.
 
-    Parameters:
+    Parameters
     -----------
     signal1 : ndarray
         The first input signal
@@ -1472,7 +1491,7 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.):
     comlex following eq. 11 of [1]_
 
 
-    Parameters:
+    Parameters
     -----------
     harmonics : ndarray
         A vector of harmonics for which the schroeder phases should be
@@ -1514,19 +1533,23 @@ def crest_factor(signal, axis=0):
     .. math:: C = \frac{|x_{peak}|}{x_{rms}}
 
     where :math:`x_{peak}` is the maximum of the absolute value and
-    :math:`x{rms}` is the effective value of the signal.
+    :math:`x_{rms}` is the effective value of the signal.
 
-    Parameters:
+    Parameters
     -----------
     signal : ndarray
         The input signal
     axis : int
         The axis for which to calculate the crest factor (default = 0)
 
-    Returns:
-    --------
+    Returns
+    -------
     scalar :
         The crest factor
+
+    See Also
+    --------
+    audiotools.Signal.calc_crest_factor
 
     """
     a_effective = np.sqrt(np.mean(signal**2, axis = axis))
@@ -1543,14 +1566,14 @@ def phase_shift(signal, phase, fs):
     phase by means of fFT transformation, phase shifting and inverse
     transformation.
 
-    Parameters:
+    Parameters
     -----------
     signal : ndarray
         The input signal
     phase : scalar
         The phase in rad by which the signal is shifted.
 
-    Returns:
+    Returns
     --------
     ndarray :
         The phase shifted signal

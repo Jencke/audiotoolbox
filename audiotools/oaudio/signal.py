@@ -6,18 +6,9 @@ from .base_signal import BaseSignal
 import copy
 
 class Signal(BaseSignal):
-    r"""
-    Attributes:
-    -----------
-    fs
-    n_channels
-    n_samples
-    duration
-    time
-    """
     @property
     def time(self):
-        """The time vector for the signal"""
+        r"""The time vector for the signal"""
         time = audio.get_time(self, self.fs)
         return time
 
@@ -30,7 +21,7 @@ class Signal(BaseSignal):
         .. math:: x = x + cos(2\pi f t + \phi_0)
 
         where :math:`x` is the waveform, :math:`f` is the frequency,
-        :math`t` is the time and :math:`\phi_0` the starting phase.
+        :math:`t` is the time and :math:`\phi_0` the starting phase.
         The first evulated timepoint is 0.
 
         Parameters
@@ -44,7 +35,7 @@ class Signal(BaseSignal):
 
         Returns
         -------
-        Returns itself
+        Signal : Returns itself
 
         See Also
         --------
@@ -108,7 +99,7 @@ class Signal(BaseSignal):
 
         Returns
         -------
-        Returns itself
+        Signal : Returns itself
 
         See Also
         --------
@@ -170,16 +161,33 @@ class Signal(BaseSignal):
         return self
 
     def set_dbfs(self, dbfs):
-        """Normalize the signal to a given dBFS RMS value.
+        r"""Normalize the signal to a given dBFS RMS value.
 
-        Parameters:
-        -----------
+        Normalizes the signal to dB Fullscale
+        for this, the Signal is multiplied with the factor :math:`A`
+
+        .. math:: A = \frac{1}{\sqrt{2}\sigma} 10^\frac{L}{20}
+
+        where :math:`L` is the goal Level, and :math:`\sigma` is the
+        RMS of the signal.
+
+        Parameters
+        ----------
         dbfs : float
-            The dBFS RMS value
+            The dBFS RMS value in dB
 
-        Returns:
-        --------
+        Returns
+        -------
         Signal : Returns itself
+
+        See Also
+        --------
+        audiotools.set_dbspl
+        audiotools.set_dbfs
+        audiotools.calc_dbfs
+        audiotools.Signal.set_dbspl
+        audiotools.Signal.calc_dbspl
+        audiotools.Signal.calc_dbfs
 
         """
 
@@ -189,10 +197,14 @@ class Signal(BaseSignal):
         return self
 
     def calc_dbfs(self):
-        """Calculate the dBFS RMS value for the signal
+        r"""Calculate the dBFS RMS value for the signal
 
-        Returns:
-        --------
+        .. math:: L = 20 \log_10\left(\sqrt{2}\sigma\right)
+
+        where :math:`\sigma` is the signals RMS.
+
+        Returns
+        -------
         float : The dBFS RMS value
 
         """
@@ -200,27 +212,66 @@ class Signal(BaseSignal):
         return dbfs
 
     def calc_crest_factor(self):
-        """Calculate crest factor
+        r"""Calculate crest factor
 
-        Calculates the crest factor of the input signal. The crest factor
-            is defined as:
+        Calculates the crest factor for the signal. The crest factor
+        is defined as:
 
         .. math:: C = \frac{|x_{peak}|}{x_{rms}}
 
         where :math:`x_{peak}` is the maximum of the absolute value and
-        :math:`x{rms}` is the effective value of the signal.
+        :math:`x_{rms}` is the effective value of the signal.
 
-        Returns:
+        Returns
         --------
         scalar :
             The crest factor
+
+        See Also
+        --------
+        audiotools.crest_factor
 
         """
         crest_factor = audio.crest_factor(self)
         return crest_factor
 
 
-    def bandpass(self, f_center, bw, ftype):
+    def bandpass(self, f_center, bw, ftype, **kwargs):
+        r"""Apply a bandpass filter
+
+        Applies a bandpass filter to the signal. The availible filters are:
+
+        - brickwall: A 'optimal' brickwall filter
+        - gammatone: A real valued gammatone filter
+
+        For additional filter parameters and detailed description see
+        the respective implementations:
+
+        - :meth:`audiotools.filter.brickwall`
+        - :meth:`audiotools.filter.gammatone`
+
+        Parameters
+        ----------
+        f_center : scalar
+            The banddpass center frequency in Hz
+        bw : scalar
+            The filter bandwidth in Hz
+        ftype : {'brickwall', 'gammatone'}
+            The filtertype
+        **kwargs :
+            Further keyword arguments are passed to the respective filter functions
+
+        Returns
+        --------
+            Signal : Returns itself
+
+        See Also
+        --------
+        audiotools.filter.brickwall
+        audiotools.filter.gammatone
+
+        """
+
         if ftype == 'brickwall':
             f_low = f_center - 0.5 * bw
             f_high = f_center + 0.5 * bw
@@ -263,7 +314,7 @@ class Signal(BaseSignal):
         where :math:`L` is the SPL, :math:`p_0=20\mu Pa` and
         :math:`\sigma` is the RMS of the signal.
 
-        Returns:
+        Returns
         --------
         float : The sound pressure level in dB
 
@@ -272,7 +323,7 @@ class Signal(BaseSignal):
         return dbspl
 
     def zeropad(self, number=None, duration=None):
-        """Add zeros to start and end of signal
+        r"""Add zeros to start and end of signal
 
         This function adds zeros of a given number or duration to the start or
         end of a signal. The same number of zeros is added to the start and
@@ -280,14 +331,14 @@ class Signal(BaseSignal):
         vector of two values is given, the first defines the number at the
         beginning, the second the number of zeros at the end.
 
-        Parameters:
+        Parameters
         -----------
         number : scalar or vecor of len(2), optional
             Number of zeros.
         duration : scalar or vecor of len(2), optional
             duration of zeros in seconds.
 
-        Returns:
+        Returns
         --------
         Signal : Returns itself
 
@@ -324,7 +375,7 @@ class Signal(BaseSignal):
         return self
 
     def add_fade_window(self, rise_time, type='cos'):
-        """Add a fade in/out window to the signal
+        r"""Add a fade in/out window to the signal
 
         This function multiplies a fade window with a given rise time
         onto the signal. Possible values for `type` are 'cos' for a
@@ -365,7 +416,7 @@ class Signal(BaseSignal):
         where m is the modulation depth, f_m is the modualtion frequency
         and t is the time. \phi_0 is the start phase
 
-        Parameters:
+        Parameters
         -----------
         frequency : float
           The frequency of the cosine modulator.
@@ -374,7 +425,7 @@ class Signal(BaseSignal):
         start_phase : float
           The starting phase of the cosine in radiant.
 
-        Returns:
+        Returns
         --------
         Signal : Returns itself
 
@@ -389,7 +440,7 @@ class Signal(BaseSignal):
         return self
 
     def delay(self, delay, method='fft'):
-        '''Delays the signal by circular shifting
+        r"""Delays the signal by circular shifting
 
         Circular shift the functions foreward to create a certain time
         delay relative to the orginal time. E.g if shifted by an
@@ -405,19 +456,19 @@ class Signal(BaseSignal):
         shifting the signal by the number of samples that is closest
         to delay.
 
-        Parameters:
+        Parameters
         -----------
         delay : float
             The delay in secons
         method : {'fft', 'samples'} optional
             The method used to delay the signal (default: 'fft')
 
-        Returns:
+        Returns
         --------
-        Signal:
+        Signal :
             Returns itself
 
-        '''
+        """
 
         if method == 'sample':
             nshift = audio.nsamples(delay, self.fs)
@@ -430,18 +481,18 @@ class Signal(BaseSignal):
 
 
     def phase_shift(self, phase):
-        """Shifts all frequency components of a signal by a constant phase.
+        r"""Shifts all frequency components of a signal by a constant phase.
 
         Shift all frequency components of a given signal by a constant
         phase. This is identical to calling the phase_shift method of
         the FrequencyDomainSignal class.
 
-        Parameters:
+        Parameters
         -----------
         phase : scalar
             The phase in rad by which the signal is shifted.
 
-        Returns:
+        Returns
         --------
         Signal :
             Returns itself
@@ -453,13 +504,13 @@ class Signal(BaseSignal):
         return self
 
     def clip(self, t_start, t_end=None):
-        '''Clip the signal between two points in time
+        r"""Clip the signal between two points in time
 
         removes the number of semples according to t_start and
         t_end. This method can not be applied to a single channel or
         slice.
 
-        Parameters:
+        Parameters
         -----------
         t_start: float
             Signal time at which the returned signal should start
@@ -467,11 +518,11 @@ class Signal(BaseSignal):
            Signal time at which the signal should stop. The full remaining
            signal is used if set to None. (default: None)
 
-        Returns:
+        Returns
         --------
-        Signal:
+        Signal :
             Returns itself
-        '''
+        """
 
         if not isinstance(self.base, type(None)):
             raise RuntimeError('Clipping can not be applied to slices')
@@ -516,14 +567,14 @@ class Signal(BaseSignal):
         return fig, ax
 
     def rms(self, axis=0):
-        """Root mean square for each channel
+        r"""Root mean square for each channel
         """
 
         rms = np.sqrt(np.mean(self**2, axis=axis))
         return rms
 
     def amplitude_spectrum(self, single_sided=False, nfft=None):
-        """Amplitude spectrum of the signal
+        r"""Amplitude spectrum of the signal
 
         """
 
@@ -570,7 +621,7 @@ class Signal(BaseSignal):
     #     return freq, spec
 
     def rectify(self):
-        """One-way rectification of the signal"""
+        r"""One-way rectification of the signal"""
         self[self < 0] = 0
         return self
 

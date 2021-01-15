@@ -3,12 +3,11 @@ from scipy.stats import norm
 from numpy import pi
 from . import gammatone_filt as gt
 
-def gammatone(signal, fs, cf, bw, order=4, attenuation_db=-3):
+def gammatone(signal, fs, cf, bw, order=4, attenuation_db=-3, return_complex=True):
     """Apply a gammatone filter to the signal
 
     Applys a gammatone filter following [1]_ to the input signal
     and returns the filtered signal.
-
 
     Parameters
     ----------
@@ -24,16 +23,17 @@ def gammatone(signal, fs, cf, bw, order=4, attenuation_db=-3):
       The filter order (default = 4)
     attenuation_db: scalar
       The attenuation at half bandwidth in dB (default = -3)
-
+    return_complex : bool
+      Whether the complex filter output or only it's real
+      part is returned (default = True)
 
     Returns
     -------
-    ndarray :
       The filtered signal.
 
     References
     ----------
-    ..[1] Hohmann, V., Frequency analysis and synthesis using a
+    .. [1] Hohmann, V., Frequency analysis and synthesis using a
           Gammatone filterbank, Acta Acustica, Vol 88 (2002), 43 -3442
 
     """
@@ -49,17 +49,20 @@ def gammatone(signal, fs, cf, bw, order=4, attenuation_db=-3):
     else:
         out_signal[:], _ = gt.gammatonefos_apply(signal, b, a, order)
 
+    if return_complex:
+        out_signal = out_signal.real
+
     return out_signal
 
 
 def brickwall(signal, fs, low_f, high_f):
-    '''Brickwall bandpass filter in frequency domain.
+    '''Brickwall bandpass filter
 
-    Bandpass filters an input signal by setting all frequencies
+    Bandpass filters an input signal by setting all frequency
     outside of the passband [low_f, high_f] to zero.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     signal : ndarray
         The input signal
     fs :  scalar
@@ -71,7 +74,6 @@ def brickwall(signal, fs, low_f, high_f):
 
     Returns
     -------
-    ndarray
         The filtered signal
 
     '''
