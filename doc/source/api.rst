@@ -18,7 +18,13 @@ auditools.Signal objects. For more informations check the numpy docs_.
    :members: fs, n_channels, n_samples, duration, ch, concatenate,
              multiply, add, abs, time, add_tone, add_noise,
              set_dbspl, calc_dbspl, set_dbfs, calc_dbfs, calc_crest_factor,
-	     bandpass, zeropad, add_fade_window, add_cos_modulator, delay
+	     bandpass, zeropad, add_fade_window, add_cos_modulator, delay,
+	     phase_shift, clip, rms, rectify, to_freqdomain
+
+.. autoclass:: audiotools.FrequencyDomainSignal
+   :members: fs, n_channels, n_samples, duration, ch, concatenate,
+             multiply, add, abs, freq, phase, mag, time_shift,
+             phase_shift, to_timedomain
 
 Function Based API
 ------------------
@@ -27,7 +33,7 @@ Function Based API
     :members: generate_tone, generate_noise, set_dbspl, calc_dbspl,
               set_dbfs, calc_dbfs, crest_factor, zeropad,
               gaussian_fade_window, cosine_fade_window,
-              cos_amp_modulator, shift_signal, fftshift_signal
+              cos_amp_modulator, shift_signal
 
 Filter
 ------

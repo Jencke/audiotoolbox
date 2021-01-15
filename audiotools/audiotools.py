@@ -1523,6 +1523,9 @@ def phase_shift(signal, phase, fs):
 
     """
 
+    warn("phase_shift is deprecated",
+     DeprecationWarning)
+
     if signal.ndim == 1:
         n_channels = 1
     else:
