@@ -426,10 +426,12 @@ class Signal(BaseSignal):
         r"""Multiply a cosinus amplitude modulator to the signal
 
         Multiplies a cosinus amplitude modulator following the equation:
-        ..math:: 1 + m * \cos{2 * \pi * f_m * t + \phi_{0}}
 
-        where m is the modulation depth, f_m is the modualtion frequency
-        and t is the time. \phi_0 is the start phase
+        .. math:: 1 + m  \cos{2  \pi  f_m  t  \phi_{0}}
+
+        where :math:`m` is the modulation depth, :math:`f_m` is the
+        modualtion frequency and :math:`t` is the time. :math:`\phi_0` is the
+        start phase
 
         Parameters
         -----------
@@ -443,6 +445,10 @@ class Signal(BaseSignal):
         Returns
         --------
         Returns itself : Signal
+
+        See Also
+        --------
+        audiotools.cos_amp_modulator
 
         """
 
@@ -465,11 +471,11 @@ class Signal(BaseSignal):
         Two methods can be used. Using the default method 'fft', the
         signal is shifted by applyint a FFT transform, and phase
         shifting each frequency accoring to the delay and applying an
-        inverse transform. This is identical to using the time_shift()
-        method of the FrequencyDomainSignal class. When using the
-        method 'sample', the signal is time delayed by circular
-        shifting the signal by the number of samples that is closest
-        to delay.
+        inverse transform. This is identical to using the
+        :meth:'audiotools.FrequencyDomainSignal.time_shift'
+        method. When using the method 'sample', the signal is time
+        delayed by circular shifting the signal by the number of
+        samples that is closest to delay.
 
         Parameters
         -----------
@@ -483,11 +489,16 @@ class Signal(BaseSignal):
         Signal :
             Returns itself
 
+        See Also
+        --------
+        audio.shift_signal
+        audio.FreqDomainSignal.time_shift
+
         """
 
         if method == 'sample':
             nshift = audio.nsamples(delay, self.fs)
-            shifted = audio.shift_signal(self, nshift, mode='cyclic')
+            shifted = audio.shift_signal(self, nshift)
         elif method == 'fft':
             shifted = self.to_freqdomain().time_shift(delay).to_timedomain()
 
@@ -581,33 +592,37 @@ class Signal(BaseSignal):
             ax.plot(self.time, self)
         return fig, ax
 
-    def rms(self, axis=0):
-        r"""Root mean square for each channel
+    def rms(self):
+        r"""Root mean square
+
+        Returns
+        -------
+        float : The RMS value
         """
 
-        rms = np.sqrt(np.mean(self**2, axis=axis))
+        rms = np.sqrt(np.mean(self**2))
         return rms
 
-    def amplitude_spectrum(self, single_sided=False, nfft=None):
-        r"""Amplitude spectrum of the signal
+    # def amplitude_spectrum(self, single_sided=False, nfft=None):
+    #     r"""Amplitude spectrum of the signal
 
-        """
+    #     """
 
-        nfft = nfft if nfft else self.n_samples
-        spec = np.fft.fft(self, n=nfft, axis=0) / nfft
-        freq = np.fft.fftfreq(nfft, 1.0 / self.fs)
-        spec = np.fft.fftshift(spec, axes=0)
-        freq = np.fft.fftshift(freq, axes= 0)
+    #     nfft = nfft if nfft else self.n_samples
+    #     spec = np.fft.fft(self, n=nfft, axis=0) / nfft
+    #     freq = np.fft.fftfreq(nfft, 1.0 / self.fs)
+    #     spec = np.fft.fftshift(spec, axes=0)
+    #     freq = np.fft.fftshift(freq, axes= 0)
 
-        if single_sided:
-            freq = freq[nfft // 2:, ...]
-            spec = spec[nfft // 2:, ...]
-            spec *= 2
-            spec[0, ...] /= 2 # do not double dc
-            if not nfft % 2:
-                spec[-1, ...] /= 2       # nyquist bin should also not be doubled
+    #     if single_sided:
+    #         freq = freq[nfft // 2:, ...]
+    #         spec = spec[nfft // 2:, ...]
+    #         spec *= 2
+    #         spec[0, ...] /= 2 # do not double dc
+    #         if not nfft % 2:
+    #             spec[-1, ...] /= 2       # nyquist bin should also not be doubled
 
-        return freq, spec
+    #     return freq, spec
 
     # def phase_spectrum(self, nfft=None):
     #     nfft = nfft if nfft else self.n_samples
@@ -636,7 +651,13 @@ class Signal(BaseSignal):
     #     return freq, spec
 
     def rectify(self):
-        r"""One-way rectification of the signal"""
+        r"""One-way rectification of the signal
+
+        Returns
+        -------
+        Returns itself : Signal
+
+        """
         self[self < 0] = 0
         return self
 
@@ -644,6 +665,20 @@ class Signal(BaseSignal):
         wav.writewav(filename, self, self.fs, bitdepth)
 
     def to_freqdomain(self):
+        r"""Convert to frequency domain by applying a DFT
+
+        This function returns a frequency domain representation of the
+        signal.
+
+        As opposed to most methods, this conversion is not in-place
+        but a new :meth:'audiotools.FrequencyDomainSignal' object is
+        returned
+
+        Returns
+        -------
+        The frequency domain representation of the signal : FrequencyDomainSignal
+
+        """
         fd = audio.oaudio.FrequencyDomainSignal(self.n_channels,
                                                 self.duration, self.fs,
                                                 dtype=complex)

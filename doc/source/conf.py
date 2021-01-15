@@ -30,7 +30,9 @@ author = 'Jörg Encke'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
-    'sphinx_rtd_theme']
+    'sphinx_rtd_theme',
+    'sphinx.ext.inheritance_diagram',
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

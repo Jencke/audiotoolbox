@@ -163,29 +163,29 @@ def test_gauss_fade_window():
 #     assert np.all(sig[-2:] == 0)
 
 
-def test_fftshift_signal():
-    fs = 48e3
-    delay = lambda x: x * 1./fs
+# def test_fftshift_signal():
+#     fs = 48e3
+#     delay = lambda x: x * 1./fs
 
-    # signal = np.ones(10)
-    # sig = audio.fftshift_signal(signal, delay(10), fs, mode='zeros')
-    # assert len(sig) == 20
-    # testing.assert_allclose(sig[10:], 1)
-    # assert np.all(sig[:10] < np.finfo(signal.dtype).resolution)
+#     # signal = np.ones(10)
+#     # sig = audio.fftshift_signal(signal, delay(10), fs, mode='zeros')
+#     # assert len(sig) == 20
+#     # testing.assert_allclose(sig[10:], 1)
+#     # assert np.all(sig[:10] < np.finfo(signal.dtype).resolution)
 
-    signal = np.ones(10)
-    signal[-2:] = 0
-    sig = audio.fftshift_signal(signal, delay(2), fs)
-    assert len(sig) == 10
-    assert np.all(sig[:2] < np.finfo(signal.dtype).resolution)
-    testing.assert_allclose(sig[2:], 1)
+#     signal = np.ones(10)
+#     signal[-2:] = 0
+#     sig = audio.fftshift_signal(signal, delay(2), fs)
+#     assert len(sig) == 10
+#     assert np.all(sig[:2] < np.finfo(signal.dtype).resolution)
+#     testing.assert_allclose(sig[2:], 1)
 
-    signal = np.ones(10)
-    signal[:2] = 0
-    sig = audio.fftshift_signal(signal, delay(-2),fs)
-    assert len(sig) == 10
-    testing.assert_allclose(sig[:2], 1)
-    assert np.all(sig[-2:] < np.finfo(signal.dtype).resolution)
+#     signal = np.ones(10)
+#     signal[:2] = 0
+#     sig = audio.fftshift_signal(signal, delay(-2),fs)
+#     assert len(sig) == 10
+#     testing.assert_allclose(sig[:2], 1)
+#     assert np.all(sig[-2:] < np.finfo(signal.dtype).resolution)
 
 
 def test_delay_signal():
@@ -588,16 +588,16 @@ def test_crest_factor():
     testing.assert_almost_equal(c, 20*np.log10(2))
 
 
-def test_phaseshift():
-    signal = audio.generate_tone(100, 1, 100e3)
-    signal2 = audio.generate_tone(100, 1, 100e3, np.pi)
-    signal3 = audio.phase_shift(signal, np.pi, 100e3)
-    testing.assert_almost_equal(signal2, signal3)
+# def test_phaseshift():
+#     signal = audio.generate_tone(100, 1, 100e3)
+#     signal2 = audio.generate_tone(100, 1, 100e3, np.pi)
+#     signal3 = audio.phase_shift(signal, np.pi, 100e3)
+#     testing.assert_almost_equal(signal2, signal3)
 
-    signal1 = audio.generate_tone(100, 1, 100e3)
-    signal2 = audio.generate_tone(200, 1, 100e3, np.pi)
-    signal = np.column_stack([signal1, signal2])
-    signal = audio.phase_shift(signal, np.pi, 100e3)
+#     signal1 = audio.generate_tone(100, 1, 100e3)
+#     signal2 = audio.generate_tone(200, 1, 100e3, np.pi)
+#     signal = np.column_stack([signal1, signal2])
+#     signal = audio.phase_shift(signal, np.pi, 100e3)
 
 
 def test_band2rms():

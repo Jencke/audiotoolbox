@@ -101,10 +101,12 @@ def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
     r"""Cosinus amplitude modulator
 
     Returns a cosinus amplitude modulator following the equation:
-    ..math:: 1 + m * \cos{2 * \pi * f_m * t}
 
-    where m is the modulation depth, f_m is the modualtion frequency
-    and t is the
+    .. math:: 1 + m  \cos{2  \pi  f_m  t  \phi_{0}}
+
+    where :math:`m` is the modulation depth, :math:`f_m` is the
+    modualtion frequency and :math:`t` is the time. :math;`\phi_0` is the
+    start phase
 
     Parameters
     -----------
@@ -125,6 +127,9 @@ def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
     --------
     ndarray : The modulator
 
+    See Also
+    --------
+    audiotools.Signal.add_cos_modulator
     """
 
     if isinstance(signal, np.ndarray):
@@ -599,12 +604,11 @@ def zero_buffer(signal, number):
     signal = zeropad(signal, number)
     return signal
 
-def shift_signal(signal, nr_samples, mode='zeros'):
+def shift_signal(signal, nr_samples):
     r"""Shift `signal` by `nr_samples` samples.
 
-    Shift a signal by a given number of samples. Depending on the
-    `mode` this is done cyclically or by attaching zeros to the start
-    of the signal.
+    Shift a signal by a given number of samples. The shift happens
+     cyclically so that the length of the signal does not change.
 
     Parameters
     ----------
@@ -613,12 +617,6 @@ def shift_signal(signal, nr_samples, mode='zeros'):
     nr_samples : int
         The number of samples that the signal should be shifted. Must
         be positive if `mode` is 'zeros'.
-    mode : {'zeros', 'cyclic'} optional
-        'zeros':
-          The signals length increase due to shifting is buffered with
-          zeros
-        'cyclic':
-          The signal is shifted cyclically
 
     Returns
     --------
@@ -636,19 +634,7 @@ def shift_signal(signal, nr_samples, mode='zeros'):
     if nr_samples == 0:
         return signal
 
-    if mode == 'zeros':
-        if nr_samples < 0:
-            raise(ValueError, 'Negative delays not possible with zeros mode')
-        shape = list(signal.shape)
-        shape[0] += np.abs(nr_samples)
-        sig = np.zeros(shape, dtype = signal.dtype)
-        if nr_samples > 0:
-            sig[:-nr_samples] = signal
-        elif nr_samples < 0:
-            sig[nr_samples:] = signal
-    if mode == 'cyclic':
-        sig = signal
-        sig = np.roll(sig, nr_samples, axis=0)
+    sig = np.roll(signal, nr_samples, axis=0)
 
     return sig
 
@@ -679,6 +665,11 @@ def fftshift_signal(signal, delay, fs):
     shift_signal : Shift a signal by whole samples.
 
     """
+
+    warn("fftshift is depricated",
+         DeprecationWarning)
+
+
     if delay == 0:
         return signal
 
@@ -1531,6 +1522,9 @@ def phase_shift(signal, phase, fs):
         The phase shifted signal
 
     """
+
+    warn("phase_shift is deprecated",
+     DeprecationWarning)
 
     if signal.ndim == 1:
         n_channels = 1

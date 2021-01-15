@@ -152,12 +152,6 @@ class test_oaudio(unittest.TestCase):
         test *= audio.cosine_fade_window(test, 10e-3, fs)
         testing.assert_equal(sig, test)
 
-        sig = Signal(1, duration, fs)
-        sig.add_tone(100).add_fade_window(rise_time=10e-3, type='hann')
-        test = audio.generate_tone(100, duration, fs)
-        test *= audio.hann_fade_window(test, 10e-3, fs)
-        testing.assert_equal(sig, test)
-
     def test_add(self):
         fs = 48000
         duration = 100e-3
@@ -316,17 +310,17 @@ class test_oaudio(unittest.TestCase):
         testing.assert_almost_equal(np.var(sig), 2)
 
 
-    def test_amplitude_spectrum(self):
-        fs = 48000
-        sig = Signal(1, 1, 48000).add_tone(1e3)
+    # def test_amplitude_spectrum(self):
+    #     fs = 48000
+    #     sig = Signal(1, 1, 48000).add_tone(1e3)
 
-        df = fs / sig.n_samples
-        n_1000 = (sig.n_samples // 2) + int(1000 / df)
+    #     df = fs / sig.n_samples
+    #     n_1000 = (sig.n_samples // 2) + int(1000 / df)
 
-        a, b = sig.amplitude_spectrum()
+    #     a, b = sig.amplitude_spectrum()
 
-        assert a[n_1000] == 1000
-        testing.assert_almost_equal(np.abs(b[n_1000]), 0.5)
+    #     assert a[n_1000] == 1000
+    #     testing.assert_almost_equal(np.abs(b[n_1000]), 0.5)
 
     def test_freqdomain(self):
         fs = 48000
