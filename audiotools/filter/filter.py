@@ -49,7 +49,7 @@ def gammatone(signal, fs, cf, bw, order=4, attenuation_db=-3, return_complex=Tru
     else:
         out_signal[:], _ = gt.gammatonefos_apply(signal, b, a, order)
 
-    if return_complex:
+    if not return_complex:
         out_signal = out_signal.real
 
     return out_signal

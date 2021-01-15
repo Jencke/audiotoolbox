@@ -277,10 +277,18 @@ class Signal(BaseSignal):
             f_high = f_center + 0.5 * bw
             filt_signal = brickwall(self, self.fs, f_low, f_high)
         elif ftype == 'gammatone':
-            filt_signal = gammatone(self, self.fs, f_center, bw).real
+            if 'return_complex' not in kwargs:
+                kwargs['return_complex'] = False
+            filt_signal = gammatone(self, self.fs, f_center, bw, **kwargs)
         else:
             raise NotImplementedError('Filter type %s not implemented' % ftype)
 
+        # in case of complex output, signal needs to be reshaped and
+        # typecast
+        if np.iscomplexobj(filt_signal):
+            shape = self.shape
+            self.dtype = complex
+            self.resize(shape, refcheck=False)
         self[:] = filt_signal
 
         return self

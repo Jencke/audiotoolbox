@@ -400,6 +400,42 @@ class test_oaudio(unittest.TestCase):
         assert sig_a.n_samples == old_n + sig_b.n_samples
         testing.assert_equal(sig_a[old_n:], sig_b)
 
+
+    def test_bandpass_brickwall(self):
+        sig = audio.Signal((2, 2), 1, 48000).add_noise().bandpass(500, 100, 'brickwall')
+        sig = sig.to_freqdomain()
+        testing.assert_array_almost_equal(sig[np.abs(sig.freq) > 550], 0)
+        testing.assert_array_almost_equal(sig[np.abs(sig.freq) < 450], 0)
+        assert np.all(sig[(np.abs(sig.freq) < 550) & (np.abs(sig.freq) > 450)] != 0)
+
+    def test_bandpass_gammatone(self):
+        # check real valued output
+        sig = audio.Signal(1, 1, 48000).add_tone(500)
+        sig2 = sig.copy()
+        sig.bandpass(500, 100, 'gammatone')
+        assert not np.iscomplexobj(sig)
+        assert sig.shape == sig2.shape
+
+        # check complex output
+        sig = audio.Signal(1, 1, 48000).add_tone(500)
+        sig2 = sig.copy()
+        sig.bandpass(500, 100, 'gammatone', return_complex=True)
+        assert np.iscomplexobj(sig)
+        assert sig.shape == sig2.shape
+
+        # check equivalence of real and complex results
+        sig = audio.Signal(1, 1, 48000).add_tone(500)
+        sig2 = sig.copy()
+        sig.bandpass(500, 100, 'gammatone')
+        sig2.bandpass(500, 100, 'gammatone', return_complex=True)
+        testing.assert_array_equal(sig2.real, sig)
+
+        # check kwargs
+        sig = audio.Signal(1, 1, 48000).add_tone(500)
+        out = audio.filter.gammatone(sig, sig2.fs, 500, 100, order=2, attenuation_db=-1)
+        sig.bandpass(500, 100, 'gammatone', order=2, attenuation_db=-1)
+        testing.assert_array_equal(sig, out.real)
+
     def test_channel_indexing(self):
         sig = Signal((2, 2), 1, 48000).add_noise()
         testing.assert_equal(sig.ch[0, 0], sig[:, 0, 0])
