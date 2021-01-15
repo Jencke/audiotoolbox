@@ -1,6 +1,6 @@
-'''
+"""
 Some simple helper functions for dealing with audiosignals
-'''
+"""
 from warnings import warn
 
 import numpy as np
@@ -36,22 +36,22 @@ def from_wav(self, filename, fullscale=True):
 
 
 def pad_for_fft(signal):
-    '''Zero buffer a signal with zeros so that it reaches the next closest
+    r"""Zero buffer a signal with zeros so that it reaches the next closest
        :math`$2^n$` length.
 
        This Function attaches zeros to a signal to adjust the length of the signal
        to a multiple of 2 for efficent FFT calculation.
 
-       Parameters:
+       Parameters
        -----------
        signal : ndarray
            The input signal
 
-       Returns:
+       Returns
        --------
        ndarray : The zero bufferd output signal.
 
-    '''
+    """
 
     if signal.ndim == 1:
         n_channels = 1
@@ -73,7 +73,7 @@ def nextpower2(num):
     return n_out
 
 def band2rms(bandlevel, bw):
-    """Convert bandlevel to rms level
+    r"""Convert bandlevel to rms level
 
     Assuming a white spectrum, this functions converts a Bandlevel in
     dB/Hz into the corresponding RMS levle in dB
@@ -85,7 +85,7 @@ def band2rms(bandlevel, bw):
     return rmslevel
 
 def rms2band(rmslevel, bw):
-    """Convert bandlevel to rms level
+    r"""Convert bandlevel to rms level
 
     Assuming a white spectrum, this functions converts a rms level in db into
     into the corresponding bandlevel
@@ -98,15 +98,17 @@ def rms2band(rmslevel, bw):
 
 
 def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
-    r'''Cosinus amplitude modulator
+    r"""Cosinus amplitude modulator
 
     Returns a cosinus amplitude modulator following the equation:
-    ..math:: 1 + m * \cos{2 * \pi * f_m * t}
 
-    where m is the modulation depth, f_m is the modualtion frequency
-    and t is the
+    .. math:: 1 + m  \cos{2  \pi  f_m  t  \phi_{0}}
 
-    Parameters:
+    where :math:`m` is the modulation depth, :math:`f_m` is the
+    modualtion frequency and :math:`t` is the time. :math;`\phi_0` is the
+    start phase
+
+    Parameters
     -----------
     signal : ndarray
         An input array that is used to determine the length of the
@@ -121,11 +123,14 @@ def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
     mod_index: float, optional
         The modulation index. (Default = 1)
 
-    Returns:
+    Returns
     --------
     ndarray : The modulator
 
-    '''
+    See Also
+    --------
+    audiotools.Signal.add_cos_modulator
+    """
 
     if isinstance(signal, np.ndarray):
         time = get_time(signal, fs)
@@ -145,48 +150,48 @@ def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
     return modulator
 
 def time2phase(time, frequency):
-    '''Time to phase for a given frequency
+    r"""Time to phase for a given frequency
 
-    Parameters:
+    Parameters
     -----------
     time : ndarray
         The time values to convert
 
-    Returns:
+    Returns
     --------
     ndarray : converted phase values
 
-    '''
+    """
 
     phase = time * frequency * (2 * pi)
     return phase
 
 def phase2time(phase, frequency):
-    '''Pase to Time for a given frequency
+    r"""Pase to Time for a given frequency
 
-    Parameters:
+    Parameters
     -----------
     phase : ndarray
         The phase values to convert
 
-    Returns:
+    Returns
     --------
     ndarray : converted time values
 
-    '''
+    """
 
     time = phase / (2 * pi) / frequency
     return time
 
 def nsamples(duration, fs):
-    '''Calculates number of samples in a signal with a given duration.
+    r"""Calculates number of samples in a signal with a given duration.
 
     This function calculates the number of samples that will be
     returned when generating a signal with a certain duration and
     sampling rates.  The number is determined by multiplying the
     sampling rate with the duration and rounding to the next integer.
 
-    Parameters:
+    Parameters
     -----------
     frequency : scalar
         The tone frequency in Hz.
@@ -197,21 +202,21 @@ def nsamples(duration, fs):
     start_phase : scalar, optional
         The starting phase of the sine tone.
 
-    Returns:
+    Returns
     --------
     int : number of samples in the signal
 
-    '''
+    """
     len_signal = int(np.round(duration * fs))
 
     return len_signal
 
 def generate_low_noise_noise(duration, fs, low_f, high_f, n_rep=10, seed=None):
-    """Low-noise Noise
+    r"""Low-noise Noise
 
     Generate Low-noise noise as defined in [1]_.
 
-    Parameters:
+    Parameters
     -----------
     duration : scalar
         Noise duration in seconds
@@ -253,9 +258,21 @@ def generate_low_noise_noise(duration, fs, low_f, high_f, n_rep=10, seed=None):
 
 
 def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
-    """Generate Noise
+    r"""Generate Noise
 
-    Generate noise with different spectral shape.
+    Generate gaussian noise with a variance of 1 and different
+    spectral shapes. The noise is generated in the frequency domain
+    using the gaussian pseudorandom generator ``numpy.random.randn``.
+    The real and imaginary part of each frequency component is set
+    using the psudorandom generator. Each frequency bin is then
+    weighted dependent on the spectral shape. The resulting spektrum
+    is then transformed into the time domain using ``numpy.fft.ifft``
+
+    Weighting functions
+
+     - white: :math:`w(f) = 1`
+     - pink: :math:`w(f) = \frac{1}{\sqrt{f}}`
+     - brown: :math:`w(f) = \frac{1}{f}`
 
     Parameters
     ----------
@@ -267,14 +284,19 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
         spectral shape of the noise
     n_channels : int
         number of indipendant noise channels
-    seed :
-        seed for the random number generator
+    seed : int or 1-d array_like, optional
+        Seed for `RandomState`.
+        Must be convertible to 32 bit unsigned integers.
 
-    Results
-    ---------
+    Returns
+    -------
     ndarray
         noise vector of the shape (NxM) where N is the number of samples
         and M >the number of channels
+
+    See Also
+    --------
+    audiotools.Signal.add_noise
 
     """
     np.random.seed(seed)
@@ -308,7 +330,7 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
     b = np.zeros([nfft, n_channels])
     a[lowbin:highbin, :] = np.random.randn(highbin - lowbin, n_channels)
     b[lowbin:highbin, :] = np.random.randn(highbin - lowbin, n_channels)
-    fspec = a + 1j *b;
+    fspec = a + 1j * b;
 
     # Frequency weighting
     fspec *= f_weights
@@ -356,15 +378,18 @@ def generate_corr_noise(duration, fs, corr=0, seed=None):
     return noise
 
 def generate_tone(frequency, duration, fs, start_phase=0):
-    r'''Sine tone with a given frequency, duration and sampling rate.
+    r"""create a cosine
 
     This function will generate a pure tone following the equation:
-    .. math:: cos(2\pi f t + \phi_0)
-    where f is the frequency, t is the time and phi_0 the starting phase.
+
+    .. math:: x = x + cos(2\pi f t + \phi_0)
+
+    where :math:`x` is the waveform, :math:`f` is the frequency,
+    :math`t` is the time and :math:`\phi_0` the starting phase.
     The first evulated timepoint is 0.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     frequency : scalar
         The tone frequency in Hz.
     duration : scalar
@@ -374,23 +399,27 @@ def generate_tone(frequency, duration, fs, start_phase=0):
     start_phase : scalar, optional
         The starting phase of the sine tone.
 
-    Returns:
-    --------
+    Returns
+    -------
     ndarray : The sine tone
 
-    '''
+    See Also
+    --------
+    audiotools.Signal.add_tone
+
+    """
     nsamp = nsamples(duration, fs)
     time = get_time(nsamp, fs)
     tone = np.cos(2 * pi * frequency * time + start_phase)
     return tone
 
 def get_time(signal, fs):
-    '''Time axis of a given signal.
+    r"""Time axis of a given signal.
 
     This function generates a time axis for a given signal at a given
     sample rate.
 
-    Parameters:
+    Parameters
     -----------
     signal : ndarray or int
         The input signal for which to generate the time axis, or the
@@ -399,11 +428,11 @@ def get_time(signal, fs):
     fs : scalar
         The sampling rate in Hz
 
-    Returns:
+    Returns
     --------
     ndarray : The time axis in seconds
 
-    '''
+    """
 
     dt = 1. / fs
 
@@ -424,13 +453,17 @@ def get_time(signal, fs):
     return time
 
 
-def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
-    '''Cosine fade-in and fade-out window.
+def cosine_fade_window(signal, rise_time, fs):
+    r"""Raised cosine fade-in and fade-out window.
 
-    This function generates a window function with a cosine fade in
-    and fade out.
+    This function generates a raised cosine / hann fade-in and fade
+    out. The Window ramps are calculated as
 
-    Parameters:
+    .. math:: \frac{1}{2} \left(1 + \cos{\left(\frac{\pi t}{t_r}\right)} \right)
+
+    where :math:`t_r` is the rise_time
+
+    Parameters
     -----------
     signal: ndarray
         The length of the array will be used to determin the window length.
@@ -439,24 +472,19 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
         is determined via rounding to the nearest integer value.
     fs : scalar
         The sampling rate in Hz
-    n_zeros : int, optional
-        Number of zeros to add at the end and at the beginning of the window. (Default = 0)
 
-    Returns:
-    --------
+    Returns
+    -------
     ndarray : The fading window
 
-    '''
+    """
 
-    assert isinstance(n_zeros, int)
 
     r = nsamples(rise_time, fs)
-    window = np.ones(len(signal) - 2 * n_zeros)
+    window = np.ones(len(signal))
     flank = 0.5 * (1 + np.cos(pi / r * (np.arange(r) - r)))
     window[:r] = flank
     window[-r:] = flank[::-1]
-
-    window = zeropad(window, n_zeros)
 
     # If the signal has multiple channels, extend the window to match
     # the shape
@@ -465,85 +493,25 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
 
     return window
 
-def cossquare_fade_window(signal, rise_time, fs, n_zeros=0):
-    '''Cosine fade-in and fade-out window.
-
-    This function generates a window function with a cosine fade in
-    and fade out.
-
-    Parameters:
-    -----------
-    signal: ndarray
-        The length of the array will be used to determin the window length.
-    rise_time : scalar
-        Duration of the cosine fade in and fade out in seconds. The number of samples
-        is determined via rounding to the nearest integer value.
-    fs : scalar
-        The sampling rate in Hz
-    n_zeros : int, optional
-        Number of zeros to add at the end and at the beginning of the window. (Default = 0)
-
-    Returns:
-    --------
-    ndarray : The fading window
-
-    '''
-
-
-    window = cosine_fade_window(signal, rise_time, fs, n_zeros)
-    window = window**2
-    return window
-
-
-
-
-def hann_fade_window(signal, rise_time, fs):
-    '''Hann fade-in and fade-out window.
-
-    This function generates a window function with a hann fade in
-    and fade out.
-
-    Parameters:
-    -----------
-    signal: ndarray
-        The length of the array will be used to determin the window length.
-    rise_time : scalar
-        Duration of the hann fade in and fade out in seconds. The
-        number of samples is determined via rounding to the nearest
-        integer value.
-    fs : scalar
-        The sampling rate in Hz
-
-    Returns:
-    --------
-    ndarray : The fading window
-
-    '''
-
-    n_samp = len(signal)
-    window = np.ones(n_samp)
-    n_rise = nsamples(rise_time, fs)
-    flanks = hann(2 * n_rise)
-    rise = flanks[:n_rise]
-    decay = flanks[n_rise:]
-    window[:n_rise] = rise
-    window[-n_rise:] = decay
-
-    if signal.ndim > 1:
-        window = np.column_stack([window] * signal.shape[1])
-
-    return window
-
-
-
 def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
-    '''Gausian fade-in and fade-out window.
+    r"""Gausiapn fade-in and fade-out window.
 
     This function generates a window function with a gausian fade in
     and fade out. The gausian slope is cut at the level defined by the
     cutoff parameter
 
-    Parameters:
+    The window is given by:
+
+    .. math:: w(t) = e^{\frac{-(t-t_r)^2}{2 * \sigma^2}}
+
+    where :math:`t` is the time, :math:`t_r` is the the rise time and
+    :math:`\sigma` is calculated as
+
+    .. math:: \sigma = \sqrt{\frac{r_t^2}{2 \log{(10^{ p / 20})}}}
+
+    where :math:`p` is the cutoff in dB
+
+    Parameters
     -----------
     signal: ndarray
         The length of the array will be used to determin the window length.
@@ -557,11 +525,11 @@ def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
     cutoff : scalar, optional
         The level at which the gausian slope is cut (default = -60dB)
 
-    Returns:
-    --------
+    Returns
+    -------
     ndarray : The fading window
 
-    '''
+    """
     cutoff_val = 10**(cutoff/ 20) # value at which to cut gaussian
     r = int(np.round(rise_time * fs)) + 1 #number of values in window
     window = np.ones(len(signal))
@@ -579,19 +547,32 @@ def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
     return window
 
 def zeropad(signal, number):
-    '''Add a number of zeros to both sides of a signal
+    r"""Add a number of zeros to both sides of a signal
 
-    Parameters:
+    This function adds a given number of zeros to the start or
+    end of a signal.
+
+    If number is a scalar, an equal number of zeros will be appended
+    at the front and end of the array. If a vector of two values is
+    given, the first defines the number at the beginning, the second
+    the number or duration of zeros at the end.
+
+    Parameters
     -----------
     signal: ndarray
         The input Signal
-    number : int
-        The number of zeros that should be added
+    number : scalar or vecor of len(2), optional
+        Number of zeros.
 
-    Returns:
+    Returns
     --------
     ndarray : The bufferd signal
-    '''
+
+    See Also
+    --------
+    audiotools.Signal.zeropad
+
+    """
 
 
     if signal.ndim == 1:
@@ -613,9 +594,9 @@ def zeropad(signal, number):
 
 
 def zero_buffer(signal, number):
-    '''Depricated use zeropad instead
+    r"""Depricated use zeropad instead
 
-    '''
+    """
 
     warn("zero_buffer is deprecated, use zeropad instead",
          DeprecationWarning)
@@ -623,28 +604,21 @@ def zero_buffer(signal, number):
     signal = zeropad(signal, number)
     return signal
 
-def shift_signal(signal, nr_samples, mode='zeros'):
-    '''Shift `signal` by `nr_samples` samples.
+def shift_signal(signal, nr_samples):
+    r"""Shift `signal` by `nr_samples` samples.
 
-    Shift a signal by a given number of samples. Depending on the
-    `mode` this is done cyclically or by attaching zeros to the start
-    of the signal.
+    Shift a signal by a given number of samples. The shift happens
+     cyclically so that the length of the signal does not change.
 
-    Parameters:
+    Parameters
     ----------
     signal : array_like
         Input signal
     nr_samples : int
         The number of samples that the signal should be shifted. Must
         be positive if `mode` is 'zeros'.
-    mode : {'zeros', 'cyclic'} optional
-        'zeros':
-          The signals length increase due to shifting is buffered with
-          zeros
-        'cyclic':
-          The signal is shifted cyclically
 
-    Returns:
+    Returns
     --------
     res : ndarray
         The shifted signal
@@ -654,36 +628,24 @@ def shift_signal(signal, nr_samples, mode='zeros'):
     delay_signal : A high level delaying / shifting function.
     fftshift_signal : Shift a signal in frequency space.
 
-    '''
+    """
     assert isinstance(nr_samples, int)
 
     if nr_samples == 0:
         return signal
 
-    if mode == 'zeros':
-        if nr_samples < 0:
-            raise(ValueError, 'Negative delays not possible with zeros mode')
-        shape = list(signal.shape)
-        shape[0] += np.abs(nr_samples)
-        sig = np.zeros(shape, dtype = signal.dtype)
-        if nr_samples > 0:
-            sig[:-nr_samples] = signal
-        elif nr_samples < 0:
-            sig[nr_samples:] = signal
-    if mode == 'cyclic':
-        sig = signal
-        sig = np.roll(sig, nr_samples, axis=0)
+    sig = np.roll(signal, nr_samples, axis=0)
 
     return sig
 
 def fftshift_signal(signal, delay, fs):
-    '''Delay the `signal` by time `delay` in the frequncy domain.
+    r"""Delay the `signal` by time `delay` in the frequncy domain.
 
     Delays a signal by introducing a linear phaseshift in the
     frequency domain. Depending on the `mode` this is done cyclically
     or by zero zeros buffering the start of the signal.
 
-    Parameters:
+    Parameters
     ----------
     signal : array_like
         Input signal
@@ -692,7 +654,7 @@ def fftshift_signal(signal, delay, fs):
     fs : scalar
         The sampling rate in Hz.
 
-    Returns:
+    Returns
     --------
     res : ndarray
         The shifted signal
@@ -702,7 +664,12 @@ def fftshift_signal(signal, delay, fs):
     delay_signal : A high level delaying / shifting function.
     shift_signal : Shift a signal by whole samples.
 
-    '''
+    """
+
+    warn("fftshift is depricated",
+         DeprecationWarning)
+
+
     if delay == 0:
         return signal
 
@@ -768,19 +735,31 @@ def delay_signal(signal, delay, fs, method='fft', mode='zeros'):
     return both
 
 def calc_dbspl(signal):
-    '''Calculate the dB (SPL) value of a given signal.
+    r"""Calculate the dB (SPL) value for a given signal.
 
-    Parameters:
-    -----------
+    .. math:: L = 20  \log_{10}\left(\frac{\sigma}{p_o}\right)
+
+    where :math:`L` is the SPL, :math:`p_0=20\mu Pa` and
+    :math:`\sigma` is the RMS of the signal.
+
+    Parameters
+    ----------
     signal : ndarray
         The input signal
 
-    Returns:
-    --------
+    Returns
+    -------
     float :
         The dB (SPL) value
 
-    '''
+    See Also
+    --------
+    audiotools.set_dbspl
+    audiotools.Signal.calc_dbspl
+    audiotools.Signal.set_dbfs
+    audiotools.Signal.calc_dbfs
+
+    """
     p0 = 20e-6
     rms_val = np.sqrt(np.mean(signal**2, axis=0))
     dbspl_val = 20 * np.log10(rms_val / p0)
@@ -788,21 +767,37 @@ def calc_dbspl(signal):
     return dbspl_val
 
 def set_dbspl(signal, dbspl_val):
-    '''Adjust signal amplitude to a given dbspl value.
+    r"""Adjust signal amplitudes to a given dbspl value.
 
-    Parameters:
-    -----------
+    Normalizes the signal to a given sound pressure level in dB
+    relative 20e-6 Pa.
+    for this, the Signal is multiplied with the factor :math:`A`
+
+    .. math:: A = \frac{p_0}{\sigma} 10^{L / 20}
+
+    where :math:`L` is the goal SPL, :math:`p_0=20\mu Pa` and
+    :math:`\sigma` is the RMS of the signal.
+
+    Parameters
+    ----------
     signal : ndarray
         The input signal
     dbspl_val : float
         The dbspl value to reach
 
-    Returns:
-    --------
+    Returns
+    -------
     ndarray :
         The amplitude adjusted signal
 
-    '''
+    See Also
+    --------
+    audiotools.calc_dbspl
+    audiotools.Signal.calc_dbspl
+    audiotools.Signal.set_dbfs
+    audiotools.Signal.calc_dbfs
+
+    """
 
     rms_val = np.sqrt(np.mean(signal**2, axis=0))
     p0 = 20e-6 #ref_value
@@ -812,23 +807,38 @@ def set_dbspl(signal, dbspl_val):
     return signal * factor
 
 def set_dbfs(signal, dbfs_val):
-    '''Full scale normalization of the signal.
+    r"""Full scale normalization of the signal.
 
-    Adjust signal peak amplitude to a given dB value relative to 1
+    Normalizes the signal to dB Fullscale
+    for this, the Signal is multiplied with the factor :math:`A`
 
-    Parameters:
-    -----------
+    .. math:: A = \frac{1}{\sqrt{2}\sigma} 10^\frac{L}{20}
+
+    where :math:`L` is the goal Level, and :math:`\sigma` is the
+    RMS of the signal.
+
+    Parameters
+    ----------
     signal : ndarray
         The input signal
     dbfs_val : float
         The db full scale value to reach
 
-    Returns:
-    --------
+    Returns
+    -------
     ndarray :
         The amplitude adjusted signal
 
-    '''
+    See Also
+    --------
+    audiotools.set_dbspl
+    audiotools.set_dbfs
+    audiotools.calc_dbfs
+    audiotools.Signal.set_dbspl
+    audiotools.Signal.calc_dbspl
+    audiotools.Signal.calc_dbfs
+
+    """
 
     rms0 = 1 / np.sqrt(2)
     rms_val = np.sqrt(np.mean(signal**2, axis=0))
@@ -838,20 +848,23 @@ def set_dbfs(signal, dbfs_val):
     return signal * factor
 
 def calc_dbfs(signal):
-    '''Calculate the dBFS RMS value of a given signal.
+    r"""Calculate the dBFS RMS value of a given signal.
 
+    .. math:: L = 20 \log_10\left(\sqrt{2}\sigma\right)
 
-    Parameters:
-    -----------
+    where :math:`\sigma` is the signals RMS.
+
+    Parameters
+    ----------
     signal : ndarray
         The input signal
 
-    Returns:
-    --------
+    Returns
+    -------
     float :
         The dBFS RMS value
 
-    '''
+    """
 
     rms0 = 1 / np.sqrt(2)
     rms_val = np.sqrt(np.mean(signal**2, axis=0))
@@ -861,7 +874,7 @@ def calc_dbfs(signal):
 
 
 def get_bark_limits():
-    '''Limits of the Bark scale
+    r"""Limits of the Bark scale
 
     Returns the limit of the Bark scale as defined in [1]_.
 
@@ -877,14 +890,14 @@ def get_bark_limits():
            Society of America, 33(2),
            248-248. http://dx.doi.org/10.1121/1.1908630
 
-    '''
+    """
     bark_table = [20, 100, 200, 300, 400, 510, 630, 770, 920, 1080,
                   1270, 1480, 1720, 2000, 2320, 2700, 3150, 3700,
                   4400, 5300, 6400, 7700, 9500, 12000, 15500]
     return bark_table
 
 def freqspace(min_frequency, max_frequency, n, scale='bark'):
-    '''Calculate a given number of frequencies that eare equally spaced on the bark or erb scale.
+    r"""Calculate a given number of frequencies that eare equally spaced on the bark or erb scale.
 
     Returns n frequencies between min_frequency and max_frequency that are
     equally spaced on the bark or erb scale.
@@ -906,7 +919,7 @@ def freqspace(min_frequency, max_frequency, n, scale='bark'):
     Returns
     -------
     ndarray: n frequencies equally spaced in bark or erb
-    '''
+    """
 
     if scale == 'bark':
         min_bark, max_bark = freq_to_bark(np.array([min_frequency, max_frequency]))
@@ -923,7 +936,7 @@ def freqspace(min_frequency, max_frequency, n, scale='bark'):
 
 
 def freqarange(min_frequency, max_frequency, step=1, scale='bark'):
-    '''Calculate a of frequencies with a predifined spacing on the bark or erb scale.
+    r"""Calculate a of frequencies with a predifined spacing on the bark or erb scale.
 
     Returns frequencies between min_frequency and max_frequency with
     the stepsize step on the bark or erb scale.
@@ -946,7 +959,7 @@ def freqarange(min_frequency, max_frequency, step=1, scale='bark'):
     -------
     ndarray: frequencies spaced following step on bark or erb scale
 
-    '''
+    """
     if scale == 'bark':
         min_bark, max_bark = freq_to_bark(np.array([min_frequency, max_frequency]))
         bark = np.arange(min_bark, max_bark, step)
@@ -961,7 +974,7 @@ def freqarange(min_frequency, max_frequency, step=1, scale='bark'):
     return freqs
 
 def bark_to_freq(bark):
-    '''Bark to frequency conversion
+    r"""Bark to frequency conversion
 
     Converts a given value on the bark scale into frequency using the
     equation by [1]_
@@ -980,7 +993,7 @@ def bark_to_freq(bark):
     ..[1] Traunmueller, H. (1990). Analytical expressions for the tonotopic
            sensory scale. The Journal of the Acoustical Society of America,
            88(1), 97-100. http://dx.doi.org/10.1121/1.399849
-    '''
+    """
 
     #reverse apply corrections
     bark[bark < 2.0] = (bark[bark < 2.0] - 0.3) / 0.85
@@ -989,7 +1002,7 @@ def bark_to_freq(bark):
     return f
 
 def freq_to_bark(frequency, use_table=False):
-    '''Frequency to Bark conversion
+    r"""Frequency to Bark conversion
 
     Converts a given sound frequency in Hz into the Bark scale using
     The equation by [2]_ or the original table by [1]_.
@@ -1017,7 +1030,7 @@ def freq_to_bark(frequency, use_table=False):
            sensory scale. The Journal of the Acoustical Society of America,
            88(1), 97-100. http://dx.doi.org/10.1121/1.399849
 
-    '''
+    """
     assert np.all(frequency >= 20)
     assert np.all(frequency < 15500)
 
@@ -1041,7 +1054,7 @@ def freq_to_bark(frequency, use_table=False):
         return cb_val
 
 def freq_to_erb(frequency):
-    '''Frequency to number of ERBs conversion
+    r"""Frequency to number of ERBs conversion
 
     Calculates the number of erbs for a given sound frequency in Hz using the
     equation by [1]_
@@ -1060,13 +1073,13 @@ def freq_to_erb(frequency):
     ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of auditory
           filter shapes from notched-noise data. Hearing Research, 47(1-2),
           103-138.
-    '''
+    """
 
     n_erb = (1000. / (24.7 * 4.37)) * np.log(4.37 * frequency / 1000 + 1)
     return n_erb
 
 def erb_to_freq(n_erb):
-    '''number of ERBs to Frequency conversion
+    r"""number of ERBs to Frequency conversion
 
     Calculates the frequency from a given number of ERBs using
     equation by [1]_
@@ -1085,14 +1098,14 @@ def erb_to_freq(n_erb):
     ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of auditory
           filter shapes from notched-noise data. Hearing Research, 47(1-2),
           103-138.
-    '''
+    """
     fkhz = (np.exp(n_erb * (24.7 * 4.37) / 1000) - 1) / 4.37
     return fkhz * 1000
 
 
 
 def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
-    '''Sound pressure levels from loudness level (following DIN ISO 226:2006-04)
+    r"""Sound pressure levels from loudness level (following DIN ISO 226:2006-04)
 
     Calulates the sound pressure level at a given frequency that is necessary to
     reach a specific loudness level following DIN ISO 226:2006-04
@@ -1125,7 +1138,7 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
     Returns
     -------
     scalar : The soundpressure level in dB SPL
-    '''
+    """
     if limit:
         # Definition only valid starting from 20 phon
         assert l_phon >= 20
@@ -1201,7 +1214,7 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
     return l_pressure
 
 def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
-    '''loudness levels from sound pressure level (following DIN ISO 226:2006-04)
+    r"""loudness levels from sound pressure level (following DIN ISO 226:2006-04)
 
     Calulates the loudness level at a given frequency from the sound
     pressure level following DIN ISO 226:2006-04
@@ -1235,7 +1248,7 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
     -------
     scalar : The loudnes level level in dB SPL
 
-    '''
+    """
     # Equation Parameters
     frequency_list = np.array([20, 25, 31.5,
                                40, 50, 63,
@@ -1312,7 +1325,7 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
     return l_phon
 
 def calc_bandwidth(fc, scale='cbw'):
-    '''Calculate approximation of auditory filter bandwidth
+    r"""Calculate approximation of auditory filter bandwidth
 
     This Function calculates aproximations for the auditory filter
     bandwidth using differnt concepts:
@@ -1326,7 +1339,7 @@ def calc_bandwidth(fc, scale='cbw'):
     Equation used for critical equivalent rectangular bandwith:
     .. math:: B = 24.7 (4.37 \frac{f_c}{1000} + 1)
 
-    Parameters:
+    Parameters
     -----------
     fc : float or ndarray
       center frequency in Hz
@@ -1344,7 +1357,7 @@ def calc_bandwidth(fc, scale='cbw'):
               filter shapes from notched-noise data. Hearing Research, 47(1-2),
               103-138.
 
-    '''
+    """
 
     if 'cbw' in scale:
         bw = 25 + 75 * (1 + 1.4 * (fc / 1000.)**2)**0.69
@@ -1354,7 +1367,7 @@ def calc_bandwidth(fc, scale='cbw'):
     return bw
 
 def extract_binaural_differences(signal1, signal2, log_levels=True):
-    '''Extract the binaural differences between two narrowband signals
+    r"""Extract the binaural differences between two narrowband signals
 
     This function extimates the binaural evelope difference as well as the
     phase difference by applying the hilbert transform.
@@ -1367,7 +1380,7 @@ def extract_binaural_differences(signal1, signal2, log_levels=True):
     Due to the use of a hilbert transform, this approach should only be used on signals
     with a relatively narrow bandwidth.
 
-    Parameters:
+    Parameters
     -----------
     signal1 : ndarray
         The first input signal
@@ -1384,7 +1397,7 @@ def extract_binaural_differences(signal1, signal2, log_levels=True):
     env_diff : ndarray
         The envelope difference
 
-    '''
+    """
 
     trans1 = hilbert(signal1)
     trans2 = hilbert(signal2)
@@ -1415,13 +1428,13 @@ def extract_binaural_differences(signal1, signal2, log_levels=True):
     return ipd, env_diff
 
 def schroeder_phase(harmonics, amplitudes, phi0=0.):
-    '''Phases for a schroeder phase harmonic complex
+    r"""Phases for a schroeder phase harmonic complex
 
     This function calculates the phases for a schroeder phase harmonic
     comlex following eq. 11 of [1]_
 
 
-    Parameters:
+    Parameters
     -----------
     harmonics : ndarray
         A vector of harmonics for which the schroeder phases should be
@@ -1431,7 +1444,7 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.):
     phi0 : scalar
         The starting phase of the first harmonic (default = 0)
 
-    Returns:
+    Returns
     --------
     ndarray :
         The phase values for the harmonic compontents
@@ -1441,7 +1454,7 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.):
           Transactions on Information Theory, 16(1),
           85-89
 
-    '''
+    """
     harmonics = np.array(harmonics)
     amplitudes = np.array(amplitudes)
     power = 0.5 * amplitudes**2
@@ -1455,7 +1468,7 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.):
     return phi_schroeder
 
 def crest_factor(signal, axis=0):
-    '''Calculate crest factor
+    r"""Calculate crest factor
 
     Calculates the crest factor of the input signal. The crest factor
     is defined as:
@@ -1463,21 +1476,25 @@ def crest_factor(signal, axis=0):
     .. math:: C = \frac{|x_{peak}|}{x_{rms}}
 
     where :math:`x_{peak}` is the maximum of the absolute value and
-    :math:`x{rms}` is the effective value of the signal.
+    :math:`x_{rms}` is the effective value of the signal.
 
-    Parameters:
+    Parameters
     -----------
     signal : ndarray
         The input signal
     axis : int
         The axis for which to calculate the crest factor (default = 0)
 
-    Returns:
-    --------
+    Returns
+    -------
     scalar :
         The crest factor
 
-    '''
+    See Also
+    --------
+    audiotools.Signal.calc_crest_factor
+
+    """
     a_effective = np.sqrt(np.mean(signal**2, axis = axis))
     a_max = np.max(np.abs(signal), axis = axis)
 
@@ -1486,25 +1503,28 @@ def crest_factor(signal, axis=0):
     return a_max / a_effective
 
 def phase_shift(signal, phase, fs):
-    '''Shifts all frequency components of a signal by a constant phase.
+    r"""Shifts all frequency components of a signal by a constant phase.
 
     Shift all frequency components of a given signal by a constant
     phase by means of fFT transformation, phase shifting and inverse
     transformation.
 
-    Parameters:
+    Parameters
     -----------
     signal : ndarray
         The input signal
     phase : scalar
         The phase in rad by which the signal is shifted.
 
-    Returns:
+    Returns
     --------
     ndarray :
         The phase shifted signal
 
-    '''
+    """
+
+    warn("phase_shift is deprecated",
+     DeprecationWarning)
 
     if signal.ndim == 1:
         n_channels = 1

@@ -1,29 +1,21 @@
 # audiotools
+A python package for creating acoustic stimuli primariliy aimed at auditory research.
 
-A toolbox for generating acoustic stimuli primariliy aimed at
-auditory research and psychoacoustics.
+[![Documentation Status](https://readthedocs.org/projects/audiotools/badge/?version=master)](https://audiotools.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://travis-ci.com/Jencke/audiotools.svg?branch=master)](https://travis-ci.com/Jencke/audiotools)
 
-## Audiotools provides two interfaces.
+## How to install audiotools
+ * Clone the repository: `git clone https://github.com/Jencke/audiotools.git`
+ * Install the package: `pip install ./`
+ * Optionally run the tests: `pytest`
 
-### Object oriented interface (Oaudio)
+## Documentation
+The package documentation can be found at: https://audiotools.readthedocs.io/en/master/
 
-Oaudio provides an easy to use fluent interface to most of the
-functionality implemented in the function based interface.
-
-```python
-stim = Signal().init_signal(1, 1, 48000)
-sitm.add_noise()
-stim.bandpass(500, 200, 'brickwall')
-stim.set_dbspl(60).add_fade_window(50e-3, 'cos')
-```
-
-Creates a one channel, 1 second long noise stimulus centered at 500Hz
-with a bandwidth of 200Hz at 48kHz sampling rate. The amplitude is set
-to be equivelent to 60dB (SPL) and the noise is ramped in and out
-using 50ms raised cosine slopes.
-
-### Function based interface.
-
-This interface provides functions to generate stimuli direktly on the
-basis of numpy arrays. It also provides a set of functions to modify
-or analyze these stimuli.
+## Contributions
+The Project is happy about any kind of contribution. If you find bugs,
+think the documentation could be improved, have comments or ideas,
+just open a ticket within the issue tracker
+https://github.com/Jencke/audiotools/issues or contact me via email.
+If you implement new features, I'm happy to receive merge requests or
+code-snippets.
