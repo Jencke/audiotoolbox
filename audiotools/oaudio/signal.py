@@ -419,13 +419,6 @@ class Signal(BaseSignal):
         elif type == 'cos':
             win = audio.cosine_fade_window(self, rise_time,
                                            self.fs, **kwargs)
-        elif type == 'cos2':
-            win = audio.cossquare_fade_window(self, rise_time,
-                                              self.fs, **kwargs)
-        elif type == 'hann':
-            win = audio.hann_fade_window(self, rise_time,
-                                         self.fs, **kwargs)
-
         self *= win
         return self
 
