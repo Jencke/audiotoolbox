@@ -17,7 +17,7 @@ Function Based API
 
 .. automodule:: audiotools
     :members: generate_tone, generate_noise, set_dbspl, calc_dbspl,
-              set_dbfs, calc_dbfs
+              set_dbfs, calc_dbfs, crest_factor
 
 Filter
 ------

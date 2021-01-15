@@ -1533,7 +1533,7 @@ def crest_factor(signal, axis=0):
     .. math:: C = \frac{|x_{peak}|}{x_{rms}}
 
     where :math:`x_{peak}` is the maximum of the absolute value and
-    :math:`x{rms}` is the effective value of the signal.
+    :math:`x_{rms}` is the effective value of the signal.
 
     Parameters
     -----------
@@ -1542,10 +1542,14 @@ def crest_factor(signal, axis=0):
     axis : int
         The axis for which to calculate the crest factor (default = 0)
 
-    Returns:
-    --------
+    Returns
+    -------
     scalar :
         The crest factor
+
+    See Also
+    --------
+    audiotools.Signal.calc_crest_factor
 
     """
     a_effective = np.sqrt(np.mean(signal**2, axis = axis))

@@ -35,7 +35,7 @@ class Signal(BaseSignal):
 
         Returns
         -------
-        Returns itself
+        Signal : Returns itself
 
         See Also
         --------
@@ -99,7 +99,7 @@ class Signal(BaseSignal):
 
         Returns
         -------
-        Returns itself
+        Signal : Returns itself
 
         See Also
         --------
@@ -145,7 +145,7 @@ class Signal(BaseSignal):
 
         Returns
         -------
-        Returns itself
+        Signal : Returns itself
 
         See Also
         --------
@@ -178,7 +178,7 @@ class Signal(BaseSignal):
 
         Returns
         -------
-        Returns itself
+        Signal : Returns itself
 
         See Also
         --------
@@ -214,18 +214,22 @@ class Signal(BaseSignal):
     def calc_crest_factor(self):
         r"""Calculate crest factor
 
-        Calculates the crest factor of the input signal. The crest factor
+        Calculates the crest factor for the signal. The crest factor
         is defined as:
 
         .. math:: C = \frac{|x_{peak}|}{x_{rms}}
 
         where :math:`x_{peak}` is the maximum of the absolute value and
-        :math:`x{rms}` is the effective value of the signal.
+        :math:`x_{rms}` is the effective value of the signal.
 
         Returns
         --------
         scalar :
             The crest factor
+
+        See Also
+        --------
+        audiotools.crest_factor
 
         """
         crest_factor = audio.crest_factor(self)
@@ -243,8 +247,8 @@ class Signal(BaseSignal):
         For additional filter parameters and detailed description see
         the respective implementations:
 
-        - audiotools.signal.gammatone
-        - audiotools.signal.brickwall
+        - :meth:`audiotools.filter.brickwall`
+        - :meth:`audiotools.filter.gammatone`
 
         Parameters
         ----------
@@ -259,7 +263,7 @@ class Signal(BaseSignal):
 
         Returns
         --------
-            Returns itself
+            Signal : Returns itself
 
         See Also
         --------
@@ -461,7 +465,7 @@ class Signal(BaseSignal):
 
         Returns
         --------
-        Signal:
+        Signal :
             Returns itself
 
         """
@@ -516,7 +520,7 @@ class Signal(BaseSignal):
 
         Returns
         --------
-        Signal:
+        Signal :
             Returns itself
         """
 
