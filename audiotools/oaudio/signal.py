@@ -426,10 +426,12 @@ class Signal(BaseSignal):
         r"""Multiply a cosinus amplitude modulator to the signal
 
         Multiplies a cosinus amplitude modulator following the equation:
-        ..math:: 1 + m * \cos{2 * \pi * f_m * t + \phi_{0}}
 
-        where m is the modulation depth, f_m is the modualtion frequency
-        and t is the time. \phi_0 is the start phase
+        .. math:: 1 + m  \cos{2  \pi  f_m  t  \phi_{0}}
+
+        where :math:`m` is the modulation depth, :math:`f_m` is the
+        modualtion frequency and :math:`t` is the time. :math:`\phi_0` is the
+        start phase
 
         Parameters
         -----------
@@ -443,6 +445,10 @@ class Signal(BaseSignal):
         Returns
         --------
         Returns itself : Signal
+
+        See Also
+        --------
+        audiotools.cos_amp_modulator
 
         """
 
@@ -465,11 +471,11 @@ class Signal(BaseSignal):
         Two methods can be used. Using the default method 'fft', the
         signal is shifted by applyint a FFT transform, and phase
         shifting each frequency accoring to the delay and applying an
-        inverse transform. This is identical to using the time_shift()
-        method of the FrequencyDomainSignal class. When using the
-        method 'sample', the signal is time delayed by circular
-        shifting the signal by the number of samples that is closest
-        to delay.
+        inverse transform. This is identical to using the
+        :meth:'audiotools.FrequencyDomainSignal.time_shift'
+        method. When using the method 'sample', the signal is time
+        delayed by circular shifting the signal by the number of
+        samples that is closest to delay.
 
         Parameters
         -----------
@@ -482,6 +488,11 @@ class Signal(BaseSignal):
         --------
         Signal :
             Returns itself
+
+        See Also
+        --------
+        audio.shift_signal
+        audio.FreqDomainSignal.time_shift
 
         """
 
