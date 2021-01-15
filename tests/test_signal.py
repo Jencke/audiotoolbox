@@ -400,7 +400,6 @@ class test_oaudio(unittest.TestCase):
         assert sig_a.n_samples == old_n + sig_b.n_samples
         testing.assert_equal(sig_a[old_n:], sig_b)
 
-
     def test_bandpass_brickwall(self):
         sig = audio.Signal((2, 2), 1, 48000).add_noise().bandpass(500, 100, 'brickwall')
         sig = sig.to_freqdomain()

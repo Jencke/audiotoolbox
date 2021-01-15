@@ -47,7 +47,7 @@ def pad_for_fft(signal):
        signal : ndarray
            The input signal
 
-       Returns:
+       Returns
        --------
        ndarray : The zero bufferd output signal.
 
@@ -121,7 +121,7 @@ def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
     mod_index: float, optional
         The modulation index. (Default = 1)
 
-    Returns:
+    Returns
     --------
     ndarray : The modulator
 
@@ -152,7 +152,7 @@ def time2phase(time, frequency):
     time : ndarray
         The time values to convert
 
-    Returns:
+    Returns
     --------
     ndarray : converted phase values
 
@@ -169,7 +169,7 @@ def phase2time(phase, frequency):
     phase : ndarray
         The phase values to convert
 
-    Returns:
+    Returns
     --------
     ndarray : converted time values
 
@@ -197,7 +197,7 @@ def nsamples(duration, fs):
     start_phase : scalar, optional
         The starting phase of the sine tone.
 
-    Returns:
+    Returns
     --------
     int : number of samples in the signal
 
@@ -423,7 +423,7 @@ def get_time(signal, fs):
     fs : scalar
         The sampling rate in Hz
 
-    Returns:
+    Returns
     --------
     ndarray : The time axis in seconds
 
@@ -449,10 +449,14 @@ def get_time(signal, fs):
 
 
 def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
-    r"""Cosine fade-in and fade-out window.
+    r"""Raised cosine fade-in and fade-out window.
 
-    This function generates a window function with a cosine fade in
-    and fade out.
+    This function generates a raised cosine / hann fade-in and fade
+    out. The Window ramps are calculated as
+
+    .. math:: \frac{1}{2} \left(1 + \cos{\left(\frac{\pi t}{t_r}\right)} \right)
+
+    where :math:`t_r` is the rise_time
 
     Parameters
     -----------
@@ -466,8 +470,8 @@ def cosine_fade_window(signal, rise_time, fs, n_zeros=0):
     n_zeros : int, optional
         Number of zeros to add at the end and at the beginning of the window. (Default = 0)
 
-    Returns:
-    --------
+    Returns
+    -------
     ndarray : The fading window
 
     """
@@ -507,7 +511,7 @@ def cossquare_fade_window(signal, rise_time, fs, n_zeros=0):
     n_zeros : int, optional
         Number of zeros to add at the end and at the beginning of the window. (Default = 0)
 
-    Returns:
+    Returns
     --------
     ndarray : The fading window
 
@@ -538,7 +542,7 @@ def hann_fade_window(signal, rise_time, fs):
     fs : scalar
         The sampling rate in Hz
 
-    Returns:
+    Returns
     --------
     ndarray : The fading window
 
@@ -558,14 +562,23 @@ def hann_fade_window(signal, rise_time, fs):
 
     return window
 
-
-
 def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
-    r"""Gausian fade-in and fade-out window.
+    r"""Gausiapn fade-in and fade-out window.
 
     This function generates a window function with a gausian fade in
     and fade out. The gausian slope is cut at the level defined by the
     cutoff parameter
+
+    The window is given by:
+
+    .. math:: w(t) = e^{\frac{-(t-t_r)^2}{2 * \sigma^2}}
+
+    where :math:`t` is the time, :math:`t_r` is the the rise time and
+    :math:`\sigma` is calculated as
+
+    .. math:: \sigma = \sqrt{\frac{r_t^2}{2 \log{(10^{ p / 20})}}}
+
+    where :math:`p` is the cutoff in dB
 
     Parameters
     -----------
@@ -581,8 +594,8 @@ def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
     cutoff : scalar, optional
         The level at which the gausian slope is cut (default = -60dB)
 
-    Returns:
-    --------
+    Returns
+    -------
     ndarray : The fading window
 
     """
@@ -605,16 +618,29 @@ def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
 def zeropad(signal, number):
     r"""Add a number of zeros to both sides of a signal
 
+    This function adds a given number of zeros to the start or
+    end of a signal.
+
+    If number is a scalar, an equal number of zeros will be appended
+    at the front and end of the array. If a vector of two values is
+    given, the first defines the number at the beginning, the second
+    the number or duration of zeros at the end.
+
     Parameters
     -----------
     signal: ndarray
         The input Signal
-    number : int
-        The number of zeros that should be added
+    number : scalar or vecor of len(2), optional
+        Number of zeros.
 
-    Returns:
+    Returns
     --------
     ndarray : The bufferd signal
+
+    See Also
+    --------
+    audiotools.Signal.zeropad
+
     """
 
 
@@ -668,7 +694,7 @@ def shift_signal(signal, nr_samples, mode='zeros'):
         'cyclic':
           The signal is shifted cyclically
 
-    Returns:
+    Returns
     --------
     res : ndarray
         The shifted signal
@@ -716,7 +742,7 @@ def fftshift_signal(signal, delay, fs):
     fs : scalar
         The sampling rate in Hz.
 
-    Returns:
+    Returns
     --------
     res : ndarray
         The shifted signal
@@ -1501,7 +1527,7 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.):
     phi0 : scalar
         The starting phase of the first harmonic (default = 0)
 
-    Returns:
+    Returns
     --------
     ndarray :
         The phase values for the harmonic compontents
