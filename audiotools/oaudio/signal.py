@@ -35,7 +35,7 @@ class Signal(BaseSignal):
 
         Returns
         -------
-        Signal : Returns itself
+        Returns itself : Signal
 
         See Also
         --------
@@ -99,7 +99,7 @@ class Signal(BaseSignal):
 
         Returns
         -------
-        Signal : Returns itself
+        Returns itself : Signal
 
         See Also
         --------
@@ -145,7 +145,7 @@ class Signal(BaseSignal):
 
         Returns
         -------
-        Signal : Returns itself
+        Returns itself : Signal
 
         See Also
         --------
@@ -178,7 +178,7 @@ class Signal(BaseSignal):
 
         Returns
         -------
-        Signal : Returns itself
+        Returns itself : Signal
 
         See Also
         --------
@@ -263,7 +263,7 @@ class Signal(BaseSignal):
 
         Returns
         --------
-            Signal : Returns itself
+            Returns itself : Signal
 
         See Also
         --------
@@ -334,10 +334,12 @@ class Signal(BaseSignal):
         r"""Add zeros to start and end of signal
 
         This function adds zeros of a given number or duration to the start or
-        end of a signal. The same number of zeros is added to the start and
-        end of a signal if a scalar is given as `number` or `duration. If a
-        vector of two values is given, the first defines the number at the
-        beginning, the second the number of zeros at the end.
+        end of a signal.
+
+        If number or duration is a scalar, an equal number of zeros
+        will be appended at the front and end of the array. If a
+        vector of two values is given, the first defines the number or duration at
+        the beginning, the second the number or duration of zeros at the end.
 
         Parameters
         -----------
@@ -348,8 +350,11 @@ class Signal(BaseSignal):
 
         Returns
         --------
-        Signal : Returns itself
+        Returns itself : Signal
 
+        See Also
+        --------
+        audiotools.zeropad
         """
 
         #Only one number or duration must be stated
@@ -376,41 +381,50 @@ class Signal(BaseSignal):
             wv = audio.zeropad(self, number)
             self.resize(wv.shape, refcheck=False)
             self[:] = wv
-            # print('no slice')
-        # new_sig = Signal(self.n_channels, duration, self.fs)
-        # new_sig[:] = wv
-        # self = new_sig
+
         return self
 
-    def add_fade_window(self, rise_time, type='cos'):
+    def add_fade_window(self, rise_time, type='cos', **kwargs):
         r"""Add a fade in/out window to the signal
 
         This function multiplies a fade window with a given rise time
-        onto the signal. Possible values for `type` are 'cos' for a
-        cosine window, 'gauss' for a gaussian window, 'hann' for a
-        hann window.
+        onto the signal. for mor information about the indiviual
+        window functions refer to the implementations:
 
-        Paramters:
+        - cos: A rasied cosine window :meth:`audiotools.cosine_fade_window`
+        - gauss: A gaussian window :meth:`audiotools.gaussian_fade_window`
+
+
+        Parameters
         ----------
         rise_time : float
             The rise time in seconds.
-        type : 'cos', 'gauss' or 'hann'
+        type : 'cos', 'gauss', 'cos2'
             The type of the window. (default = 'cos')
+
+        Returns
+        -------
+        Return itself : Signal
+
+        See Also
+        --------
+        audiotools.gaussian_fade_window
+        audiotools.cosine_fade_window
 
         """
 
         if type == 'gauss':
             win = audio.gaussian_fade_window(self, rise_time,
-                                             self.fs)
+                                             self.fs, **kwargs)
         elif type == 'cos':
             win = audio.cosine_fade_window(self, rise_time,
-                                           self.fs)
+                                           self.fs, **kwargs)
         elif type == 'cos2':
             win = audio.cossquare_fade_window(self, rise_time,
-                                           self.fs)
+                                              self.fs, **kwargs)
         elif type == 'hann':
             win = audio.hann_fade_window(self, rise_time,
-                                         self.fs)
+                                         self.fs, **kwargs)
 
         self *= win
         return self
@@ -435,7 +449,7 @@ class Signal(BaseSignal):
 
         Returns
         --------
-        Signal : Returns itself
+        Returns itself : Signal
 
         """
 
