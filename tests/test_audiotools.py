@@ -489,32 +489,22 @@ def test_generate_noise():
     testing.assert_equal(noise1, noise2)
     assert ~np.all(noise1 == noise3)
 
-    #Test vor variance = 1
-    noise = audio.generate_corr_noise(duration, fs, corr=0.5)
-    testing.assert_almost_equal(noise.var(axis=0), 1)
 
-def test_generate_corr_noise():
+def test_generate_uncorr_noise():
     from scipy.stats import pearsonr
 
     duration = 1
     fs = 100e3
-    noise = audio.generate_corr_noise(duration, fs)
+    noise = audio.generate_uncorr_noise(duration, fs, 2)
     noise1 = noise[:, 0]
     noise2 = noise[:, 1]
-    power1 = np.mean(noise1**2)
-    power2 = np.mean(noise2**2)
-
-    # Test for whole spectrum
-    assert np.all(~np.isclose(np.abs(np.fft.fft(noise1)), 0))
-    assert np.all(~np.isclose(np.abs(np.fft.fft(noise2)), 0))
-
     # Test equal Power assumption
-    testing.assert_almost_equal(power1, power2)
+    testing.assert_almost_equal(noise1.var(), noise2.var())
 
     # Test orthogonality
     corr_val = []
     for i in range(100):
-        noise = audio.generate_corr_noise(duration, fs)
+        noise = audio.generate_uncorr_noise(duration, fs, 2)
         noise1 = noise[:, 0]
         noise2 = noise[:, 1]
         corr_val.append(pearsonr(noise1, noise2)[0])
@@ -522,18 +512,18 @@ def test_generate_corr_noise():
     assert np.max(corr_val) < 1e-4
     assert np.median(corr_val) < 1e-6
 
-    # Test definition of covariance
-    corr_val = []
-    for i in range(100):
-        noise = audio.generate_corr_noise(duration, fs, corr=0.5)
-        noise1 = noise[:, 0]
-        noise2 = noise[:, 1]
-        corr_val.append(pearsonr(noise1, noise2)[0] - 0.5)
-    assert np.max(corr_val) < 1e-4
-    assert np.median(corr_val) < 1e-6
+    # Test multichannel
+    res_noise = audio.generate_uncorr_noise(1, 48000, 100, corr=0.5)
+    cv = np.corrcoef(res_noise.T)
+    lower_tri = np.tril(cv, -1)
+    lower_tri[lower_tri==0] = np.nan
+    mean = np.nanmean(lower_tri)
+    std = np.nanstd(lower_tri)
+    assert(std <= 1e-5)
+    assert(np.abs(mean - 0.5) <= 1e-6)
 
     #Test vor variance = 1
-    noise = audio.generate_corr_noise(duration, fs, corr=0.5)
+    noise = audio.generate_uncorr_noise(duration, fs, 2, corr=0.5)
     testing.assert_almost_equal(noise.var(axis=0), 1)
 
 
@@ -569,7 +559,7 @@ def test_extract_binaural_differences():
     assert np.all(np.isclose(ipd, 0))
 
     # #Test that phase is wrapped to +pi -pi
-    # signal = audio.generate_corr_noise(1, fs, corr=0.5)
+    # signal = audio.generate_uncorr_noise(1, fs, corr=0.5)
     # signal1 = signal[:, 0]
     # signal2 = signal[:, 1]
     # n_buf = int(48000 * 100e-3)

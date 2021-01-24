@@ -309,19 +309,6 @@ class test_oaudio(unittest.TestCase):
         assert np.var(sig.ch[0]) == np.var(sig.ch[1])
         testing.assert_almost_equal(np.var(sig), 2)
 
-
-    # def test_amplitude_spectrum(self):
-    #     fs = 48000
-    #     sig = Signal(1, 1, 48000).add_tone(1e3)
-
-    #     df = fs / sig.n_samples
-    #     n_1000 = (sig.n_samples // 2) + int(1000 / df)
-
-    #     a, b = sig.amplitude_spectrum()
-
-    #     assert a[n_1000] == 1000
-    #     testing.assert_almost_equal(np.abs(b[n_1000]), 0.5)
-
     def test_freqdomain(self):
         fs = 48000
         sig = Signal(1, 1, 48000).add_noise()
