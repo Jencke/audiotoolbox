@@ -489,7 +489,9 @@ def test_generate_noise():
     testing.assert_equal(noise1, noise2)
     assert ~np.all(noise1 == noise3)
 
-
+    #Test vor variance = 1
+    noise = audio.generate_corr_noise(duration, fs, corr=0.5)
+    testing.assert_almost_equal(noise.var(axis=0), 1)
 
 def test_generate_corr_noise():
     from scipy.stats import pearsonr
@@ -529,6 +531,10 @@ def test_generate_corr_noise():
         corr_val.append(pearsonr(noise1, noise2)[0] - 0.5)
     assert np.max(corr_val) < 1e-4
     assert np.median(corr_val) < 1e-6
+
+    #Test vor variance = 1
+    noise = audio.generate_corr_noise(duration, fs, corr=0.5)
+    testing.assert_almost_equal(noise.var(axis=0), 1)
 
 
 def test_extract_binaural_differences():

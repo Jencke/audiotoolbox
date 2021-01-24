@@ -357,23 +357,28 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
     return noise
 
 def generate_corr_noise(duration, fs, corr=0, seed=None):
+
     # generate two noise vectors
     np.random.seed(seed)
-    # nsamp = nsamples(duration, fs)
-    # noise = np.random.randn(nsamp, 2)
+
     noise = generate_noise(duration, fs, n_channels=2, seed=seed)
 
     # use Gram-Schmidt to generate orthogonal noise. This makes shure
-    # that the two noise vectors are of equal power.
+    # that the two noise vectors are of equal power. And that they are
+    # uncorrelated
     Q, R = np.linalg.qr(noise)
     noise = Q / np.abs(Q).max()
 
+    # Calculate the mixing components
     alpha = corr
     beta = np.sqrt(1 - corr**2)
 
     # Generate partially corelated noise using the two channel method
     if corr > 0:
         noise[:, 1] = alpha * noise[:, 0] + beta * noise[:, 1]
+
+    # normalize energy so that variance = 1
+    noise /= noise.std(axis=0)
 
     return noise
 
