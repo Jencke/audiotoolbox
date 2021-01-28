@@ -31,6 +31,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx_rtd_theme',
+    'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.inheritance_diagram',
 ]
 
