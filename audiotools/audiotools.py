@@ -301,6 +301,20 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
     """
     np.random.seed(seed)
 
+    len_signal = nsamples(duration, fs)
+
+    # If noise type is white just use the random number generator
+    if ntype == 'white':
+        print([len_signal, n_channels])
+        if np.ndim(n_channels):
+            noise = np.random.randn(len_signal, *n_channels)
+        else:
+            noise = np.random.randn(len_signal, n_channels)
+        noise -= noise.mean(axis=0)
+        noise /= noise.std(axis=0)
+        return noise
+
+    # Otherwise create spectrum
     # Calculate length and number of fft samples
     len_signal = nsamples(duration, fs)
     nfft = nextpower2(len_signal)
@@ -315,10 +329,7 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
 
     # amplitude weighting factor
     f_weights = np.zeros([nfft, n_channels])
-    if ntype == 'white':
-        # equal power
-        f_weights[:, :] = 1
-    elif ntype == 'pink':
+    if ntype == 'pink':
         # Power proportinal to 1 / f
         f_weights[lowbin:highbin, :] = 1. / np.sqrt(freqs[lowbin:, None])
     elif ntype == 'brown':
@@ -431,31 +442,6 @@ def generate_uncorr_noise(duration, fs, n_channels, corr=0 , seed=None):
     res_noise /= res_noise.std(axis=0)
     return res_noise
 
-# def generate_corr_noise(duration, fs, corr=0, seed=None):
-
-#     # generate two noise vectors
-#     np.random.seed(seed)
-
-#     noise = generate_noise(duration, fs, n_channels=2, seed=seed)
-
-#     # use Gram-Schmidt to generate orthogonal noise. This makes shure
-#     # that the two noise vectors are of equal power. And that they are
-#     # uncorrelated
-#     Q, R = np.linalg.qr(noise)
-#     noise = Q / np.abs(Q).max()
-
-#     # Calculate the mixing components
-#     alpha = corr
-#     beta = np.sqrt(1 - corr**2)
-
-#     # Generate partially corelated noise using the two channel method
-#     if corr > 0:
-#         noise[:, 1] = alpha * noise[:, 0] + beta * noise[:, 1]
-
-#     # normalize energy so that variance = 1
-#     noise /= noise.std(axis=0)
-
-#     return noise
 
 def generate_tone(frequency, duration, fs, start_phase=0):
     r"""create a cosine
