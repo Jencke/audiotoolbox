@@ -1,0 +1,323 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Introduction &mdash; audiotools  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="Welcome to audiotools’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> audiotools
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fluent-interface">Fluent Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-signal-class">The Signal class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-frequencydomainsignal-class">The FrequencyDomainSignal class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">audiotools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Introduction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/introduction.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p><strong>audiotools</strong> is a python package designed to generate and anlyze
+acoustic stimuli for use in auditory research. It aims to provide an
+easy to use and intuitive interface.</p>
+<div class="section" id="fluent-interface">
+<h2>Fluent Interface<a class="headerlink" href="#fluent-interface" title="Permalink to this headline">¶</a></h2>
+<p>The main API of audiotools provides a fluent interface for generating
+and analyzing signals. In a fluent interface, methods are applied
+in-place and the object itself is returend which allowes methods to be
+stacked.</p>
+<p>The commands:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">audiotools</span> <span class="k">as</span> <span class="nn">audio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">set_dbspl</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span><span class="o">.</span><span class="n">add_fade_window</span><span class="p">(</span><span class="mf">10e-3</span><span class="p">,</span> <span class="s1">&#39;cos&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>create a 1 second long signal with 1 channel at a sampling rate of
+48kHz. A 500 Hz tone is then added to this signal, the level is set to
+60dB SPL and a 10ms raised cosine fade-in and fade-out is added.</p>
+</div>
+<div class="section" id="the-signal-class">
+<h2>The Signal class<a class="headerlink" href="#the-signal-class" title="Permalink to this headline">¶</a></h2>
+<p>The audiotools.Signal class is used to work with signals in the time
+domain. Like all other classes that are used, the Signal class is
+inherited from the <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html">numpy.ndarray</a> class and thus also inherits all its
+methods. It is also directly compatible with most of the packages in
+scientific stack such as scipy and matplotlib.</p>
+<p>To create a empty signal, the class is called providing the number of
+channels, the duration of the stimulus and the sampling rate.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(48000, 2)</span>
+</pre></div>
+</div>
+<p>Basic properties of the signal such as the number of channels, samples
+or the duration are availible as properties:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">n_channels</span><span class="p">,</span> <span class="n">sig</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span> <span class="n">sig</span><span class="o">.</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">sig</span><span class="o">.</span><span class="n">fs</span><span class="p">)</span>
+<span class="go">2 1.0 48000 48000</span>
+</pre></div>
+</div>
+<p>Signals can have several dimensions:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(48000, 2, 3)</span>
+</pre></div>
+</div>
+<p>to directly index individual channels, the objects provides the <cite>ch</cite> property
+which also supports channel slicing</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">slice</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">slice</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(48000, 2, 3) (48000, 3)</span>
+</pre></div>
+</div>
+<p>Methods are allways applied to all channels.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>thus adds the same noise to both channels of the signal. The <code class="docutils literal notranslate"><span class="pre">ch</span></code>
+indexer if methods should be applied to one individual signal.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>Using the <code class="docutils literal notranslate"><span class="pre">ch</span></code> indexer is equivalent to direclty indexing the signal</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="the-frequencydomainsignal-class">
+<h2>The FrequencyDomainSignal class<a class="headerlink" href="#the-frequencydomainsignal-class" title="Permalink to this headline">¶</a></h2>
+<p>Audiotools provides a simple mechanism of switching between
+time-domain and frequency-domain representation of a signal.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">sig</span><span class="p">))</span>
+<span class="go">&lt;class &#39;audiotools.oaudio.signal.Signal&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fdomain_sig</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">to_freqdomain</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">fdomain_sig</span><span class="p">))</span>
+<span class="go">&lt;class &#39;audiotools.oaudio.freqdomain_signal.FrequencyDomainSignal&#39;&gt;</span>
+</pre></div>
+</div>
+<p>calling the method <code class="docutils literal notranslate"><span class="pre">audiotools.Signal.to_freqdomain()</span></code> returns a
+FrequencyDomainSignal object which contains the FFT transformed
+signal. It is important to note that the object does not directly
+contain the FFT transformed but that all frequency components where
+normalized by dividing them by the number of samples.</p>
+<p>Like the Signal class, the FrequencyDomainSignal is inherits from
+<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> an empty object can be created using an syntax
+identical to creating a Signal object</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">FrequencyDomainSignal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(48000, 2)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="api.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to audiotools’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Jörg Encke.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

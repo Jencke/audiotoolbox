@@ -1,0 +1,1545 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>API &mdash; audiotools  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> audiotools
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fluent-interface-api">Fluent Interface API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-audiotools">Function Based API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-audiotools.filter">Filter</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">audiotools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>API</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="toctree-wrapper compound">
+</div>
+<div class="section" id="api">
+<h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="fluent-interface-api">
+<h2>Fluent Interface API<a class="headerlink" href="#fluent-interface-api" title="Permalink to this headline">¶</a></h2>
+<p>The Signal Class inherits from numpy.ndarray via the BaseSignal class:</p>
+<div class="graphviz"><img src="_images/inheritance-92a982c100b9e85f2136db94221f13bd438c6d75.png" alt="Inheritance diagram of audiotools.Signal" class="inheritance graphviz" /></div>
+<p>As a consequence, <cite>numpy.ndarray</cite> methods such as <cite>x.min()</cite>,
+<cite>x.max()</cite>, <cite>x.sum()</cite>, <cite>x.var()</cite> and others can also be used on
+auditools.Signal objects. For more informations check the numpy <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html">docs</a>.</p>
+<dl class="py class">
+<dt id="audiotools.Signal">
+<em class="property">class </em><code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">Signal</code><span class="sig-paren">(</span><em class="sig-param">n_channels</em>, <em class="sig-param">duration</em>, <em class="sig-param">fs</em>, <em class="sig-param">dtype=&lt;class 'float'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="audiotools.Signal.abs">
+<code class="sig-name descname">abs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.abs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Absolute value</p>
+<p>Calculates the absolute value or modulus of all values of the signal</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.add">
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>In-place summation</p>
+<p>This function allowes for in-place summation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>scalar</em><em> or </em><em>ndarray</em>) – The value or array to add to the signal</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Returns itself</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audiotools</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<span class="go">2.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.add_cos_modulator">
+<code class="sig-name descname">add_cos_modulator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frequency</span></em>, <em class="sig-param"><span class="n">m</span></em>, <em class="sig-param"><span class="n">start_phase</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.add_cos_modulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Multiply a cosinus amplitude modulator to the signal</p>
+<p>Multiplies a cosinus amplitude modulator following the equation:</p>
+<div class="math notranslate nohighlight">
+\[1 + m  \cos{2  \pi  f_m  t  \phi_{0}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(m\)</span> is the modulation depth, <span class="math notranslate nohighlight">\(f_m\)</span> is the
+modualtion frequency and <span class="math notranslate nohighlight">\(t\)</span> is the time. <span class="math notranslate nohighlight">\(\phi_0\)</span> is the
+start phase</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<em>float</em>) – The frequency of the cosine modulator.</p></li>
+<li><p><strong>m</strong> (<em>float</em><em>, </em><em>optional</em>) – The modulation index. (Default = 1)</p></li>
+<li><p><strong>start_phase</strong> (<em>float</em>) – The starting phase of the cosine in radiant.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Returns itself</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotools.Signal" title="audiotools.Signal">Signal</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.cos_amp_modulator" title="audiotools.cos_amp_modulator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.cos_amp_modulator</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.add_fade_window">
+<code class="sig-name descname">add_fade_window</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rise_time</span></em>, <em class="sig-param"><span class="n">type</span><span class="o">=</span><span class="default_value">'cos'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.add_fade_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a fade in/out window to the signal</p>
+<p>This function multiplies a fade window with a given rise time
+onto the signal. for mor information about the indiviual
+window functions refer to the implementations:</p>
+<ul class="simple">
+<li><p>cos: A rasied cosine window <a class="reference internal" href="#audiotools.cosine_fade_window" title="audiotools.cosine_fade_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotools.cosine_fade_window()</span></code></a></p></li>
+<li><p>gauss: A gaussian window <a class="reference internal" href="#audiotools.gaussian_fade_window" title="audiotools.gaussian_fade_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotools.gaussian_fade_window()</span></code></a></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rise_time</strong> (<em>float</em>) – The rise time in seconds.</p></li>
+<li><p><strong>type</strong> (<em>'cos'</em><em>, </em><em>'gauss'</em><em>, </em><em>'cos2'</em>) – The type of the window. (default = ‘cos’)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Return itself</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotools.Signal" title="audiotools.Signal">Signal</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.gaussian_fade_window" title="audiotools.gaussian_fade_window"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.gaussian_fade_window</span></code></a>, <a class="reference internal" href="#audiotools.cosine_fade_window" title="audiotools.cosine_fade_window"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.cosine_fade_window</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.add_noise">
+<code class="sig-name descname">add_noise</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ntype</span><span class="o">=</span><span class="default_value">'white'</span></em>, <em class="sig-param"><span class="n">variance</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">seed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.add_noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add uncorrelated noise to the signal</p>
+<p>add gaussian noise with a defined variance and different
+spectral shapes. The noise is generated in the frequency domain
+using the gaussian pseudorandom generator <code class="docutils literal notranslate"><span class="pre">numpy.random.randn</span></code>.
+The real and imaginary part of each frequency component is set
+using the psudorandom generator. Each frequency bin is then
+weighted dependent on the spectral shape. The resulting spektrum
+is then transformed into the time domain using <code class="docutils literal notranslate"><span class="pre">numpy.fft.ifft</span></code></p>
+<p>Weighting functions:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>white: <span class="math notranslate nohighlight">\(w(f) = 1\)</span></p></li>
+<li><p>pink: <span class="math notranslate nohighlight">\(w(f) = \frac{1}{\sqrt{f}}\)</span></p></li>
+<li><p>brown: <span class="math notranslate nohighlight">\(w(f) = \frac{1}{f}\)</span></p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ntype</strong> (<em>{'white'</em><em>, </em><em>'pink'</em><em>, </em><em>'brown'}</em>) – spectral shape of the noise</p></li>
+<li><p><strong>variance</strong> (<em>scalar</em><em>, </em><em>optional</em>) – The Variance of the noise</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em> or </em><em>1-d array_like</em><em>, </em><em>optional</em>) – Seed for <cite>RandomState</cite>.
+Must be convertible to 32 bit unsigned integers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Returns itself</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotools.Signal" title="audiotools.Signal">Signal</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.generate_noise" title="audiotools.generate_noise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.generate_noise</span></code></a>, <a class="reference internal" href="#audiotools.generate_uncorr_noise" title="audiotools.generate_uncorr_noise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.generate_uncorr_noise</span></code></a>, <a class="reference internal" href="#audiotools.Signal.add_uncorr_noise" title="audiotools.Signal.add_uncorr_noise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.add_uncorr_noise</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.add_tone">
+<code class="sig-name descname">add_tone</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frequency</span></em>, <em class="sig-param"><span class="n">amplitude</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">start_phase</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.add_tone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a cosine to the signal</p>
+<p>This function will add a pure tone to the current
+waveform. following the equation:</p>
+<div class="math notranslate nohighlight">
+\[x = x + cos(2\pi f t + \phi_0)\]</div>
+<p>where <span class="math notranslate nohighlight">\(x\)</span> is the waveform, <span class="math notranslate nohighlight">\(f\)</span> is the frequency,
+<span class="math notranslate nohighlight">\(t\)</span> is the time and <span class="math notranslate nohighlight">\(\phi_0\)</span> the starting phase.
+The first evulated timepoint is 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<em>scalar</em>) – The tone frequency in Hz.</p></li>
+<li><p><strong>amplitude</strong> (<em>scalar</em><em>, </em><em>optional</em>) – The amplitude of the cosine. (default = 1)</p></li>
+<li><p><strong>start_phase</strong> (<em>scalar</em><em>, </em><em>optional</em>) – The starting phase of the cosine. (default = 0)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Returns itself</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotools.Signal" title="audiotools.Signal">Signal</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.generate_tone" title="audiotools.generate_tone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.generate_tone</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.add_uncorr_noise">
+<code class="sig-name descname">add_uncorr_noise</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">corr</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">variance</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">seed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.add_uncorr_noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add partly uncorrelated noise</p>
+<p>This function adds partly uncorrelated noise using the N+1
+generator method.</p>
+<p>To generate N partly uncorrelated noises with a desired
+correlation coefficent of $rho$, the algoritm first generates N+1
+noise tokens which are then orthogonalized using the Gram-Schmidt
+process (as implementd in numpy.linalg.qr). The N+1 th noise token
+is then mixed with the remaining noise tokens using the equation</p>
+<div class="math notranslate nohighlight">
+\[X_{\rho,n} = X_{N+1}  \sqrt{\rho} + X_n  \beta \sqrt{1 - \rho}\]</div>
+<p>where <span class="math notranslate nohighlight">\(X_{\rho,n}\)</span> is the nth output and noise,
+<span class="math notranslate nohighlight">\(X_{n}\)</span> the nth indipendent noise and <span class="math notranslate nohighlight">\(X_{N=1}\)</span> is the
+common noise.</p>
+<p>for two noise tokens, this is identical to the assymetric
+three-generator method described in <a href="#id7"><span class="problematic" id="id1">[1]_</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>corr</strong> (<em>int</em><em>, </em><em>optional</em>) – Desired correlation of the noise tokens, (default=0)</p></li>
+<li><p><strong>variance</strong> (<em>scalar</em><em>, </em><em>optional</em>) – The desired variance of the noise, (default=1)</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em> or </em><em>1-d array_like</em><em>, </em><em>optional</em>) – Seed for <cite>RandomState</cite>.
+Must be convertible to 32 bit unsigned integers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Returns itself</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotools.Signal" title="audiotools.Signal">Signal</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.generate_noise" title="audiotools.generate_noise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.generate_noise</span></code></a>, <a class="reference internal" href="#audiotools.generate_uncorr_noise" title="audiotools.generate_uncorr_noise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.generate_uncorr_noise</span></code></a>, <a class="reference internal" href="#audiotools.Signal.add_noise" title="audiotools.Signal.add_noise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.add_noise</span></code></a></p>
+</div>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets">1</span></dt>
+<dd><p>Hartmann, W. M., &amp; Cho, Y. J. (2011). Generating partially
+correlated noise—a comparison of methods. The Journal of the
+Acoustical Society of America, 130(1),
+292–301. <a class="reference external" href="http://dx.doi.org/10.1121/1.3596475">http://dx.doi.org/10.1121/1.3596475</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.bandpass">
+<code class="sig-name descname">bandpass</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">f_center</span></em>, <em class="sig-param"><span class="n">bw</span></em>, <em class="sig-param"><span class="n">ftype</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.bandpass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply a bandpass filter</p>
+<p>Applies a bandpass filter to the signal. The availible filters are:</p>
+<ul class="simple">
+<li><p>brickwall: A ‘optimal’ brickwall filter</p></li>
+<li><p>gammatone: A real valued gammatone filter</p></li>
+</ul>
+<p>For additional filter parameters and detailed description see
+the respective implementations:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#audiotools.filter.brickwall" title="audiotools.filter.brickwall"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotools.filter.brickwall()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#audiotools.filter.gammatone" title="audiotools.filter.gammatone"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotools.filter.gammatone()</span></code></a></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f_center</strong> (<em>scalar</em>) – The banddpass center frequency in Hz</p></li>
+<li><p><strong>bw</strong> (<em>scalar</em>) – The filter bandwidth in Hz</p></li>
+<li><p><strong>ftype</strong> (<em>{'brickwall'</em><em>, </em><em>'gammatone'}</em>) – The filtertype</p></li>
+<li><p><strong>**kwargs</strong> – Further keyword arguments are passed to the respective filter functions</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Returns itself</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotools.Signal" title="audiotools.Signal">Signal</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.filter.brickwall" title="audiotools.filter.brickwall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.filter.brickwall</span></code></a>, <a class="reference internal" href="#audiotools.filter.gammatone" title="audiotools.filter.gammatone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.filter.gammatone</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.calc_crest_factor">
+<code class="sig-name descname">calc_crest_factor</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.calc_crest_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate crest factor</p>
+<p>Calculates the crest factor for the signal. The crest factor
+is defined as:</p>
+<div class="math notranslate nohighlight">
+\[C = \frac{|x_{peak}|}{x_{rms}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(x_{peak}\)</span> is the maximum of the absolute value and
+<span class="math notranslate nohighlight">\(x_{rms}\)</span> is the effective value of the signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The crest factor</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>scalar</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.crest_factor" title="audiotools.crest_factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.crest_factor</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.calc_dbfs">
+<code class="sig-name descname">calc_dbfs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.calc_dbfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the dBFS RMS value for the signal</p>
+<div class="math notranslate nohighlight">
+\[L = 20 \log_10\left(\sqrt{2}\sigma\right)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\sigma\)</span> is the signals RMS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>float</strong></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>The dBFS RMS value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.calc_dbspl">
+<code class="sig-name descname">calc_dbspl</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.calc_dbspl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the sound pressure level of the signal</p>
+<div class="math notranslate nohighlight">
+\[L = 20  \log_{10}\left(\frac{\sigma}{p_o}\right)\]</div>
+<p>where <span class="math notranslate nohighlight">\(L\)</span> is the SPL, <span class="math notranslate nohighlight">\(p_0=20\mu Pa\)</span> and
+<span class="math notranslate nohighlight">\(\sigma\)</span> is the RMS of the signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>float</strong></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>The sound pressure level in dB</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.ch">
+<em class="property">property </em><code class="sig-name descname">ch</code><a class="headerlink" href="#audiotools.Signal.ch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Direct channel indexer</p>
+<p>Returns an indexer class which enables direct indexing and
+slicing of the channels indipendent of samples.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audiotools</span><span class="o">.</span><span class="n">Signal</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="ow">is</span> <span class="n">sig</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.clip">
+<code class="sig-name descname">clip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">t_start</span></em>, <em class="sig-param"><span class="n">t_end</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clip the signal between two points in time</p>
+<p>removes the number of semples according to t_start and
+t_end. This method can not be applied to a single channel or
+slice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t_start</strong> (<em>float</em>) – Signal time at which the returned signal should start</p></li>
+<li><p><strong>t_end</strong> (<em>flot</em><em> or </em><em>None</em><em> (</em><em>optional</em><em>)</em>) – Signal time at which the signal should stop. The full remaining
+signal is used if set to None. (default: None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns itself</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotools.Signal" title="audiotools.Signal">Signal</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.concatenate">
+<code class="sig-name descname">concatenate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.concatenate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concatenate another signal or array</p>
+<p>This method appends another signal to the end of the current
+signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>signal</strong> (<em>signal</em><em> or </em><em>ndarray</em>) – The signal to append</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Returns itself</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.delay">
+<code class="sig-name descname">delay</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">delay</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'fft'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.delay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delays the signal by circular shifting</p>
+<p>Circular shift the functions foreward to create a certain time
+delay relative to the orginal time. E.g if shifted by an
+equivalent of N samples, the value at sample i will move to
+sample i + N.</p>
+<p>Two methods can be used. Using the default method ‘fft’, the
+signal is shifted by applyint a FFT transform, and phase
+shifting each frequency accoring to the delay and applying an
+inverse transform. This is identical to using the
+:meth:’audiotools.FrequencyDomainSignal.time_shift’
+method. When using the method ‘sample’, the signal is time
+delayed by circular shifting the signal by the number of
+samples that is closest to delay.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>delay</strong> (<em>float</em>) – The delay in secons</p></li>
+<li><p><strong>method</strong> (<em>{'fft'</em><em>, </em><em>'samples'} optional</em>) – The method used to delay the signal (default: ‘fft’)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns itself</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotools.Signal" title="audiotools.Signal">Signal</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">audio.shift_signal</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">audio.FreqDomainSignal.time_shift</span></code></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.duration">
+<em class="property">property </em><code class="sig-name descname">duration</code><a class="headerlink" href="#audiotools.Signal.duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Duration of the signal in seconds</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.fs">
+<em class="property">property </em><code class="sig-name descname">fs</code><a class="headerlink" href="#audiotools.Signal.fs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sampling rate of the signal in Hz</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.multiply">
+<code class="sig-name descname">multiply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.multiply" title="Permalink to this definition">¶</a></dt>
+<dd><p>In-place multiplication</p>
+<p>This function allowes for in-place multiplication</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>scalar</em><em> or </em><em>ndarray</em>) – The value or array to muliply with the signal</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Returns itself</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audiotools</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="go">2.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.n_channels">
+<em class="property">property </em><code class="sig-name descname">n_channels</code><a class="headerlink" href="#audiotools.Signal.n_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of channels in the signal</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.n_samples">
+<em class="property">property </em><code class="sig-name descname">n_samples</code><a class="headerlink" href="#audiotools.Signal.n_samples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of samples in the signal</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.phase_shift">
+<code class="sig-name descname">phase_shift</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">phase</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.phase_shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shifts all frequency components of a signal by a constant phase.</p>
+<p>Shift all frequency components of a given signal by a constant
+phase. This is identical to calling the phase_shift method of
+the FrequencyDomainSignal class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>phase</strong> (<em>scalar</em>) – The phase in rad by which the signal is shifted.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Returns itself</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotools.Signal" title="audiotools.Signal">Signal</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.rectify">
+<code class="sig-name descname">rectify</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.rectify" title="Permalink to this definition">¶</a></dt>
+<dd><p>One-way rectification of the signal</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>Returns itself</strong></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#audiotools.Signal" title="audiotools.Signal">Signal</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.rms">
+<code class="sig-name descname">rms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.rms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Root mean square</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>float</strong></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>The RMS value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.set_dbfs">
+<code class="sig-name descname">set_dbfs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dbfs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.set_dbfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize the signal to a given dBFS RMS value.</p>
+<p>Normalizes the signal to dB Fullscale
+for this, the Signal is multiplied with the factor <span class="math notranslate nohighlight">\(A\)</span></p>
+<div class="math notranslate nohighlight">
+\[A = \frac{1}{\sqrt{2}\sigma} 10^\frac{L}{20}\]</div>
+<p>where <span class="math notranslate nohighlight">\(L\)</span> is the goal Level, and <span class="math notranslate nohighlight">\(\sigma\)</span> is the
+RMS of the signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dbfs</strong> (<em>float</em>) – The dBFS RMS value in dB</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Returns itself</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotools.Signal" title="audiotools.Signal">Signal</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.set_dbspl" title="audiotools.set_dbspl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.set_dbspl</span></code></a>, <a class="reference internal" href="#audiotools.set_dbfs" title="audiotools.set_dbfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.set_dbfs</span></code></a>, <a class="reference internal" href="#audiotools.calc_dbfs" title="audiotools.calc_dbfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.calc_dbfs</span></code></a>, <a class="reference internal" href="#audiotools.Signal.set_dbspl" title="audiotools.Signal.set_dbspl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.set_dbspl</span></code></a>, <a class="reference internal" href="#audiotools.Signal.calc_dbspl" title="audiotools.Signal.calc_dbspl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.calc_dbspl</span></code></a>, <a class="reference internal" href="#audiotools.Signal.calc_dbfs" title="audiotools.Signal.calc_dbfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.calc_dbfs</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.set_dbspl">
+<code class="sig-name descname">set_dbspl</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dbspl</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.set_dbspl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set sound pressure level in dB</p>
+<p>Normalizes the signal to a given sound pressure level in dB
+relative 20e-6 Pa.</p>
+<p>Normalizes the signal to a given sound pressure level in dB
+relative 20e-6 Pa.
+for this, the Signal is multiplied with the factor <span class="math notranslate nohighlight">\(A\)</span></p>
+<div class="math notranslate nohighlight">
+\[A = \frac{p_0}{\sigma} 10^{L / 20}\]</div>
+<p>where <span class="math notranslate nohighlight">\(L\)</span> is the goal SPL, <span class="math notranslate nohighlight">\(p_0=20\mu Pa\)</span> and
+<span class="math notranslate nohighlight">\(\sigma\)</span> is the RMS of the signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dbspl</strong> (<em>float</em>) – The sound pressure level in dB</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Returns itself</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotools.Signal" title="audiotools.Signal">Signal</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.set_dbspl" title="audiotools.set_dbspl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.set_dbspl</span></code></a>, <a class="reference internal" href="#audiotools.Signal.calc_dbspl" title="audiotools.Signal.calc_dbspl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.calc_dbspl</span></code></a>, <a class="reference internal" href="#audiotools.Signal.set_dbfs" title="audiotools.Signal.set_dbfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.set_dbfs</span></code></a>, <a class="reference internal" href="#audiotools.Signal.calc_dbfs" title="audiotools.Signal.calc_dbfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.calc_dbfs</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.time">
+<em class="property">property </em><code class="sig-name descname">time</code><a class="headerlink" href="#audiotools.Signal.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>The time vector for the signal</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.to_freqdomain">
+<code class="sig-name descname">to_freqdomain</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.to_freqdomain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to frequency domain by applying a DFT</p>
+<p>This function returns a frequency domain representation of the
+signal.</p>
+<p>As opposed to most methods, this conversion is not in-place
+but a new :meth:’audiotools.FrequencyDomainSignal’ object is
+returned</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>The frequency domain representation of the signal</strong></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#audiotools.FrequencyDomainSignal" title="audiotools.FrequencyDomainSignal">FrequencyDomainSignal</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.Signal.zeropad">
+<code class="sig-name descname">zeropad</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">number</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">duration</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.Signal.zeropad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add zeros to start and end of signal</p>
+<p>This function adds zeros of a given number or duration to the start or
+end of a signal.</p>
+<p>If number or duration is a scalar, an equal number of zeros
+will be appended at the front and end of the array. If a
+vector of two values is given, the first defines the number or duration at
+the beginning, the second the number or duration of zeros at the end.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>number</strong> (<em>scalar</em><em> or </em><em>vecor of len</em><em>(</em><em>2</em><em>)</em><em>, </em><em>optional</em>) – Number of zeros.</p></li>
+<li><p><strong>duration</strong> (<em>scalar</em><em> or </em><em>vecor of len</em><em>(</em><em>2</em><em>)</em><em>, </em><em>optional</em>) – duration of zeros in seconds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>Returns itself</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotools.Signal" title="audiotools.Signal">Signal</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.zeropad" title="audiotools.zeropad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.zeropad</span></code></a></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="audiotools.FrequencyDomainSignal">
+<em class="property">class </em><code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">FrequencyDomainSignal</code><span class="sig-paren">(</span><em class="sig-param">n_channels</em>, <em class="sig-param">duration</em>, <em class="sig-param">fs</em>, <em class="sig-param">dtype=&lt;class 'complex'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.FrequencyDomainSignal" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="audiotools.FrequencyDomainSignal.abs">
+<code class="sig-name descname">abs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.FrequencyDomainSignal.abs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Absolute value</p>
+<p>Calculates the absolute value or modulus of all values of the signal</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.FrequencyDomainSignal.add">
+<code class="sig-name descname">add</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.FrequencyDomainSignal.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>In-place summation</p>
+<p>This function allowes for in-place summation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>scalar</em><em> or </em><em>ndarray</em>) – The value or array to add to the signal</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Returns itself</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audiotools</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<span class="go">2.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.FrequencyDomainSignal.ch">
+<em class="property">property </em><code class="sig-name descname">ch</code><a class="headerlink" href="#audiotools.FrequencyDomainSignal.ch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Direct channel indexer</p>
+<p>Returns an indexer class which enables direct indexing and
+slicing of the channels indipendent of samples.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audiotools</span><span class="o">.</span><span class="n">Signal</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="ow">is</span> <span class="n">sig</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.FrequencyDomainSignal.concatenate">
+<code class="sig-name descname">concatenate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.FrequencyDomainSignal.concatenate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concatenate another signal or array</p>
+<p>This method appends another signal to the end of the current
+signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>signal</strong> (<em>signal</em><em> or </em><em>ndarray</em>) – The signal to append</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Returns itself</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.FrequencyDomainSignal.duration">
+<em class="property">property </em><code class="sig-name descname">duration</code><a class="headerlink" href="#audiotools.FrequencyDomainSignal.duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Duration of the signal in seconds</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.FrequencyDomainSignal.freq">
+<em class="property">property </em><code class="sig-name descname">freq</code><a class="headerlink" href="#audiotools.FrequencyDomainSignal.freq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the frequency axis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>The frequency axis in Hz</strong></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.FrequencyDomainSignal.fs">
+<em class="property">property </em><code class="sig-name descname">fs</code><a class="headerlink" href="#audiotools.FrequencyDomainSignal.fs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sampling rate of the signal in Hz</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.FrequencyDomainSignal.mag">
+<em class="property">property </em><code class="sig-name descname">mag</code><a class="headerlink" href="#audiotools.FrequencyDomainSignal.mag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retruns the magnitudes of the frequency components</p>
+<p>equivalent to <a class="reference internal" href="#audiotools.FrequencyDomainSignal.abs" title="audiotools.FrequencyDomainSignal.abs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotools.FrequencyDomainSignal.abs()</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>The magnitudes</strong></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.FrequencyDomainSignal.multiply">
+<code class="sig-name descname">multiply</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.FrequencyDomainSignal.multiply" title="Permalink to this definition">¶</a></dt>
+<dd><p>In-place multiplication</p>
+<p>This function allowes for in-place multiplication</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>scalar</em><em> or </em><em>ndarray</em>) – The value or array to muliply with the signal</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Returns itself</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audiotools</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="go">2.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.FrequencyDomainSignal.n_channels">
+<em class="property">property </em><code class="sig-name descname">n_channels</code><a class="headerlink" href="#audiotools.FrequencyDomainSignal.n_channels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of channels in the signal</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.FrequencyDomainSignal.n_samples">
+<em class="property">property </em><code class="sig-name descname">n_samples</code><a class="headerlink" href="#audiotools.FrequencyDomainSignal.n_samples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of samples in the signal</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.FrequencyDomainSignal.phase">
+<em class="property">property </em><code class="sig-name descname">phase</code><a class="headerlink" href="#audiotools.FrequencyDomainSignal.phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Argument of the frequency components</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>The arguments in radiants</strong></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.FrequencyDomainSignal.phase_shift">
+<code class="sig-name descname">phase_shift</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">phase</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.FrequencyDomainSignal.phase_shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply a phase shift</p>
+<p>Phase shift the spectrum by multiplying all frequency
+components with:</p>
+<div class="math notranslate nohighlight">
+\[H(\omega) = e^{-j\psi}\]</div>
+<p>where <span class="math notranslate nohighlight">\(j\)</span> is the complex unit and <span class="math notranslate nohighlight">\(\psi\)</span> is the
+desired phaseshift.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>phase</strong> (<em>scalar</em>) – The phaseshift</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Returns itself</strong> (<em>FrequencyDomainSignal</em>)</p></li>
+<li><p><em>Also See</em></p></li>
+<li><p><em>——–</em></p></li>
+<li><p><em>audiotools.Signal.phase_shift</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.FrequencyDomainSignal.time_shift">
+<code class="sig-name descname">time_shift</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.FrequencyDomainSignal.time_shift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply a time shift</p>
+<p>Time shift the signal by a linear phase shift by
+multiplying all frequency components with:</p>
+<div class="math notranslate nohighlight">
+\[H(\omega) = e^{-j\omega\Delta t}\]</div>
+<p>where <span class="math notranslate nohighlight">\(j\)</span> is the complex unit, <span class="math notranslate nohighlight">\(omega\)</span> the
+circular frequency and <span class="math notranslate nohighlight">\(\Delta t\)</span> the timeshift.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>scalar</em>) – The time by which the signal should be shifted</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Returns itself</strong> (<em>FrequencyDomainSignal</em>)</p></li>
+<li><p><em>Also See</em></p></li>
+<li><p><em>——–</em></p></li>
+<li><p><em>audiotools.Signal.delay</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="audiotools.FrequencyDomainSignal.to_timedomain">
+<code class="sig-name descname">to_timedomain</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.FrequencyDomainSignal.to_timedomain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert to timedomain.</p>
+<p>Convert to timedomain by means of inverse DFT. If the complex
+part after DFT is small (&lt; 222e-16), it is neglected. This
+method is not applied in-place but a new
+:meth:’audiotools.Signal’ object is returned</p>
+<p>Signal : The timedomain representation</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-audiotools">
+<span id="function-based-api"></span><h2>Function Based API<a class="headerlink" href="#module-audiotools" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audiotools.calc_dbfs">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">calc_dbfs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.calc_dbfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the dBFS RMS value of a given signal.</p>
+<div class="math notranslate nohighlight">
+\[L = 20 \log_10\left(\sqrt{2}\sigma\right)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\sigma\)</span> is the signals RMS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>signal</strong> (<em>ndarray</em>) – The input signal</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The dBFS RMS value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.calc_dbspl">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">calc_dbspl</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.calc_dbspl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the dB (SPL) value for a given signal.</p>
+<div class="math notranslate nohighlight">
+\[L = 20  \log_{10}\left(\frac{\sigma}{p_o}\right)\]</div>
+<p>where <span class="math notranslate nohighlight">\(L\)</span> is the SPL, <span class="math notranslate nohighlight">\(p_0=20\mu Pa\)</span> and
+<span class="math notranslate nohighlight">\(\sigma\)</span> is the RMS of the signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>signal</strong> (<em>ndarray</em>) – The input signal</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The dB (SPL) value</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.set_dbspl" title="audiotools.set_dbspl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.set_dbspl</span></code></a>, <a class="reference internal" href="#audiotools.Signal.calc_dbspl" title="audiotools.Signal.calc_dbspl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.calc_dbspl</span></code></a>, <a class="reference internal" href="#audiotools.Signal.set_dbfs" title="audiotools.Signal.set_dbfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.set_dbfs</span></code></a>, <a class="reference internal" href="#audiotools.Signal.calc_dbfs" title="audiotools.Signal.calc_dbfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.calc_dbfs</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.cos_amp_modulator">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">cos_amp_modulator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">modulator_freq</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">mod_index</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">start_phase</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.cos_amp_modulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cosinus amplitude modulator</p>
+<p>Returns a cosinus amplitude modulator following the equation:</p>
+<div class="math notranslate nohighlight">
+\[1 + m  \cos{2  \pi  f_m  t  \phi_{0}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(m\)</span> is the modulation depth, <span class="math notranslate nohighlight">\(f_m\)</span> is the
+modualtion frequency and <span class="math notranslate nohighlight">\(t\)</span> is the time. :math;`phi_0` is the
+start phase</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ndarray</em>) – An input array that is used to determine the length of the
+modulator.</p></li>
+<li><p><strong>modulator_freq</strong> (<em>float</em>) – The frequency of the cosine modulator.</p></li>
+<li><p><strong>fs</strong> (<em>float</em>) – The sample frequency of the input signal.</p></li>
+<li><p><strong>mod_index</strong> (<em>float</em><em>, </em><em>optional</em>) – The modulation index. (Default = 1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>ndarray</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>The modulator</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.Signal.add_cos_modulator" title="audiotools.Signal.add_cos_modulator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.add_cos_modulator</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.cosine_fade_window">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">cosine_fade_window</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">rise_time</span></em>, <em class="sig-param"><span class="n">fs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.cosine_fade_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raised cosine fade-in and fade-out window.</p>
+<p>This function generates a raised cosine / hann fade-in and fade
+out. The Window ramps are calculated as</p>
+<div class="math notranslate nohighlight">
+\[\frac{1}{2} \left(1 + \cos{\left(\frac{\pi t}{t_r}\right)} \right)\]</div>
+<p>where <span class="math notranslate nohighlight">\(t_r\)</span> is the rise_time</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ndarray</em>) – The length of the array will be used to determin the window length.</p></li>
+<li><p><strong>rise_time</strong> (<em>scalar</em>) – Duration of the cosine fade in and fade out in seconds. The number of samples
+is determined via rounding to the nearest integer value.</p></li>
+<li><p><strong>fs</strong> (<em>scalar</em>) – The sampling rate in Hz</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>ndarray</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>The fading window</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.crest_factor">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">crest_factor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">axis</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.crest_factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate crest factor</p>
+<p>Calculates the crest factor of the input signal. The crest factor
+is defined as:</p>
+<div class="math notranslate nohighlight">
+\[C = \frac{|x_{peak}|}{x_{rms}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(x_{peak}\)</span> is the maximum of the absolute value and
+<span class="math notranslate nohighlight">\(x_{rms}\)</span> is the effective value of the signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ndarray</em>) – The input signal</p></li>
+<li><p><strong>axis</strong> (<em>int</em>) – The axis for which to calculate the crest factor (default = 0)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The crest factor</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>scalar</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.Signal.calc_crest_factor" title="audiotools.Signal.calc_crest_factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.calc_crest_factor</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.gaussian_fade_window">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">gaussian_fade_window</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">rise_time</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">cutoff</span><span class="o">=</span><span class="default_value">- 60</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.gaussian_fade_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gausiapn fade-in and fade-out window.</p>
+<p>This function generates a window function with a gausian fade in
+and fade out. The gausian slope is cut at the level defined by the
+cutoff parameter</p>
+<p>The window is given by:</p>
+<div class="math notranslate nohighlight">
+\[w(t) = e^{\frac{-(t-t_r)^2}{2 * \sigma^2}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(t\)</span> is the time, <span class="math notranslate nohighlight">\(t_r\)</span> is the the rise time and
+<span class="math notranslate nohighlight">\(\sigma\)</span> is calculated as</p>
+<div class="math notranslate nohighlight">
+\[\sigma = \sqrt{\frac{r_t^2}{2 \log{(10^{ p / 20})}}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(p\)</span> is the cutoff in dB</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ndarray</em>) – The length of the array will be used to determin the window length.</p></li>
+<li><p><strong>rise_time</strong> (<em>scalar</em>) – Duration of the gaussian fade in and fade out in seconds. The
+value is measured from the cutof level until reaching a value
+of 1. The number of samples is determined via rounding to the
+nearest integer value.</p></li>
+<li><p><strong>fs</strong> (<em>scalar</em>) – The sampling rate in Hz</p></li>
+<li><p><strong>cutoff</strong> (<em>scalar</em><em>, </em><em>optional</em>) – The level at which the gausian slope is cut (default = -60dB)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>ndarray</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>The fading window</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.generate_noise">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">generate_noise</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">duration</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">ntype</span><span class="o">=</span><span class="default_value">'white'</span></em>, <em class="sig-param"><span class="n">n_channels</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">seed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.generate_noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate Noise</p>
+<p>Generate gaussian noise with a variance of 1 and different
+spectral shapes. The noise is generated in the frequency domain
+using the gaussian pseudorandom generator <code class="docutils literal notranslate"><span class="pre">numpy.random.randn</span></code>.
+The real and imaginary part of each frequency component is set
+using the psudorandom generator. Each frequency bin is then
+weighted dependent on the spectral shape. The resulting spektrum
+is then transformed into the time domain using <code class="docutils literal notranslate"><span class="pre">numpy.fft.ifft</span></code></p>
+<p>Weighting functions</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>white: <span class="math notranslate nohighlight">\(w(f) = 1\)</span></p></li>
+<li><p>pink: <span class="math notranslate nohighlight">\(w(f) = \frac{1}{\sqrt{f}}\)</span></p></li>
+<li><p>brown: <span class="math notranslate nohighlight">\(w(f) = \frac{1}{f}\)</span></p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>duration</strong> (<em>scalar</em>) – Noise duration in seconds</p></li>
+<li><p><strong>fs</strong> (<em>int</em>) – Sampling frequency</p></li>
+<li><p><strong>ntype</strong> (<em>{'white'</em><em>, </em><em>'pink'</em><em>, </em><em>'brown'}</em>) – spectral shape of the noise</p></li>
+<li><p><strong>n_channels</strong> (<em>int</em>) – number of indipendant noise channels</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em> or </em><em>1-d array_like</em><em>, </em><em>optional</em>) – Seed for <cite>RandomState</cite>.
+Must be convertible to 32 bit unsigned integers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>noise vector of the shape (NxM) where N is the number of samples
+and M &gt;the number of channels</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.Signal.add_noise" title="audiotools.Signal.add_noise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.add_noise</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.generate_tone">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">generate_tone</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frequency</span></em>, <em class="sig-param"><span class="n">duration</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">start_phase</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.generate_tone" title="Permalink to this definition">¶</a></dt>
+<dd><p>create a cosine</p>
+<p>This function will generate a pure tone following the equation:</p>
+<div class="math notranslate nohighlight">
+\[x = x + cos(2\pi f t + \phi_0)\]</div>
+<p>where <span class="math notranslate nohighlight">\(x\)</span> is the waveform, <span class="math notranslate nohighlight">\(f\)</span> is the frequency,
+:math`t` is the time and <span class="math notranslate nohighlight">\(\phi_0\)</span> the starting phase.
+The first evulated timepoint is 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<em>scalar</em>) – The tone frequency in Hz.</p></li>
+<li><p><strong>duration</strong> (<em>scalar</em>) – The tone duration in seconds.</p></li>
+<li><p><strong>fs</strong> (<em>scalar</em>) – The sampling rate for the tone.</p></li>
+<li><p><strong>start_phase</strong> (<em>scalar</em><em>, </em><em>optional</em>) – The starting phase of the sine tone.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>ndarray</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>The sine tone</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.Signal.add_tone" title="audiotools.Signal.add_tone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.add_tone</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.generate_uncorr_noise">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">generate_uncorr_noise</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">duration</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">n_channels</span></em>, <em class="sig-param"><span class="n">corr</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">seed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.generate_uncorr_noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate partly uncorrelated noise</p>
+<p>This function generates partly uncorrelated noise using the N+1
+generator method.</p>
+<p>To generate N partly uncorrelated noises with a desired
+correlation coefficent of $rho$, the algoritm first generates N+1
+noise tokens which are then orthogonalized using the Gram-Schmidt
+process (as implementd in numpy.linalg.qr). The N+1 th noise token
+is then mixed with the remaining noise tokens using the equation</p>
+<div class="math notranslate nohighlight">
+\[X_{\rho,n} = X_{N+1}  \sqrt{\rho} + X_n  \beta \sqrt{1 - \rho}\]</div>
+<p>where <span class="math notranslate nohighlight">\(X_{\rho,n}\)</span> is the nth output and noise,
+<span class="math notranslate nohighlight">\(X_{n}\)</span> the nth indipendent noise and <span class="math notranslate nohighlight">\(X_{N=1}\)</span> is the
+common noise.</p>
+<p>for two noise tokens, this is identical to the assymetric
+three-generator method described in <a href="#id8"><span class="problematic" id="id3">[1]_</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>duration</strong> (<em>scalar</em>) – Noise duration in seconds</p></li>
+<li><p><strong>fs</strong> (<em>int</em>) – Sampling frequency</p></li>
+<li><p><strong>n_channels</strong> (<em>int</em>) – number of indipendant noise channels</p></li>
+<li><p><strong>corr</strong> (<em>int</em><em>, </em><em>optional</em>) – Desired correlation of the noise tokens, (default=0)</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em> or </em><em>1-d array_like</em><em>, </em><em>optional</em>) – Seed for <cite>RandomState</cite>.
+Must be convertible to 32 bit unsigned integers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>noise vector of the shape (NxM) where N is the number of samples
+and M &gt;the number of channels</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets">1</span></dt>
+<dd><p>Hartmann, W. M., &amp; Cho, Y. J. (2011). Generating partially
+correlated noise—a comparison of methods. The Journal of the
+Acoustical Society of America, 130(1),
+292–301. <a class="reference external" href="http://dx.doi.org/10.1121/1.3596475">http://dx.doi.org/10.1121/1.3596475</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.set_dbfs">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">set_dbfs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">dbfs_val</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.set_dbfs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Full scale normalization of the signal.</p>
+<p>Normalizes the signal to dB Fullscale
+for this, the Signal is multiplied with the factor <span class="math notranslate nohighlight">\(A\)</span></p>
+<div class="math notranslate nohighlight">
+\[A = \frac{1}{\sqrt{2}\sigma} 10^\frac{L}{20}\]</div>
+<p>where <span class="math notranslate nohighlight">\(L\)</span> is the goal Level, and <span class="math notranslate nohighlight">\(\sigma\)</span> is the
+RMS of the signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ndarray</em>) – The input signal</p></li>
+<li><p><strong>dbfs_val</strong> (<em>float</em>) – The db full scale value to reach</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The amplitude adjusted signal</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.set_dbspl" title="audiotools.set_dbspl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.set_dbspl</span></code></a>, <a class="reference internal" href="#audiotools.set_dbfs" title="audiotools.set_dbfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.set_dbfs</span></code></a>, <a class="reference internal" href="#audiotools.calc_dbfs" title="audiotools.calc_dbfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.calc_dbfs</span></code></a>, <a class="reference internal" href="#audiotools.Signal.set_dbspl" title="audiotools.Signal.set_dbspl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.set_dbspl</span></code></a>, <a class="reference internal" href="#audiotools.Signal.calc_dbspl" title="audiotools.Signal.calc_dbspl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.calc_dbspl</span></code></a>, <a class="reference internal" href="#audiotools.Signal.calc_dbfs" title="audiotools.Signal.calc_dbfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.calc_dbfs</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.set_dbspl">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">set_dbspl</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">dbspl_val</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.set_dbspl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjust signal amplitudes to a given dbspl value.</p>
+<p>Normalizes the signal to a given sound pressure level in dB
+relative 20e-6 Pa.
+for this, the Signal is multiplied with the factor <span class="math notranslate nohighlight">\(A\)</span></p>
+<div class="math notranslate nohighlight">
+\[A = \frac{p_0}{\sigma} 10^{L / 20}\]</div>
+<p>where <span class="math notranslate nohighlight">\(L\)</span> is the goal SPL, <span class="math notranslate nohighlight">\(p_0=20\mu Pa\)</span> and
+<span class="math notranslate nohighlight">\(\sigma\)</span> is the RMS of the signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ndarray</em>) – The input signal</p></li>
+<li><p><strong>dbspl_val</strong> (<em>float</em>) – The dbspl value to reach</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The amplitude adjusted signal</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.calc_dbspl" title="audiotools.calc_dbspl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.calc_dbspl</span></code></a>, <a class="reference internal" href="#audiotools.Signal.calc_dbspl" title="audiotools.Signal.calc_dbspl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.calc_dbspl</span></code></a>, <a class="reference internal" href="#audiotools.Signal.set_dbfs" title="audiotools.Signal.set_dbfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.set_dbfs</span></code></a>, <a class="reference internal" href="#audiotools.Signal.calc_dbfs" title="audiotools.Signal.calc_dbfs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.calc_dbfs</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.shift_signal">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">shift_signal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">nr_samples</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.shift_signal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shift <cite>signal</cite> by <cite>nr_samples</cite> samples.</p>
+<dl class="simple">
+<dt>Shift a signal by a given number of samples. The shift happens</dt><dd><p>cyclically so that the length of the signal does not change.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>array_like</em>) – Input signal</p></li>
+<li><p><strong>nr_samples</strong> (<em>int</em>) – The number of samples that the signal should be shifted. Must
+be positive if <cite>mode</cite> is ‘zeros’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>res</strong> (<em>ndarray</em>) – The shifted signal</p></li>
+<li><p><em>See Also</em></p></li>
+<li><p><em>———</em></p></li>
+<li><p><strong>delay_signal</strong> (<em>A high level delaying / shifting function.</em>)</p></li>
+<li><p><strong>fftshift_signal</strong> (<em>Shift a signal in frequency space.</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.zeropad">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">zeropad</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">number</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.zeropad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a number of zeros to both sides of a signal</p>
+<p>This function adds a given number of zeros to the start or
+end of a signal.</p>
+<p>If number is a scalar, an equal number of zeros will be appended
+at the front and end of the array. If a vector of two values is
+given, the first defines the number at the beginning, the second
+the number or duration of zeros at the end.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ndarray</em>) – The input Signal</p></li>
+<li><p><strong>number</strong> (<em>scalar</em><em> or </em><em>vecor of len</em><em>(</em><em>2</em><em>)</em><em>, </em><em>optional</em>) – Number of zeros.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>ndarray</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>The bufferd signal</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#audiotools.Signal.zeropad" title="audiotools.Signal.zeropad"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotools.Signal.zeropad</span></code></a></p>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-audiotools.filter">
+<span id="filter"></span><h2>Filter<a class="headerlink" href="#module-audiotools.filter" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="audiotools.filter.brickwall">
+<code class="sig-prename descclassname">audiotools.filter.</code><code class="sig-name descname">brickwall</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">low_f</span></em>, <em class="sig-param"><span class="n">high_f</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.filter.brickwall" title="Permalink to this definition">¶</a></dt>
+<dd><p>Brickwall bandpass filter</p>
+<p>Bandpass filters an input signal by setting all frequency
+outside of the passband [low_f, high_f] to zero.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ndarray</em>) – The input signal</p></li>
+<li><p><strong>fs</strong> (<em>scalar</em>) – The signals sampling rate in Hz</p></li>
+<li><p><strong>low_f</strong> (<em>scalar</em><em> or </em><em>None</em>) – The lower cutoff frequency in Hz</p></li>
+<li><p><strong>high_f</strong> (<em>scalar</em>) – The upper cutoff frequency in Hz</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>The filtered signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.filter.gammatone">
+<code class="sig-prename descclassname">audiotools.filter.</code><code class="sig-name descname">gammatone</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">cf</span></em>, <em class="sig-param"><span class="n">bw</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="n">attenuation_db</span><span class="o">=</span><span class="default_value">- 3</span></em>, <em class="sig-param"><span class="n">return_complex</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.filter.gammatone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply a gammatone filter to the signal</p>
+<p>Applys a gammatone filter following <a href="#id9"><span class="problematic" id="id5">[1]_</span></a> to the input signal
+and returns the filtered signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ndarray</em>) – The input signal</p></li>
+<li><p><strong>fs</strong> (<em>int</em>) – The sample frequency in Hz</p></li>
+<li><p><strong>cf</strong> (<em>scalar</em>) – The center frequency of the filter in Hz</p></li>
+<li><p><strong>bw</strong> (<em>scalar</em>) – The bandwidth of the filter in Hz</p></li>
+<li><p><strong>order</strong> (<em>int</em>) – The filter order (default = 4)</p></li>
+<li><p><strong>attenuation_db</strong> (<em>scalar</em>) – The attenuation at half bandwidth in dB (default = -3)</p></li>
+<li><p><strong>return_complex</strong> (<em>bool</em>) – Whether the complex filter output or only it’s real
+part is returned (default = True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>The filtered signal.</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id6"><span class="brackets">1</span></dt>
+<dd><p>Hohmann, V., Frequency analysis and synthesis using a
+Gammatone filterbank, Acta Acustica, Vol 88 (2002), 43 -3442</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="introduction.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Jörg Encke.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
