@@ -139,7 +139,7 @@ class FrequencyDomainSignal(BaseSignal):
 
         Returns:
         --------
-        Signal : The timedomain representation
+        The timedomain representation: Signal
 
         """
 
@@ -147,17 +147,30 @@ class FrequencyDomainSignal(BaseSignal):
         self *= self.n_samples
         wv = np.fft.ifft(self, axis=0)
         wv = np.real_if_close(wv)
-        signal = audio.Signal(self.n_channels, self.duration, self.fs)
+        signal = audio.Signal(self.n_channels, self.duration, self.fs, dtype = wv.dtype)
         signal[:] = wv
         return signal
 
     def to_analytical(self):
+        """Convert spectrum to analytical signal
+
+        Converts the spectrum to that of the equivalent analytical
+        signal by removing the negative frequency components and
+        doubling the positive coponents.
+
+        Returns:
+        --------
+        Returns itself : FrequencyDomainSignal
+
+        """
         nsamp = self.n_samples
 
         h = np.zeros(nsamp)
 
         if nsamp % 2 == 0:
+            # Do not change the nyquist bin or the offset
             h[0] = h[nsamp // 2] = 1
+            # double all other components
             h[1:nsamp // 2] = 2
         else:
             h[0] = 1
@@ -168,7 +181,6 @@ class FrequencyDomainSignal(BaseSignal):
             ind[0] = slice(None)
             h = h[tuple(ind)]
 
-        signal = audio.AnalyticalSignal(self.n_channels, self.duration, self.fs,
-                                        dtype=complex)
-        signal[:] = np.fft.ifft(self.copy() * h * self.n_samples, axis=0)
-        return signal
+        self *= h
+
+        return self

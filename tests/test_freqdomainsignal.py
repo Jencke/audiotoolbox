@@ -65,9 +65,24 @@ class test_oaudio(unittest.TestCase):
         assert np.all(np.isreal(res))
 
     def test_analytical(self):
-        sig = audio.Signal(2, 1, 48000).add_tone(100).to_freqdomain()
-        asig = sig.to_analytical()
-        testing.assert_almost_equal(sig.to_timedomain(), asig.to_timedomain())
+        sig = audio.Signal(2, 1, 48000).add_noise()
+        fsig = sig.to_freqdomain()
+        fsig.to_analytical()
+        # All but the niquist bin should be zero
+        testing.assert_array_equal(fsig[fsig.freq < 0][1:], 0)
+        asig = fsig.to_timedomain()
+        testing.assert_almost_equal(asig.real, sig)
 
-        sig = audio.Signal(2, 1, 48000).add_noise().to_freqdomain()
-        sig2 = sig.to_analytical()
+        sig = audio.Signal(1, 0.1, 48000).add_tone(500)
+        sig2 = audio.Signal(1, 0.1, 48000).add_tone(500, start_phase=-np.pi/2)
+        fsig = sig.to_freqdomain()
+        fsig.to_analytical()
+        asig = fsig.to_timedomain()
+        testing.assert_almost_equal(asig.imag, sig2)
+        testing.assert_almost_equal(asig.real, sig)
+
+        sig = audio.Signal((2, 2), 1, 48000).add_noise()
+        fsig = sig.to_freqdomain()
+        fsig.to_analytical()
+        asig = fsig.to_timedomain()
+        testing.assert_almost_equal(asig.real, sig)

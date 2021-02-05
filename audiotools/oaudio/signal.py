@@ -740,6 +740,17 @@ class Signal(BaseSignal):
         return fd
 
     def to_analytical(self):
+        r"""Convert to analytical signal representation
+
+        This function converts the signal into its analytical
+        representation. The function is not applied inplace but a new
+        signal with datatype complex is returned
+
+        Returns
+        -------
+        The analytical signal : Signal
+
+        """
         fd_signal = self.to_freqdomain()
-        a_signal = fd_signal.to_analytical()
+        a_signal = fd_signal.to_analytical().to_timedomain()
         return a_signal

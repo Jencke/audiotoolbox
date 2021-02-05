@@ -439,3 +439,8 @@ class test_oaudio(unittest.TestCase):
         sig.ch[1].add_tone(500)
         tone_2 = audio.generate_tone(500, sig.duration, sig.fs)
         testing.assert_equal(sig.ch[1], tone_2)
+
+    def test_analytical(self):
+        sig = audio.Signal((2, 2), 1, 48000).add_noise()
+        asig = sig.to_analytical()
+        testing.assert_almost_equal(sig, asig.real)
