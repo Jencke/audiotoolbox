@@ -472,25 +472,21 @@ def test_generate_noise():
 
     noise = audio.generate_noise(duration, fs)
     assert len(noise) == audio.nsamples(duration, fs)
-    assert np.abs(noise.mean()) <= 1e-2
-
+    assert np.ndim(noise) == 1
     # Test for whole spectrum
-    assert np.all(~np.isclose(np.abs(np.fft.fft(noise))[1:], 0))
-    # # offset has to be zero
-    print(np.fft.fft(noise)[0])
-    print(noise.mean())
-    # assert np.all(np.isclose(, 0))
+    spec = np.fft.fft(noise)
+    assert np.all(~np.isclose(np.abs(spec)[1:], 0))
+    testing.assert_almost_equal(np.abs(spec[0]), 0)
+    testing.assert_almost_equal(np.var(noise), 1)
 
     # # Test no offset
-    # testing.assert_almost_equal(noise.mean(), 0)
-
-    # # test seed
-    # noise1 = audio.generate_noise(duration, fs, seed=1)
-    # noise2 = audio.generate_noise(duration, fs, seed=1)
-    # noise3 = audio.generate_noise(duration, fs, seed=2)
-    # testing.assert_equal(noise1, noise2)
-    # assert ~np.all(noise1 == noise3)
-
+    testing.assert_almost_equal(noise.mean(), 0)
+    # test seed
+    noise1 = audio.generate_noise(duration, fs, seed=1)
+    noise2 = audio.generate_noise(duration, fs, seed=1)
+    noise3 = audio.generate_noise(duration, fs, seed=2)
+    testing.assert_equal(noise1, noise2)
+    assert ~np.all(noise1 == noise3)
 
 def test_generate_uncorr_noise():
     from scipy.stats import pearsonr
@@ -527,6 +523,18 @@ def test_generate_uncorr_noise():
     #Test vor variance = 1
     noise = audio.generate_uncorr_noise(duration, fs, 2, corr=0.5)
     testing.assert_almost_equal(noise.var(axis=0), 1)
+
+    #Test multiple dimensions:
+    noise = audio.generate_uncorr_noise(duration, fs, (2, 3, 4), corr=0.5)
+    assert noise.shape[1:] == (2, 3, 4)
+    noise = noise.reshape([len(noise), 2 * 3 * 4])
+    cv = np.corrcoef(noise.T)
+    lower_tri = np.tril(cv, -1)
+    lower_tri[lower_tri == 0] = np.nan
+    mean = np.nanmean(lower_tri)
+    std = np.nanstd(lower_tri)
+    assert(std <= 1e-5)
+    assert(np.abs(mean - 0.5) <= 1e-6)
 
 
 def test_extract_binaural_differences():
