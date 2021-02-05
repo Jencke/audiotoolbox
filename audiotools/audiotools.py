@@ -787,7 +787,7 @@ def delay_signal(signal, delay, fs, method='fft', mode='zeros'):
 
     #due to the cyclic nature of the shift, pad the signal with
     #enough zeros
-    n_pad = np.int(np.ceil(np.abs(delay * fs)))
+    n_pad = int(np.ceil(np.abs(delay * fs)))
     pad = np.zeros(n_pad)
     signal = np.concatenate([pad, signal, pad])
 
