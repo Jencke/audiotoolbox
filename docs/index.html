@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Welcome to audiotools’s documentation! &mdash; audiotools  documentation</title>
+  <title>What is audiotools ? &mdash; audiotools  documentation</title>
   
 
   
@@ -54,9 +54,12 @@
           
 
           
-            <a href="#" class="icon icon-home"> audiotools
+            <a href="#">
           
 
+          
+            
+            <img src="_static/logo_white.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -137,7 +140,7 @@
     
       <li><a href="#" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Welcome to audiotools’s documentation!</li>
+      <li>What is audiotools ?</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -156,9 +159,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="welcome-to-audiotools-s-documentation">
-<h1>Welcome to audiotools’s documentation!<a class="headerlink" href="#welcome-to-audiotools-s-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
+  <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a><ul>
@@ -175,14 +176,56 @@
 </li>
 </ul>
 </div>
+<a class="reference internal image-reference" href="_images/logo.png"><img alt="_images/logo.png" class="align-center" src="_images/logo.png" style="width: 7cm;" /></a>
+<div class="section" id="what-is-audiotools">
+<h1>What is audiotools ?<a class="headerlink" href="#what-is-audiotools" title="Permalink to this headline">¶</a></h1>
+<p><strong>audiotools</strong> is a python package designed to generate and analyze
+acoustic stimuli for use in auditory research. It aims to provide an
+easy to use and intuitive interface.</p>
+<p><strong>auditools</strong> provides the powerfull <cite>Signal</cite> class which extends the
+standard <cite>numpy</cite> array class with a fluent interface that provides
+methods and attributes often used in auditory signal processing.</p>
+<p>The commands:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">audiotools</span> <span class="k">as</span> <span class="nn">audio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">set_dbspl</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span><span class="o">.</span><span class="n">add_fade_window</span><span class="p">(</span><span class="mf">10e-3</span><span class="p">,</span> <span class="s1">&#39;cos&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>create a 1 second long signal with 1 channel at a sampling rate of
+48kHz. A 500 Hz tone is then added to this signal, the level is set to
+60dB SPL and a 10ms raised cosine fade-in and fade-out is added. It
+also provides method to quickly switch between the frequency and
+time-domain representation of the same signal:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f_sig</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">to_freqdomain</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f_sig</span><span class="p">[</span><span class="n">f_sig</span><span class="o">.</span><span class="n">freq</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">f_sig</span><span class="o">.</span><span class="n">to_timedomain</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>first adds white noise to the signal and then sets all spectral
+components above 1kHz to zero.</p>
+<p>As all Signal Classes are extensions of the <cite>numpy</cite> array, they can be
+used as drop-in replacements.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Currently, the easiest method is to install
+audiotools by cloning the git repository:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Clone the repository: <cite>git clone https://github.com/Jencke/audiotools.git</cite></p></li>
+<li><p>Install the package: <cite>pip install ./</cite></p></li>
+<li><p>Optionally run the tests: <cite>pytest</cite></p></li>
+</ol>
+</div></blockquote>
 </div>
 <div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
+</div>
 </div>
 
 

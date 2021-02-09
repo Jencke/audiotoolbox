@@ -54,9 +54,12 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> audiotools
+            <a href="index.html">
           
 
+          
+            
+            <img src="_static/logo_white.png" class="logo" alt="Logo"/>
           
           </a>
 
@@ -358,7 +361,7 @@ is then mixed with the remaining noise tokens using the equation</p>
 <span class="math notranslate nohighlight">\(X_{n}\)</span> the nth indipendent noise and <span class="math notranslate nohighlight">\(X_{N=1}\)</span> is the
 common noise.</p>
 <p>for two noise tokens, this is identical to the assymetric
-three-generator method described in <a href="#id7"><span class="problematic" id="id1">[1]_</span></a></p>
+three-generator method described in <a href="#id9"><span class="problematic" id="id1">[1]_</span></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1007,7 +1010,7 @@ circular frequency and <span class="math notranslate nohighlight">\(\Delta t\)</
 part after DFT is small (&lt; 222e-16), it is neglected. This
 method is not applied in-place but a new
 :meth:’audiotools.Signal’ object is returned</p>
-<p>Signal : The timedomain representation</p>
+<p>The timedomain representation: Signal</p>
 </dd></dl>
 
 </dd></dl>
@@ -1016,11 +1019,41 @@ method is not applied in-place but a new
 <div class="section" id="module-audiotools">
 <span id="function-based-api"></span><h2>Function Based API<a class="headerlink" href="#module-audiotools" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
+<dt id="audiotools.calc_coherence">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">calc_coherence</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.calc_coherence" title="Permalink to this definition">¶</a></dt>
+<dd><p>normalized complex valued coherence</p>
+<p>This function calculates the normalized complex valued degree of
+coherence between two signals <span class="math notranslate nohighlight">\(f(t)\)</span> and <span class="math notranslate nohighlight">\(g(t)\)</span>. It is
+defined as:</p>
+<div class="math notranslate nohighlight">
+\[\gamma(tau) = \frac{&lt;f_a(t)g^*_a(t-\tau)&gt;}{\sqrt{&lt;|f_a(t)|^2&gt;&lt;|g_a(t)|^2&gt;}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(f_a(t)\)</span> is the analytic signals of <span class="math notranslate nohighlight">\(f(t)\)</span> and and
+<span class="math notranslate nohighlight">\(g^*_a(t)\)</span> is the complex conjugate of the analytic signal of
+<span class="math notranslate nohighlight">\(g(t)\)</span>. <span class="math notranslate nohighlight">\(&lt;\dots&gt;\)</span> symbolizes the mean over time.</p>
+<p>Requires an input signal with the shape (N, 2).  If only a
+one-dimensional signal is provided, the auto-coherence function where
+<span class="math notranslate nohighlight">\(f(t) = g(t)\)</span> is calculated.</p>
+<p>The real part of the complex valued coherence equals the normalized
+cross-correlation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>signal</strong> (<a class="reference internal" href="#audiotools.Signal" title="audiotools.Signal"><em>Signal</em></a><em> or </em><em>ndarray</em>) – The input signal</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>The coherence vector</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotools.Signal" title="audiotools.Signal">Signal</a> or ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="audiotools.calc_dbfs">
 <code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">calc_dbfs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.calc_dbfs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the dBFS RMS value of a given signal.</p>
 <div class="math notranslate nohighlight">
-\[L = 20 \log_10\left(\sqrt{2}\sigma\right)\]</div>
+\[L = 20 \log_{10}\left(\sqrt{2}\sigma\right)\]</div>
 <p>where <span class="math notranslate nohighlight">\(\sigma\)</span> is the signals RMS.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1279,7 +1312,7 @@ is then mixed with the remaining noise tokens using the equation</p>
 <span class="math notranslate nohighlight">\(X_{n}\)</span> the nth indipendent noise and <span class="math notranslate nohighlight">\(X_{N=1}\)</span> is the
 common noise.</p>
 <p>for two noise tokens, this is identical to the assymetric
-three-generator method described in <a href="#id8"><span class="problematic" id="id3">[1]_</span></a></p>
+three-generator method described in <a href="#id10"><span class="problematic" id="id3">[1]_</span></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1306,6 +1339,140 @@ and M &gt;the number of channels</p>
 correlated noise—a comparison of methods. The Journal of the
 Acoustical Society of America, 130(1),
 292–301. <a class="reference external" href="http://dx.doi.org/10.1121/1.3596475">http://dx.doi.org/10.1121/1.3596475</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.nsamples">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">nsamples</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">duration</span></em>, <em class="sig-param"><span class="n">fs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.nsamples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of samples in a signal with a given duration.</p>
+<p>This function calculates the number of samples that will be
+returned when generating a signal with a certain duration and
+sampling rates.  The number is determined by multiplying the
+sampling rate with the duration and rounding to the next integer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>duration</strong> (<em>scalar</em>) – The tone duration in seconds.</p></li>
+<li><p><strong>fs</strong> (<em>scalar</em>) – The sampling rate for the tone.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>number of samples in the signal</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.phase2time">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">phase2time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">phase</span></em>, <em class="sig-param"><span class="n">frequency</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.phase2time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pase to Time for a given frequency</p>
+<div class="math notranslate nohighlight">
+\[t = \frac{\phi}{2 \pi f}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>phase</strong> (<em>ndarray</em>) – The phase values to convert</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>converted time values</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.phon_to_dbspl">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">phon_to_dbspl</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frequency</span></em>, <em class="sig-param"><span class="n">l_phon</span></em>, <em class="sig-param"><span class="n">interpolate</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">limit</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.phon_to_dbspl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sound pressure levels from loudness level (following DIN ISO 226:2006-04)</p>
+<p>Calulates the sound pressure level at a given frequency that is
+necessary to reach a specific loudness level following DIN ISO
+226:2006-04</p>
+<p>The normed values are tabulated for the following frequencies and
+sound pressure levels:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>20phon to 90phon</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>20 Hz, 25 Hz, 31.5 Hz, 40 Hz, 50 Hz, 63 Hz, 80 Hz, 100 Hz,
+125 Hz, 160 Hz, 200 Hz, 250 Hz, 315 Hz, 400 Hz, 500 Hz, 630
+Hz, 800 Hz, 1000 Hz, 1250 Hz, 1600 Hz, 2000 Hz, 2500 Hz, 3150
+Hz, 4000 Hz</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>20phon to 80phon</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>5000 Hz, 6300 Hz, 8000 Hz, 10000 Hz, 12500 Hz</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<p>Values for other frequencies can be interpolated (cubic spline) by setting the
+parameter <cite>interpolate=True</cite>. The check for correct sound pressure levels can be
+switched off by setting <cite>limit=False</cite>. In both cases, the results are not covered by
+the DIN ISO norm</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<em>scalar</em>) – The frequency in Hz. must be one of the tabulated values above if interpolate = False</p></li>
+<li><p><strong>l_phon</strong> (<em>scalar</em>) – loudness level that should be converted</p></li>
+<li><p><strong>interpolate</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines whether the tabulated values from the norm should be interpolated.
+If set to True, the tabulated values will be interpolated using a cubic spline
+(default = False)</p></li>
+<li><p><strong>limit</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines whether the limits of the norm should be checked (default = True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>The soundpressure level in dB SPL</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>scalar</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="audiotools.schroeder_phase">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">schroeder_phase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">harmonics</span></em>, <em class="sig-param"><span class="n">amplitudes</span></em>, <em class="sig-param"><span class="n">phi0</span><span class="o">=</span><span class="default_value">0.0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.schroeder_phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Phases for a schroeder phase harmonic complex</p>
+<p>This function calculates the phases for a schroeder phase harmonic
+comlex following eq. 11 of <a href="#id11"><span class="problematic" id="id5">[1]_</span></a>:</p>
+<div class="math notranslate nohighlight">
+\[\phi_n = \phi_l - 2\pi \sum\limits^{n-1}_{l=1}(n - l)p_l\]</div>
+<p><span class="math notranslate nohighlight">\(n\)</span> is the order of the harmonic and p_l is the relative
+power of the spectral component p_l.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>harmonics</strong> (<em>ndarray</em>) – A vector of harmonics for which the schroeder phases should be
+calculated</p></li>
+<li><p><strong>amplitudes</strong> (<em>ndarray</em>) – A vector of amplitudes for the given harmonics</p></li>
+<li><p><strong>phi0</strong> (<em>scalar</em>) – The starting phase of the first harmonic (default = 0)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>The phase values for the harmonic compontents</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="footnote brackets">
+<dt class="label" id="id6"><span class="brackets">1</span></dt>
+<dd><p>Schroeder, M. (1970). Synthesis of low-peak-factor signals and
+binary sequences with low autocorrelation (corresp.). IEEE
+Transactions on Information Theory, 16(1),
+85-89</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1401,6 +1568,25 @@ be positive if <cite>mode</cite> is ‘zeros’.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt id="audiotools.time2phase">
+<code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">time2phase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">frequency</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.time2phase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time to phase for a given frequency</p>
+<div class="math notranslate nohighlight">
+\[\phi = 2 \pi t f\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>ndarray</em>) – The time values to convert</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>converted phase values</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="audiotools.zeropad">
 <code class="sig-prename descclassname">audiotools.</code><code class="sig-name descname">zeropad</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">number</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.zeropad" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add a number of zeros to both sides of a signal</p>
@@ -1461,7 +1647,7 @@ outside of the passband [low_f, high_f] to zero.</p>
 <dt id="audiotools.filter.gammatone">
 <code class="sig-prename descclassname">audiotools.filter.</code><code class="sig-name descname">gammatone</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal</span></em>, <em class="sig-param"><span class="n">fs</span></em>, <em class="sig-param"><span class="n">cf</span></em>, <em class="sig-param"><span class="n">bw</span></em>, <em class="sig-param"><span class="n">order</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="n">attenuation_db</span><span class="o">=</span><span class="default_value">- 3</span></em>, <em class="sig-param"><span class="n">return_complex</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotools.filter.gammatone" title="Permalink to this definition">¶</a></dt>
 <dd><p>Apply a gammatone filter to the signal</p>
-<p>Applys a gammatone filter following <a href="#id9"><span class="problematic" id="id5">[1]_</span></a> to the input signal
+<p>Applys a gammatone filter following <a href="#id12"><span class="problematic" id="id7">[1]_</span></a> to the input signal
 and returns the filtered signal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1485,7 +1671,7 @@ part is returned (default = True)</p></li>
 </dl>
 <p class="rubric">References</p>
 <dl class="footnote brackets">
-<dt class="label" id="id6"><span class="brackets">1</span></dt>
+<dt class="label" id="id8"><span class="brackets">1</span></dt>
 <dd><p>Hohmann, V., Frequency analysis and synthesis using a
 Gammatone filterbank, Acta Acustica, Vol 88 (2002), 43 -3442</p>
 </dd>
