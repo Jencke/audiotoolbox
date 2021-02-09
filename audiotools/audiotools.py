@@ -10,6 +10,7 @@ from numpy import pi
 from scipy.interpolate import interp1d
 from scipy.signal import hilbert
 from scipy.signal.windows import hann
+from .oaudio import Signal
 
 from .filter import brickwall
 
@@ -152,6 +153,8 @@ def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
 def time2phase(time, frequency):
     r"""Time to phase for a given frequency
 
+    .. math:: \phi = 2 \pi t f
+
     Parameters
     -----------
     time : ndarray
@@ -159,7 +162,7 @@ def time2phase(time, frequency):
 
     Returns
     --------
-    ndarray : converted phase values
+    converted phase values : ndarray
 
     """
 
@@ -169,6 +172,8 @@ def time2phase(time, frequency):
 def phase2time(phase, frequency):
     r"""Pase to Time for a given frequency
 
+    .. math:: t = \frac{\phi}{2 \pi f}
+
     Parameters
     -----------
     phase : ndarray
@@ -176,7 +181,7 @@ def phase2time(phase, frequency):
 
     Returns
     --------
-    ndarray : converted time values
+    converted time values : ndarray
 
     """
 
@@ -184,7 +189,7 @@ def phase2time(phase, frequency):
     return time
 
 def nsamples(duration, fs):
-    r"""Calculates number of samples in a signal with a given duration.
+    r"""Number of samples in a signal with a given duration.
 
     This function calculates the number of samples that will be
     returned when generating a signal with a certain duration and
@@ -193,18 +198,13 @@ def nsamples(duration, fs):
 
     Parameters
     -----------
-    frequency : scalar
-        The tone frequency in Hz.
     duration : scalar
         The tone duration in seconds.
     fs : scalar
         The sampling rate for the tone.
-    start_phase : scalar, optional
-        The starting phase of the sine tone.
-
     Returns
     --------
-    int : number of samples in the signal
+    number of samples in the signal : int
 
     """
     len_signal = int(np.round(duration * fs))
@@ -301,6 +301,20 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
     """
     np.random.seed(seed)
 
+    len_signal = nsamples(duration, fs)
+
+    # If noise type is white just use the random number generator
+    if ntype == 'white':
+        if np.ndim(n_channels):
+            noise = np.random.randn(len_signal, *n_channels)
+        else:
+            noise = np.random.randn(len_signal, n_channels)
+        noise -= noise.mean(axis=0)
+        # normalize variance
+        noise /= noise.std(axis=0)
+        return np.squeeze(noise)
+
+    # Otherwise create spectrum
     # Calculate length and number of fft samples
     len_signal = nsamples(duration, fs)
     nfft = nextpower2(len_signal)
@@ -315,10 +329,7 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
 
     # amplitude weighting factor
     f_weights = np.zeros([nfft, n_channels])
-    if ntype == 'white':
-        # equal power
-        f_weights[:, :] = 1
-    elif ntype == 'pink':
+    if ntype == 'pink':
         # Power proportinal to 1 / f
         f_weights[lowbin:highbin, :] = 1. / np.sqrt(freqs[lowbin:, None])
     elif ntype == 'brown':
@@ -356,26 +367,97 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
 
     return noise
 
-def generate_corr_noise(duration, fs, corr=0, seed=None):
-    # generate two noise vectors
-    np.random.seed(seed)
-    # nsamp = nsamples(duration, fs)
-    # noise = np.random.randn(nsamp, 2)
-    noise = generate_noise(duration, fs, n_channels=2, seed=seed)
+def generate_uncorr_noise(duration, fs, n_channels, corr=0 , seed=None):
+    r"""Generate partly uncorrelated noise
 
-    # use Gram-Schmidt to generate orthogonal noise. This makes shure
-    # that the two noise vectors are of equal power.
-    Q, R = np.linalg.qr(noise)
-    noise = Q / np.abs(Q).max()
+    This function generates partly uncorrelated noise using the N+1
+    generator method.
 
-    alpha = corr
-    beta = np.sqrt(1 - corr**2)
+    To generate N partly uncorrelated noises with a desired
+    correlation coefficent of $\rho$, the algoritm first generates N+1
+    noise tokens which are then orthogonalized using the Gram-Schmidt
+    process (as implementd in numpy.linalg.qr). The N+1 th noise token
+    is then mixed with the remaining noise tokens using the equation
 
-    # Generate partially corelated noise using the two channel method
-    if corr > 0:
-        noise[:, 1] = alpha * noise[:, 0] + beta * noise[:, 1]
+    .. math:: X_{\rho,n} = X_{N+1}  \sqrt{\rho} + X_n  \beta \sqrt{1 - \rho}
 
-    return noise
+    where :math:`X_{\rho,n}` is the nth output and noise,
+    :math:`X_{n}` the nth indipendent noise and :math:`X_{N=1}` is the
+    common noise.
+
+    for two noise tokens, this is identical to the assymetric
+    three-generator method described in [1]_
+
+    Parameters
+    ----------
+    duration : scalar
+        Noise duration in seconds
+    fs : int
+        Sampling frequency
+    n_channels : int
+        number of indipendant noise channels
+    corr : int, optional
+        Desired correlation of the noise tokens, (default=0)
+    seed : int or 1-d array_like, optional
+        Seed for `RandomState`.
+        Must be convertible to 32 bit unsigned integers.
+
+    Returns
+    -------
+    ndarray
+        noise vector of the shape (NxM) where N is the number of samples
+        and M >the number of channels
+
+    References
+    ----------
+
+    .. [1] Hartmann, W. M., & Cho, Y. J. (2011). Generating partially
+      correlated noise—a comparison of methods. The Journal of the
+      Acoustical Society of America, 130(1),
+      292–301. http://dx.doi.org/10.1121/1.3596475
+
+    """
+
+    # if more then one dimension in n_channels
+    if np.ndim(n_channels) > 0:
+        shape = n_channels
+        n_channels = np.product(n_channels)
+    else:
+        shape = n_channels
+
+    # correlated noise in multiple channels is generated by using the
+    # N+1 generator method
+    noise = generate_noise(duration, fs, seed=seed, n_channels=n_channels+1)
+
+    #Orthogonalize the noise tokens
+    Q, R = np.linalg.qr(noise, 'reduced')
+
+    # normalizing the individual noise energies somewhat reduces
+    # the trial-by-trial variance of correlation values
+    Q /= Q.std(axis=0)
+
+    # The common noise component is mixed with each of the indebendent
+    # noise components to reach the desired correlation
+    common_noise = Q[:, -1]
+    independent_noise = Q[:, :-1]
+    #
+    alpha = np.sqrt(corr)
+    beta = np.sqrt(1 - alpha**2)
+    res_noise = (common_noise.T * alpha + independent_noise.T * beta).T
+
+    # Again make sure that the output variance is 1
+    res_noise /= res_noise.std(axis=0)
+
+    # bring into correct shape
+    if np.ndim(shape) > 0:
+        full_shape = [len(res_noise), *shape]
+        res_noise = res_noise.reshape(full_shape)
+    # if really only 1 dimensional, return vector
+    elif res_noise.shape[1] == 1:
+        res_noise = np.squeeze(res_noise)
+
+    return res_noise
+
 
 def generate_tone(frequency, duration, fs, start_phase=0):
     r"""create a cosine
@@ -705,7 +787,7 @@ def delay_signal(signal, delay, fs, method='fft', mode='zeros'):
 
     #due to the cyclic nature of the shift, pad the signal with
     #enough zeros
-    n_pad = np.int(np.ceil(np.abs(delay * fs)))
+    n_pad = int(np.ceil(np.abs(delay * fs)))
     pad = np.zeros(n_pad)
     signal = np.concatenate([pad, signal, pad])
 
@@ -850,7 +932,7 @@ def set_dbfs(signal, dbfs_val):
 def calc_dbfs(signal):
     r"""Calculate the dBFS RMS value of a given signal.
 
-    .. math:: L = 20 \log_10\left(\sqrt{2}\sigma\right)
+    .. math:: L = 20 \log_{10}\left(\sqrt{2}\sigma\right)
 
     where :math:`\sigma` is the signals RMS.
 
@@ -1107,19 +1189,25 @@ def erb_to_freq(n_erb):
 def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
     r"""Sound pressure levels from loudness level (following DIN ISO 226:2006-04)
 
-    Calulates the sound pressure level at a given frequency that is necessary to
-    reach a specific loudness level following DIN ISO 226:2006-04
+    Calulates the sound pressure level at a given frequency that is
+    necessary to reach a specific loudness level following DIN ISO
+    226:2006-04
 
-    The normed values are tabulated for the following frequencies and sound pressure levels:
+    The normed values are tabulated for the following frequencies and
+    sound pressure levels:
+
      1. 20phon to 90phon
-       * 20, 25, 31.5, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315,
-       * 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000
+       * 20 Hz, 25 Hz, 31.5 Hz, 40 Hz, 50 Hz, 63 Hz, 80 Hz, 100 Hz,
+         125 Hz, 160 Hz, 200 Hz, 250 Hz, 315 Hz, 400 Hz, 500 Hz, 630
+         Hz, 800 Hz, 1000 Hz, 1250 Hz, 1600 Hz, 2000 Hz, 2500 Hz, 3150
+         Hz, 4000 Hz
+
      2. 20phon to 80phon
-       *5000, 6300, 8000, 10000, 12500
+       * 5000 Hz, 6300 Hz, 8000 Hz, 10000 Hz, 12500 Hz
 
     Values for other frequencies can be interpolated (cubic spline) by setting the
-    parameter interpolate to True. The check for correct sound pressure levels can be
-    switched off by setting limit=False. In both cases, the results are not covered by
+    parameter `interpolate=True`. The check for correct sound pressure levels can be
+    switched off by setting `limit=False`. In both cases, the results are not covered by
     the DIN ISO norm
 
     Parameters
@@ -1137,7 +1225,8 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
 
     Returns
     -------
-    scalar : The soundpressure level in dB SPL
+    The soundpressure level in dB SPL : scalar
+
     """
     if limit:
         # Definition only valid starting from 20 phon
@@ -1431,11 +1520,15 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.):
     r"""Phases for a schroeder phase harmonic complex
 
     This function calculates the phases for a schroeder phase harmonic
-    comlex following eq. 11 of [1]_
+    comlex following eq. 11 of [1]_:
 
+    .. math:: \phi_n = \phi_l - 2\pi \sum\limits^{n-1}_{l=1}(n - l)p_l
+
+    :math:`n` is the order of the harmonic and p_l is the relative
+    power of the spectral component p_l.
 
     Parameters
-    -----------
+    ----------
     harmonics : ndarray
         A vector of harmonics for which the schroeder phases should be
         calculated
@@ -1445,11 +1538,13 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.):
         The starting phase of the first harmonic (default = 0)
 
     Returns
-    --------
-    ndarray :
-        The phase values for the harmonic compontents
+    -------
+    The phase values for the harmonic compontents : ndarray
 
-    ..[1] Schroeder, M. (1970). Synthesis of low-peak-factor signals and
+
+    References
+    ----------
+    .. [1] Schroeder, M. (1970). Synthesis of low-peak-factor signals and
           binary sequences with low autocorrelation (corresp.). IEEE
           Transactions on Information Theory, 16(1),
           85-89
@@ -1501,6 +1596,66 @@ def crest_factor(signal, axis=0):
     # crest_factor = 20*np.log10(a_max / a_effective)
 
     return a_max / a_effective
+
+
+def calc_coherence(signal):
+    r"""normalized complex valued coherence
+
+    This function calculates the normalized complex valued degree of
+    coherence between two signals :math:`f(t)` and :math:`g(t)`. It is
+    defined as:
+
+    .. math:: \gamma(tau) = \frac{<f_a(t)g^*_a(t-\tau)>}{\sqrt{<|f_a(t)|^2><|g_a(t)|^2>}}
+
+    where :math:`f_a(t)` is the analytic signals of :math:`f(t)` and and
+    :math:`g^*_a(t)` is the complex conjugate of the analytic signal of
+    :math:`g(t)`. :math:`<\dots>` symbolizes the mean over time.
+
+    Requires an input signal with the shape (N, 2).  If only a
+    one-dimensional signal is provided, the auto-coherence function where
+    :math:`f(t) = g(t)` is calculated.
+
+    The real part of the complex valued coherence equals the normalized
+    cross-correlation.
+
+    Parameters
+    ----------
+    signal : Signal or ndarray
+        The input signal
+
+    Returns
+    -------
+    The coherence vector: Signal or ndarray
+
+    """
+    if not isinstance(signal, Signal):
+        sig = Signal(2, len(signal), 1)
+        sig[:] = signal.copy()
+    elif signal.n_channels == 1:
+        sig = Signal(2, len(signal), 1)
+        sig[:] = signal.copy()[:, None]
+    else:
+        sig = signal.copy()
+
+    # calculate analytical signal and its spectrum
+    fsig = sig.to_freqdomain().to_analytical()
+    asig = fsig.to_timedomain()
+
+    # calculate coherence by convolving first channel with complex
+    # conjugate of the second channel (done by multiplying fft)
+    coh = ((fsig.ch[0] * fsig.ch[1].conj()) / sig.n_samples**2).to_timedomain()
+
+    # normalize by energy so that we gain the normalized coherence function
+    coh /= np.sqrt(np.product(np.mean(np.abs(asig)**2, axis=0)))
+
+    # if input was an ndarray convert output back to ndarray
+    if not isinstance(signal, Signal):
+        coh = np.asarray(coh)
+
+    return coh
+
+
+
 
 def phase_shift(signal, phase, fs):
     r"""Shifts all frequency components of a signal by a constant phase.

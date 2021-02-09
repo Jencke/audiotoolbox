@@ -472,16 +472,15 @@ def test_generate_noise():
 
     noise = audio.generate_noise(duration, fs)
     assert len(noise) == audio.nsamples(duration, fs)
-    assert np.abs(noise.mean()) <= 1e-2
-
+    assert np.ndim(noise) == 1
     # Test for whole spectrum
-    assert np.all(~np.isclose(np.abs(np.fft.fft(noise))[1:], 0))
-    # offset has to be zero
-    assert np.all(np.isclose(np.abs(np.fft.fft(noise))[0], 0))
+    spec = np.fft.fft(noise)
+    assert np.all(~np.isclose(np.abs(spec)[1:], 0))
+    testing.assert_almost_equal(np.abs(spec[0]), 0)
+    testing.assert_almost_equal(np.var(noise), 1)
 
-    # Test no offset
+    # # Test no offset
     testing.assert_almost_equal(noise.mean(), 0)
-
     # test seed
     noise1 = audio.generate_noise(duration, fs, seed=1)
     noise2 = audio.generate_noise(duration, fs, seed=1)
@@ -489,30 +488,21 @@ def test_generate_noise():
     testing.assert_equal(noise1, noise2)
     assert ~np.all(noise1 == noise3)
 
-
-
-def test_generate_corr_noise():
+def test_generate_uncorr_noise():
     from scipy.stats import pearsonr
 
     duration = 1
     fs = 100e3
-    noise = audio.generate_corr_noise(duration, fs)
+    noise = audio.generate_uncorr_noise(duration, fs, 2)
     noise1 = noise[:, 0]
     noise2 = noise[:, 1]
-    power1 = np.mean(noise1**2)
-    power2 = np.mean(noise2**2)
-
-    # Test for whole spectrum
-    assert np.all(~np.isclose(np.abs(np.fft.fft(noise1)), 0))
-    assert np.all(~np.isclose(np.abs(np.fft.fft(noise2)), 0))
-
     # Test equal Power assumption
-    testing.assert_almost_equal(power1, power2)
+    testing.assert_almost_equal(noise1.var(), noise2.var())
 
     # Test orthogonality
     corr_val = []
     for i in range(100):
-        noise = audio.generate_corr_noise(duration, fs)
+        noise = audio.generate_uncorr_noise(duration, fs, 2)
         noise1 = noise[:, 0]
         noise2 = noise[:, 1]
         corr_val.append(pearsonr(noise1, noise2)[0])
@@ -520,15 +510,31 @@ def test_generate_corr_noise():
     assert np.max(corr_val) < 1e-4
     assert np.median(corr_val) < 1e-6
 
-    # Test definition of covariance
-    corr_val = []
-    for i in range(100):
-        noise = audio.generate_corr_noise(duration, fs, corr=0.5)
-        noise1 = noise[:, 0]
-        noise2 = noise[:, 1]
-        corr_val.append(pearsonr(noise1, noise2)[0] - 0.5)
-    assert np.max(corr_val) < 1e-4
-    assert np.median(corr_val) < 1e-6
+    # Test multichannel
+    res_noise = audio.generate_uncorr_noise(1, 48000, 100, corr=0.5)
+    cv = np.corrcoef(res_noise.T)
+    lower_tri = np.tril(cv, -1)
+    lower_tri[lower_tri==0] = np.nan
+    mean = np.nanmean(lower_tri)
+    std = np.nanstd(lower_tri)
+    assert(std <= 1e-5)
+    assert(np.abs(mean - 0.5) <= 1e-6)
+
+    #Test vor variance = 1
+    noise = audio.generate_uncorr_noise(duration, fs, 2, corr=0.5)
+    testing.assert_almost_equal(noise.var(axis=0), 1)
+
+    #Test multiple dimensions:
+    noise = audio.generate_uncorr_noise(duration, fs, (2, 3, 4), corr=0.5)
+    assert noise.shape[1:] == (2, 3, 4)
+    noise = noise.reshape([len(noise), 2 * 3 * 4])
+    cv = np.corrcoef(noise.T)
+    lower_tri = np.tril(cv, -1)
+    lower_tri[lower_tri == 0] = np.nan
+    mean = np.nanmean(lower_tri)
+    std = np.nanstd(lower_tri)
+    assert(std <= 1e-5)
+    assert(np.abs(mean - 0.5) <= 1e-6)
 
 
 def test_extract_binaural_differences():
@@ -563,7 +569,7 @@ def test_extract_binaural_differences():
     assert np.all(np.isclose(ipd, 0))
 
     # #Test that phase is wrapped to +pi -pi
-    # signal = audio.generate_corr_noise(1, fs, corr=0.5)
+    # signal = audio.generate_uncorr_noise(1, fs, corr=0.5)
     # signal1 = signal[:, 0]
     # signal2 = signal[:, 1]
     # n_buf = int(48000 * 100e-3)
@@ -617,3 +623,45 @@ def test_crest_factor():
     signal = audio.generate_tone(100, 1, 100e3)
     cfac = audio.crest_factor(signal)
     testing.assert_almost_equal(cfac, np.sqrt(2))
+
+
+def test_calc_coherence():
+    cf = 500
+    bw = 100
+    sig = audio.Signal(2, 100, 48000).add_noise().bandpass(cf, bw, 'brickwall')
+    coh = audio.calc_coherence(sig)
+
+    # Analytic coherence for aboves signal
+    coh_analytic = (np.sin(np.pi * bw * sig.time[1:])
+                    / (np.pi * bw * sig.time[1:])
+                    * np.exp(1j * 2 * np.pi * cf * sig.time[1:]))
+
+    assert isinstance(coh, audio.Signal)
+    testing.assert_almost_equal(np.abs(coh[0]), 1)
+    nsamp = 1000
+    testing.assert_allclose(coh[1:nsamp], coh_analytic[:nsamp-1], rtol=0, atol=0.03)
+
+    # calculate auto-coherrence
+    coh2 = audio.calc_coherence(sig.ch[0])
+    testing.assert_array_equal(coh, coh2)
+
+    # test using numpy arrays
+    sig = np.asarray(sig)
+    coh3 = audio.calc_coherence(sig)
+    testing.assert_array_equal(coh3, coh)
+
+    cf = 500
+    bw = 100
+    sig = audio.Signal(2, 100, 48000).add_uncorr_noise(0.5).bandpass(cf, bw, 'brickwall')
+    coh = audio.calc_coherence(sig)
+    testing.assert_allclose(coh.abs()[0], 0.5, rtol=0.05)
+
+
+
+
+#     import matplotlib.pyplot as plt
+#     plt.ioff()
+#     plt.plot(sig.time[:nsamp], np.abs(coh[:nsamp]))
+#     plt.plot(sig.time[:nsamp], np.abs(coh_analytic[:nsamp]))
+# #    plt.xlim(0, 50e-3)
+#     plt.show()

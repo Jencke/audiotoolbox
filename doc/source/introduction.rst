@@ -16,16 +16,6 @@ and analyzing signals. In a fluent interface, methods are applied
 in-place and the object itself is returend which allowes methods to be
 stacked.
 
-The commands:
-
->>> import audiotools as audio
->>> sig = audio.Signal(n_channels=1, duration=1, fs=48000)
->>> sig.add_tone(500).set_dbspl(60).add_fade_window(10e-3, 'cos')
-
-create a 1 second long signal with 1 channel at a sampling rate of
-48kHz. A 500 Hz tone is then added to this signal, the level is set to
-60dB SPL and a 10ms raised cosine fade-in and fade-out is added.
-
 The Signal class
 ----------------
 

@@ -309,32 +309,30 @@ class test_oaudio(unittest.TestCase):
         assert np.var(sig.ch[0]) == np.var(sig.ch[1])
         testing.assert_almost_equal(np.var(sig), 2)
 
-
-    # def test_amplitude_spectrum(self):
-    #     fs = 48000
-    #     sig = Signal(1, 1, 48000).add_tone(1e3)
-
-    #     df = fs / sig.n_samples
-    #     n_1000 = (sig.n_samples // 2) + int(1000 / df)
-
-    #     a, b = sig.amplitude_spectrum()
-
-    #     assert a[n_1000] == 1000
-    #     testing.assert_almost_equal(np.abs(b[n_1000]), 0.5)
-
-    def test_freqdomain(self):
+    def test_add_noise(self):
         fs = 48000
         sig = Signal(1, 1, 48000).add_noise()
-        sig_c = sig.copy()
-        sig = sig.to_freqdomain()
-        sig = sig.to_timedomain()
-        testing.assert_almost_equal(sig_c, sig)
+        assert sig.max() != 0
+        sig = Signal(2, 1, 48000).add_noise()
+        assert np.all(sig.max(axis=0) != 0)
 
-        sig = Signal(1, 3, 48000).add_noise()
-        sig_c = sig.copy()
-        sig = sig.to_freqdomain()
-        sig = sig.to_timedomain()
-        testing.assert_almost_equal(sig_c, sig)
+        sig = Signal((2, 2), 1, 48000).add_noise()
+        assert np.all(sig.max(axis=0) != 0)
+
+        sig = Signal((2, 2), 1, 48000).add_noise(variance = 2)
+        assert np.var(sig.ch[0]) == np.var(sig.ch[1])
+        testing.assert_almost_equal(np.var(sig), 2)
+
+
+    def test_add_uncorr_noise(self):
+        fs = 48000
+        sig = Signal(5, 1, fs).add_uncorr_noise()
+        # lower trianglular matrix should be  0
+        testing.assert_almost_equal(np.tril(np.cov(sig.T), -1), 0)
+
+        #Multidimensional case
+        sig = Signal((2, 2), 1, fs).add_uncorr_noise()
+        assert(sig.n_channels == (2, 2))
 
 
     def test_crest_factor(self):
@@ -441,3 +439,8 @@ class test_oaudio(unittest.TestCase):
         sig.ch[1].add_tone(500)
         tone_2 = audio.generate_tone(500, sig.duration, sig.fs)
         testing.assert_equal(sig.ch[1], tone_2)
+
+    def test_analytical(self):
+        sig = audio.Signal((2, 2), 1, 48000).add_noise()
+        asig = sig.to_analytical()
+        testing.assert_almost_equal(sig, asig.real)

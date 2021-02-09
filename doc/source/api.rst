@@ -19,7 +19,7 @@ auditools.Signal objects. For more informations check the numpy docs_.
              multiply, add, abs, time, add_tone, add_noise,
              set_dbspl, calc_dbspl, set_dbfs, calc_dbfs, calc_crest_factor,
 	     bandpass, zeropad, add_fade_window, add_cos_modulator, delay,
-	     phase_shift, clip, rms, rectify, to_freqdomain
+	     phase_shift, clip, rms, rectify, to_freqdomain, add_uncorr_noise
 
 .. autoclass:: audiotools.FrequencyDomainSignal
    :members: fs, n_channels, n_samples, duration, ch, concatenate,
@@ -33,13 +33,15 @@ Function Based API
     :members: generate_tone, generate_noise, set_dbspl, calc_dbspl,
               set_dbfs, calc_dbfs, crest_factor, zeropad,
               gaussian_fade_window, cosine_fade_window,
-              cos_amp_modulator, shift_signal
+              cos_amp_modulator, shift_signal, generate_uncorr_noise,
+              calc_coherence, schroeder_phase, phon_to_dbspl,
+              time2phase, phase2time, nsamples
+
 
 Filter
 ------
 
 .. automodule:: audiotools.filter
     :members: gammatone, brickwall
-
 
 .. _docs: https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html

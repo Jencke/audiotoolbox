@@ -6,10 +6,15 @@ from .base_signal import BaseSignal
 import copy
 
 class Signal(BaseSignal):
+    def __new__(cls, n_channels, duration, fs, dtype=float):
+        obj = BaseSignal.__new__(cls, n_channels, duration, fs, dtype)
+        obj.time_offset = 0
+        return obj
+
     @property
     def time(self):
         r"""The time vector for the signal"""
-        time = audio.get_time(self, self.fs)
+        time = audio.get_time(self, self.fs) + self.time_offset
         return time
 
     def add_tone(self, frequency, amplitude=1, start_phase=0):
@@ -104,6 +109,8 @@ class Signal(BaseSignal):
         See Also
         --------
         audiotools.generate_noise
+        audiotools.generate_uncorr_noise
+        audiotools.Signal.add_uncorr_noise
         """
         noise = audio.generate_noise(self.duration, self.fs,
                                      ntype=ntype, n_channels=1,
@@ -112,13 +119,64 @@ class Signal(BaseSignal):
         self[:] = (self.T + noise.T * np.sqrt(variance)).T
         return self
 
-    def add_corr_noise(self, corr=1, channels=[0, 1], seed=None):
+    def add_uncorr_noise(self, corr=0, variance=1, seed=None):
+        r"""Add partly uncorrelated noise
 
-        noise = audio.generate_corr_noise(self.duration, self.fs, corr, seed=seed)
-        for i_c, n_c in enumerate(channels):
-            self[:, n_c] += noise[:, i_c]
-            # summed_wv = self[n_c].waveform + noise[:, i_c]
-            # self[n_c].set_waveform(summed_wv)
+        This function adds partly uncorrelated noise using the N+1
+        generator method.
+
+        To generate N partly uncorrelated noises with a desired
+        correlation coefficent of $\rho$, the algoritm first generates N+1
+        noise tokens which are then orthogonalized using the Gram-Schmidt
+        process (as implementd in numpy.linalg.qr). The N+1 th noise token
+        is then mixed with the remaining noise tokens using the equation
+
+        .. math:: X_{\rho,n} = X_{N+1}  \sqrt{\rho} + X_n  \beta \sqrt{1 - \rho}
+
+        where :math:`X_{\rho,n}` is the nth output and noise,
+        :math:`X_{n}` the nth indipendent noise and :math:`X_{N=1}` is the
+        common noise.
+
+        for two noise tokens, this is identical to the assymetric
+        three-generator method described in [1]_
+
+        Parameters
+        ----------
+        corr : int, optional
+            Desired correlation of the noise tokens, (default=0)
+        variance : scalar, optional
+            The desired variance of the noise, (default=1)
+        seed : int or 1-d array_like, optional
+            Seed for `RandomState`.
+            Must be convertible to 32 bit unsigned integers.
+
+        Returns
+        -------
+        Returns itself : Signal
+
+        See Also
+        --------
+        audiotools.generate_noise
+        audiotools.generate_uncorr_noise
+        audiotools.Signal.add_noise
+
+        References
+        ----------
+
+        .. [1] Hartmann, W. M., & Cho, Y. J. (2011). Generating partially
+          correlated noise—a comparison of methods. The Journal of the
+          Acoustical Society of America, 130(1),
+          292–301. http://dx.doi.org/10.1121/1.3596475
+
+        """
+
+        noise = audio.generate_uncorr_noise(duration=self.duration,
+                                            fs=self.fs,
+                                            n_channels=self.n_channels,
+                                            corr=corr,
+                                            seed=seed)
+
+        self += noise * np.sqrt(variance)
 
         return self
 
@@ -687,6 +745,17 @@ class Signal(BaseSignal):
         return fd
 
     def to_analytical(self):
+        r"""Convert to analytical signal representation
+
+        This function converts the signal into its analytical
+        representation. The function is not applied inplace but a new
+        signal with datatype complex is returned
+
+        Returns
+        -------
+        The analytical signal : Signal
+
+        """
         fd_signal = self.to_freqdomain()
-        a_signal = fd_signal.to_analytical()
+        a_signal = fd_signal.to_analytical().to_timedomain()
         return a_signal
