@@ -34,7 +34,8 @@ Function Based API
               set_dbfs, calc_dbfs, crest_factor, zeropad,
               gaussian_fade_window, cosine_fade_window,
               cos_amp_modulator, shift_signal, generate_uncorr_noise,
-	      calc_coherence
+              calc_coherence, schroeder_phase, phon_to_dbspl,
+              time2phase, phase2time, nsamples
 
 
 Filter
