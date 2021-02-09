@@ -10,6 +10,7 @@ from numpy import pi
 from scipy.interpolate import interp1d
 from scipy.signal import hilbert
 from scipy.signal.windows import hann
+from .oaudio import Signal
 
 from .filter import brickwall
 
@@ -932,7 +933,7 @@ def set_dbfs(signal, dbfs_val):
 def calc_dbfs(signal):
     r"""Calculate the dBFS RMS value of a given signal.
 
-    .. math:: L = 20 \log_10\left(\sqrt{2}\sigma\right)
+    .. math:: L = 20 \log_{10}\left(\sqrt{2}\sigma\right)
 
     where :math:`\sigma` is the signals RMS.
 
@@ -1583,6 +1584,66 @@ def crest_factor(signal, axis=0):
     # crest_factor = 20*np.log10(a_max / a_effective)
 
     return a_max / a_effective
+
+
+def calc_coherence(signal):
+    r"""normalized complex valued coherence
+
+    This function calculates the normalized complex valued degree of
+    coherence between two signals :math:`f(t)` and :math:`g(t)`. It is
+    defined as:
+
+    .. math:: \gamma(tau) = \frac{<f_a(t)g^*_a(t-\tau)>}{\sqrt{<|f_a(t)|^2><|g_a(t)|^2>}}
+
+    where :math:`f_a(t)` is the analytic signals of :math:`f(t)` and and
+    :math:`g^*_a(t)` is the complex conjugate of the analytic signal of
+    :math:`g(t)`. :math:`<\dots>` symbolizes the mean over time.
+
+    Requires an input signal with the shape (N, 2).  If only a
+    one-dimensional signal is provided, the auto-coherence function where
+    :math:`f(t) = g(t)` is calculated.
+
+    The real part of the complex valued coherence equals the normalized
+    cross-correlation.
+
+    Parameters
+    ----------
+    signal : Signal or ndarray
+        The input signal
+
+    Returns
+    -------
+    The coherence vector: Signal or ndarray
+
+    """
+    if not isinstance(signal, Signal):
+        sig = Signal(2, len(signal), 1)
+        sig[:] = signal.copy()
+    elif signal.n_channels == 1:
+        sig = Signal(2, len(signal), 1)
+        sig[:] = signal.copy()[:, None]
+    else:
+        sig = signal.copy()
+
+    # calculate analytical signal and its spectrum
+    fsig = sig.to_freqdomain().to_analytical()
+    asig = fsig.to_timedomain()
+
+    # calculate coherence by convolving first channel with complex
+    # conjugate of the second channel (done by multiplying fft)
+    coh = ((fsig.ch[0] * fsig.ch[1].conj()) / sig.n_samples**2).to_timedomain()
+
+    # normalize by energy so that we gain the normalized coherence function
+    coh /= np.sqrt(np.product(np.mean(np.abs(asig)**2, axis=0)))
+
+    # if input was an ndarray convert output back to ndarray
+    if not isinstance(signal, Signal):
+        coh = np.asarray(coh)
+
+    return coh
+
+
+
 
 def phase_shift(signal, phase, fs):
     r"""Shifts all frequency components of a signal by a constant phase.

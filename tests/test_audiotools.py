@@ -623,3 +623,45 @@ def test_crest_factor():
     signal = audio.generate_tone(100, 1, 100e3)
     cfac = audio.crest_factor(signal)
     testing.assert_almost_equal(cfac, np.sqrt(2))
+
+
+def test_calc_coherence():
+    cf = 500
+    bw = 100
+    sig = audio.Signal(2, 100, 48000).add_noise().bandpass(cf, bw, 'brickwall')
+    coh = audio.calc_coherence(sig)
+
+    # Analytic coherence for aboves signal
+    coh_analytic = (np.sin(np.pi * bw * sig.time[1:])
+                    / (np.pi * bw * sig.time[1:])
+                    * np.exp(1j * 2 * np.pi * cf * sig.time[1:]))
+
+    assert isinstance(coh, audio.Signal)
+    testing.assert_almost_equal(np.abs(coh[0]), 1)
+    nsamp = 1000
+    testing.assert_allclose(coh[1:nsamp], coh_analytic[:nsamp-1], rtol=0, atol=0.03)
+
+    # calculate auto-coherrence
+    coh2 = audio.calc_coherence(sig.ch[0])
+    testing.assert_array_equal(coh, coh2)
+
+    # test using numpy arrays
+    sig = np.asarray(sig)
+    coh3 = audio.calc_coherence(sig)
+    testing.assert_array_equal(coh3, coh)
+
+    cf = 500
+    bw = 100
+    sig = audio.Signal(2, 100, 48000).add_uncorr_noise(0.5).bandpass(cf, bw, 'brickwall')
+    coh = audio.calc_coherence(sig)
+    testing.assert_allclose(coh.abs()[0], 0.5, rtol=0.05)
+
+
+
+
+#     import matplotlib.pyplot as plt
+#     plt.ioff()
+#     plt.plot(sig.time[:nsamp], np.abs(coh[:nsamp]))
+#     plt.plot(sig.time[:nsamp], np.abs(coh_analytic[:nsamp]))
+# #    plt.xlim(0, 50e-3)
+#     plt.show()

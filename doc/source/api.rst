@@ -33,7 +33,8 @@ Function Based API
     :members: generate_tone, generate_noise, set_dbspl, calc_dbspl,
               set_dbfs, calc_dbfs, crest_factor, zeropad,
               gaussian_fade_window, cosine_fade_window,
-              cos_amp_modulator, shift_signal, generate_uncorr_noise
+              cos_amp_modulator, shift_signal, generate_uncorr_noise,
+	      calc_coherence
 
 
 Filter
