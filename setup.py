@@ -11,7 +11,10 @@ setup(
     packages = find_packages(),
     author = "Joerg Encke",
     author_email = "joerg.encke@uol.de",
-    description = "Toolbox of some simple functions for audio signal generation",
+    description = "Toolbox for generating signals used in auditory research",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://jencke.github.io/audiotools/",
     python_requires='>=3',
     install_requires=[
         'numpy>=1.19',
