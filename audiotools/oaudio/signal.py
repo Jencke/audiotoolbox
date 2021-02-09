@@ -14,7 +14,7 @@ class Signal(BaseSignal):
     @property
     def time(self):
         r"""The time vector for the signal"""
-        time = audio.get_time(self, self.fs) - self.time_offset
+        time = audio.get_time(self, self.fs) + self.time_offset
         return time
 
     def add_tone(self, frequency, amplitude=1, start_phase=0):
