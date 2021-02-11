@@ -660,12 +660,6 @@ def test_calc_coherence():
     sig = audio.Signal(2, 100, 48000).add_noise().bandpass(cf, bw, 'brickwall')
     coh = audio.calc_coherence(sig)
 
-    # import matplotlib.pyplot as plt
-    # plt.ioff()
-    # plt.plot(np.abs(coh))
-    # plt.plot(np.real(coh))
-    # plt.show()
-
     # Analytic coherence for aboves signal
     coh_analytic = (np.sin(np.pi * bw * sig.time[1:])
                     / (np.pi * bw * sig.time[1:])
