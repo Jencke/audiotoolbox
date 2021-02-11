@@ -23,6 +23,26 @@ def test_pad_for_fft():
     assert np.array_equal(padded[100:, :], np.zeros([28, 2]))
     assert np.array_equal(padded[:100, :], signal1)
 
+def test_nsamples():
+    duration = 1
+    fs = 10
+
+    assert audio.nsamples(duration, fs) == 10
+
+    # test for directly using signal class
+    sig = audio.Signal(1, 1, 10)
+    assert audio.nsamples(sig) == 10
+
+def test_low_noise_noise():
+    noise = audio.generate_low_noise_noise(1, 400, 600, fs=48000)
+    assert noise.shape == (48000,)
+
+    # test directly using signal
+    sig = audio.Signal((2, 3), 1, 48000)
+    noise = audio.generate_low_noise_noise(sig, 400, 600, n_rep=10)
+    assert noise.shape == (48000, 2, 3)
+    testing.assert_array_equal(noise[:, 0, :], noise[:, 1, :])
+    testing.assert_array_equal(noise[:, :, 0], noise[:, :, 1])
 
 
 def test_generate_tone():
@@ -213,7 +233,7 @@ def test_delay_signal():
     # Test with noise and full sample shift
     duration = 100e-3
     fs = 48e3
-    noise = audio.generate_noise(duration, fs)
+    noise = audio.generate_noise(duration, fs=fs)
     noise *= audio.cosine_fade_window(noise, 20e-3, fs)
     dt = 1. / fs
     delayed = audio.delay_signal(noise, dt * 5, fs)
@@ -487,6 +507,26 @@ def test_generate_noise():
     noise3 = audio.generate_noise(duration, fs, seed=2)
     testing.assert_equal(noise1, noise2)
     assert ~np.all(noise1 == noise3)
+
+    # test directly handing over signal
+    sig = audio.Signal((2, 3), 1, 10)
+    noise = audio.generate_noise(sig)
+    assert noise.shape == (10, 2, 3)
+    testing.assert_array_equal(noise[:, 0, :], noise[:, 1, :])
+    testing.assert_array_equal(noise[:, :, 0], noise[:, :, 1])
+
+
+    # test directly handing over signal
+    noise = audio.generate_noise(1, 10, n_channels=(2, 3))
+    assert noise.shape == (10, 2, 3)
+    testing.assert_array_equal(noise[:, 0, :], noise[:, 1, :])
+    testing.assert_array_equal(noise[:, :, 0], noise[:, :, 1])
+
+    # test multichannel
+    noise = audio.generate_noise(1, 10, n_channels=(2, 3), ntype='pink')
+    assert noise.shape == (10, 2, 3)
+    testing.assert_array_equal(noise[:, 0, :], noise[:, 1, :])
+    testing.assert_array_equal(noise[:, :, 0], noise[:, :, 1])
 
 def test_generate_uncorr_noise():
     from scipy.stats import pearsonr

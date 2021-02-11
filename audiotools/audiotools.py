@@ -188,7 +188,25 @@ def phase2time(phase, frequency):
     time = phase / (2 * pi) / frequency
     return time
 
-def nsamples(duration, fs):
+def _duration_is_signal(duration, fs=None, n_channels=None):
+    r""" Check if the duration which was passed was really a signal class
+    """
+    inval = duration
+    if isinstance(duration, Signal):
+        real_duration = inval.duration
+        real_fs = inval.fs
+        real_nch = inval.n_channels
+    else:
+        real_duration = duration
+        real_fs = fs
+        real_nch = n_channels
+
+    assert not (real_fs is None)
+
+    return real_duration, real_fs, real_nch
+
+
+def nsamples(duration, fs=None):
     r"""Number of samples in a signal with a given duration.
 
     This function calculates the number of samples that will be
@@ -199,19 +217,22 @@ def nsamples(duration, fs):
     Parameters
     -----------
     duration : scalar
-        The tone duration in seconds.
-    fs : scalar
-        The sampling rate for the tone.
+        The signals duration in seconds. Or Signal class
+    fs : scalar (optional)
+        The sampling rate for the tone. Is ignored when Signal calss is passed
     Returns
     --------
     number of samples in the signal : int
 
     """
+    duration, fs, n_ch = _duration_is_signal(duration, fs)
+
     len_signal = int(np.round(duration * fs))
 
     return len_signal
 
-def generate_low_noise_noise(duration, fs, low_f, high_f, n_rep=10, seed=None):
+def generate_low_noise_noise(duration, low_f, high_f, fs=None,
+                             n_channels=1, n_rep=10, seed=None):
     r"""Low-noise Noise
 
     Generate Low-noise noise as defined in [1]_.
@@ -242,12 +263,15 @@ def generate_low_noise_noise(duration, fs, low_f, high_f, n_rep=10, seed=None):
 
     """
 
+    # Todo - need to fix duration
+    duration, fs, n_ch = _duration_is_signal(duration, fs, n_channels)
+
     # Generate initial noise
-    noise = generate_noise(duration, fs, ntype='white')
+    noise = generate_noise(duration, fs, ntype='white', n_channels=n_ch)
     noise = brickwall(noise, fs, low_f, high_f)
 
     for i in range(n_rep):
-        hilb = hilbert(noise)
+        hilb = hilbert(noise, axis=0)
         env = abs(hilb)
 
         #diveide through envelope and restrict
@@ -257,7 +281,7 @@ def generate_low_noise_noise(duration, fs, low_f, high_f, n_rep=10, seed=None):
     return noise
 
 
-def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
+def generate_noise(duration, fs=None, ntype='white', n_channels=1, seed=None):
     r"""Generate Noise
 
     Generate gaussian noise with a variance of 1 and different
@@ -276,14 +300,17 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
 
     Parameters
     ----------
-    duration : scalar
-        Noise duration in seconds
-    fs : int
-        Sampling frequency
+    duration : scalar or Signal
+        Noise duration in seconds. If Signal object is passed, then
+        duration is taken from object.
+    fs : int (optional)
+        Sampling frequency, If Signal object is passed, then
+        duration is taken from object.
     ntype : {'white', 'pink', 'brown'}
         spectral shape of the noise
-    n_channels : int
-        number of indipendant noise channels
+    n_channels : int (optional)
+        number of indipendant noise channels. If Signal object is passed, then
+        duration is taken from object.
     seed : int or 1-d array_like, optional
         Seed for `RandomState`.
         Must be convertible to 32 bit unsigned integers.
@@ -301,17 +328,25 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
     """
     np.random.seed(seed)
 
+    # If signal class is passed, get parameters directy from it
+    inval = duration
+    if isinstance(duration, Signal):
+        duration = inval.duration
+        fs = inval.fs
+        n_channels = inval.n_channels
+
     len_signal = nsamples(duration, fs)
 
     # If noise type is white just use the random number generator
     if ntype == 'white':
-        if np.ndim(n_channels):
-            noise = np.random.randn(len_signal, *n_channels)
-        else:
-            noise = np.random.randn(len_signal, n_channels)
+        noise = np.random.randn(len_signal)
         noise -= noise.mean(axis=0)
         # normalize variance
         noise /= noise.std(axis=0)
+
+        if np.ndim(n_channels) == 0: n_channels = [n_channels]
+        noise = np.tile(noise, (*n_channels[::-1], 1)).T
+
         return np.squeeze(noise)
 
     # Otherwise create spectrum
@@ -328,19 +363,19 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
     freqs = np.arange(0, nybin) * df;
 
     # amplitude weighting factor
-    f_weights = np.zeros([nfft, n_channels])
+    f_weights = np.zeros(nfft)
     if ntype == 'pink':
         # Power proportinal to 1 / f
-        f_weights[lowbin:highbin, :] = 1. / np.sqrt(freqs[lowbin:, None])
+        f_weights[lowbin:highbin] = 1. / np.sqrt(freqs[lowbin:])
     elif ntype == 'brown':
         # Power proportional to 1 / f**2
-        f_weights[lowbin:highbin, :] = 1. / freqs[lowbin:, None]
+        f_weights[lowbin:highbin] = 1. / freqs[lowbin:]
 
     # generate noise
-    a = np.zeros([nfft, n_channels])
-    b = np.zeros([nfft, n_channels])
-    a[lowbin:highbin, :] = np.random.randn(highbin - lowbin, n_channels)
-    b[lowbin:highbin, :] = np.random.randn(highbin - lowbin, n_channels)
+    a = np.zeros([nfft])
+    b = np.zeros([nfft])
+    a[lowbin:highbin] = np.random.randn(highbin - lowbin)
+    b[lowbin:highbin] = np.random.randn(highbin - lowbin)
     fspec = a + 1j * b;
 
     # Frequency weighting
@@ -354,18 +389,12 @@ def generate_noise(duration, fs, ntype='white', n_channels=1, seed=None):
     noise -= noise.mean()
 
     # Normalize the signal by its rms
-    noise = noise / np.sqrt(np.mean(noise**2, axis=0))
+    noise /= np.std(noise)
 
-    # # Seed random number genarator
-    # np.random.seed(seed)
-    # noise = np.random.randn(len_signal)
+    if np.ndim(n_channels) == 0: n_channels = [n_channels]
+    noise = np.tile(noise, (*n_channels[::-1], 1)).T
 
-    noise = noise[:len_signal]
-
-    if n_channels == 1:
-        noise = noise[:, 0]
-
-    return noise
+    return np.squeeze(noise)
 
 def generate_uncorr_noise(duration, fs, n_channels, corr=0 , seed=None):
     r"""Generate partly uncorrelated noise
