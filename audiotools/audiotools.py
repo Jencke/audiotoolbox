@@ -1684,10 +1684,11 @@ def calc_coherence(signal):
     coh /= np.sqrt(np.product(np.mean(np.abs(asig)**2, axis=0)))
 
     # if input was an ndarray convert output back to ndarray
+    coh[:] = np.roll(coh, coh.n_samples//2, axis=0)
+
     if not isinstance(signal, Signal):
         coh = np.asarray(coh)
     else:
-        coh[:] = np.roll(coh, coh.n_samples//2, axis=0)
         coh.time_offset = -coh.n_samples//2 * 1 / coh.fs
 
     return coh
