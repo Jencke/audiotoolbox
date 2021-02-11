@@ -660,15 +660,23 @@ def test_calc_coherence():
     sig = audio.Signal(2, 100, 48000).add_noise().bandpass(cf, bw, 'brickwall')
     coh = audio.calc_coherence(sig)
 
+    # import matplotlib.pyplot as plt
+    # plt.ioff()
+    # plt.plot(np.abs(coh))
+    # plt.plot(np.real(coh))
+    # plt.show()
+
     # Analytic coherence for aboves signal
     coh_analytic = (np.sin(np.pi * bw * sig.time[1:])
                     / (np.pi * bw * sig.time[1:])
                     * np.exp(1j * 2 * np.pi * cf * sig.time[1:]))
 
     assert isinstance(coh, audio.Signal)
-    testing.assert_almost_equal(np.abs(coh[0]), 1)
+    testing.assert_almost_equal(np.abs(coh[coh.time==0]), 1)
     nsamp = 1000
-    testing.assert_allclose(coh[1:nsamp], coh_analytic[:nsamp-1], rtol=0, atol=0.03)
+    start = np.where(coh.time == 0)[0][0]
+    testing.assert_allclose(coh[start+1:start + nsamp],
+                            coh_analytic[:nsamp-1], rtol=0, atol=0.03)
 
     # calculate auto-coherrence
     coh2 = audio.calc_coherence(sig.ch[0])
@@ -683,14 +691,4 @@ def test_calc_coherence():
     bw = 100
     sig = audio.Signal(2, 100, 48000).add_uncorr_noise(0.5).bandpass(cf, bw, 'brickwall')
     coh = audio.calc_coherence(sig)
-    testing.assert_allclose(coh.abs()[0], 0.5, rtol=0.05)
-
-
-
-
-#     import matplotlib.pyplot as plt
-#     plt.ioff()
-#     plt.plot(sig.time[:nsamp], np.abs(coh[:nsamp]))
-#     plt.plot(sig.time[:nsamp], np.abs(coh_analytic[:nsamp]))
-# #    plt.xlim(0, 50e-3)
-#     plt.show()
+    testing.assert_allclose(coh.abs()[coh.time==0], 0.5, rtol=0.05)
