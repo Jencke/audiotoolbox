@@ -90,7 +90,15 @@ class FrequencyDomainSignal(BaseSignal):
         if not self.n_samples % 2:
             phases[self.n_samples//2] = 0
 
-        self *= np.exp(1j * phases)
+        shift_factor = np.exp(1j * phases)
+
+        if self.ndim > 1:
+            ind = [np.newaxis] * self.ndim
+            ind[0] = slice(None)
+            shift_factor = shift_factor[tuple(ind)]
+
+        self *= shift_factor
+
         return self
 
     def phase_shift(self, phase):
