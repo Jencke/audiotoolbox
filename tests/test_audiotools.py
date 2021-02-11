@@ -533,32 +533,25 @@ def test_generate_uncorr_noise():
 
     duration = 1
     fs = 100e3
-    noise = audio.generate_uncorr_noise(duration, fs, 2)
+    noise = audio.generate_uncorr_noise(duration, fs, n_channels=2)
     noise1 = noise[:, 0]
     noise2 = noise[:, 1]
     # Test equal Power assumption
     testing.assert_almost_equal(noise1.var(), noise2.var())
 
-    # Test orthogonality
-    corr_val = []
-    for i in range(100):
-        noise = audio.generate_uncorr_noise(duration, fs, 2)
-        noise1 = noise[:, 0]
-        noise2 = noise[:, 1]
-        corr_val.append(pearsonr(noise1, noise2)[0])
-
-    assert np.max(corr_val) < 1e-4
-    assert np.median(corr_val) < 1e-6
-
-    # Test multichannel
-    res_noise = audio.generate_uncorr_noise(1, 48000, 100, corr=0.5)
+    #Test multichannel
+    res_noise = audio.generate_uncorr_noise(1, fs=48000, n_channels=100, corr=0)
     cv = np.corrcoef(res_noise.T)
     lower_tri = np.tril(cv, -1)
     lower_tri[lower_tri==0] = np.nan
-    mean = np.nanmean(lower_tri)
-    std = np.nanstd(lower_tri)
-    assert(std <= 1e-5)
-    assert(np.abs(mean - 0.5) <= 1e-6)
+    testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0)
+
+    #Test multichannel
+    res_noise = audio.generate_uncorr_noise(1, fs=48000, n_channels=3, corr=0.5)
+    cv = np.corrcoef(res_noise.T)
+    lower_tri = np.tril(cv, -1)
+    lower_tri[lower_tri==0] = np.nan
+    testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5)
 
     #Test vor variance = 1
     noise = audio.generate_uncorr_noise(duration, fs, 2, corr=0.5)
@@ -571,11 +564,7 @@ def test_generate_uncorr_noise():
     cv = np.corrcoef(noise.T)
     lower_tri = np.tril(cv, -1)
     lower_tri[lower_tri == 0] = np.nan
-    mean = np.nanmean(lower_tri)
-    std = np.nanstd(lower_tri)
-    assert(std <= 1e-5)
-    assert(np.abs(mean - 0.5) <= 1e-6)
-
+    testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5)
 
 def test_extract_binaural_differences():
 
