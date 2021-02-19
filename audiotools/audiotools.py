@@ -18,6 +18,23 @@ COLOR_R = '#d65c5c'
 COLOR_L = '#5c5cd6'
 
 
+def _duration_is_signal(duration, fs=None, n_channels=None):
+    r""" Check if the duration which was passed was really a signal class
+    """
+    inval = duration
+    if isinstance(duration, Signal):
+        real_duration = inval.duration
+        real_fs = inval.fs
+        real_nch = inval.n_channels
+    else:
+        real_duration = duration
+        real_fs = fs
+        real_nch = n_channels
+
+    assert not (real_fs is None)
+
+    return real_duration, real_fs, real_nch
+
 def from_wav(self, filename, fullscale=True):
     from .oaudio import Signal
     from .wav import readwav
@@ -98,7 +115,7 @@ def rms2band(rmslevel, bw):
     return bandlevel
 
 
-def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
+def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1, start_phase=0):
     r"""Cosinus amplitude modulator
 
     Returns a cosinus amplitude modulator following the equation:
@@ -111,7 +128,7 @@ def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
 
     Parameters
     -----------
-    signal : ndarray
+    duration : ndarray
         An input array that is used to determine the length of the
         modulator.
 
@@ -133,14 +150,17 @@ def cos_amp_modulator(signal, modulator_freq, fs, mod_index=1, start_phase=0):
     audiotools.Signal.add_cos_modulator
     """
 
-    if isinstance(signal, np.ndarray):
-        time = get_time(signal, fs)
-        ndim = signal.ndim
-    elif isinstance(signal, int):
-        time = get_time(np.zeros(signal), fs)
-        ndim = 1
-    else:
-        raise TypeError("Signal must be numpy ndarray or int")
+    duration, fs, n_channels = _duration_is_signal(duration, fs)
+    time = get_time(len(duration), fs)
+
+    # if isinstance(signal, np.ndarray):
+    #     time = get_time(signal, fs)
+    #     ndim = signal.ndim
+    # elif isinstance(signal, int):
+    #     time = get_time(np.zeros(signal), fs)
+    #     ndim = 1
+    # else:
+    #     raise TypeError("Signal must be numpy ndarray or int")
 
     modulator = 1 + mod_index * np.cos(2 * pi * modulator_freq * time
                                        + start_phase)
@@ -187,24 +207,6 @@ def phase2time(phase, frequency):
 
     time = phase / (2 * pi) / frequency
     return time
-
-def _duration_is_signal(duration, fs=None, n_channels=None):
-    r""" Check if the duration which was passed was really a signal class
-    """
-    inval = duration
-    if isinstance(duration, Signal):
-        real_duration = inval.duration
-        real_fs = inval.fs
-        real_nch = inval.n_channels
-    else:
-        real_duration = duration
-        real_fs = fs
-        real_nch = n_channels
-
-    assert not (real_fs is None)
-
-    return real_duration, real_fs, real_nch
-
 
 def nsamples(duration, fs=None):
     r"""Number of samples in a signal with a given duration.
