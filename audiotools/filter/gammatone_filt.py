@@ -2,7 +2,7 @@ import numpy as np
 from numpy import pi
 from scipy.signal import lfilter
 
-def design_gammatone(cf, bw, fs, order=4, attenuation_db=-3):
+def design_gammatone(fc, bw, fs, order=4, attenuation_db='erb'):
     """Returns the coefficient of a gammatone filter
 
     Calculates the filter coefficents for a gammatone filter following
@@ -11,7 +11,7 @@ def design_gammatone(cf, bw, fs, order=4, attenuation_db=-3):
 
     Parameters
     ----------
-    cf : scalar
+    fc : scalar
       The center frequency of the filter in Hz
     bw : scalar
       The bandwidth of the filter in Hz
@@ -19,9 +19,10 @@ def design_gammatone(cf, bw, fs, order=4, attenuation_db=-3):
       The sample frequency
     order : int
       The filter order (default = 4)
-    attenuation_db: scalar
-      The attenuation at half bandwidth in dB (default = -3)
-
+    attenuation_db: scalar or 'erb'
+      The attenuation at half bandwidth in dB, when set to 'erb', bw
+      is interpreted as the equivalent rectangular bandwidth
+      of the filter. (default = 'erb')
 
     Returns
     -------
@@ -36,13 +37,24 @@ def design_gammatone(cf, bw, fs, order=4, attenuation_db=-3):
           Gammatone filterbank, Acta Acustica, Vol 88 (2002), 43 -3442
 
     """
+
+    # in case the bandwith is stated in equivalent rectangular
+    # bandwidth:
+    if attenuation_db == 'erb':
+        # Using Eq. 14 and 15 [Hohmann2002]
+        c = 2 * np.sqrt(2**(1 / order) - 1)
+        alpha = ((np.pi * np.math.factorial(2 * order - 2) * 2**(2 - 2 * order))
+                 / np.math.factorial(order - 1)**2)
+        bw = c / alpha * bw
+        attenuation_db = -3
+
     phi = pi * bw / fs          # Eq. 12 [Hohmann2002]
-    beta = 2 * pi * cf / fs     # Eq. 10 [Hohmann2002]
+    beta = 2 * pi * fc / fs     # Eq. 10 [Hohmann2002]
 
     alpha = 10**(0.1 * attenuation_db / order)       # Eq. 12 [Hohmann2002]
     p = (-2 + 2 * alpha * np.cos(phi)) / (1 - alpha) # Eq. 12 [Hohmann2002]
 
-    l = -p / 2 - np.sqrt(p * p / 4 - 1) # Eq. 12 [Hohmann2002]
+    l = -p / 2 - np.sqrt(p**2 / 4 - 1) # Eq. 12 [Hohmann2002]
 
     coef = l * np.exp(1j * beta)   # Eq. 1 [Hohmann2002]
     factor = 2 * (1 - np.abs(coef))**order

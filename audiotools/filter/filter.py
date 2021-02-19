@@ -3,7 +3,7 @@ from scipy.stats import norm
 from numpy import pi
 from . import gammatone_filt as gt
 
-def gammatone(signal, fs, cf, bw, order=4, attenuation_db=-3, return_complex=True):
+def gammatone(signal, fs, cf, bw, order=4, attenuation_db='erb', return_complex=True):
     """Apply a gammatone filter to the signal
 
     Applys a gammatone filter following [1]_ to the input signal
@@ -21,8 +21,10 @@ def gammatone(signal, fs, cf, bw, order=4, attenuation_db=-3, return_complex=Tru
       The bandwidth of the filter in Hz
     order : int
       The filter order (default = 4)
-    attenuation_db: scalar
-      The attenuation at half bandwidth in dB (default = -3)
+    attenuation_db: scalar or 'erb'
+      The attenuation at half bandwidth in dB (default = -3).
+      If set to 'erb', the bandwidth is interpreted as the rectangular
+      equivalent bw
     return_complex : bool
       Whether the complex filter output or only it's real
       part is returned (default = True)

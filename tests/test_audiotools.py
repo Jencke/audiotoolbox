@@ -653,7 +653,6 @@ def test_crest_factor():
     cfac = audio.crest_factor(signal)
     testing.assert_almost_equal(cfac, np.sqrt(2))
 
-
 def test_calc_coherence():
     cf = 500
     bw = 100
