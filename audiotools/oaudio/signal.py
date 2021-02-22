@@ -510,7 +510,7 @@ class Signal(BaseSignal):
 
         """
 
-        mod = audio.cos_amp_modulator(signal=self,
+        mod = audio.cos_amp_modulator(duration=self,
                                       modulator_freq=frequency,
                                       fs=self.fs,
                                       mod_index=m,

@@ -33,6 +33,7 @@ def test_nsamples():
     sig = audio.Signal(1, 1, 10)
     assert audio.nsamples(sig) == 10
 
+
 def test_low_noise_noise():
     noise = audio.generate_low_noise_noise(1, 400, 600, fs=48000)
     assert noise.shape == (48000,)
@@ -88,14 +89,6 @@ def test_get_time():
     left = np.linspace(0, 1, 50976)
     time = audio.get_time(left, fs)
     assert len(left) == len(time)
-
-    # Test using integer input value
-    fs = 1e3
-    tone = audio.generate_tone(1, 1, fs)
-    nsamp = len(tone2)
-    time1 = audio.get_time(tone, fs)
-    time2 = audio.get_time(nsamp, fs)
-    testing.assert_equal(time1, time2)
 
 def test_cosine_fade_window():
     window = audio.cosine_fade_window(np.zeros(1000), 100e-3, 1e3)
@@ -685,3 +678,30 @@ def test_calc_coherence():
     sig = audio.Signal(2, 100, 48000).add_uncorr_noise(0.5).bandpass(cf, bw, 'brickwall')
     coh = audio.calc_coherence(sig)
     testing.assert_allclose(coh.abs()[coh.time==0], 0.5, rtol=0.05)
+
+def test_duration_is_signal():
+
+    #direct input
+    duration, fs, n_ch = audio.audiotools._duration_is_signal(1, 2, 3)
+    assert duration == 1
+    assert fs == 2
+    assert n_ch == 3
+
+    duration, fs, n_ch = audio.audiotools._duration_is_signal(1, 2)
+    assert duration == 1
+    assert fs == 2
+    assert n_ch == None
+
+    #signal as input
+    sig = audio.Signal((2, 3), 1, 2)
+    duration, fs, n_ch = audio.audiotools._duration_is_signal(sig)
+    assert duration == 1
+    assert fs == 2
+    assert n_ch == (2, 3)
+
+    #Numpy array as input
+    sig = np.zeros((11, 2, 3))
+    duration, fs, n_ch = audio.audiotools._duration_is_signal(sig, 3)
+    assert duration == 11 / 3
+    assert fs == 3
+    assert n_ch == (2, 3)

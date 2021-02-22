@@ -26,6 +26,14 @@ def _duration_is_signal(duration, fs=None, n_channels=None):
         real_duration = inval.duration
         real_fs = inval.fs
         real_nch = inval.n_channels
+    elif isinstance(duration, np.ndarray):
+        n_samples = len(duration)
+        real_duration = n_samples / fs
+        real_fs = fs
+        if np.ndim(duration) > 1:
+            real_nch = duration.shape[1:]
+        else:
+            real_nch = 1
     else:
         real_duration = duration
         real_fs = fs
@@ -151,7 +159,8 @@ def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1, start_phas
     """
 
     duration, fs, n_channels = _duration_is_signal(duration, fs)
-    time = get_time(len(duration), fs)
+    n_samples = nsamples(duration, fs)
+    time = get_time(duration, fs)
 
     # if isinstance(signal, np.ndarray):
     #     time = get_time(signal, fs)
@@ -165,8 +174,8 @@ def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1, start_phas
     modulator = 1 + mod_index * np.cos(2 * pi * modulator_freq * time
                                        + start_phase)
 
-    if ndim > 1:
-        modulator = np.tile(modulator, (ndim, 1)).T
+    if n_channels > 1:
+        modulator = np.tile(modulator, (n_channels, 1)).T
 
     return modulator
 
@@ -221,7 +230,7 @@ def nsamples(duration, fs=None):
     duration : scalar
         The signals duration in seconds. Or Signal class
     fs : scalar (optional)
-        The sampling rate for the tone. Is ignored when Signal calss is passed
+        The sampling rate for the tone. Is ignored when Signal class is passed
     Returns
     --------
     number of samples in the signal : int
@@ -527,12 +536,11 @@ def generate_tone(frequency, duration, fs, start_phase=0):
     audiotools.Signal.add_tone
 
     """
-    nsamp = nsamples(duration, fs)
-    time = get_time(nsamp, fs)
+    time = get_time(duration, fs)
     tone = np.cos(2 * pi * frequency * time + start_phase)
     return tone
 
-def get_time(signal, fs):
+def get_time(duration, fs=None):
     r"""Time axis of a given signal.
 
     This function generates a time axis for a given signal at a given
@@ -540,9 +548,8 @@ def get_time(signal, fs):
 
     Parameters
     -----------
-    signal : ndarray or int
-        The input signal for which to generate the time axis, or the
-        number of samples for which to calculate the time axis
+    duration : ndarray or int
+        The duration of the stimulus
 
     fs : scalar
         The sampling rate in Hz
@@ -553,22 +560,13 @@ def get_time(signal, fs):
 
     """
 
+    duration, fs, _ = _duration_is_signal(duration, fs=fs)
+
     dt = 1. / fs
+    nsamp = nsamples(duration, fs)
 
-    if isinstance(signal, np.ndarray):
-        nsamp = len(signal)
-    elif isinstance(signal, int):
-        nsamp = signal
-    else:
-        raise TypeError('Signal must be int or ndarray')
+    time = np.arange(nsamp) * dt
 
-    max_time = nsamp * dt
-    time = np.arange(0, max_time , dt)
-
-    # Sometimes, due to numerics arange creates an extra sample which
-    # needs to be removed
-    if len(time) == nsamp + 1:
-        time = time[:-1]
     return time
 
 
