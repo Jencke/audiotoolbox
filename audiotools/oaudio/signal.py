@@ -8,7 +8,23 @@ import copy
 class Signal(BaseSignal):
     def __new__(cls, n_channels, duration, fs, dtype=float):
         obj = BaseSignal.__new__(cls, n_channels, duration, fs, dtype)
-        obj.time_offset = 0
+        return obj
+
+    def __array_finalize__(self, obj):
+        '''Finalize Array __new__ is only called when directly creating a new
+        object. When copying or templating, __new__ is not called
+        which is why init code should be put in __array_finalize__
+
+        '''
+        BaseSignal.__array_finalize__(self, obj)
+
+        if obj is None:
+            # When creating new array
+            self.time_offset = 0
+        else:
+            # When copying or slicing
+            self.time_offset = getattr(obj, 'time_offset', None)
+
         return obj
 
     @property

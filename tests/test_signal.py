@@ -440,6 +440,23 @@ class test_oaudio(unittest.TestCase):
         tone_2 = audio.generate_tone(500, sig.duration, sig.fs)
         testing.assert_equal(sig.ch[1], tone_2)
 
+        #Indexing only one channel should still work
+        sig = Signal(1, 1, 40000)
+        sig.ch[0]
+
+    def test_time_offset(self):
+        sig = Signal(1, 1, 48000)
+        assert sig.time_offset == 0
+        sig.time_offset = -5
+        assert sig.time_offset == -5
+
+        sig2 = sig.copy()
+        assert sig2.time_offset == -5
+
+        # assert sig2.ch[0].time_offset == -5
+
+
+
     def test_analytical(self):
         sig = audio.Signal((2, 2), 1, 48000).add_noise()
         asig = sig.to_analytical()
