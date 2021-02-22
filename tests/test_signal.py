@@ -336,9 +336,9 @@ class test_oaudio(unittest.TestCase):
 
 
     def test_crest_factor(self):
+        #crest factor of a tone is square root of 2
         sig = Signal(1, 1, 48000).add_tone(1e3)
         cfac = sig.calc_crest_factor()
-
         testing.assert_almost_equal(cfac, np.sqrt(2))
 
     def test_clip(self):
