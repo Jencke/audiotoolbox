@@ -165,18 +165,43 @@ class BaseSignal(np.ndarray):
         return np.abs(self)
 
 class _chIndexer(object):
+    """ Channel Indexer
+
+    Allowes channels to be indexed directly without needing to care about samples
+    """
+
     def __init__(self, obj):
         self.idx_obj = obj
+
     def __getitem__(self, key):
-        # If only one index is handed over
+
         if not isinstance(key, tuple):
+            # If only one index is handed over, convert key to tuple
             key = (key, )
-        idx = (slice(None, None, None), ) + key
+
+        if np.ndim(self.idx_obj) == 1:
+            # In case, it's only a 1D array, allways return the whole
+            # array
+            idx = slice(None, None, None)
+        else:
+            # return only the slice
+            idx = (slice(None, None, None), ) + key
+
         return self.idx_obj[idx]
+
     def __setitem__(self, key, value):
-        # If only one index is handed over
+
         if not isinstance(key, tuple):
+            # If only one index is handed over, convert key to tuple
             key = (key, )
-        idx = (slice(None, None, None), ) + key
+
+        if np.ndim(self.idx_obj) == 1:
+            # In case, it's only a 1D array, allways return the whole
+            # array
+            idx = slice(None, None, None)
+        else:
+            # return only the slice
+            idx = (slice(None, None, None), ) + key
+
         self.idx_obj[idx] = value
         return self.idx_obj

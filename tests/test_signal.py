@@ -441,8 +441,11 @@ class test_oaudio(unittest.TestCase):
         testing.assert_equal(sig.ch[1], tone_2)
 
         #Indexing only one channel should still work
-        sig = Signal(1, 1, 40000)
-        sig.ch[0]
+        sig = Signal(1, 1, 40000).add_noise()
+        testing.assert_equal(sig.ch[0], sig)
+        sig.ch[0] = 1
+        testing.assert_equal(sig.ch[0], 1)
+
 
     def test_time_offset(self):
         sig = Signal(1, 1, 48000)
@@ -452,8 +455,6 @@ class test_oaudio(unittest.TestCase):
 
         sig2 = sig.copy()
         assert sig2.time_offset == -5
-
-        # assert sig2.ch[0].time_offset == -5
 
 
 
