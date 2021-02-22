@@ -72,7 +72,7 @@ def test_gammatone():
 
 def test_gammatone_coefficients():
     # Compare with results from AMT toolbox
-    b, a = gt.design_gammatone(500, 75, 48000)
+    b, a = gt.design_gammatone(500, 75, 48000, attenuation_db=-3)
     amt_a = 0.98664066847502018831050918379333 + 0.064667845966194278939376260950667j
     amt_b = 0.000000031948804250169196536011229472021
 
