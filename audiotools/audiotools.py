@@ -18,6 +18,16 @@ COLOR_R = '#d65c5c'
 COLOR_L = '#5c5cd6'
 
 
+def _copy_to_dim(array, dim):
+    if np.ndim(dim) == 0: dim = (dim,)
+
+    #tile by the number of dimensions
+    tiled_array = np.tile(array, (*dim[::-1], 1)).T
+    #squeeze to remove axis of lenght 1
+    tiled_array = np.squeeze(tiled_array)
+
+    return tiled_array
+
 def _duration_is_signal(duration, fs=None, n_channels=None):
     r""" Check if the duration which was passed was really a signal class
     """
@@ -102,8 +112,11 @@ def band2rms(bandlevel, bw):
     r"""Convert bandlevel to rms level
 
     Assuming a white spectrum, this functions converts a Bandlevel in
-    dB/Hz into the corresponding RMS levle in dB
+    dB/sqrt(Hz) into the corresponding RMS levle in dB
 
+    ..math:: L_{rms} = L_{band} + 10 \log_10(f_\delta)
+
+    where :math:`f_\delta` is the bandwidth of the signal
     """
 
     rmslevel = bandlevel + 10 * np.log10(bw)
@@ -162,20 +175,12 @@ def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1, start_phas
     n_samples = nsamples(duration, fs)
     time = get_time(duration, fs)
 
-    # if isinstance(signal, np.ndarray):
-    #     time = get_time(signal, fs)
-    #     ndim = signal.ndim
-    # elif isinstance(signal, int):
-    #     time = get_time(np.zeros(signal), fs)
-    #     ndim = 1
-    # else:
-    #     raise TypeError("Signal must be numpy ndarray or int")
-
     modulator = 1 + mod_index * np.cos(2 * pi * modulator_freq * time
                                        + start_phase)
 
+
     if n_channels > 1:
-        modulator = np.tile(modulator, (n_channels, 1)).T
+        modulator = _copy_to_dim(modulator, n_channels)
 
     return modulator
 
@@ -355,8 +360,7 @@ def generate_noise(duration, fs=None, ntype='white', n_channels=1, seed=None):
         # normalize variance
         noise /= noise.std(axis=0)
 
-        if np.ndim(n_channels) == 0: n_channels = [n_channels]
-        noise = np.tile(noise, (*n_channels[::-1], 1)).T
+        noise = _copy_to_dim(noise, n_channels)
 
         return np.squeeze(noise)
 
@@ -402,10 +406,9 @@ def generate_noise(duration, fs=None, ntype='white', n_channels=1, seed=None):
     # Normalize the signal by its rms
     noise /= np.std(noise)
 
-    if np.ndim(n_channels) == 0: n_channels = [n_channels]
-    noise = np.tile(noise, (*n_channels[::-1], 1)).T
+    noise = _copy_to_dim(noise, n_channels)
 
-    return np.squeeze(noise)
+    return noise
 
 def generate_uncorr_noise(duration, fs, n_channels=2, corr=0 , seed=None):
     r"""Generate partly uncorrelated noise
@@ -505,7 +508,7 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0 , seed=None):
     return res_noise
 
 
-def generate_tone(frequency, duration, fs, start_phase=0):
+def generate_tone(duration, frequency, fs=None, start_phase=0):
     r"""create a cosine
 
     This function will generate a pure tone following the equation:
@@ -518,10 +521,10 @@ def generate_tone(frequency, duration, fs, start_phase=0):
 
     Parameters
     ----------
-    frequency : scalar
-        The tone frequency in Hz.
     duration : scalar
         The tone duration in seconds.
+    frequency : scalar
+        The tone frequency in Hz.
     fs : scalar
         The sampling rate for the tone.
     start_phase : scalar, optional
@@ -536,8 +539,15 @@ def generate_tone(frequency, duration, fs, start_phase=0):
     audiotools.Signal.add_tone
 
     """
+
+    duration, fs, ndim = _duration_is_signal(duration, fs, None)
+
     time = get_time(duration, fs)
     tone = np.cos(2 * pi * frequency * time + start_phase)
+
+    if ndim is not None:
+        tone = _copy_to_dim(tone, ndim)
+
     return tone
 
 def get_time(duration, fs=None):
@@ -570,7 +580,7 @@ def get_time(duration, fs=None):
     return time
 
 
-def cosine_fade_window(signal, rise_time, fs):
+def cosine_fade_window(duration, rise_time, fs=None):
     r"""Raised cosine fade-in and fade-out window.
 
     This function generates a raised cosine / hann fade-in and fade
@@ -582,13 +592,13 @@ def cosine_fade_window(signal, rise_time, fs):
 
     Parameters
     -----------
-    signal: ndarray
-        The length of the array will be used to determin the window length.
+    duration: ndarray or Signal
+        The duration of the stimulus or Signal class
     rise_time : scalar
         Duration of the cosine fade in and fade out in seconds. The number of samples
         is determined via rounding to the nearest integer value.
-    fs : scalar
-        The sampling rate in Hz
+    fs : scalar, optional
+        The sampling rate in Hz, is ignored when Signal is passed
 
     Returns
     -------
@@ -596,21 +606,22 @@ def cosine_fade_window(signal, rise_time, fs):
 
     """
 
+    duration, fs, ndim = _duration_is_signal(duration, fs, None)
 
+    n_samples = nsamples(duration, fs)
     r = nsamples(rise_time, fs)
-    window = np.ones(len(signal))
+    window = np.ones(n_samples)
     flank = 0.5 * (1 + np.cos(pi / r * (np.arange(r) - r)))
     window[:r] = flank
     window[-r:] = flank[::-1]
 
     # If the signal has multiple channels, extend the window to match
     # the shape
-    if signal.ndim > 1:
-        window = np.column_stack([window] * signal.shape[1])
+    window = _copy_to_dim(window, ndim)
 
     return window
 
-def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
+def gaussian_fade_window(duration, rise_time, fs=None, cutoff=-60):
     r"""Gausiapn fade-in and fade-out window.
 
     This function generates a window function with a gausian fade in
@@ -630,7 +641,7 @@ def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
 
     Parameters
     -----------
-    signal: ndarray
+    signal: ndarray, or Signal
         The length of the array will be used to determin the window length.
     rise_time : scalar
         Duration of the gaussian fade in and fade out in seconds. The
@@ -640,16 +651,21 @@ def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
     fs : scalar
         The sampling rate in Hz
     cutoff : scalar, optional
-        The level at which the gausian slope is cut (default = -60dB)
+        The level at which the gausian slope is cut (default = -60dB),
+        is ignored when signal is passed
 
     Returns
     -------
     ndarray : The fading window
 
     """
+
+    duration, fs, ndim = _duration_is_signal(duration, fs, None)
+    n_samples = nsamples(duration, fs)
+    window = np.ones(n_samples)
+
     cutoff_val = 10**(cutoff/ 20) # value at which to cut gaussian
     r = int(np.round(rise_time * fs)) + 1 #number of values in window
-    window = np.ones(len(signal))
     win_time = np.linspace(0, rise_time, r)
     sigma = np.sqrt((-(rise_time)**2 / np.log(cutoff_val)) / 2)
     flank = np.exp(-(win_time - rise_time)**2 / (2 * sigma**2))
@@ -658,9 +674,7 @@ def gaussian_fade_window(signal, rise_time, fs, cutoff=-60):
     window[:r-1] = flank[:-1]
     window[-r:] = flank[::-1]
 
-    if signal.ndim > 1:
-        window = np.column_stack([window] * signal.shape[1])
-
+    window = _copy_to_dim(window, ndim)
     return window
 
 def zeropad(signal, number):
@@ -691,19 +705,17 @@ def zeropad(signal, number):
 
     """
 
+    duration, fs, ndim = _duration_is_signal(signal, 1, None)
 
-    if signal.ndim == 1:
-        if not np.isscalar(number):
-            buf_s = np.zeros(number[0])
-            buf_e = np.zeros(number[1])
-        else:
-            buf_s = buf_e = np.zeros(number)
+    if not np.isscalar(number):
+        buf_s = np.zeros(number[0])
+        buf_e = np.zeros(number[1])
     else:
-        if not np.isscalar(number):
-            buf_s = np.zeros([number[0], signal.shape[1]])
-            buf_e = np.zeros([number[1], signal.shape[1]])
-        else:
-            buf_s = buf_e = np.zeros([number, signal.shape[1]])
+        buf_s = buf_e = np.zeros(number)
+
+
+    buf_s = _copy_to_dim(buf_s, ndim)
+    buf_e = _copy_to_dim(buf_e, ndim)
 
     signal_out = np.concatenate([buf_s, signal, buf_e])
 
@@ -878,7 +890,10 @@ def calc_dbspl(signal):
 
     """
     p0 = 20e-6
-    rms_val = np.sqrt(np.mean(signal**2, axis=0))
+    if np.ndim(signal) != 0:
+        rms_val = np.sqrt(np.mean(signal**2, axis=0))
+    else:
+        rms_val = signal
     dbspl_val = 20 * np.log10(rms_val / p0)
 
     return dbspl_val
@@ -916,7 +931,11 @@ def set_dbspl(signal, dbspl_val):
 
     """
 
-    rms_val = np.sqrt(np.mean(signal**2, axis=0))
+    if np.ndim(signal) != 0:
+        rms_val = np.sqrt(np.mean(signal**2, axis=0))
+    else:
+        rms_val = signal
+
     p0 = 20e-6 #ref_value
 
     factor = (p0 * 10**(float(dbspl_val) / 20)) / rms_val
@@ -958,7 +977,11 @@ def set_dbfs(signal, dbfs_val):
     """
 
     rms0 = 1 / np.sqrt(2)
-    rms_val = np.sqrt(np.mean(signal**2, axis=0))
+
+    if np.ndim(signal) != 0:
+        rms_val = np.sqrt(np.mean(signal**2, axis=0))
+    else:
+        rms_val = signal
 
     factor = (rms0 * 10**(float(dbfs_val) / 20)) / rms_val
 
@@ -984,7 +1007,12 @@ def calc_dbfs(signal):
     """
 
     rms0 = 1 / np.sqrt(2)
-    rms_val = np.sqrt(np.mean(signal**2, axis=0))
+
+    if np.ndim(signal) != 0:
+        rms_val = np.sqrt(np.mean(signal**2, axis=0))
+    else:
+        rms_val = signal
+
     dbfs = 20 * np.log10(rms_val / rms0)
 
     return dbfs
@@ -1218,8 +1246,6 @@ def erb_to_freq(n_erb):
     """
     fkhz = (np.exp(n_erb * (24.7 * 4.37) / 1000) - 1) / 4.37
     return fkhz * 1000
-
-
 
 def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
     r"""Sound pressure levels from loudness level (following DIN ISO 226:2006-04)
@@ -1490,7 +1516,7 @@ def calc_bandwidth(fc, scale='cbw'):
 
     return bw
 
-def extract_binaural_differences(signal1, signal2, log_levels=True):
+def extract_binaural_differences(signal, log_ilds=True):
     r"""Extract the binaural differences between two narrowband signals
 
     This function extimates the binaural evelope difference as well as the
@@ -1507,10 +1533,8 @@ def extract_binaural_differences(signal1, signal2, log_levels=True):
     Parameters
     -----------
     signal1 : ndarray
-        The first input signal
-    signal2 : ndarray
-        The second input signal
-    log_levels : bool, optional
+        The input signal
+    log_ilds : bool, optional
         Defines whether the envelope difference is returned in db
         default = True
 
@@ -1523,33 +1547,28 @@ def extract_binaural_differences(signal1, signal2, log_levels=True):
 
     """
 
-    trans1 = hilbert(signal1)
-    trans2 = hilbert(signal2)
-    env1 = np.abs(trans1)
-    env2 = np.abs(trans2)
-    phase1 = np.angle(trans1)
-    phase2 = np.angle(trans2)
-
-    ipd = phase1 - phase2
-
-    if log_levels:
-        env_diff = 20*(np.log10(env1) - np.log10(env2))
+    if not isinstance(signal, Signal):
+        sig = Signal(2, len(signal), 1)
+        sig[:] = signal.copy()
+    elif signal.n_channels == 1:
+        sig = Signal(2, len(signal), 1)
+        sig[:] = signal.copy()[:, None]
     else:
-        env_diff = env1 - env2
+        sig = signal.copy()
 
-    # Phase wrap if phase difference larger then +- pi
-    while np.abs(ipd).max() > pi:
-        first_occ = np.where(np.abs(ipd) > pi)[0][0]
-        sign = np.sign(ipd[first_occ])
-        ipd[first_occ:] = -2 * pi * sign + ipd[first_occ:]
+    asig = sig.to_analytical()
+    ia_sig = asig.ch[0] / asig.ch[1]
+    ipd = np.angle(ia_sig)
+    ild = np.abs(ia_sig)
 
-    # If the signal envelopes are close to zero the ipd should be
-    # zero. this fixes some instabilities with the hilbert transform
-    # that result in phase jumps when the two signals only differ from
-    # zero due to numerics
-    is_zero = np.isclose(env1, 0, atol=1e-6) & np.isclose(env2, 0, atol=1e-6)
-    ipd[is_zero] = 0
-    return ipd, env_diff
+    if log_ilds:
+        ild = 20 * np.log10(ild)
+
+    if not isinstance(signal, Signal):
+        ipd = np.asarray(ipd)
+        ild = np.asarray(ild)
+
+    return ipd, ild
 
 def schroeder_phase(harmonics, amplitudes, phi0=0.):
     r"""Phases for a schroeder phase harmonic complex
