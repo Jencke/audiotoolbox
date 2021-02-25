@@ -3,7 +3,7 @@ from scipy.stats import norm
 from numpy import pi
 from . import gammatone_filt as gt
 
-def gammatone(signal, fs, fc, bw, order=4, attenuation_db='erb', return_complex=True):
+def gammatone(signal, fc, bw, fs, order=4, attenuation_db='erb', return_complex=True):
     """Apply a gammatone filter to the signal
 
     Applys a gammatone filter following [1]_ to the input signal
