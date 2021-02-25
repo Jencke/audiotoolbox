@@ -347,13 +347,13 @@ class Signal(BaseSignal):
         """
 
         if ftype == 'brickwall':
-            f_low = f_center - 0.5 * bw
-            f_high = f_center + 0.5 * bw
-            filt_signal = brickwall_bandpass(self, self.fs, f_low, f_high)
+            # f_low = f_center - 0.5 * bw
+            # f_high = f_center + 0.5 * bw
+            filt_signal = brickwall_bandpass(self, f_center, bw,self.fs)
         elif ftype == 'gammatone':
             if 'return_complex' not in kwargs:
                 kwargs['return_complex'] = False
-            filt_signal = gammatone(self, self.fs, f_center, bw, **kwargs)
+            filt_signal = gammatone(self, f_center, bw, self.fs, **kwargs)
         else:
             raise NotImplementedError('Filter type %s not implemented' % ftype)
 

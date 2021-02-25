@@ -246,7 +246,7 @@ def nsamples(duration, fs=None):
 
     return len_signal
 
-def generate_low_noise_noise(duration, low_f, high_f, fs=None,
+def generate_low_noise_noise(duration, fc, bw, fs=None,
                              n_channels=1, n_rep=10, seed=None):
     r"""Low-noise Noise
 
@@ -283,7 +283,7 @@ def generate_low_noise_noise(duration, low_f, high_f, fs=None,
 
     # Generate initial noise
     noise = generate_noise(duration, fs, ntype='white', n_channels=n_ch)
-    noise = brickwall_bandpass(noise, fs, low_f, high_f)
+    noise = brickwall_bandpass(noise, fc, bw, fs)
 
     for i in range(n_rep):
         hilb = hilbert(noise, axis=0)
@@ -291,7 +291,7 @@ def generate_low_noise_noise(duration, low_f, high_f, fs=None,
 
         #diveide through envelope and restrict
         noise /= env
-        noise = brickwall_bandpass(noise, fs, low_f, high_f)
+        noise = brickwall_bandpass(noise, fc, bw, fs)
 
     return noise
 

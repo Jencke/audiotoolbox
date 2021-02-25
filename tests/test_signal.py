@@ -423,7 +423,7 @@ class test_oaudio(unittest.TestCase):
 
         # check kwargs
         sig = audio.Signal(1, 1, 48000).add_tone(500)
-        out = audio.filter.gammatone(sig, sig2.fs, 500, 100, order=2, attenuation_db=-1)
+        out = audio.filter.gammatone(sig, 500, 100, sig2.fs, order=2, attenuation_db=-1)
         sig.bandpass(500, 100, 'gammatone', order=2, attenuation_db=-1)
         testing.assert_array_equal(sig, out.real)
 

@@ -35,12 +35,12 @@ def test_nsamples():
 
 
 def test_low_noise_noise():
-    noise = audio.generate_low_noise_noise(1, 400, 600, fs=48000)
+    noise = audio.generate_low_noise_noise(1, 500, 200, fs=48000)
     assert noise.shape == (48000,)
 
     # test directly using signal
     sig = audio.Signal((2, 3), 1, 48000)
-    noise = audio.generate_low_noise_noise(sig, 400, 600, n_rep=10)
+    noise = audio.generate_low_noise_noise(sig, 500, 200, n_rep=10)
     assert noise.shape == (48000, 2, 3)
     testing.assert_array_equal(noise[:, 0, :], noise[:, 1, :])
     testing.assert_array_equal(noise[:, :, 0], noise[:, :, 1])
