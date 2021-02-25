@@ -57,7 +57,7 @@ def gammatone(signal, fs, fc, bw, order=4, attenuation_db='erb', return_complex=
     return out_signal
 
 
-def brickwall_bandpass(signal, fs, low_f, high_f):
+def brickwall_bandpass(signal, fc, bw, fs):
     '''Brickwall bandpass filter
 
     Bandpass filters an input signal by setting all frequency
@@ -67,18 +67,21 @@ def brickwall_bandpass(signal, fs, low_f, high_f):
     ----------
     signal : ndarray
         The input signal
-    fs :  scalar
-        The signals sampling rate in Hz
-    low_f : scalar or None
-        The lower cutoff frequency in Hz
+    fc : scalar
+        center frequency in Hz
     high_f : scalar
         The upper cutoff frequency in Hz
+    fs :  scalar
+        The signals sampling rate in Hz
 
     Returns
     -------
         The filtered signal
 
     '''
+
+    low_f = fc - bw / 2
+    high_f = fc + bw / 2
 
     spec = np.fft.fft(signal, axis=0)
     freqs = np.fft.fftfreq(len(signal), 1. / fs)

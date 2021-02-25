@@ -6,14 +6,16 @@ import numpy.testing as testing
 from scipy.stats import norm
 import pytest
 
-def test_brickwall():
+def test_brickwall_bandpass():
     duration = 500e-3
     fs = 100e3
     noise = audio.generate_noise(duration, fs)
 
-    flow = 200
-    fhigh = 400
-    out = filter.brickwall_bandpass(noise, fs, 200, 400)
+    fc = 300
+    bw = 200
+    flow = fc - bw / 2
+    fhigh = fc + bw / 2
+    out = filter.brickwall_bandpass(noise, fc, bw, fs)
     spec = np.abs(np.fft.fft(out))
     freqs = np.fft.fftfreq(len(spec), 1. / fs)
     passband = (np.abs(freqs) >= flow) & (np.abs(freqs) <= fhigh)
@@ -21,10 +23,11 @@ def test_brickwall():
 
     assert np.array_equal(non_zero, passband)
 
-
+    fc = 1015
+    bw = 230
     flow = 900
     fhigh = 1130
-    out = filter.brickwall_bandpass(noise, fs, flow, fhigh)
+    out = filter.brickwall_bandpass(noise, fc, bw, fs)
     spec = np.abs(np.fft.fft(out))
     freqs = np.fft.fftfreq(len(spec), 1. / fs)
     passband = (np.abs(freqs) >= flow) & (np.abs(freqs) <= fhigh)
