@@ -42,28 +42,28 @@ class test_oaudio(unittest.TestCase):
         sig.add_tone(100)
         sig.add_tone(200, start_phase=np.pi)
 
-        test = audio.generate_tone(100, duration, fs)
-        test += audio.generate_tone(200, duration, fs, np.pi)
+        test = audio.generate_tone(duration, 100, fs)
+        test += audio.generate_tone(duration, 200, fs, np.pi)
 
         testing.assert_equal(sig, test)
 
         sig = Signal(1, duration, fs)
         sig.add_tone(100, amplitude=2)
 
-        test = 2 * audio.generate_tone(100, duration, fs)
+        test = 2 * audio.generate_tone(duration, 100, fs)
         testing.assert_equal(sig, test)
 
         sig = Signal(2, duration, fs)
         sig.add_tone(100, amplitude=2)
 
-        test = 2 * audio.generate_tone(100, duration, fs)
+        test = 2 * audio.generate_tone(duration, 100, fs)
         testing.assert_equal(sig.ch[0], test)
         testing.assert_equal(sig.ch[1], test)
 
         sig = Signal((2, 2), duration, fs)
         sig.add_tone(100, amplitude=2)
 
-        test = 2 * audio.generate_tone(100, duration, fs)
+        test = 2 * audio.generate_tone(duration, 100, fs)
         testing.assert_equal(sig.ch[0, 0], test)
         testing.assert_equal(sig.ch[1, 0], test)
         testing.assert_equal(sig.ch[0, 1], test)
@@ -77,7 +77,7 @@ class test_oaudio(unittest.TestCase):
         sig = Signal(1, duration, fs)
         sig.add_tone(100).set_dbspl(50)
 
-        test = audio.generate_tone(100, duration, fs)
+        test = audio.generate_tone(duration, 100, fs)
         test = audio.set_dbspl(test, 50)
 
         testing.assert_equal(sig, test)
@@ -136,19 +136,19 @@ class test_oaudio(unittest.TestCase):
 
         sig = Signal(1, duration, fs)
         sig.add_tone(100).add_fade_window(rise_time=10e-3, type='gauss')
-        test = audio.generate_tone(100, duration, fs)
+        test = audio.generate_tone(duration, 100, fs)
         test *= audio.gaussian_fade_window(test, 10e-3, fs)
         testing.assert_equal(sig, test)
 
         sig = Signal(1, duration, fs)
         sig.add_tone(100).add_fade_window(rise_time=10e-3, type='cos')
-        test = audio.generate_tone(100, duration, fs)
+        test = audio.generate_tone(duration, 100, fs)
         test *= audio.cosine_fade_window(test, 10e-3, fs)
         testing.assert_equal(sig, test)
 
         sig = Signal(1, duration, fs)
         sig.add_tone(100).add_fade_window(rise_time=10e-3, type='cos')
-        test = audio.generate_tone(100, duration, fs)
+        test = audio.generate_tone(duration, 100, fs)
         test *= audio.cosine_fade_window(test, 10e-3, fs)
         testing.assert_equal(sig, test)
 
@@ -269,8 +269,8 @@ class test_oaudio(unittest.TestCase):
         sig.add_tone(100)
         sig[:, 0].phase_shift(np.pi)
 
-        test1 = audio.generate_tone(100, duration, fs, np.pi)
-        test2 = audio.generate_tone(100, duration, fs)
+        test1 = audio.generate_tone(duration, 100, fs, np.pi)
+        test2 = audio.generate_tone(duration, 100, fs)
         test = np.column_stack([test1, test2])
 
         testing.assert_almost_equal(sig, test)
@@ -280,7 +280,7 @@ class test_oaudio(unittest.TestCase):
         sig = Signal(1, 1, fs).add_tone(100)
         sig.add_cos_modulator(5, 1)
 
-        test = audio.generate_tone(100, 1, fs)
+        test = audio.generate_tone(1, 100, fs)
         test *= audio.cos_amp_modulator(test, 5, fs)
 
         testing.assert_array_equal(sig, test)
@@ -289,7 +289,7 @@ class test_oaudio(unittest.TestCase):
         sig = Signal(2, 1, fs).add_tone(100)
         sig.add_cos_modulator(5, 1)
 
-        test = audio.generate_tone(100, 1, fs)
+        test = audio.generate_tone(1, 100, fs)
         test *= audio.cos_amp_modulator(test, 5, fs)
 
         testing.assert_array_equal(sig[:, 0], test)
@@ -437,7 +437,7 @@ class test_oaudio(unittest.TestCase):
         assert np.all(sig[:, 0] == 1)
 
         sig.ch[1].add_tone(500)
-        tone_2 = audio.generate_tone(500, sig.duration, sig.fs)
+        tone_2 = audio.generate_tone(sig.duration, 500, sig.fs)
         testing.assert_equal(sig.ch[1], tone_2)
 
         #Indexing only one channel should still work

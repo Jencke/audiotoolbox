@@ -196,7 +196,7 @@ def test_gauss_fade_window():
 def test_delay_signal():
 
     signal = audio.generate_tone(1, 1, 1e3, start_phase = 0.5 * np.pi)
-    signal += audio.generate_tone(2, 1, 1e3, start_phase = 0.5 * np.pi)
+    signal += audio.generate_tone(1, 2, 1e3, start_phase = 0.5 * np.pi)
 
     delayed = audio.delay_signal(signal, 1.5e-3, 1e3)
 
@@ -204,7 +204,7 @@ def test_delay_signal():
     phase2 = 1.5e-3 * 2 * 2 * np.pi - 0.5 * np.pi
 
     shifted = audio.generate_tone(1, 1, 1e3, start_phase=-phase1)
-    shifted += audio.generate_tone(2, 1, 1e3, start_phase=-phase2)
+    shifted += audio.generate_tone(1, 2, 1e3, start_phase=-phase2)
 
     error = np.abs(shifted[:] - delayed[:-2, 1])
     assert np.max(error[10:-10]) <= 1e-3
@@ -370,9 +370,9 @@ def test_phase2time():
 
 def test_cos_amp_modulator():
     fs = 100e3
-    signal = audio.generate_tone(100, 1, fs)
+    signal = audio.generate_tone(1, 100, fs)
     mod = audio.cos_amp_modulator(signal, 5, fs)
-    test = audio.generate_tone(5, 1, fs)
+    test = audio.generate_tone(1, 5, fs)
     testing.assert_array_almost_equal(mod, test + 1)
     assert max(mod) == 2.0
 
@@ -380,7 +380,7 @@ def test_cos_amp_modulator():
     assert mod[0] == 1.5
 
     mod = audio.cos_amp_modulator(signal, 5, fs, start_phase=np.pi)
-    test = audio.generate_tone(5, 1, fs, start_phase=np.pi)
+    test = audio.generate_tone(1, 5, fs, start_phase=np.pi)
     testing.assert_array_almost_equal(mod, test + 1)
 
     sig = audio.Signal(1, 1, 48000).add_tone(5) + 1
@@ -389,7 +389,6 @@ def test_cos_amp_modulator():
 
     sig = audio.Signal((2, 3), 1, 48000).add_tone(5) + 1
     mod = audio.cos_amp_modulator(sig, 5, 1)
-    print(mod)
 
 
 def test_calc_dbspl():

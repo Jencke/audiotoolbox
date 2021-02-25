@@ -1,6 +1,5 @@
 import numpy as np
 import audiotools as audio
-from audiotools.filter import brickwall, gammatone
 import copy
 
 class BaseSignal(np.ndarray):

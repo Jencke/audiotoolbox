@@ -1,6 +1,6 @@
 import numpy as np
 import audiotools as audio
-from audiotools.filter import brickwall, gammatone
+from audiotools.filter import brickwall_bandpass, gammatone
 from audiotools import wav
 from .base_signal import BaseSignal
 import copy
@@ -63,8 +63,8 @@ class Signal(BaseSignal):
         audiotools.generate_tone
 
         """
-        wv = audio.generate_tone(frequency,
-                                 self.duration,
+        wv = audio.generate_tone(self.duration,
+                                 frequency,
                                  self.fs,
                                  start_phase)
 
@@ -315,13 +315,13 @@ class Signal(BaseSignal):
 
         Applies a bandpass filter to the signal. The availible filters are:
 
-        - brickwall: A 'optimal' brickwall filter
+        - brickwall: A 'optimal' brickwall_bandpass filter
         - gammatone: A real valued gammatone filter
 
         For additional filter parameters and detailed description see
         the respective implementations:
 
-        - :meth:`audiotools.filter.brickwall`
+        - :meth:`audiotools.filter.brickwall_bandpass`
         - :meth:`audiotools.filter.gammatone`
 
         Parameters
@@ -341,7 +341,7 @@ class Signal(BaseSignal):
 
         See Also
         --------
-        audiotools.filter.brickwall
+        audiotools.filter.brickwall_bandpass
         audiotools.filter.gammatone
 
         """
@@ -349,7 +349,7 @@ class Signal(BaseSignal):
         if ftype == 'brickwall':
             f_low = f_center - 0.5 * bw
             f_high = f_center + 0.5 * bw
-            filt_signal = brickwall(self, self.fs, f_low, f_high)
+            filt_signal = brickwall_bandpass(self, self.fs, f_low, f_high)
         elif ftype == 'gammatone':
             if 'return_complex' not in kwargs:
                 kwargs['return_complex'] = False
@@ -368,8 +368,8 @@ class Signal(BaseSignal):
         return self
 
     # def lowpass(self, f_cut, ftype):
-    #     if ftype == 'brickwall':
-    #         filt_signal = brickwall(self.waveform, self.fs, 0, f_cut)
+    #     if ftype == 'brickwall_bandpass':
+    #         filt_signal = brickwall_bandpass(self.waveform, self.fs, 0, f_cut)
     #     else:
     #         raise NotImplementedError('Filter type %s not implemented' % ftype)
 
@@ -378,8 +378,8 @@ class Signal(BaseSignal):
     #     return self
 
     # def highpass(self, f_cut, ftype):
-    #     if ftype == 'brickwall':
-    #         filt_signal = brickwall(self.waveform, self.fs, f_cut, np.inf)
+    #     if ftype == 'brickwall_bandpass':
+    #         filt_signal = brickwall_bandpass(self.waveform, self.fs, f_cut, np.inf)
     #     else:
     #         raise NotImplementedError('Filter type %s not implemented' % ftype)
 

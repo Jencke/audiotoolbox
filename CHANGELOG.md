@@ -13,3 +13,6 @@ In Developement:
    * Gammatone filter now defaults to interpreting the bw parameter as
      ERB not as -3dB bandwidth - can be chaged by setting
      attenuation_db=-3
+   * Change order of arguments for gnererate_tone so that it is now
+     consistent with other functions
+   * Removed old implementation of Gauss filter

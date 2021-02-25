@@ -12,7 +12,7 @@ from scipy.signal import hilbert
 from scipy.signal.windows import hann
 from .oaudio import Signal
 
-from .filter import brickwall
+from .filter import brickwall_bandpass
 
 COLOR_R = '#d65c5c'
 COLOR_L = '#5c5cd6'
@@ -179,8 +179,7 @@ def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1, start_phas
                                        + start_phase)
 
 
-    if n_channels > 1:
-        modulator = _copy_to_dim(modulator, n_channels)
+    modulator = _copy_to_dim(modulator, n_channels)
 
     return modulator
 
@@ -284,7 +283,7 @@ def generate_low_noise_noise(duration, low_f, high_f, fs=None,
 
     # Generate initial noise
     noise = generate_noise(duration, fs, ntype='white', n_channels=n_ch)
-    noise = brickwall(noise, fs, low_f, high_f)
+    noise = brickwall_bandpass(noise, fs, low_f, high_f)
 
     for i in range(n_rep):
         hilb = hilbert(noise, axis=0)
@@ -292,7 +291,7 @@ def generate_low_noise_noise(duration, low_f, high_f, fs=None,
 
         #diveide through envelope and restrict
         noise /= env
-        noise = brickwall(noise, fs, low_f, high_f)
+        noise = brickwall_bandpass(noise, fs, low_f, high_f)
 
     return noise
 
