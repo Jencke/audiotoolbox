@@ -2,7 +2,7 @@ import numpy as np
 from numpy import pi
 
 
-def _brickwall(signal, low_f, high_f=None, fs=None):
+def brickwall(signal, low_f, high_f, fs):
     '''Brickwall filter
 
     Bandpass filters an input signal by setting all frequency
@@ -25,7 +25,12 @@ def _brickwall(signal, low_f, high_f=None, fs=None):
 
     '''
 
-    if high_f is None: high_f = fs / 2
+    if low_f is None and high_f is not None:
+        low_f = 0
+    elif low_f is not None and high_f is None:
+        high_f = fs / 2
+    elif low_f is None and high_f is None:
+        raise Exception('low_f and/or high_f must be provided')
 
     spec = np.fft.fft(signal, axis=0)
     freqs = np.fft.fftfreq(len(signal), 1. / fs)
@@ -36,85 +41,85 @@ def _brickwall(signal, low_f, high_f=None, fs=None):
 
     return filtered_signal
 
-def brickwall_bandpass(signal, fc, bw, fs):
-    '''Brickwall bandpass filter
+# def brickwall_bandpass(signal, fc, bw, fs):
+#     '''Brickwall bandpass filter
 
-    Bandpass filters an input signal by setting all frequency
-    outside of the passband defined by center frequency and bandwidth to zero.
+#     Bandpass filters an input signal by setting all frequency
+#     outside of the passband defined by center frequency and bandwidth to zero.
 
-    Parameters
-    ----------
-    signal : ndarray
-        The input signal
-    fc : scalar
-        center frequency in Hz
-    bw : scalar
-        The bandwidth in Hz
-    fs :  scalar
-        The signals sampling rate in Hz
+#     Parameters
+#     ----------
+#     signal : ndarray
+#         The input signal
+#     fc : scalar
+#         center frequency in Hz
+#     bw : scalar
+#         The bandwidth in Hz
+#     fs :  scalar
+#         The signals sampling rate in Hz
 
-    Returns
-    -------
-        The filtered signal
+#     Returns
+#     -------
+#         The filtered signal
 
-    '''
+#     '''
 
-    low_f = fc - bw / 2
-    high_f = fc + bw / 2
+#     low_f = fc - bw / 2
+#     high_f = fc + bw / 2
 
-    filtered_signal = _brickwall(signal, low_f, high_f, fs)
+#     filtered_signal = _brickwall(signal, low_f, high_f, fs)
 
-    return filtered_signal
+#     return filtered_signal
 
-def brickwall_lowpass(signal, fc, fs):
-    '''Brickwall lowpass filter
+# def brickwall_lowpass(signal, fc, fs):
+#     '''Brickwall lowpass filter
 
-    Lowpass filters an input signal by setting all frequency
-    components above fc to zero.
+#     Lowpass filters an input signal by setting all frequency
+#     components above fc to zero.
 
-    Parameters
-    ----------
-    signal : ndarray
-        The input signal
-    fc : scalar
-        corner frequency in Hz
-    fs :  scalar
-        The signals sampling rate in Hz
+#     Parameters
+#     ----------
+#     signal : ndarray
+#         The input signal
+#     fc : scalar
+#         corner frequency in Hz
+#     fs :  scalar
+#         The signals sampling rate in Hz
 
-    Returns
-    -------
-        The filtered signal
+#     Returns
+#     -------
+#         The filtered signal
 
-    '''
+#     '''
 
-    high_f = fc
-    low_f = 0
+#     high_f = fc
+#     low_f = 0
 
-    filtered_signal = _brickwall(signal, low_f, high_f, fs)
+#     filtered_signal = _brickwall(signal, low_f, high_f, fs)
 
-    return filtered_signal
+#     return filtered_signal
 
-def brickwall_highpass(signal, fc, fs):
-    '''Brickwall highpass filter
+# def brickwall_highpass(signal, fc, fs):
+#     '''Brickwall highpass filter
 
-    Highpass filters an input signal by setting all frequency
-    below fc to zero.
+#     Highpass filters an input signal by setting all frequency
+#     below fc to zero.
 
-    Parameters
-    ----------
-    signal : ndarray
-        The input signal
-    fc : scalar
-        corner frequency in Hz
-    fs :  scalar
-        The signals sampling rate in Hz
+#     Parameters
+#     ----------
+#     signal : ndarray
+#         The input signal
+#     fc : scalar
+#         corner frequency in Hz
+#     fs :  scalar
+#         The signals sampling rate in Hz
 
-    Returns
-    -------
-        The filtered signal
+#     Returns
+#     -------
+#         The filtered signal
 
-    '''
+#     '''
 
-    filtered_signal = _brickwall(signal, fc, None, fs)
+#     filtered_signal = _brickwall(signal, fc, None, fs)
 
-    return filtered_signal
+#     return filtered_signal

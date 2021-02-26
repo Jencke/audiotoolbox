@@ -64,7 +64,6 @@ def design_gammatone(fc, bw, fs, order=4, attenuation_db='erb'):
 
     return b, a
 
-
 def gammatonefos_apply(signal, b, a, order, states=None):
     """Process an input signal by applying the filter `order` times
 
