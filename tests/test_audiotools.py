@@ -332,6 +332,9 @@ def test_freqarange():
     diff = np.diff(barks)
     testing.assert_almost_equal(diff[0], 0.5)
 
+
+
+
 def test_erb_to_freq():
     # Test by inversion from freq_to_erb
     freq = np.array([100., 1000, 10000])

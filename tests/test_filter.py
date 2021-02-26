@@ -35,6 +35,39 @@ def test_brickwall_bandpass():
 
     assert np.array_equal(non_zero, passband)
 
+
+def test_brickwall_lowpass():
+    duration = 500e-3
+    fs = 100e3
+    noise = audio.generate_noise(duration, fs)
+
+    fc = 300
+    out = filter.brickwall_lowpass(noise, fc, fs)
+    spec = np.abs(np.fft.fft(out))
+    freqs = np.fft.fftfreq(len(spec), 1. / fs)
+
+    # check if only frequencies within the passband are non-zero
+    passband = ((np.abs(freqs) <= fc) & (freqs != 0))
+    non_zero = ~np.isclose(spec, 0)
+
+    assert np.array_equal(non_zero, passband)
+
+def test_brickwall_highpass():
+    duration = 500e-3
+    fs = 100e3
+    noise = audio.generate_noise(duration, fs)
+
+    fc = 300
+    out = filter.brickwall_highpass(noise, fc, fs)
+    spec = np.abs(np.fft.fft(out))
+    freqs = np.fft.fftfreq(len(spec), 1. / fs)
+
+    # check if only frequencies within the passband are non-zero
+    passband = ((np.abs(freqs) >= fc))
+    non_zero = ~np.isclose(spec, 0)
+
+    assert np.array_equal(non_zero, passband)
+
 def test_gammatone():
     # Check that gammatone function is the same as the individual one
     b, a = gt.design_gammatone(500, 75, 48000)
@@ -42,6 +75,7 @@ def test_gammatone():
     out, states = gt.gammatonefos_apply(noise, b, a, 4)
     out2 = filter.gammatone(noise, 500, 75, 48000)
     # testing.assert_equal(out, out2)
+
 
 def test_gammatone_coefficients():
     # Compare with results from AMT toolbox

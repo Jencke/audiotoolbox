@@ -1,7 +1,7 @@
 import numpy as np
-from scipy.stats import norm
 from numpy import pi
 from . import gammatone_filt as gt
+from .brickwall_filt import *
 
 def gammatone(signal, fc, bw, fs, order=4, attenuation_db='erb', return_complex=True):
     """Apply a gammatone filter to the signal
@@ -56,41 +56,6 @@ def gammatone(signal, fc, bw, fs, order=4, attenuation_db='erb', return_complex=
 
     return out_signal
 
-
-def brickwall_bandpass(signal, fc, bw, fs):
-    '''Brickwall bandpass filter
-
-    Bandpass filters an input signal by setting all frequency
-    outside of the passband [low_f, high_f] to zero.
-
-    Parameters
-    ----------
-    signal : ndarray
-        The input signal
-    fc : scalar
-        center frequency in Hz
-    high_f : scalar
-        The upper cutoff frequency in Hz
-    fs :  scalar
-        The signals sampling rate in Hz
-
-    Returns
-    -------
-        The filtered signal
-
-    '''
-
-    low_f = fc - bw / 2
-    high_f = fc + bw / 2
-
-    spec = np.fft.fft(signal, axis=0)
-    freqs = np.fft.fftfreq(len(signal), 1. / fs)
-    sel_freq = ~((np.abs(freqs) <= high_f) & (np.abs(freqs) >= low_f))
-    spec[sel_freq] = 0
-    filtered_signal = np.fft.ifft(spec, axis=0)
-    filtered_signal = np.real_if_close(filtered_signal, 1000)
-
-    return filtered_signal
 
 
 # def middle_ear_filter(signal, fs):
