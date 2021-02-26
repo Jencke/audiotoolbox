@@ -6,7 +6,8 @@ import numpy.testing as testing
 from scipy.stats import norm
 import pytest
 
-def test_brickwall_bandpass():
+def test_brickwall():
+    #Test Bandpass
     duration = 500e-3
     fs = 100e3
     noise = audio.generate_noise(duration, fs)
@@ -15,7 +16,7 @@ def test_brickwall_bandpass():
     bw = 200
     flow = fc - bw / 2
     fhigh = fc + bw / 2
-    out = filter.brickwall_bandpass(noise, fc, bw, fs)
+    out = filter.brickwall(noise, flow, fhigh, fs)
     spec = np.abs(np.fft.fft(out))
     freqs = np.fft.fftfreq(len(spec), 1. / fs)
     passband = (np.abs(freqs) >= flow) & (np.abs(freqs) <= fhigh)
@@ -27,7 +28,7 @@ def test_brickwall_bandpass():
     bw = 230
     flow = 900
     fhigh = 1130
-    out = filter.brickwall_bandpass(noise, fc, bw, fs)
+    out = filter.brickwall(noise, flow, fhigh, fs)
     spec = np.abs(np.fft.fft(out))
     freqs = np.fft.fftfreq(len(spec), 1. / fs)
     passband = (np.abs(freqs) >= flow) & (np.abs(freqs) <= fhigh)
@@ -35,14 +36,14 @@ def test_brickwall_bandpass():
 
     assert np.array_equal(non_zero, passband)
 
+    #Brickwall Lowpass
 
-def test_brickwall_lowpass():
     duration = 500e-3
     fs = 100e3
     noise = audio.generate_noise(duration, fs)
 
     fc = 300
-    out = filter.brickwall_lowpass(noise, fc, fs)
+    out = filter.brickwall(noise, None, fc, fs)
     spec = np.abs(np.fft.fft(out))
     freqs = np.fft.fftfreq(len(spec), 1. / fs)
 
@@ -52,13 +53,13 @@ def test_brickwall_lowpass():
 
     assert np.array_equal(non_zero, passband)
 
-def test_brickwall_highpass():
+    # brickwall_highpass
     duration = 500e-3
     fs = 100e3
     noise = audio.generate_noise(duration, fs)
 
     fc = 300
-    out = filter.brickwall_highpass(noise, fc, fs)
+    out = filter.brickwall(noise, fc, None, fs)
     spec = np.abs(np.fft.fft(out))
     freqs = np.fft.fftfreq(len(spec), 1. / fs)
 
@@ -67,6 +68,55 @@ def test_brickwall_highpass():
     non_zero = ~np.isclose(spec, 0)
 
     assert np.array_equal(non_zero, passband)
+
+
+def test_butterworth_filt():
+
+     # Test Lowpass
+     sig = audio.Signal(1, 1, 48000).add_tone(500)
+     sig_out, states = filter.butterworth(sig, None, 500, 48000)
+     testing.assert_almost_equal(sig_out[:].std(), 0.5, 3)
+
+     sig = audio.Signal(1, 1, 48000).add_tone(400)
+     sig_out, states = filter.butterworth(sig, None, 500, 48000)
+     assert sig_out[:].std() > 0.5
+
+     sig = audio.Signal(1, 1, 48000).add_tone(600)
+     sig_out, states = filter.butterworth(sig, None, 500, 48000)
+     assert sig_out[:].std() < 0.5
+
+
+     # test Highpass
+     sig = audio.Signal(1, 1, 48000).add_tone(500)
+     sig_out, states = filter.butterworth(sig, 500, None, 48000)
+     testing.assert_almost_equal(sig_out[:].std(), 0.5, 3)
+
+     sig = audio.Signal(1, 1, 48000).add_tone(400)
+     sig_out, states = filter.butterworth(sig, 500, None, 48000)
+     assert sig_out[:].std() < 0.5
+
+     sig = audio.Signal(1, 1, 48000).add_tone(600)
+     sig_out, states = filter.butterworth(sig, 500, None, 48000)
+     assert sig_out[:].std() > 0.5
+
+
+     sig = audio.Signal(1, 1, 48000).add_tone(500)
+     sig_out, states = filter.butterworth(sig, 400, 600, 48000)
+     testing.assert_almost_equal(sig_out[:].std(), 1 / np.sqrt(2), 3)
+     sig = audio.Signal(1, 1, 48000).add_tone(400)
+     sig_out, states = filter.butterworth(sig, 400, 600, 48000)
+     testing.assert_almost_equal(sig_out[:].std(), 0.5, 3)
+     sig = audio.Signal(1, 1, 48000).add_tone(600)
+     sig_out, states = filter.butterworth(sig, 400, 600, 48000)
+     testing.assert_almost_equal(sig_out[:].std(), 0.5, 3)
+
+
+     sig = audio.Signal((2, 3), 1, 48000).add_tone(500)
+     sig_out, states = filter.butterworth(sig, 400, 600, 48000)
+     testing.assert_almost_equal(np.std(sig_out, axis=0), 1 / np.sqrt(2), 3)
+     sig = audio.Signal((2, 3), 1, 48000).add_tone(400)
+     sig_out, states = filter.butterworth(sig, 400, 600, 48000)
+     testing.assert_almost_equal(np.std(sig_out, axis=0), 0.5, 3)
 
 def test_gammatone():
     # Check that gammatone function is the same as the individual one

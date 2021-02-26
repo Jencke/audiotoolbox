@@ -1,7 +1,10 @@
 import numpy as np
 from numpy import pi
 from . import gammatone_filt as gt
-from .brickwall_filt import *
+from . import brickwall_filt
+from . import butterworth_filt
+from .brickwall_filt import brickwall
+from .butterworth_filt import butterworth
 
 def gammatone(signal, fc, bw, fs, order=4, attenuation_db='erb', return_complex=True):
     """Apply a gammatone filter to the signal
@@ -55,8 +58,6 @@ def gammatone(signal, fc, bw, fs, order=4, attenuation_db='erb', return_complex=
         out_signal = out_signal.real
 
     return out_signal
-
-
 
 # def middle_ear_filter(signal, fs):
 #     f1 = 4000 / fs
