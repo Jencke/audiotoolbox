@@ -4,6 +4,17 @@ from copy import deepcopy
 
 from .base_signal import BaseSignal
 
+def _copy_to_dim(array, dim):
+    if np.ndim(dim) == 0: dim = (dim,)
+
+    #tile by the number of dimensions
+    tiled_array = np.tile(array, (*dim[::-1], 1)).T
+    #squeeze to remove axis of lenght 1
+    tiled_array = np.squeeze(tiled_array)
+
+    return tiled_array
+
+
 class FrequencyDomainSignal(BaseSignal):
 
     def __new__(cls, n_channels, duration, fs, dtype=complex):
@@ -91,11 +102,7 @@ class FrequencyDomainSignal(BaseSignal):
             phases[self.n_samples//2] = 0
 
         shift_factor = np.exp(1j * phases)
-
-        if self.ndim > 1:
-            ind = [np.newaxis] * self.ndim
-            ind[0] = slice(None)
-            shift_factor = shift_factor[tuple(ind)]
+        shift_factor = _copy_to_dim(shift_factor, self.shape[1:])
 
         self *= shift_factor
 
@@ -128,6 +135,8 @@ class FrequencyDomainSignal(BaseSignal):
         """
 
         shift_val = - 1.0j * phase * np.sign(self.freq)
+        shift_val = _copy_to_dim(shift_val, self.shape[1:])
+
         self *= np.exp(shift_val)
         return self
 
