@@ -285,31 +285,6 @@ class Signal(BaseSignal):
         dbfs = audio.calc_dbfs(self)
         return dbfs
 
-    # def calc_crest_factor(self):
-    #     r"""Calculate crest factor
-
-    #     Calculates the crest factor for the signal. The crest factor
-    #     is defined as:
-
-    #     .. math:: C = \frac{|x_{peak}|}{x_{rms}}
-
-    #     where :math:`x_{peak}` is the maximum of the absolute value and
-    #     :math:`x_{rms}` is the effective value of the signal.
-
-    #     Returns
-    #     --------
-    #     scalar :
-    #         The crest factor
-
-    #     See Also
-    #     --------
-    #     audiotools.crest_factor
-
-    #     """
-    #     crest_factor = audio.crest_factor(self)
-    #     return crest_factor
-
-
     def bandpass(self, f_center, bw, ftype, **kwargs):
         r"""Apply a bandpass filter
 
