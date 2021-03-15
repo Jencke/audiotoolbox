@@ -17,7 +17,7 @@ auditools.Signal objects. For more informations check the numpy docs_.
 .. autoclass:: audiotools.Signal
    :members: fs, n_channels, n_samples, duration, ch, concatenate,
              multiply, add, abs, time, add_tone, add_noise,
-             set_dbspl, calc_dbspl, set_dbfs, calc_dbfs, calc_crest_factor,
+             set_dbspl, calc_dbspl, set_dbfs, calc_dbfs,
 	     bandpass, zeropad, add_fade_window, add_cos_modulator, delay,
 	     phase_shift, clip, rms, rectify, to_freqdomain, add_uncorr_noise
 
