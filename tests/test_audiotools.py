@@ -46,6 +46,7 @@ def test_low_noise_noise():
     testing.assert_array_equal(noise[:, :, 0], noise[:, :, 1])
 
 
+
 def test_generate_tone():
     # test frequency, sampling rate and duration
     tone1 = audio.generate_tone(1, 1, 1e3)

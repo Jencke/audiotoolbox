@@ -47,6 +47,14 @@ class test_oaudio(unittest.TestCase):
         sig[:, 1] = sig[:, 1].to_freqdomain().phase_shift(0.5 * np.pi).to_timedomain()
         testing.assert_almost_equal(sig[:, 1], sig[:, 0])
 
+        # phase shifting half a period
+        sig = audio.Signal((2, 2), 1, 48000)
+        sig[:, :, 0].add_tone(100, start_phase=-0.5 * np.pi)
+        sig[:, :, 1].add_tone(100)
+        sig[:, :, 1] = sig[:, :, 1].to_freqdomain().phase_shift(0.5 * np.pi).to_timedomain()
+        testing.assert_almost_equal(sig[:, :, 1], sig[:, :, 0])
+
+
     def test_timeshift(self):
         #timeshift a tone by one full phase
         sig = audio.Signal(2, 1, 48000).add_tone(100)
@@ -61,6 +69,12 @@ class test_oaudio(unittest.TestCase):
 
         shift_time = 3.2e-4
         sig = audio.Signal(2, 1.000, 48000).add_noise()
+        res =  sig[:, 1].to_freqdomain().time_shift(shift_time).to_timedomain()
+        assert np.all(np.isreal(res))
+
+
+        shift_time = 3.2e-4
+        sig = audio.Signal((2, 2), 1.000, 48000).add_noise()
         res =  sig[:, 1].to_freqdomain().time_shift(shift_time).to_timedomain()
         assert np.all(np.isreal(res))
 

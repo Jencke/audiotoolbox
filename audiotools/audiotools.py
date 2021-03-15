@@ -281,9 +281,11 @@ def generate_low_noise_noise(duration, fc, bw, fs=None,
     # Todo - need to fix duration
     duration, fs, n_ch = _duration_is_signal(duration, fs, n_channels)
 
+
     # Generate initial noise
     noise = generate_noise(duration, fs, ntype='white', n_channels=n_ch)
     noise = brickwall(noise, fc - bw / 2, fc + bw / 2, fs)
+    std = noise.std(axis=0)
 
     for i in range(n_rep):
         hilb = hilbert(noise, axis=0)
@@ -291,7 +293,8 @@ def generate_low_noise_noise(duration, fc, bw, fs=None,
 
         #diveide through envelope and restrict
         noise /= env
-        noise = brickwall(noise, fc - bw / 2, bw + bw / 2, fs)
+        noise = brickwall(noise, fc - bw/2, fc + bw/2, fs)
+        noise /= noise.std(axis=0) * std
 
     return noise
 
@@ -1699,7 +1702,7 @@ def calc_coherence(signal):
     coh = ((fsig.ch[0] * fsig.ch[1].conj()) / sig.n_samples**2).to_timedomain()
 
     # normalize by energy so that we gain the normalized coherence function
-    coh /= np.sqrt(np.product(np.mean(np.abs(asig)**2, axis=0)))
+    coh /= np.sqrt(np.product(np.mean(np.abs(asig)**2, axis=0), axis=0))
 
     # if input was an ndarray convert output back to ndarray
     coh[:] = np.roll(coh, coh.n_samples//2, axis=0)

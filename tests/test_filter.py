@@ -124,8 +124,13 @@ def test_gammatone():
     noise = audio.generate_noise(100e-3, 48000)
     out, states = gt.gammatonefos_apply(noise, b, a, 4)
     out2 = filter.gammatone(noise, 500, 75, 48000)
-    # testing.assert_equal(out, out2)
 
+    sig = audio.Signal(1, 1, 48000).add_tone(500)
+    out = filter.gammatone(sig, 500, 75, 48000, order=4, attenuation_db=-3)
+    testing.assert_almost_equal(out.real.std(), 1 / np.sqrt(2), 2)
+    sig = audio.Signal(1, 1, 48000).add_tone(400)
+    out = filter.gammatone(sig, 500, 200, 48000, order=4, attenuation_db=-3)
+    testing.assert_almost_equal(out.real.std(), 0.5, 2)
 
 def test_gammatone_coefficients():
     # Compare with results from AMT toolbox
