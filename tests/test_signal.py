@@ -334,13 +334,6 @@ class test_oaudio(unittest.TestCase):
         sig = Signal((2, 2), 1, fs).add_uncorr_noise()
         assert(sig.n_channels == (2, 2))
 
-
-    def test_crest_factor(self):
-        #crest factor of a tone is square root of 2
-        sig = Signal(1, 1, 48000).add_tone(1e3)
-        cfac = sig.calc_crest_factor()
-        testing.assert_almost_equal(cfac, np.sqrt(2))
-
     def test_clip(self):
         sig = Signal(2, 1, 48000).add_noise()
         o_sig = sig.copy()
