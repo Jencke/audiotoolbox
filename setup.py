@@ -21,6 +21,7 @@ setup(
         'scipy>=1.5.1',
         'matplotlib>=3.3.1',
         'pytest>=5.4.3',
+        'coverage'
     ],
     license = "GPL",
 )

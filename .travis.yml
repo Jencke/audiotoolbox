@@ -3,4 +3,4 @@ install:
   - pip install -r requirements.txt
   - pip install ./
 script:
-  - pytest
+  - coverage run --include=audiotools/* -m pytest -ra
