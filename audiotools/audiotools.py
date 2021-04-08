@@ -464,6 +464,8 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0 , seed=None):
     """
     np.random.seed(seed)
 
+    sign = np.sign(corr)
+    corr = np.abs(corr)
     # if more then one dimension in n_channels
     if np.ndim(n_channels) > 0:
         shape = n_channels
@@ -724,17 +726,6 @@ def zeropad(signal, number):
     return signal_out
 
 
-def zero_buffer(signal, number):
-    r"""Depricated use zeropad instead
-
-    """
-
-    warn("zero_buffer is deprecated, use zeropad instead",
-         DeprecationWarning)
-
-    signal = zeropad(signal, number)
-    return signal
-
 def shift_signal(signal, nr_samples):
     r"""Shift `signal` by `nr_samples` samples.
 
@@ -769,59 +760,59 @@ def shift_signal(signal, nr_samples):
 
     return sig
 
-def fftshift_signal(signal, delay, fs):
-    r"""Delay the `signal` by time `delay` in the frequncy domain.
+# def fftshift_signal(signal, delay, fs):
+#     r"""Delay the `signal` by time `delay` in the frequncy domain.
 
-    Delays a signal by introducing a linear phaseshift in the
-    frequency domain. Depending on the `mode` this is done cyclically
-    or by zero zeros buffering the start of the signal.
+#     Delays a signal by introducing a linear phaseshift in the
+#     frequency domain. Depending on the `mode` this is done cyclically
+#     or by zero zeros buffering the start of the signal.
 
-    Parameters
-    ----------
-    signal : array_like
-        Input signal
-    delay : scalar
-        The delay in seconds. Must be positive if `mode` is 'zeros'.
-    fs : scalar
-        The sampling rate in Hz.
+#     Parameters
+#     ----------
+#     signal : array_like
+#         Input signal
+#     delay : scalar
+#         The delay in seconds. Must be positive if `mode` is 'zeros'.
+#     fs : scalar
+#         The sampling rate in Hz.
 
-    Returns
-    --------
-    res : ndarray
-        The shifted signal
+#     Returns
+#     --------
+#     res : ndarray
+#         The shifted signal
 
-    See Also:
-    ---------
-    delay_signal : A high level delaying / shifting function.
-    shift_signal : Shift a signal by whole samples.
+#     See Also:
+#     ---------
+#     delay_signal : A high level delaying / shifting function.
+#     shift_signal : Shift a signal by whole samples.
 
-    """
+#     """
 
-    warn("fftshift is depricated",
-         DeprecationWarning)
+#     warn("fftshift is depricated",
+#          DeprecationWarning)
 
 
-    if delay == 0:
-        return signal
+#     if delay == 0:
+#         return signal
 
-    n_pad = 0
-    len_sig = len(signal)
+#     n_pad = 0
+#     len_sig = len(signal)
 
-    #Apply FFT
-    ft_signal = np.fft.fft(signal, axis=0)
+#     #Apply FFT
+#     ft_signal = np.fft.fft(signal, axis=0)
 
-    #Calculate the phases need for shifting and apply them to the
-    #spectrum
-    freqs = np.fft.fftfreq(len_sig, 1. / fs)
-    phase = time2phase(delay, freqs)
-    ft_signal *= np.exp(-1j * phase)
+#     #Calculate the phases need for shifting and apply them to the
+#     #spectrum
+#     freqs = np.fft.fftfreq(len_sig, 1. / fs)
+#     phase = time2phase(delay, freqs)
+#     ft_signal *= np.exp(-1j * phase)
 
-    #Inverse transform the spectrum and leave away the imag. part if
-    #it is really small
-    shifted_signal = np.fft.ifft(ft_signal)
-    shifted_signal = np.real_if_close(shifted_signal, 1000)
+#     #Inverse transform the spectrum and leave away the imag. part if
+#     #it is really small
+#     shifted_signal = np.fft.ifft(ft_signal)
+#     shifted_signal = np.real_if_close(shifted_signal, 1000)
 
-    return shifted_signal
+#     return shifted_signal
 
 def delay_signal(signal, delay, fs, method='fft', mode='zeros'):
 
@@ -1714,55 +1705,52 @@ def calc_coherence(signal):
 
     return coh
 
+# def phase_shift(signal, phase, fs):
+#     r"""Shifts all frequency components of a signal by a constant phase.
 
+#     Shift all frequency components of a given signal by a constant
+#     phase by means of fFT transformation, phase shifting and inverse
+#     transformation.
 
+#     Parameters
+#     -----------
+#     signal : ndarray
+#         The input signal
+#     phase : scalar
+#         The phase in rad by which the signal is shifted.
 
-def phase_shift(signal, phase, fs):
-    r"""Shifts all frequency components of a signal by a constant phase.
+#     Returns
+#     --------
+#     ndarray :
+#         The phase shifted signal
 
-    Shift all frequency components of a given signal by a constant
-    phase by means of fFT transformation, phase shifting and inverse
-    transformation.
+#     """
 
-    Parameters
-    -----------
-    signal : ndarray
-        The input signal
-    phase : scalar
-        The phase in rad by which the signal is shifted.
+#     warn("phase_shift is deprecated",
+#      DeprecationWarning)
 
-    Returns
-    --------
-    ndarray :
-        The phase shifted signal
+#     if signal.ndim == 1:
+#         n_channels = 1
+#     else:
+#         n_channels = signal.shape[1]
 
-    """
+#     n_signal = len(signal)
+#     signal = pad_for_fft(signal)
+#     i_signal = np.zeros([signal.shape[0], n_channels])
 
-    warn("phase_shift is deprecated",
-     DeprecationWarning)
+#     for i in range(n_channels):
+#         if n_channels == 1:
+#             spec = np.fft.fft(signal)
+#         else:
+#             spec = np.fft.fft(signal[:, i])
+#         freqs = np.fft.fftfreq(len(signal), 1. / fs)
 
-    if signal.ndim == 1:
-        n_channels = 1
-    else:
-        n_channels = signal.shape[1]
+#         shift_val = np.exp(1j * phase * np.sign(freqs))
+#         spec *= shift_val
+#         i_signal[:, i] = np.real_if_close(np.fft.ifft(spec), 3000)
 
-    n_signal = len(signal)
-    signal = pad_for_fft(signal)
-    i_signal = np.zeros([signal.shape[0], n_channels])
-
-    for i in range(n_channels):
-        if n_channels == 1:
-            spec = np.fft.fft(signal)
-        else:
-            spec = np.fft.fft(signal[:, i])
-        freqs = np.fft.fftfreq(len(signal), 1. / fs)
-
-        shift_val = np.exp(1j * phase * np.sign(freqs))
-        spec *= shift_val
-        i_signal[:, i] = np.real_if_close(np.fft.ifft(spec), 3000)
-
-    if n_channels == 1:
-        ret = i_signal[:n_signal, 0]
-    else:
-        ret = i_signal[:n_signal, :]
-    return  ret
+#     if n_channels == 1:
+#         ret = i_signal[:n_signal, 0]
+#     else:
+#         ret = i_signal[:n_signal, :]
+#     return  ret
