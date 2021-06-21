@@ -449,6 +449,14 @@ class test_oaudio(unittest.TestCase):
         sig2 = sig.copy()
         assert sig2.time_offset == -5
 
+    def test_plot(self):
+        sig = audio.Signal(2, 1, 48000).add_noise()
+        fig, ax = sig.plot()
+        assert len(ax.lines) == sig.n_channels
+        # Test for the correct colors in case of two channels
+        assert ax.lines[0].get_color() == '#5c5cd6'
+        assert ax.lines[1].get_color() == '#d65c5c'
+
 
 
     def test_analytical(self):
