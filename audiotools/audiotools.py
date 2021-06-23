@@ -1,15 +1,12 @@
 """
 Some simple helper functions for dealing with audiosignals
 """
-from warnings import warn
-
 import numpy as np
 from numpy import pi
 
 
 from scipy.interpolate import interp1d
 from scipy.signal import hilbert
-from scipy.signal.windows import hann
 from .oaudio import Signal
 
 from .filter import brickwall
