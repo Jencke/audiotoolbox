@@ -40,6 +40,7 @@ def design_gammatone(fc, bw, fs, order=4, attenuation_db='erb'):
 
     # in case the bandwith is stated in equivalent rectangular
     # bandwidth:
+    print(f'{fc=}{bw=}{order=}')
     if attenuation_db == 'erb':
         # Using Eq. 14 and 15 [Hohmann2002]
         c = 2 * np.sqrt(2**(1 / order) - 1)
