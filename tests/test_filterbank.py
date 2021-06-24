@@ -89,6 +89,27 @@ class test_oaudio(unittest.TestCase):
         assert np.all((amps - 1) <= 0.01)
 
 
+
+    def test_brickwall(self):
+        # Test the gain at fc 
+        sig = audio.Signal(1, 1, 48000)
+        fc = np.round(audio.freqarange(100, 4000, 1, 'erb'))        
+        bw = audio.calc_bandwidth(fc, 'erb')
+        # add a tone at every fc
+        for f in fc:
+            sig.add_tone(f)
+        # create filterbank an run signal
+        bank = audio.create_filterbank(fc, bw, 48000, 'brickwall')
+        sig_out = bank.filt(sig)
+        #check amplitudes at fc of every filter
+        amps = np.zeros(len(fc))
+        for i_fc, f in enumerate(fc):
+            spec = sig_out.ch[i_fc].to_freqdomain()
+            amps[i_fc] = np.abs(spec[spec.freq==f])
+        # Amplitudes hould be 0.5 (double sided spectrum)
+        assert np.all((amps - 0.5) <= 0.01)
+        
+
     def test_set_params(self):
         fc = [100, 200, 5000]
         bw = [10, 5, 8]

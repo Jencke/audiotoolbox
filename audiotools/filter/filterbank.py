@@ -2,6 +2,7 @@ import numpy as np
 
 from . import gammatone_filt as gamma
 from . import butterworth_filt as butter
+from . import brickwall_filt as brick
 from .. import audiotools as audio
 
 
@@ -34,6 +35,8 @@ def create_filterbank(fc, bw, fs, filter_type, **kwargs):
         bank = ButterworthBank(fc, bw, fs, **kwargs)
     elif filter_type == 'gammatone':
         bank = GammaToneBank(fc, bw, fs, **kwargs)
+    elif filter_type == 'brickwall':
+        bank = BrickBank(fc, bw, fs)        
     return bank
 
 
@@ -153,3 +156,20 @@ class GammaToneBank(FilterBank):
             out, states = gamma.gammatonefos_apply(signal, b, a, order)
             out_sig.T[i_filt] = out.T
         return out_sig
+
+
+class BrickBank(FilterBank):
+    def __init__(self, fc, bw, fs):
+        FilterBank.__init__(self, fc, bw, fs)
+
+    def filt(self, signal):
+        n_ch_out = (*signal.shape[1:], self.n_filters)
+        duration = len(signal) / self.fs
+        out_sig = audio.Signal(n_ch_out, duration, self.fs)
+        for i_filt, (freq, bw) in enumerate(zip(self.fc, self.bw)):
+            low_f = freq - bw / 2
+            high_f = freq + bw / 2
+            out = brick.brickwall(signal, low_f, high_f, self.fs)
+            out_sig.T[i_filt] = out.T
+        return out_sig
+    
