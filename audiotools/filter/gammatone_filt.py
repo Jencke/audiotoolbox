@@ -105,9 +105,12 @@ def gammatonefos_apply(signal, b, a, order, states=None):
 
     states = np.zeros(shape, dtype=np.complex128)
 
-    # copy results into a new complex array
-    signal_out = audio.Signal(signal.n_channels, signal.duration,
-                              signal.fs, dtype=complex)
+    # copy results into a new complex Signal or array
+    if isinstance(signal, audio.Signal):
+        signal_out = audio.Signal(n_channel, signal.duration,
+                                  signal.fs, dtype=complex)
+    else:
+        signal_out = np.zeros_like(signal, dtype=complex)
     signal_out[:] = signal
 
     for i in range(order):

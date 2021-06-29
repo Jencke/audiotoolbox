@@ -28,7 +28,8 @@ def _copy_to_dim(array, dim):
 
 
 def _duration_is_signal(duration, fs=None, n_channels=None):
-    r""" Check if the duration which was passed was really a signal class
+    r"""Check if the duration which was passed was really a signal class
+
     """
     inval = duration
     if isinstance(duration, Signal):
@@ -37,7 +38,10 @@ def _duration_is_signal(duration, fs=None, n_channels=None):
         real_nch = inval.n_channels
     elif isinstance(duration, np.ndarray):
         n_samples = len(duration)
-        real_duration = n_samples / fs
+        if fs is not None:
+            real_duration = n_samples / fs
+        else:
+            real_duration = None
         real_fs = fs
         if np.ndim(duration) > 1:
             real_nch = duration.shape[1:]
@@ -48,7 +52,7 @@ def _duration_is_signal(duration, fs=None, n_channels=None):
         real_fs = fs
         real_nch = n_channels
 
-    assert not (real_fs is None)
+    # assert not (real_fs is None)
 
     return real_duration, real_fs, real_nch
 

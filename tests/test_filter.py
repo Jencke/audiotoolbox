@@ -71,66 +71,71 @@ def test_brickwall():
 
 
 def test_butterworth_filt():
+    # Test Lowpass
+    sig = audio.Signal(10, 1, 48000).add_tone(500)
+    sig_out = filter.butterworth(sig, None, 500, 48000)
+    testing.assert_almost_equal(sig_out[:].std(), 0.5, 3)
 
-     # Test Lowpass
-     sig = audio.Signal(1, 1, 48000).add_tone(500)
-     sig_out, states = filter.butterworth(sig, None, 500, 48000)
-     testing.assert_almost_equal(sig_out[:].std(), 0.5, 3)
+    sig = audio.Signal(1, 1, 48000).add_tone(400)
+    sig_out = filter.butterworth(sig, None, 500, 48000)
+    assert sig_out[:].std() > 0.5
 
-     sig = audio.Signal(1, 1, 48000).add_tone(400)
-     sig_out, states = filter.butterworth(sig, None, 500, 48000)
-     assert sig_out[:].std() > 0.5
+    sig = audio.Signal(1, 1, 48000).add_tone(600)
+    sig_out = filter.butterworth(sig, None, 500, 48000)
+    assert sig_out[:].std() < 0.5
 
-     sig = audio.Signal(1, 1, 48000).add_tone(600)
-     sig_out, states = filter.butterworth(sig, None, 500, 48000)
-     assert sig_out[:].std() < 0.5
+    # test Highpass
+    sig = audio.Signal(1, 1, 48000).add_tone(500)
+    sig_out = filter.butterworth(sig, 500, None, 48000)
+    testing.assert_almost_equal(sig_out[:].std(), 0.5, 3)
 
+    sig = audio.Signal(1, 1, 48000).add_tone(400)
+    sig_out = filter.butterworth(sig, 500, None, 48000)
+    assert sig_out[:].std() < 0.5
 
-     # test Highpass
-     sig = audio.Signal(1, 1, 48000).add_tone(500)
-     sig_out, states = filter.butterworth(sig, 500, None, 48000)
-     testing.assert_almost_equal(sig_out[:].std(), 0.5, 3)
-
-     sig = audio.Signal(1, 1, 48000).add_tone(400)
-     sig_out, states = filter.butterworth(sig, 500, None, 48000)
-     assert sig_out[:].std() < 0.5
-
-     sig = audio.Signal(1, 1, 48000).add_tone(600)
-     sig_out, states = filter.butterworth(sig, 500, None, 48000)
-     assert sig_out[:].std() > 0.5
-
-
-     sig = audio.Signal(1, 1, 48000).add_tone(500)
-     sig_out, states = filter.butterworth(sig, 400, 600, 48000)
-     testing.assert_almost_equal(sig_out[:].std(), 1 / np.sqrt(2), 3)
-     sig = audio.Signal(1, 1, 48000).add_tone(400)
-     sig_out, states = filter.butterworth(sig, 400, 600, 48000)
-     testing.assert_almost_equal(sig_out[:].std(), 0.5, 3)
-     sig = audio.Signal(1, 1, 48000).add_tone(600)
-     sig_out, states = filter.butterworth(sig, 400, 600, 48000)
-     testing.assert_almost_equal(sig_out[:].std(), 0.5, 3)
-
-
-     sig = audio.Signal((2, 3), 1, 48000).add_tone(500)
-     sig_out, states = filter.butterworth(sig, 400, 600, 48000)
-     testing.assert_almost_equal(np.std(sig_out, axis=0), 1 / np.sqrt(2), 3)
-     sig = audio.Signal((2, 3), 1, 48000).add_tone(400)
-     sig_out, states = filter.butterworth(sig, 400, 600, 48000)
-     testing.assert_almost_equal(np.std(sig_out, axis=0), 0.5, 3)
-
-def test_gammatone():
-    # Check that gammatone function is the same as the individual one
-    b, a = gt.design_gammatone(500, 75, 48000)
-    noise = audio.generate_noise(100e-3, 48000)
-    out, states = gt.gammatonefos_apply(noise, b, a, 4)
-    out2 = filter.gammatone(noise, 500, 75, 48000)
+    sig = audio.Signal(1, 1, 48000).add_tone(600)
+    sig_out = filter.butterworth(sig, 500, None, 48000)
+    assert sig_out[:].std() > 0.5
 
     sig = audio.Signal(1, 1, 48000).add_tone(500)
-    out = filter.gammatone(sig, 500, 75, 48000, order=4, attenuation_db=-3)
-    testing.assert_almost_equal(out.real.std(), 1 / np.sqrt(2), 2)
+    sig_out = filter.butterworth(sig, 400, 600, 48000)
+    testing.assert_almost_equal(sig_out[:].std(), 1 / np.sqrt(2), 3)
     sig = audio.Signal(1, 1, 48000).add_tone(400)
-    out = filter.gammatone(sig, 500, 200, 48000, order=4, attenuation_db=-3)
+    sig_out = filter.butterworth(sig, 400, 600, 48000)
+    testing.assert_almost_equal(sig_out[:].std(), 0.5, 3)
+    sig = audio.Signal(1, 1, 48000).add_tone(600)
+    sig_out = filter.butterworth(sig, 400, 600, 48000)
+    testing.assert_almost_equal(sig_out[:].std(), 0.5, 3)
+
+    sig = audio.Signal((2, 3), 1, 48000).add_tone(500)
+    sig_out = filter.butterworth(sig, 400, 600, 48000)
+    testing.assert_almost_equal(np.std(sig_out, axis=0), 1 / np.sqrt(2), 3)
+    sig = audio.Signal((2, 3), 1, 48000).add_tone(400)
+    sig_out = filter.butterworth(sig, 400, 600, 48000)
+    testing.assert_almost_equal(np.std(sig_out, axis=0), 0.5, 3)
+
+
+def test_gammatone():
+    # Tone located at center frequency
+    sig = audio.Signal(1, 1, 48000).add_tone(500)
+    out = filter.gammatone(sig, 500, 75, 48000,
+                           order=4, attenuation_db=-3)
+    testing.assert_almost_equal(out.real.std(), 1 / np.sqrt(2), 2)
+
+    # Tone located at -3dB frequency
+    sig = audio.Signal(2, 1, 48000).add_tone(400)
+    out = filter.gammatone(sig, 500, 200, 48000,
+                           order=4, attenuation_db=-3)
     testing.assert_almost_equal(out.real.std(), 0.5, 2)
+
+    # Test Multichannel
+    sig = audio.Signal((2, 2), 1, 48000).add_tone(400)
+    out = filter.gammatone(sig, 500, 200, 48000,
+                           order=4, attenuation_db=-3)
+    testing.assert_almost_equal(out.real.std(), 0.5, 2)
+    assert(sig.shape == out.shape)
+
+
 
 def test_gammatone_coefficients():
     # Compare with results from AMT toolbox
@@ -164,3 +169,15 @@ def test_gammatonefos_apply():
     out, states = gt.gammatonefos_apply(tone, b, a, 4)
     # max should be - 3dB
     assert (20*np.log10(out.real[3000:].max()) + 3) < 0.05
+
+def test_bandpass():
+    sig = audio.Signal(1, 1, 48000).add_noise()
+
+    sig_out = audio.filter.bandpass(sig, 500, 100, 'gammatone')
+    sig_out2 = audio.filter.gammatone(sig, 500, 100, 48000)
+    testing.assert_array_equal(sig_out, sig_out2)
+
+    sig = audio.Signal(1, 1, 48000).add_noise()
+    sig_out = audio.filter.bandpass(sig, 500, 100, 'butter')
+    sig_out2 = audio.filter.butterworth(sig, 450, 550, 48000)
+    # print(sig_out)

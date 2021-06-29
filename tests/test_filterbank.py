@@ -1,34 +1,28 @@
 import unittest
 import numpy as np
 
-#
-#from audiotools.oaudio import *
 import audiotools as audio
 import audiotools.filter.filterbank as bank
 from audiotools.filter import gammatone_filt
 from audiotools.filter import butterworth_filt
-# import numpy as np
 import numpy.testing as testing
-# import pytest
-
-# import matplotlib.pyplot as plt
 
 
 class test_oaudio(unittest.TestCase):
     def test_create_filterbank(self):
         fc = [100, 200]
         bw = [10, 20]
-        butter = audio.create_filterbank(fc, bw, 48000, 'butter')
+        butter = audio.create_filterbank(fc, bw, 'butter', 48000)
         assert isinstance(butter, bank.ButterworthBank)
 
-        gamma = audio.create_filterbank(fc, bw, 48000, 'gammatone')
+        gamma = audio.create_filterbank(fc, bw, 'gammatone', 48000)
         assert isinstance(gamma, bank.GammaToneBank)
 
     def test_butterworth(self):
         fc = [100, 200, 5000]
         bw = [10, 5, 8]
         fs = 48000
-        butter = audio.create_filterbank(fc, bw, fs, 'butter')
+        butter = audio.create_filterbank(fc, bw, 'butter', fs)
 
         for i_filt, (fc, bw) in enumerate(zip(fc, bw)):
             low_f = fc - bw / 2
@@ -45,7 +39,7 @@ class test_oaudio(unittest.TestCase):
         for f in fc:
             sig.add_tone(f)
         # create filterbank an run signal
-        bank = audio.create_filterbank(fc, bw, 48000, 'butter')
+        bank = audio.create_filterbank(fc, bw, 'butter', 48000)
         sig_out = bank.filt(sig)
         #check amplitudes at fc of every filter
         amps = np.zeros(len(fc))
@@ -62,7 +56,7 @@ class test_oaudio(unittest.TestCase):
         fc = [100, 200, 5000]
         bw = [10, 5, 8]
         fs = 48000
-        gamma = audio.create_filterbank(fc, bw, fs, 'gammatone')
+        gamma = audio.create_filterbank(fc, bw, 'gammatone', fs)
         for i_filt, (fc, bw) in enumerate(zip(fc, bw)):
             b, a = gammatone_filt.design_gammatone(fc, bw, fs)
             b_bank = gamma.coefficents[0, i_filt]
@@ -78,7 +72,7 @@ class test_oaudio(unittest.TestCase):
         for f in fc:
             sig.add_tone(f)
         # create filterbank an run signal
-        bank = audio.create_filterbank(fc, bw, 48000, 'gammatone')
+        bank = audio.create_filterbank(fc, bw, 'gammatone', 48000)
         sig_out = bank.filt(sig)
         #check amplitudes at fc of every filter
         amps = np.zeros(len(fc))
@@ -87,7 +81,6 @@ class test_oaudio(unittest.TestCase):
             amps[i_fc] = np.abs(spec[spec.freq==f])
         # Amplitudes hould be 1 (one sided spectrum)
         assert np.all((amps - 1) <= 0.01)
-
 
 
     def test_brickwall(self):
@@ -99,7 +92,7 @@ class test_oaudio(unittest.TestCase):
         for f in fc:
             sig.add_tone(f)
         # create filterbank an run signal
-        bank = audio.create_filterbank(fc, bw, 48000, 'brickwall')
+        bank = audio.create_filterbank(fc, bw, 'brickwall', 48000)
         sig_out = bank.filt(sig)
         #check amplitudes at fc of every filter
         amps = np.zeros(len(fc))
@@ -115,7 +108,7 @@ class test_oaudio(unittest.TestCase):
         bw = [10, 5, 8]
         fs = 48000
         print()
-        gamma = audio.create_filterbank(fc, bw, fs, 'gammatone',
+        gamma = audio.create_filterbank(fc, bw, 'gammatone', fs,
                                         order=5, attenuation_db=-3)
         print('--')
 

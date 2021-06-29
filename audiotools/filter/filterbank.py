@@ -6,7 +6,7 @@ from . import brickwall_filt as brick
 from .. import audiotools as audio
 
 
-def create_filterbank(fc, bw, fs, filter_type, **kwargs):
+def create_filterbank(fc, bw, filter_type, fs, **kwargs):
     '''Creates a filterbank object
 
     Parameters

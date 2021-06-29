@@ -1,5 +1,6 @@
 import scipy.signal as sig
 import numpy as np
+from .. import audiotools as audio
 
 def _copy_to_dim(array, dim):
     if np.ndim(dim) == 0: dim = (dim,)
@@ -12,12 +13,47 @@ def _copy_to_dim(array, dim):
     return tiled_array
 
 
-def butterworth(signal, low_f, high_f, fs, order=2):
+def butterworth(signal, low_f, high_f, fs, order=2, return_states=False,
+                states=None):
+    r"""Apply a butterwoth filter
+
+    Applies the cascated second-order sections representation of a
+    butterwoth IIR filter.
+
+    To construct a lowpass filter, set low_f to None. For a highpass,
+    set high_f to None.
+
+    Parameters:
+    ----------
+    low_f : scalar or None
+        lower cutoff in Hz
+    high_f : scalar or None
+        high cutoff in Hz
+    fs : scalar
+       sampling frequency in Hz
+    order : integer, optional
+       filter order (default = 2)
+    return_states : bool, optional
+       Wheather the filter states should be returned. (default=False)
+    states : True, None or array_like, optional
+        Inital conditions for the filter. if True, the conditions for
+        a step response are constructed. if set to None, the inital rest is
+        assumed (all 0). Otherwise, expects the inital filter delay
+        values.
+
+    Returns:
+    --------
+    ndarray : The filtered signal
+
+    """
 
     sos = design_butterworth(low_f, high_f, fs, order)
-    filtered_signal = apply_sos(signal, sos)
+    filtered_signal, states = apply_sos(signal, sos, states=states)
 
-    return filtered_signal
+    if not return_states:
+        return filtered_signal
+    else:
+        return filtered_signal, states
 
 
 def design_butterworth(low_f, high_f, fs, order=2):
@@ -58,7 +94,7 @@ def design_butterworth(low_f, high_f, fs, order=2):
         raise Exception('low_f and/or high_f must be provided')
     return sos
 
-def apply_sos(signal, sos, states=True, axis=0):
+def apply_sos(signal, sos, states=None, axis=0):
     r"""Filter the data along one dimension using second order sections
 
     Filter the input data using a digital IIR filter defined by sos.
@@ -75,7 +111,7 @@ def apply_sos(signal, sos, states=True, axis=0):
         coefficients.
     states : True, None or array_like, optional
         Inital conditions for the filter. if True, the conditions for
-        a step response are constructed. if None, the inital rest is
+        a step response are constructed. if set to None, the inital rest is
         assumed (all 0). Otherwise, expects the inital filter delay
         values.
 
@@ -88,12 +124,24 @@ def apply_sos(signal, sos, states=True, axis=0):
 
     """
 
-    #initialize states
+    _, _, n_channel = audio._duration_is_signal(signal, None, None)
+
+    # initialize states
     if states is True:
         states = sig.sosfilt_zi(sos)
         dim = signal.shape[1:][::-1]
         states = np.tile(states.T, (*dim, 1, 1)).T
+    elif states is None:
+        order = sos.shape[0]
+        if np.ndim(n_channel) == 0:
+            if n_channel == 1:  # only one channel
+                shape = [order, 2]
+            else:               # more then one channels
+                shape = [order, 2, n_channel]
+        else:                   # Multiple dimensions
+            shape = [order, 2, *n_channel]
+        states = np.zeros(shape)
 
-    sig_out, states =sig.sosfilt(sos, signal, zi=states, axis=axis)
+    sig_out, states = sig.sosfilt(sos, signal, zi=states, axis=axis)
 
     return sig_out, states
