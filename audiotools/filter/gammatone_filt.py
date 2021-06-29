@@ -1,4 +1,5 @@
 import numpy as np
+from .. import audiotools as audio
 from numpy import pi
 from scipy.signal import lfilter
 
@@ -90,16 +91,33 @@ def gammatonefos_apply(signal, b, a, order, states=None):
       The filter states.
 
     """
+    _, _, n_channel = audio._duration_is_signal(signal, None, None)
+
+    # state shape
     if not states:
-        states = np.zeros(order, dtype=np.complex128)
+        if np.ndim(n_channel) == 0:
+            if n_channel == 1:  # only one channel
+                shape = [order, 1]
+            else:               # more then one channels
+                shape = [order, 1, n_channel]
+        else:                   # Multiple dimensions
+            shape = [order, 1, *n_channel]
+
+    states = np.zeros(shape, dtype=np.complex128)
+
+    # copy results into a new complex array
+    signal_out = audio.Signal(signal.n_channels, signal.duration,
+                              signal.fs, dtype=complex)
+    signal_out[:] = signal
 
     for i in range(order):
-        state = [states[i]]
-        signal, state = lfilter(b, a, signal, zi=state)
+        # state = states[i, :]
+        out, state = lfilter(b, a, signal_out, zi=states[i], axis=0)
+        signal_out[:] = out
         states[i] = state[0]
         b = np.ones_like(b)
 
-    return signal, states
+    return signal_out, states
 
 
 def gammatone(signal, fc, bw, fs, order=4, attenuation_db='erb', return_complex=True):
@@ -143,12 +161,13 @@ def gammatone(signal, fc, bw, fs, order=4, attenuation_db='erb', return_complex=
 
     out_signal = np.zeros_like(signal, complex)
 
-    if signal.ndim > 1:
-        n_channel = signal.shape[1]
-        for i_c in range(n_channel):
-            out_signal[:, i_c], _ = gammatonefos_apply(signal[:, i_c], b, a, order)
-    else:
-        out_signal[:], _ = gammatonefos_apply(signal, b, a, order)
+    # if signal.ndim > 1:
+    #     n_channel = signal.shape[1]
+    #     for i_c in range(n_channel):
+    #         out_signal[:, i_c], _ = gammatonefos_apply(signal[:, i_c], b, a, order)
+    # else:
+    #     out_signal[:], _ = gammatonefos_apply(signal, b, a, order)
+    out_signal, state = gammatonefos_apply(signal, b, a, order)
 
     if not return_complex:
         out_signal = out_signal.real
