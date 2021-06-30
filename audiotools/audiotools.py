@@ -1155,9 +1155,11 @@ def bark_to_freq(bark):
 
     References
     ----------
-    ..[1] Traunmueller, H. (1990). Analytical expressions for the tonotopic
-           sensory scale. The Journal of the Acoustical Society of America,
-           88(1), 97-100. http://dx.doi.org/10.1121/1.399849
+    ..[1] Traunmueller, H. (1990). Analytical expressions for the
+           tonotopic sensory scale. The Journal of the Acoustical
+           Society of America, 88(1),
+           97-100. http://dx.doi.org/10.1121/1.399849
+
     """
 
     # reverse apply corrections
@@ -1178,9 +1180,9 @@ def freq_to_bark(frequency, use_table=False):
     frequency: scalar or ndarray
         The frequency in Hz. Value has to be between 20 and 15500 Hz
     use_table: bool, optional
-        If True, the original table by [1]_ instead of the equation by [2]_
-        is used. This also results in the CB beeing returned as integers.
-        (default = False)
+        If True, the original table by [1]_ instead of the equation by
+        [2]_ is used. This also results in the CB beeing returned as
+        integers.  (default = False)
 
     Returns
     -------
@@ -1188,13 +1190,15 @@ def freq_to_bark(frequency, use_table=False):
 
     References
     ----------
-    ..[1] Zwicker, E. (1961). Subdivision of the audible frequency range into
-           critical bands (frequenzgruppen). The Journal of the Acoustical
-           Society of America, 33(2),
+    ..[1] Zwicker, E. (1961). Subdivision of the audible frequency
+           range into critical bands (frequenzgruppen). The Journal of
+           the Acoustical Society of America, 33(2),
            248-248. http://dx.doi.org/10.1121/1.19086f30
-    ..[2] Traunmueller, H. (1990). Analytical expressions for the tonotopic
-           sensory scale. The Journal of the Acoustical Society of America,
-           88(1), 97-100. http://dx.doi.org/10.1121/1.399849
+
+    ..[2] Traunmueller, H. (1990). Analytical expressions for the
+           tonotopic sensory scale. The Journal of the Acoustical
+           Society of America, 88(1),
+           97-100. http://dx.doi.org/10.1121/1.399849
 
     """
     assert np.all(frequency >= 20)
@@ -1223,8 +1227,8 @@ def freq_to_bark(frequency, use_table=False):
 def freq_to_erb(frequency):
     r"""Frequency to number of ERBs conversion
 
-    Calculates the number of erbs for a given sound frequency in Hz using the
-    equation by [1]_
+    Calculates the number of erbs for a given sound frequency in Hz
+    using the equation by [1]_
 
     Parameters
     ----------
@@ -1233,16 +1237,19 @@ def freq_to_erb(frequency):
 
     Returns
     -------
-    scalar or ndarray : The number of erbs corresponding to the frequency
+    scalar or ndarray : The number of erbs corresponding to the
+    frequency
 
     References
     ----------
-    ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of auditory
-          filter shapes from notched-noise data. Hearing Research, 47(1-2),
-          103-138.
+    ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of
+          auditory filter shapes from notched-noise data. Hearing
+          Research, 47(1-2), 103-138.
+
     """
 
-    n_erb = (1000. / (24.7 * 4.37)) * np.log(4.37 * frequency / 1000 + 1)
+    n_erb = ((1000. / (24.7 * 4.37))
+             * np.log(4.37 * frequency / 1000 + 1))
     return n_erb
 
 
@@ -1263,9 +1270,10 @@ def erb_to_freq(n_erb):
 
     References
     ----------
-    ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of auditory
-          filter shapes from notched-noise data. Hearing Research, 47(1-2),
-          103-138.
+    ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of
+          auditory filter shapes from notched-noise data. Hearing
+          Research, 47(1-2), 103-138.
+
     """
     fkhz = (np.exp(n_erb * (24.7 * 4.37) / 1000) - 1) / 4.37
     return fkhz * 1000
@@ -1383,8 +1391,10 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
         i_type = 'cubic'
         alpha_f = interp1d(frequency_list,
                            alpha_f_list, kind=i_type)(frequency)
-        l_u = interp1d(frequency_list, l_u_list, kind=i_type)(frequency)
-        t_f = interp1d(frequency_list, t_f_list, kind=i_type)(frequency)
+        l_u = interp1d(frequency_list,
+                       l_u_list, kind=i_type)(frequency)
+        t_f = interp1d(frequency_list,
+                       t_f_list, kind=i_type)(frequency)
 
     a_f = (4.47e-3 * (10**(0.025 * l_phon) - 1.15)
            + (0.4 * 10**((t_f + l_u) / 10 - 9))**alpha_f)
@@ -1489,9 +1499,12 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
         t_f = t_f_list[n_param]
     else:
         i_type = 'cubic'
-        alpha_f = interp1d(frequency_list, alpha_f_list, kind=i_type)(frequency)
-        l_u = interp1d(frequency_list, l_u_list, kind=i_type)(frequency)
-        t_f = interp1d(frequency_list, t_f_list, kind=i_type)(frequency)
+        alpha_f = interp1d(frequency_list,
+                           alpha_f_list, kind=i_type)(frequency)
+        l_u = interp1d(frequency_list,
+                       l_u_list, kind=i_type)(frequency)
+        t_f = interp1d(frequency_list,
+                       t_f_list, kind=i_type)(frequency)
 
     b_f = ((0.4 * 10**((l_dbspl + l_u) / 10 - 9))**alpha_f
            - (0.4 * 10**((t_f + l_u) / 10 - 9))**alpha_f + 0.005135)
@@ -1516,7 +1529,8 @@ def calc_bandwidth(fc, scale='cbw'):
     bandwidth using differnt concepts:
 
      - cbw: Use the critical bandwidth concept following [1]_
-     - erb: Use the equivalent rectangular bandwith concept following [2]_
+     - erb: Use the equivalent rectangular bandwith concept following
+       [2]_
 
     Equation used for critical bandwidth:
     .. math:: B = 25 + 75 (1 + 1.4 \frac{f_c}{1000}^2)^0.69
@@ -1533,14 +1547,14 @@ def calc_bandwidth(fc, scale='cbw'):
       String indicating the scale that should be used possible values:
       'cbw' or 'erb'. (default='cbw')
 
-        ..[1] Zwicker, E., & Terhardt, E. (1980). Analytical expressions for
-              critical-band rate and critical bandwidth as a function of
-              frequency. The Journal of the Acoustical Society of America,
-              68(5), 1523-1525.
+        ..[1] Zwicker, E., & Terhardt, E. (1980). Analytical
+              expressions for critical-band rate and critical
+              bandwidth as a function of frequency. The Journal of the
+              Acoustical Society of America, 68(5), 1523-1525.
 
-        ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of auditory
-              filter shapes from notched-noise data. Hearing Research, 47(1-2),
-              103-138.
+        ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of
+              auditory filter shapes from notched-noise data. Hearing
+              Research, 47(1-2), 103-138.
 
     """
 
@@ -1700,16 +1714,17 @@ def calc_coherence(signal):
 
     .. math:: \gamma(tau) = \frac{<f_a(t)g^*_a(t-\tau)>}{\sqrt{<|f_a(t)|^2><|g_a(t)|^2>}}
 
-    where :math:`f_a(t)` is the analytic signals of :math:`f(t)` and and
-    :math:`g^*_a(t)` is the complex conjugate of the analytic signal of
-    :math:`g(t)`. :math:`<\dots>` symbolizes the mean over time.
+    where :math:`f_a(t)` is the analytic signals of :math:`f(t)` and
+    and :math:`g^*_a(t)` is the complex conjugate of the analytic
+    signal of :math:`g(t)`. :math:`<\dots>` symbolizes the mean over
+    time.
 
     Requires an input signal with the shape (N, 2).  If only a
-    one-dimensional signal is provided, the auto-coherence function where
-    :math:`f(t) = g(t)` is calculated.
+    one-dimensional signal is provided, the auto-coherence function
+    where :math:`f(t) = g(t)` is calculated.
 
-    The real part of the complex valued coherence equals the normalized
-    cross-correlation.
+    The real part of the complex valued coherence equals the
+    normalized cross-correlation.
 
     Parameters
     ----------
