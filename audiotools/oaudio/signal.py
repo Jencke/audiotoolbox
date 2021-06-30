@@ -750,3 +750,33 @@ class Signal(BaseSignal):
         fd_signal = self.to_freqdomain()
         a_signal = fd_signal.to_analytical().to_timedomain()
         return a_signal
+
+
+def as_signal(signal, fs):
+    """ Convert Numpy array to Signal class.
+
+    Parameters
+    ----------
+    signal : ndarray
+      The input array
+    fs : int
+      The sampling rate in Hz
+
+    Returns
+    -------
+    The converted signal : Signal
+
+    """
+    # if allready signal class
+    if isinstance(signal, Signal):
+        return signal
+    else:
+        duration = len(signal) / fs
+        if np.ndim(signal) == 0:
+            n_channels = 1
+        else:
+            n_channels = signal.shape[1:]
+
+        sig_out = Signal(n_channels, duration, fs, dtype=signal.dtype)
+        sig_out[:] = signal
+    return sig_out
