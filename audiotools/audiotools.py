@@ -1635,9 +1635,9 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.):
 
     References
     ----------
-    .. [1] Schroeder, M. (1970). Synthesis of low-peak-factor signals and
-          binary sequences with low autocorrelation (corresp.). IEEE
-          Transactions on Information Theory, 16(1),
+    .. [1] Schroeder, M. (1970). Synthesis of low-peak-factor signals
+          and binary sequences with low autocorrelation
+          (corresp.). IEEE Transactions on Information Theory, 16(1),
           85-89
 
     """
@@ -1648,7 +1648,8 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.):
 
     phi_schroeder = np.zeros(len(harmonics))
     for i_n, n in enumerate(harmonics):
-        phi_shift = 2 * pi * np.sum((n - harmonics[:i_n]) * power[:i_n])
+        phi_shift = 2 * pi * np.sum((n - harmonics[:i_n])
+                                    * power[:i_n])
         phi_schroeder[i_n] = phi0 - phi_shift
 
     return phi_schroeder
@@ -1749,53 +1750,3 @@ def calc_coherence(signal):
         coh.time_offset = -coh.n_samples//2 * 1 / coh.fs
 
     return coh
-
-# def phase_shift(signal, phase, fs):
-#     r"""Shifts all frequency components of a signal by a constant phase.
-
-#     Shift all frequency components of a given signal by a constant
-#     phase by means of fFT transformation, phase shifting and inverse
-#     transformation.
-
-#     Parameters
-#     -----------
-#     signal : ndarray
-#         The input signal
-#     phase : scalar
-#         The phase in rad by which the signal is shifted.
-
-#     Returns
-#     --------
-#     ndarray :
-#         The phase shifted signal
-
-#     """
-
-#     warn("phase_shift is deprecated",
-#      DeprecationWarning)
-
-#     if signal.ndim == 1:
-#         n_channels = 1
-#     else:
-#         n_channels = signal.shape[1]
-
-#     n_signal = len(signal)
-#     signal = pad_for_fft(signal)
-#     i_signal = np.zeros([signal.shape[0], n_channels])
-
-#     for i in range(n_channels):
-#         if n_channels == 1:
-#             spec = np.fft.fft(signal)
-#         else:
-#             spec = np.fft.fft(signal[:, i])
-#         freqs = np.fft.fftfreq(len(signal), 1. / fs)
-
-#         shift_val = np.exp(1j * phase * np.sign(freqs))
-#         spec *= shift_val
-#         i_signal[:, i] = np.real_if_close(np.fft.ifft(spec), 3000)
-
-#     if n_channels == 1:
-#         ret = i_signal[:n_signal, 0]
-#     else:
-#         ret = i_signal[:n_signal, :]
-#     return  ret
