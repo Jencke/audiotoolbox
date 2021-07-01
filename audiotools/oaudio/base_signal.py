@@ -163,6 +163,12 @@ class BaseSignal(np.ndarray):
         """
         return np.abs(self)
 
+    def copy_empty(self):
+        out = self.copy()
+        out[:] = 0
+        return out
+
+
 class _chIndexer(object):
     """ Channel Indexer
 
