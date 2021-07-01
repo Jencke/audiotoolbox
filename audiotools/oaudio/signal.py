@@ -309,7 +309,8 @@ class Signal(BaseSignal):
         ftype : {'brickwall', 'gammatone'}
             The filtertype
         **kwargs :
-            Further keyword arguments are passed to the respective filter functions
+            Further keyword arguments are passed to the respective
+            filter functions
 
         Returns
         --------
@@ -343,26 +344,6 @@ class Signal(BaseSignal):
 
         return self
 
-    # def lowpass(self, f_cut, ftype):
-    #     if ftype == 'brickwall':
-    #         filt_signal = brickwall(self.waveform, self.fs, 0, f_cut)
-    #     else:
-    #         raise NotImplementedError('Filter type %s not implemented' % ftype)
-
-    #     self.set_waveform(filt_signal)
-
-    #     return self
-
-    # def highpass(self, f_cut, ftype):
-    #     if ftype == 'brickwall':
-    #         filt_signal = brickwall(self.waveform, self.fs, f_cut, np.inf)
-    #     else:
-    #         raise NotImplementedError('Filter type %s not implemented' % ftype)
-
-    #     self.set_waveform(filt_signal)
-
-    #     return self
-
     def calc_dbspl(self):
         r"""Calculate the sound pressure level of the signal
 
@@ -388,8 +369,9 @@ class Signal(BaseSignal):
 
         If number or duration is a scalar, an equal number of zeros
         will be appended at the front and end of the array. If a
-        vector of two values is given, the first defines the number or duration at
-        the beginning, the second the number or duration of zeros at the end.
+        vector of two values is given, the first defines the number or
+        duration at the beginning, the second the number or duration
+        of zeros at the end.
 
         Parameters
         -----------
@@ -405,18 +387,19 @@ class Signal(BaseSignal):
         See Also
         --------
         audiotools.zeropad
+
         """
 
-        #Only one number or duration must be stated
-        if duration == None and number == None:
+        # Only one number or duration must be stated
+        if duration is None and number is None:
             raise ValueError('Must state duration or number of zeros')
-        elif duration == None and number == None:
-                raise ValueError('Must state only duration or number of zeros')
-                return
+        elif duration is None and number is None:
+            raise ValueError('Must state only duration or number of zeros')
+            return
 
         # If duration instead of number is stated, calculate the
         # number of samples to buffer with
-        elif duration != None and number == None:
+        elif duration is not None and number is None:
             if not np.isscalar(duration):
                 number_s = audio.nsamples(duration[0], self.fs)
                 number_e = audio.nsamples(duration[1], self.fs)
@@ -555,7 +538,6 @@ class Signal(BaseSignal):
         self[:] = shifted
         return self
 
-
     def phase_shift(self, phase):
         r"""Shifts all frequency components of a signal by a constant phase.
 
@@ -615,7 +597,6 @@ class Signal(BaseSignal):
         #  store the cliped part in the signal
         self[0:i_end-i_start, :] = self[i_start:i_end, :]
 
-
         newshape = list(self.shape)
         newshape[0] = i_end - i_start
         self.resize(newshape, refcheck=False)
@@ -652,53 +633,6 @@ class Signal(BaseSignal):
 
         rms = np.sqrt(np.mean(self**2))
         return rms
-
-    # def amplitude_spectrum(self, single_sided=False, nfft=None):
-    #     r"""Amplitude spectrum of the signal
-
-    #     """
-
-    #     nfft = nfft if nfft else self.n_samples
-    #     spec = np.fft.fft(self, n=nfft, axis=0) / nfft
-    #     freq = np.fft.fftfreq(nfft, 1.0 / self.fs)
-    #     spec = np.fft.fftshift(spec, axes=0)
-    #     freq = np.fft.fftshift(freq, axes= 0)
-
-    #     if single_sided:
-    #         freq = freq[nfft // 2:, ...]
-    #         spec = spec[nfft // 2:, ...]
-    #         spec *= 2
-    #         spec[0, ...] /= 2 # do not double dc
-    #         if not nfft % 2:
-    #             spec[-1, ...] /= 2       # nyquist bin should also not be doubled
-
-    #     return freq, spec
-
-    # def phase_spectrum(self, nfft=None):
-    #     nfft = nfft if nfft else self.n_samples
-    #     freq, spec = self.amplitude_spectrum(nfft)
-    #     phase = np.angle(spec)
-    #     phase = phase[..., nfft // 2:]
-    #     freq = freq[..., nfft // 2:]
-    #     return freq, phase
-
-    # def autopower_spectrum(self, nfft=None):
-    #     nfft = nfft if nfft else self.n_samples
-    #     freq, spec = self.amplitude_spectrum(nfft)
-    #     auto_spec = np.real_if_close(spec * spec.conj())
-
-    #     return freq, auto_spec
-
-    # def power_spectrum(self, nfft=None):
-    #     nfft = nfft if nfft else self.n_samples
-    #     freq, specsubtype = self.autopower_spectrum(nfft)
-    #     freq = freq[nfft // 2:, ...]
-    #     spec = spec[nfft // 2:, ...]
-    #     spec *= 2
-    #     spec[0, ...] /= 2 # do not double dc
-    #     if not nfft % 2:
-    #         spec[-1, ...] /= 2       # nyquist bin should also not be doubled
-    #     return freq, spec
 
     def rectify(self):
         r"""One-way rectification of the signal
