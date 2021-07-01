@@ -457,9 +457,28 @@ class test_oaudio(unittest.TestCase):
         assert ax.lines[0].get_color() == '#5c5cd6'
         assert ax.lines[1].get_color() == '#d65c5c'
 
-
-
     def test_analytical(self):
         sig = audio.Signal((2, 2), 1, 48000).add_noise()
         asig = sig.to_analytical()
         testing.assert_almost_equal(sig, asig.real)
+
+    def test_to_signal(self):
+        fs = 480000
+        sig_array = np.random.random(1000)
+        sig = audio.as_signal(sig_array, fs)
+        assert isinstance(sig, audio.Signal)
+        testing.assert_array_equal(sig, sig_array)
+
+        # test multiple dimensions
+        fs = 480000
+        sig_array = np.random.random([1000, 3, 4])
+        sig = audio.as_signal(sig_array, fs)
+        assert isinstance(sig, audio.Signal)
+        testing.assert_array_equal(sig, sig_array)
+
+        # test datatype
+        fs = 480000
+        sig_array = np.ones([1000], dtype=complex)
+        sig = audio.as_signal(sig_array, fs)
+        assert isinstance(sig, audio.Signal)
+        testing.assert_array_equal(sig, sig_array)
