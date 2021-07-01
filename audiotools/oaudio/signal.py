@@ -1,9 +1,10 @@
 import numpy as np
-import audiotools as audio
-from audiotools.filter import brickwall, gammatone
-from audiotools import wav
+from .. import audiotools as audio
+from .. import wav
+from .freqdomain_signal import FrequencyDomainSignal
 from .base_signal import BaseSignal
-import copy
+from ..filter import brickwall, gammatone
+
 
 class Signal(BaseSignal):
     def __new__(cls, n_channels, duration, fs, dtype=float):
@@ -11,10 +12,10 @@ class Signal(BaseSignal):
         return obj
 
     def __array_finalize__(self, obj):
-        '''Finalize Array __new__ is only called when directly creating a new
-        object. When copying or templating, __new__ is not called
-        which is why init code should be put in __array_finalize__
-
+        '''Finalize Array __new__ is only called when directly
+        creating a new object.  When copying or templating, __new__ is
+        not called which is why init code should be put in
+        __array_finalize__
         '''
         BaseSignal.__array_finalize__(self, obj)
 
@@ -728,9 +729,9 @@ class Signal(BaseSignal):
         The frequency domain representation of the signal : FrequencyDomainSignal
 
         """
-        fd = audio.oaudio.FrequencyDomainSignal(self.n_channels,
-                                                self.duration, self.fs,
-                                                dtype=complex)
+        fd = FrequencyDomainSignal(self.n_channels,
+                                   self.duration, self.fs,
+                                   dtype=complex)
         fd.from_timedomain(self)
 
         return fd
