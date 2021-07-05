@@ -3,12 +3,10 @@ Some simple helper functions for dealing with audiosignals
 """
 import numpy as np
 from numpy import pi
-
-
 from scipy.interpolate import interp1d
 from scipy.signal import hilbert
-from .oaudio import Signal
 
+from .oaudio import Signal
 from .filter import brickwall
 
 COLOR_R = '#d65c5c'
@@ -149,33 +147,30 @@ def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1,
 
     Returns a cosinus amplitude modulator following the equation:
 
-    .. math:: 1 + m  \cos{2  \pi  f_m  t  \phi_{0}}
+    ..  math:: 1 + m \cos{2 \pi f_m t \phi_{0}}
 
     where :math:`m` is the modulation depth, :math:`f_m` is the
-    modualtion frequency and :math:`t` is the time. :math;`\phi_0` is the
-    start phase
+    modualtion frequency and :math:`t` is the time.  :math;`\phi_0` is
+    the start phase
 
     Parameters
-    -----------
-    duration : ndarray
-        An input array that is used to determine the length of the
-        modulator.
+    ----------
+    duration : ndarray An input array that is used to determine the
+    length of the modulator.
 
-    modulator_freq : float
-        The frequency of the cosine modulator.
+    modulator_freq : float The frequency of the cosine modulator.
 
-    fs : float
-        The sample frequency of the input signal.
+    fs : float The sample frequency of the input signal.
 
-    mod_index: float, optional
-        The modulation index. (Default = 1)
+    mod_index: float, optional The modulation index.  (Default = 1)
 
     Returns
-    --------
+    -------
     ndarray : The modulator
 
     See Also
     --------
+
     audiotools.Signal.add_cos_modulator
     """
 

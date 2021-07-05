@@ -13,8 +13,8 @@ def _copy_to_dim(array, dim):
     return tiled_array
 
 
-def butterworth(signal, low_f, high_f, fs, order=2, return_states=False,
-                states=None):
+def butterworth(signal, low_f, high_f, fs=None, order=2,
+                return_states=False, states=None):
     r"""Apply a butterwoth filter
 
     Applies the cascated second-order sections representation of a
@@ -46,6 +46,7 @@ def butterworth(signal, low_f, high_f, fs, order=2, return_states=False,
     ndarray : The filtered signal
 
     """
+    _, fs, _ = audio._duration_is_signal(signal, fs, None)
 
     sos = design_butterworth(low_f, high_f, fs, order)
     filtered_signal, states = apply_sos(signal, sos, states=states)

@@ -5,7 +5,7 @@ if not (version_info.major == 3 and version_info.minor >= 0):
     exit(1)
 
 from .audiotools import *
-from . oaudio import Signal
+from . oaudio import Signal, as_signal
 from . oaudio import FrequencyDomainSignal
 from . filter import create_filterbank
 from . import interfaces
