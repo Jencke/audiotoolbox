@@ -6,12 +6,12 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name = "audiotools",
-    version = "0.01",
-    packages = find_packages(),
-    author = "Joerg Encke",
-    author_email = "joerg.encke@uol.de",
-    description = "Toolbox for generating signals used in auditory research",
+    name="audiotools",
+    version="0.01",
+    packages=find_packages(),
+    author="Joerg Encke",
+    author_email="joerg.encke@uol.de",
+    description="Toolbox for generating signals used in auditory research",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://jencke.github.io/audiotools/",
@@ -23,5 +23,5 @@ setup(
         'pytest>=5.4.3',
         'coverage'
     ],
-    license = "GPL",
+    license="GPL",
 )
