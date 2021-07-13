@@ -1,6 +1,5 @@
-"""
-Some simple helper functions for dealing with audiosignals
-"""
+"""Function based interface to audiotools."""
+
 import numpy as np
 from numpy import pi
 from scipy.interpolate import interp1d
@@ -26,9 +25,7 @@ def _copy_to_dim(array, dim):
 
 
 def _duration_is_signal(duration, fs=None, n_channels=None):
-    r"""Check if the duration which was passed was really a signal class
-
-    """
+    r"""Check if the duration which was passed was really a signal class."""
     inval = duration
     if isinstance(duration, Signal):
         real_duration = inval.duration
@@ -74,8 +71,7 @@ def from_wav(self, filename, fullscale=True):
 
 
 def pad_for_fft(signal):
-    r"""Zero buffer a signal with zeros so that it reaches the next closest
-       :math`$2^n$` length.
+    r"""Zero buffer a signal with zeros so that it reaches the next closest :math`$2^n$` length.
 
        This Function attaches zeros to a signal to adjust the length
        of the signal to a multiple of 2 for efficent FFT calculation.
@@ -143,7 +139,7 @@ def rms2band(rmslevel, bw):
 
 def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1,
                       start_phase=0):
-    r"""Cosinus amplitude modulator
+    r"""Cosinus amplitude modulator.
 
     Returns a cosinus amplitude modulator following the equation:
 
@@ -173,7 +169,6 @@ def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1,
 
     audiotools.Signal.add_cos_modulator
     """
-
     duration, fs, n_channels = _duration_is_signal(duration, fs)
     n_samples = nsamples(duration, fs)
     time = get_time(duration, fs)
@@ -187,7 +182,7 @@ def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1,
 
 
 def time2phase(time, frequency):
-    r"""Time to phase for a given frequency
+    r"""Time to phase for a given frequency.
 
     .. math:: \phi = 2 \pi t f
 
