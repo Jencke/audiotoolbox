@@ -44,7 +44,7 @@ PA_SAMPLE_FORMAT = { 'PA_SAMPLE_U8': 0, # Unsigned 8 Bit PCM
 PA_STREAM_PLAYBACK = 1
 
 
-def play(signal, fs, bitdepth, buffsize=1024):
+def play(signal, fs, bitdepth, buffsize=1024):  # pragma: no cover
     """Play a sound signal.
 
     This function plays a sound-signal using pulseaudio.
