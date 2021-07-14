@@ -1,7 +1,9 @@
 import numpy as np
 import wave
 
+
 def readwav(filename, fullscale=True):
+    """Read a wav file."""
     wf = wave.open(filename, 'rb')
 
     # get information
@@ -10,7 +12,7 @@ def readwav(filename, fullscale=True):
     nchannels = wf.getnchannels()
     fs = wf.getframerate()
 
-    #read whole file
+    # read whole file
     byte_data = wf.readframes(nframes)
 
     wf.close()
@@ -18,10 +20,16 @@ def readwav(filename, fullscale=True):
     # decide on datatype
     if sampwidth == 1:
         dtype = np.int8
-        bitdepth = 8
     elif sampwidth == 2:
         dtype = np.int16
-        bitdepth = 16
+    elif sampwidth == 3:
+        dtype = np.int32
+    elif sampwidth == 4:
+        dtype = np.int64
+    else:
+        raise(ValueError, f'Unknown sample width {sampwidth}byte')
+
+    bitdepth = sampwidth * 8
 
     # convert to int array
     intsignal = np.frombuffer(byte_data, dtype=dtype)
@@ -38,22 +46,22 @@ def readwav(filename, fullscale=True):
 
 
 def int_to_fullscale(signal, bitdepth):
-    '''Convert integer to fullscale (64bit float)
+    """Convert integer to fullscale (64bit float).
 
-       Converts a integer signal to its 64bit fullscale representation.
+    Converts a integer signal to its 64bit fullscale representation.
 
-       Parameters:
-       -----------
-       signal : ndarray
-           The input signal
-       bitdepth : int
-           The bitdepth of the input signal (8, 16, 32 or 64)
+    Parameters:
+    -----------
+    signal : ndarray
+        The input signal
+    bitdepth : int
+        The bitdepth of the input signal (8, 16, 32 or 64)
 
-       Returns:
-       --------
-       ndarray : The converted signal
+    Returns:
+    --------
+    ndarray : The converted signal
 
-    '''
+    """
     if bitdepth == 8:
         dtype = np.int8
     if bitdepth == 16:
@@ -71,23 +79,24 @@ def int_to_fullscale(signal, bitdepth):
 
     return fullscalesignal
 
+
 def fullscale_to_int(signal, bitdepth):
-    '''Convert a fullscale to int (64bit float)
+    """Convert a fullscale to int (64bit float).
 
-       Converts a fullscale signal into an integer signal of predefined
+    Converts a fullscale signal into an integer signal of predefined
 
-       Parameters:
-       -----------
-       signal : ndarray
-           The input signal
-       bitdepth : int
-           The bitdepth of the input signal (8, 16, 32 or 64)
+    Parameters:
+    -----------
+    signal : ndarray
+        The input signal
+    bitdepth : int
+        The bitdepth of the input signal (8, 16, 32 or 64)
 
-       Returns:
-       --------
-       ndarray : The converted signal
+    Returns:
+    --------
+    ndarray : The converted signal
 
-    '''
+    """
     if bitdepth == 8:
         dtype = np.int8
     if bitdepth == 16:
@@ -106,23 +115,25 @@ def fullscale_to_int(signal, bitdepth):
     intsignal = np.array(signal * np.iinfo(dtype).max, dtype=dtype)
     return intsignal
 
+
 def array_to_byte(signal, bitdepth):
-    '''Convert a fullscale array into a bytesignal
+    """Convert a fullscale array into a bytesignal.
 
-       Convert a fullscale array into a bytesignal for streaming to soundcard
+    Convert a fullscale array into a bytesignal for streaming to
+    soundcard
 
-       Parameters:
-       -----------
-       signal : ndarray
-           The input signal
-       bitdepth : int
-           The bitdepth of the input signal (8, 16, 32 or 64)
+    Parameters:
+    -----------
+    signal : ndarray
+        The input signal
+    bitdepth : int
+        The bitdepth of the input signal (8, 16, 32 or 64)
 
-       Returns:
-       --------
-       ndarray : The bitstream
+    Returns:
+    --------
+    ndarray : The bitstream
 
-    '''
+    """
     intsignal = fullscale_to_int(signal, bitdepth)
     intsignal = intsignal.reshape(np.product(intsignal.shape))
     bytesignal = intsignal.tobytes()
@@ -133,12 +144,11 @@ def writewav(filename, signal, fs, bitdepth):
 
     # get information
     nchannels = 1 if np.ndim(signal) == 0 else signal.shape[1]
-    nsamples = signal.shape[0]
 
-    if  bitdepth == 8:
-        sampwidth = 1
-    elif bitdepth == 16:
-        sampwidth = 2
+    if bitdepth % 8 != 0 or bitdepth > 32:
+        raise ValueError('bitdepth must be a multiple of 8 and < 32')
+
+    sampwidth = bitdepth // 8
 
     bytesignal = array_to_byte(signal, bitdepth)
 

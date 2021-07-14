@@ -21,6 +21,30 @@ class test_oaudio(unittest.TestCase):
                                     signal,
                                     atol=2 / 2**bd, rtol=1)
 
+    def test_writewav(self):
+        """Test invertability of readwav and writewav"""
+        fs = 41200
+        signal = audio.Signal(2, 2, fs)
+        signal[:] = np.linspace(-1, 1, signal.n_samples)[:, None]
+
+        bitdepth = [8, 16, 32]
+        for bd in bitdepth:
+            wav.writewav('test.wav', signal, signal.fs, bd)
+
+        self.assertRaises(ValueError,
+                          wav.writewav,
+                          filename='test.wav',
+                          signal=signal,
+                          fs=signal.fs,
+                          bitdepth=7)
+
+        self.assertRaises(ValueError,
+                          wav.writewav,
+                          filename='test.wav',
+                          signal=signal,
+                          fs=signal.fs,
+                          bitdepth=64)
+
     def test_int_to_fullscale(self):
         """correct conversion from integer to fullscale"""
         bitdepth = [8, 16]
