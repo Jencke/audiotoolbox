@@ -427,7 +427,12 @@ class test_oaudio(unittest.TestCase):
                      attenuation_db=-1)
         testing.assert_array_equal(sig, out.real)
 
-    # def test_bandpass_butterworth(self):
+    def test_bandpass_butterworth(self):
+        sig = audio.Signal(1, 1, 48000).add_noise()
+
+        sig2 = audio.filter.butterworth(sig, 100, 300)
+        sig = sig.bandpass(200, 200, 'butter')
+        testing.assert_array_equal(sig, sig2)
 
     def test_channel_indexing(self):
         sig = Signal((2, 2), 1, 48000).add_noise()
