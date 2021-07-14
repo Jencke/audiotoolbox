@@ -1,6 +1,7 @@
 import numpy as np
 from .. import audiotools as audio
 from .. import wav
+from .. import interfaces
 from .freqdomain_signal import FrequencyDomainSignal
 from .base_signal import BaseSignal
 from ..filter import brickwall, gammatone
@@ -605,7 +606,7 @@ class Signal(BaseSignal):
 
     def play(self, bitdepth=32, buffsize=1024):
         wv = self
-        audio.interfaces.play(signal=wv,
+        interfaces.play(signal=wv,
                               fs=self.fs,
                               bitdepth=bitdepth,
                               buffsize=buffsize)
