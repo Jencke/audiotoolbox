@@ -4,7 +4,7 @@ from .. import wav
 from .. import interfaces
 from .freqdomain_signal import FrequencyDomainSignal
 from .base_signal import BaseSignal
-from ..filter import brickwall, gammatone, bandpass
+from ..filter import bandpass, lowpass, highpass
 
 
 class Signal(BaseSignal):
@@ -290,7 +290,8 @@ class Signal(BaseSignal):
     def bandpass(self, fc, bw, filter_type, **kwargs):
         r"""Apply a bandpass filter.
 
-        Applies a bandpass filter to the signal. The availible filters are:
+        Applies a bandpass filter to the signal. The availible filters
+        are:
 
         - brickwall: A 'optimal' brickwall filter
         - gammatone: A real valued gammatone filter
@@ -309,7 +310,7 @@ class Signal(BaseSignal):
             The banddpass center frequency in Hz
         bw : scalar
             The filter bandwidth in Hz
-        filter_type : {'brickwall', 'gammatone'}
+        filter_type : {'brickwall', 'gammatone', 'butter'}
             The filtertype
         **kwargs :
             Further keyword arguments are passed to the respective
@@ -323,6 +324,7 @@ class Signal(BaseSignal):
         --------
         audiotools.filter.brickwall
         audiotools.filter.gammatone
+        audiotools.filter.butterworth
 
         """
         # Default gammatone to real valued implementation
@@ -340,6 +342,96 @@ class Signal(BaseSignal):
             self.resize(shape, refcheck=False)
         self[:] = filt_signal
 
+        return self
+
+    def lowpass(self, f_cut, filter_type, **kwargs):
+        """Apply a lowpass filter to the Signal.
+
+        This function provieds a unified interface to all lowpass
+        filters implemented in audiotools.
+
+        - brickwall: A 'optimal' brickwall filter
+        - butter: A butterworth filter
+
+        For additional filter parameters and detailed description see
+        the respective implementations:
+
+        - :meth:`audiotools.filter.brickwall`
+        - :meth:`audiotools.filter.butterworth`
+
+        Parameters
+        ----------
+        signal : ndarray or Signal
+          The input signal.
+        f_cut : float
+          The cutoff frequency in Hz
+        filter_type : {'butter', 'brickwall'}
+          The filter type
+        fs : None or int
+          The sampling frequency, must be provided if not using the
+          Signal class.
+        **kwargs :
+          Further arguments such as 'order' that are passed to the
+          filter functions.
+
+        Returns
+        -------
+        Signal : The filtered Signal
+
+        See Also
+        --------
+        audiotools.filter.brickwall
+        audiotools.filter.butterworth
+
+        """
+        filt_signal = lowpass(self, f_cut, filter_type, **kwargs)
+
+        self[:] = filt_signal
+        return self
+
+    def highpass(self, f_cut, filter_type, **kwargs):
+        """Apply a highpass filter to the Signal.
+
+        This function provieds a unified interface to all highpass
+        filters implemented in audiotools.
+
+        - brickwall: A 'optimal' brickwall filter
+        - butter: A butterworth filter
+
+        For additional filter parameters and detailed description see
+        the respective implementations:
+
+        - :meth:`audiotools.filter.brickwall`
+        - :meth:`audiotools.filter.butterworth`
+
+        Parameters
+        ----------
+        signal : ndarray or Signal
+          The input signal.
+        f_cut : float
+          The cutoff frequency in Hz
+        filter_type : {'butter', 'brickwall'}
+          The filter type
+        fs : None or int
+          The sampling frequency, must be provided if not using the
+          Signal class.
+        **kwargs :
+          Further arguments such as 'order' that are passed to the
+          filter functions.
+
+        Returns
+        -------
+        Signal : The filtered Signal
+
+        See Also
+        --------
+        audiotools.filter.brickwall
+        audiotools.filter.butterworth
+
+        """
+        filt_signal = highpass(self, f_cut, filter_type, **kwargs)
+
+        self[:] = filt_signal
         return self
 
     def calc_dbspl(self):

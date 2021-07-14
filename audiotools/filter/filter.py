@@ -22,6 +22,9 @@ def bandpass(signal, fc, bw, filter_type, fs=None, **kwargs):
       The bandwidth in Hz
     filter_type : string
       The filter type, 'gammatone', 'butter', 'brickwall'
+    fs : None or int
+      The sampling frequency, must be provided if not using the Signal
+      class.
     **kwargs :
       Further arguments such as 'order' that are passed to the filter
       functions.
@@ -63,6 +66,9 @@ def lowpass(signal, f_cut, filter_type, fs=None, **kwargs):
       The cutoff frequency in Hz
     filter_type : string
       The filter type, 'butter', 'brickwall'
+    fs : None or int
+      The sampling frequency, must be provided if not using the Signal
+      class.
     **kwargs :
       Further arguments such as 'order' that are passed to the filter
       functions.

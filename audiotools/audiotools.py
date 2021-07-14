@@ -52,7 +52,8 @@ def _duration_is_signal(duration, fs=None, n_channels=None):
     return real_duration, real_fs, real_nch
 
 
-def from_wav(self, filename, fullscale=True):
+def from_wav(filename, fullscale=True):
+    """Read signal from wav file"""
     from .oaudio import Signal
     from .wav import readwav
 
@@ -65,7 +66,7 @@ def from_wav(self, filename, fullscale=True):
 
     duration = wv.shape[0] / fs
     sig = Signal(n_channels, duration, fs)
-    sig = wv
+    sig[:] = wv
 
     return sig
 

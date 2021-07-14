@@ -434,6 +434,26 @@ class test_oaudio(unittest.TestCase):
         sig = sig.bandpass(200, 200, 'butter')
         testing.assert_array_equal(sig, sig2)
 
+    def test_lowpass(self):
+        types = ['brickwall', 'butter']
+        f_cut = 300
+
+        for ftype in types:
+            sig = audio.Signal((2, 2), 1, 48000).add_uncorr_noise()
+            sig2 = audio.filter.lowpass(sig, f_cut, ftype)
+            sig.lowpass(f_cut, ftype)
+            testing.assert_array_equal(sig, sig2)
+
+    def test_highpass(self):
+        types = ['brickwall', 'butter']
+        f_cut = 300
+
+        for ftype in types:
+            sig = audio.Signal(2, 1, 48000).add_noise()
+            sig2 = audio.filter.highpass(sig, f_cut, ftype)
+            sig.highpass(f_cut, ftype)
+            testing.assert_array_equal(sig, sig2)
+
     def test_channel_indexing(self):
         sig = Signal((2, 2), 1, 48000).add_noise()
         testing.assert_equal(sig.ch[0, 0], sig[:, 0, 0])
