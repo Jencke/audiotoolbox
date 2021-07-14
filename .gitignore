@@ -3,3 +3,4 @@
 /doc/build
 .*
 /htmlcov
+/tests/test.wav
