@@ -1,10 +1,9 @@
 import unittest
 
-from audiotools.oaudio import *
+from audiotools import Signal
 import audiotools as audio
 import numpy as np
 import numpy.testing as testing
-import pytest
 
 
 class test_oaudio(unittest.TestCase):
