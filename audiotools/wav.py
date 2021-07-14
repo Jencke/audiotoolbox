@@ -66,7 +66,9 @@ def int_to_fullscale(signal, bitdepth):
     # only valid if maximum value in bound of bitdepth
     assert np.abs(signal).max() <= np.iinfo(dtype).max
 
-    fullscalesignal = np.array(signal, dtype=np.float64) / np.iinfo(dtype).max
+    fullscalesignal = (np.array(signal, dtype=np.float64)
+                       / np.iinfo(dtype).max)
+
     return fullscalesignal
 
 def fullscale_to_int(signal, bitdepth):
