@@ -42,12 +42,84 @@ def bandpass(signal, fc, bw, filter_type, fs=None, **kwargs):
         sig_out = gamma.gammatone(signal, fc, bw, fs, **kwargs)
     elif filter_type == 'brickwall':
         sig_out = brick.brickwall(signal, low_f, high_f, fs, **kwargs)
+    else:
+        raise(ValueError, f'Filtertype {filter_type} not implemented.')
+        return None
+
     return sig_out
 
 
 def lowpass(signal, f_cut, filter_type, fs=None, **kwargs):
+    """Apply a lowpass filter to the Signal.
+
+    This function provieds a unified interface to all lowpass filters
+    implemented in audiotools.
+
+    Parameters
+    ----------
+    signal : ndarray or Signal
+      The input signal.
+    f_cut : float
+      The cutoff frequency in Hz
+    filter_type : string
+      The filter type, 'butter', 'brickwall'
+    **kwargs :
+      Further arguments such as 'order' that are passed to the filter
+      functions.
+
+    Returns
+    -------
+    Signal : The filtered Signal
+
+    """
     duration, fs, n_channels = audio._duration_is_signal(signal, fs)
 
-    sig_out = butter.butterworth(signal, None, f_cut, fs **kwargs)
+    if filter_type == 'butter':
+        sig_out = butter.butterworth(signal, None, f_cut, fs,
+                                     **kwargs)
+    elif filter_type == 'brickwall':
+        sig_out = brick.brickwall(signal, None, f_cut, fs,
+                                  **kwargs)
+    else:
+        raise(ValueError, f'Filtertype {filter_type} not implemented.')
+        return None
+
+    return sig_out
+
+
+def highpass(signal, f_cut, filter_type, fs=None, **kwargs):
+    """Apply a highpass filter to the Signal.
+
+    This function provieds a unified interface to all highpass filters
+    implemented in audiotools.
+
+    Parameters
+    ----------
+    signal : ndarray or Signal
+      The input signal.
+    f_cut : float
+      The cutoff frequency in Hz
+    filter_type : string
+      The filter type, 'butter', 'brickwall'
+    **kwargs :
+      Further arguments such as 'order' that are passed to the filter
+      functions.
+
+    Returns
+    -------
+    Signal : The filtered Signal
+
+    """
+    duration, fs, n_channels = audio._duration_is_signal(signal, fs)
+
+    if filter_type == 'butter':
+        sig_out = butter.butterworth(signal, f_cut, None, fs,
+                                     **kwargs)
+    elif filter_type == 'brickwall':
+        sig_out = brick.brickwall(signal, f_cut, None, fs,
+                                  **kwargs)
+    else:
+        raise(ValueError, f'Filtertype {filter_type} not implemented.')
+        return None
 
     return sig_out
