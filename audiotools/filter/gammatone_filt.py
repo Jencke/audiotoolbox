@@ -3,8 +3,9 @@ from .. import audiotools as audio
 from numpy import pi
 from scipy.signal import lfilter
 
+
 def design_gammatone(fc, bw, fs, order=4, attenuation_db='erb'):
-    """Returns the coefficient of a gammatone filter
+    """Returns the coefficient of a gammatone filter.
 
     Calculates the filter coefficents for a gammatone filter following
     Eq. 11 and 12 of [1]_.
@@ -38,7 +39,6 @@ def design_gammatone(fc, bw, fs, order=4, attenuation_db='erb'):
           Gammatone filterbank, Acta Acustica, Vol 88 (2002), 43 -3442
 
     """
-
     # in case the bandwith is stated in equivalent rectangular
     # bandwidth:
     if attenuation_db == 'erb':
@@ -65,8 +65,9 @@ def design_gammatone(fc, bw, fs, order=4, attenuation_db='erb'):
 
     return b, a
 
+
 def gammatonefos_apply(signal, b, a, order, states=None):
-    """Process an input signal by applying the filter `order` times
+    """Process an input signal by applying the filter `order` times.
 
     Filter the signal with a gammatone filter defined by the
     coeffients `b` and `a`. The filter is applied `order` times.
@@ -123,8 +124,9 @@ def gammatonefos_apply(signal, b, a, order, states=None):
     return signal_out, states
 
 
-def gammatone(signal, fc, bw, fs, order=4, attenuation_db='erb', return_complex=True):
-    """Apply a gammatone filter to the signal
+def gammatone(signal, fc, bw, fs, order=4, attenuation_db='erb',
+              return_complex=True):
+    """Apply a gammatone filter to the signal.
 
     Applys a gammatone filter following [1]_ to the input signal
     and returns the filtered signal.
@@ -159,17 +161,10 @@ def gammatone(signal, fc, bw, fs, order=4, attenuation_db='erb', return_complex=
           Gammatone filterbank, Acta Acustica, Vol 88 (2002), 43 -3442
 
     """
-
     b, a = design_gammatone(fc, bw, fs, order, attenuation_db)
 
     out_signal = np.zeros_like(signal, complex)
 
-    # if signal.ndim > 1:
-    #     n_channel = signal.shape[1]
-    #     for i_c in range(n_channel):
-    #         out_signal[:, i_c], _ = gammatonefos_apply(signal[:, i_c], b, a, order)
-    # else:
-    #     out_signal[:], _ = gammatonefos_apply(signal, b, a, order)
     out_signal, state = gammatonefos_apply(signal, b, a, order)
 
     if not return_complex:

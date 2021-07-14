@@ -386,11 +386,15 @@ class test_oaudio(unittest.TestCase):
         testing.assert_equal(sig_a[old_n:], sig_b)
 
     def test_bandpass_brickwall(self):
-        sig = audio.Signal((2, 2), 1, 48000).add_noise().bandpass(500, 100, 'brickwall')
+        sig = audio.Signal((2, 2), 1, 48000)
+        sig.add_noise().bandpass(500, 100, 'brickwall')
         sig = sig.to_freqdomain()
-        testing.assert_array_almost_equal(sig[np.abs(sig.freq) > 550], 0)
-        testing.assert_array_almost_equal(sig[np.abs(sig.freq) < 450], 0)
-        assert np.all(sig[(np.abs(sig.freq) < 550) & (np.abs(sig.freq) > 450)] != 0)
+        testing.assert_array_almost_equal(sig[np.abs(sig.freq) > 550],
+                                          0)
+        testing.assert_array_almost_equal(sig[np.abs(sig.freq) < 450],
+                                          0)
+        assert np.all(sig[(np.abs(sig.freq) < 550)
+                          & (np.abs(sig.freq) > 450)] != 0)
 
     def test_bandpass_gammatone(self):
         # check real valued output
@@ -416,9 +420,14 @@ class test_oaudio(unittest.TestCase):
 
         # check kwargs
         sig = audio.Signal(1, 1, 48000).add_tone(500)
-        out = audio.filter.gammatone(sig, 500, 100, sig2.fs, order=2, attenuation_db=-1)
-        sig.bandpass(500, 100, 'gammatone', order=2, attenuation_db=-1)
+        out = audio.filter.gammatone(sig, 500, 100,
+                                     sig2.fs, order=2,
+                                     attenuation_db=-1)
+        sig.bandpass(500, 100, 'gammatone', order=2,
+                     attenuation_db=-1)
         testing.assert_array_equal(sig, out.real)
+
+    # def test_bandpass_butterworth(self):
 
     def test_channel_indexing(self):
         sig = Signal((2, 2), 1, 48000).add_noise()

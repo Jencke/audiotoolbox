@@ -4,7 +4,7 @@ from .. import wav
 from .. import interfaces
 from .freqdomain_signal import FrequencyDomainSignal
 from .base_signal import BaseSignal
-from ..filter import brickwall, gammatone
+from ..filter import brickwall, gammatone, bandpass
 
 
 class Signal(BaseSignal):
@@ -287,27 +287,29 @@ class Signal(BaseSignal):
         dbfs = audio.calc_dbfs(self)
         return dbfs
 
-    def bandpass(self, f_center, bw, ftype, **kwargs):
-        r"""Apply a bandpass filter
+    def bandpass(self, fc, bw, filter_type, **kwargs):
+        r"""Apply a bandpass filter.
 
         Applies a bandpass filter to the signal. The availible filters are:
 
         - brickwall: A 'optimal' brickwall filter
         - gammatone: A real valued gammatone filter
+        - butter: A butterworth filter
 
         For additional filter parameters and detailed description see
         the respective implementations:
 
         - :meth:`audiotools.filter.brickwall`
         - :meth:`audiotools.filter.gammatone`
+        - :meth:`audiotools.filter.butterworth`
 
         Parameters
         ----------
-        f_center : scalar
+        fc : scalar
             The banddpass center frequency in Hz
         bw : scalar
             The filter bandwidth in Hz
-        ftype : {'brickwall', 'gammatone'}
+        filter_type : {'brickwall', 'gammatone'}
             The filtertype
         **kwargs :
             Further keyword arguments are passed to the respective
@@ -323,17 +325,12 @@ class Signal(BaseSignal):
         audiotools.filter.gammatone
 
         """
-
-        if ftype == 'brickwall':
-            f_low = f_center - 0.5 * bw
-            f_high = f_center + 0.5 * bw
-            filt_signal = brickwall(self, f_low, f_high, self.fs)
-        elif ftype == 'gammatone':
+        # Default gammatone to real valued implementation
+        if filter_type == 'gammatone':
             if 'return_complex' not in kwargs:
                 kwargs['return_complex'] = False
-            filt_signal = gammatone(self, f_center, bw, self.fs, **kwargs)
-        else:
-            raise NotImplementedError('Filter type %s not implemented' % ftype)
+
+        filt_signal = bandpass(self, fc, bw, filter_type, **kwargs)
 
         # in case of complex output, signal needs to be reshaped and
         # typecast
@@ -346,7 +343,7 @@ class Signal(BaseSignal):
         return self
 
     def calc_dbspl(self):
-        r"""Calculate the sound pressure level of the signal
+        r"""Calculate the sound pressure level of the signal.
 
 
         .. math:: L = 20  \log_{10}\left(\frac{\sigma}{p_o}\right)
