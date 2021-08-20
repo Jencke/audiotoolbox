@@ -745,7 +745,7 @@ class Signal(BaseSignal):
         signal.
 
         As opposed to most methods, this conversion is not in-place
-        but a new :meth:'audiotools.FrequencyDomainSignal' object is
+        but a new :meth:`audiotools.FrequencyDomainSignal` object is
         returned
 
         Returns
