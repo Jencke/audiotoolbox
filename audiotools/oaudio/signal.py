@@ -3,13 +3,42 @@ from .. import audiotools as audio
 from .. import wav
 from .. import interfaces
 from .freqdomain_signal import FrequencyDomainSignal
-from .base_signal import BaseSignal
+from . import base_signal
 from ..filter import bandpass, lowpass, highpass
 
 
-class Signal(BaseSignal):
+class Signal(base_signal.BaseSignal):
+    """Base class for signals in the timedomain.
+
+    Parameters
+    ----------
+    n_channels : int or tuple
+      Number of channels to be used, can be N-dimensional
+    duration : float
+      Stimulus duration in seconds
+    fs : int
+      Sampling rate  in Hz
+    dtype : type, optional
+      Datatype of the array (default is float)
+
+    Returns
+    -------
+    Signal : The new signal object.
+
+    Examples
+    --------
+    Create a 1 second long signal with two channels at a sampling rate
+    of 48 kHz
+
+    >>> sig = audiotools.Signal(2, 1, 48000)
+    >>> print(sig.shape)
+    (4800, 2)
+
+    """
+
     def __new__(cls, n_channels, duration, fs, dtype=float):
-        obj = BaseSignal.__new__(cls, n_channels, duration, fs, dtype)
+        obj = base_signal.BaseSignal.__new__(cls, n_channels,
+                                             duration, fs, dtype)
         return obj
 
     def __array_finalize__(self, obj):
@@ -18,7 +47,7 @@ class Signal(BaseSignal):
         not called which is why init code should be put in
         __array_finalize__
         '''
-        BaseSignal.__array_finalize__(self, obj)
+        base_signal.BaseSignal.__array_finalize__(self, obj)
 
         if obj is None:
             # When creating new array
