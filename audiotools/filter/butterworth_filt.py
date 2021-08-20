@@ -20,10 +20,10 @@ def butterworth(signal, low_f, high_f, fs=None, order=2,
     Applies the cascated second-order sections representation of a
     butterwoth IIR filter.
 
-    To construct a lowpass filter, set low_f to None. For a highpass,
-    set high_f to None.
+    To construct a lowpass filter, set `low_f` to `None`. For a
+    highpass, set `high_f` to `None`.
 
-    Parameters:
+    Parameters
     ----------
     low_f : scalar or None
         lower cutoff in Hz
@@ -41,7 +41,7 @@ def butterworth(signal, low_f, high_f, fs=None, order=2,
         assumed (all 0). Otherwise, expects the inital filter delay
         values.
 
-    Returns:
+    Returns
     --------
     ndarray : The filtered signal
 
@@ -58,7 +58,7 @@ def butterworth(signal, low_f, high_f, fs=None, order=2,
 
 
 def design_butterworth(low_f, high_f, fs, order=2):
-    r"""Return the coeffiecent of a butterwoth filter
+    r"""Return the coeffiecent of a butterwoth filter.
 
     Returns the cascated second-order sections representation of a
     butterwoth IIR filter. coefficents are calculated using
@@ -83,20 +83,21 @@ def design_butterworth(low_f, high_f, fs, order=2):
     Second-order sections representations of the IIR filter : ndarray
 
     """
-
-    #Determine filtertype
+    # Determine filtertype
     if low_f is None and high_f is not None:
         sos = sig.butter(order, high_f, btype='lowpass', output='sos', fs=fs)
     elif low_f is not None and high_f is None:
         sos = sig.butter(order, low_f, btype='highpass', output='sos', fs=fs)
     elif low_f is not None and high_f is not None:
-        sos = sig.butter(order, [low_f, high_f], btype='bandpass', output='sos', fs=fs)
+        sos = sig.butter(order, [low_f, high_f], btype='bandpass',
+                         output='sos', fs=fs)
     else:
         raise Exception('low_f and/or high_f must be provided')
     return sos
 
+
 def apply_sos(signal, sos, states=None, axis=0):
-    r"""Filter the data along one dimension using second order sections
+    r"""Filter the data along one dimension using second order sections.
 
     Filter the input data using a digital IIR filter defined by sos.
 
@@ -124,7 +125,6 @@ def apply_sos(signal, sos, states=None, axis=0):
         the final filter delay values
 
     """
-
     _, _, n_channel = audio._duration_is_signal(signal, None, None)
 
     # initialize states
