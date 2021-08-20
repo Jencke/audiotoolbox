@@ -1,3 +1,5 @@
+"""Definition for the Signal class."""
+
 import numpy as np
 from .. import audiotools as audio
 from .. import wav
@@ -722,9 +724,9 @@ class Signal(base_signal.BaseSignal):
         """Play the signal over Soundard - Very experimental."""
         wv = self
         interfaces.play(signal=wv,
-                              fs=self.fs,
-                              bitdepth=bitdepth,
-                              buffsize=buffsize)
+                        fs=self.fs,
+                        bitdepth=bitdepth,
+                        buffsize=buffsize)
 
     def plot(self, ax=None):
         """Plot the Signal using matplotlib.
@@ -756,18 +758,17 @@ class Signal(base_signal.BaseSignal):
         return fig, ax
 
     def rms(self):
-        r"""Root mean square
+        r"""Root mean square.
 
         Returns
         -------
         float : The RMS value
         """
-
         rms = np.sqrt(np.mean(self**2))
         return rms
 
     def rectify(self):
-        r"""One-way rectification of the signal
+        r"""One-way rectification of the signal.
 
         Returns
         -------
@@ -778,6 +779,17 @@ class Signal(base_signal.BaseSignal):
         return self
 
     def writewav(self, filename, bitdepth=16):
+        """Save the signal as a wav file.
+
+        Experimental method to write the signal as a wav file.
+
+        Parameter:
+        ----------
+        filename : string
+          The filename that should be used.
+        bitdepth : int
+          The bitdepth used for saving
+        """
         wav.writewav(filename, self, self.fs, bitdepth)
 
     def to_freqdomain(self):
