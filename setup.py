@@ -4,8 +4,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="audiotools",
-    version="0.6",
+    name="pyaudiotools",
+    version="0.61",
     author="Jörg Encke",
     author_email="joerg.encke@posteo.de",
     description="Toolbox for generating and working with audio signals",
