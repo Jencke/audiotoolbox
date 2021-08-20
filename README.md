@@ -3,6 +3,7 @@ A python package for creating acoustic stimuli primariliy aimed at auditory rese
 
 [![Documentation Status](https://readthedocs.org/projects/audiotools/badge/?version=master)](https://audiotools.readthedocs.io/en/latest/?badge=latest)
 [![Build Status](https://travis-ci.com/Jencke/audiotools.svg?branch=master)](https://travis-ci.com/Jencke/audiotools)
+[![codecov](https://codecov.io/gh/Jencke/audiotools/branch/develop/graph/badge.svg?token=SI8BRM2ZYZ)](https://codecov.io/gh/Jencke/audiotools)
 
 ## How to install audiotools
  * Clone the repository: `git clone https://github.com/Jencke/audiotools.git`
@@ -19,3 +20,9 @@ just open a ticket within the issue tracker
 https://github.com/Jencke/audiotools/issues or contact me via email.
 If you implement new features, I'm happy to receive merge requests or
 code-snippets.
+
+## Acknowledgments
+This software package was developed during my PHD in the group of
+Prof. Werner Hemmert at the Technical University of Munich and further
+developed during my time as a post-doc in the Group of Prof. Mathias
+Dietz at the University of Oldenburg.

@@ -2,3 +2,8 @@
 *.egg*
 /doc/build
 .*
+/htmlcov
+/tests/test.wav
+/dist
+test.wav
+tests/data/

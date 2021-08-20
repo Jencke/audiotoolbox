@@ -1,10 +1,9 @@
 import unittest
 
-from audiotools.oaudio import *
+from audiotools import Signal
 import audiotools as audio
 import numpy as np
 import numpy.testing as testing
-import pytest
 
 
 class test_oaudio(unittest.TestCase):
@@ -42,28 +41,28 @@ class test_oaudio(unittest.TestCase):
         sig.add_tone(100)
         sig.add_tone(200, start_phase=np.pi)
 
-        test = audio.generate_tone(100, duration, fs)
-        test += audio.generate_tone(200, duration, fs, np.pi)
+        test = audio.generate_tone(duration, 100, fs)
+        test += audio.generate_tone(duration, 200, fs, np.pi)
 
         testing.assert_equal(sig, test)
 
         sig = Signal(1, duration, fs)
         sig.add_tone(100, amplitude=2)
 
-        test = 2 * audio.generate_tone(100, duration, fs)
+        test = 2 * audio.generate_tone(duration, 100, fs)
         testing.assert_equal(sig, test)
 
         sig = Signal(2, duration, fs)
         sig.add_tone(100, amplitude=2)
 
-        test = 2 * audio.generate_tone(100, duration, fs)
+        test = 2 * audio.generate_tone(duration, 100, fs)
         testing.assert_equal(sig.ch[0], test)
         testing.assert_equal(sig.ch[1], test)
 
         sig = Signal((2, 2), duration, fs)
         sig.add_tone(100, amplitude=2)
 
-        test = 2 * audio.generate_tone(100, duration, fs)
+        test = 2 * audio.generate_tone(duration, 100, fs)
         testing.assert_equal(sig.ch[0, 0], test)
         testing.assert_equal(sig.ch[1, 0], test)
         testing.assert_equal(sig.ch[0, 1], test)
@@ -77,7 +76,7 @@ class test_oaudio(unittest.TestCase):
         sig = Signal(1, duration, fs)
         sig.add_tone(100).set_dbspl(50)
 
-        test = audio.generate_tone(100, duration, fs)
+        test = audio.generate_tone(duration, 100, fs)
         test = audio.set_dbspl(test, 50)
 
         testing.assert_equal(sig, test)
@@ -136,19 +135,19 @@ class test_oaudio(unittest.TestCase):
 
         sig = Signal(1, duration, fs)
         sig.add_tone(100).add_fade_window(rise_time=10e-3, type='gauss')
-        test = audio.generate_tone(100, duration, fs)
+        test = audio.generate_tone(duration, 100, fs)
         test *= audio.gaussian_fade_window(test, 10e-3, fs)
         testing.assert_equal(sig, test)
 
         sig = Signal(1, duration, fs)
         sig.add_tone(100).add_fade_window(rise_time=10e-3, type='cos')
-        test = audio.generate_tone(100, duration, fs)
+        test = audio.generate_tone(duration, 100, fs)
         test *= audio.cosine_fade_window(test, 10e-3, fs)
         testing.assert_equal(sig, test)
 
         sig = Signal(1, duration, fs)
         sig.add_tone(100).add_fade_window(rise_time=10e-3, type='cos')
-        test = audio.generate_tone(100, duration, fs)
+        test = audio.generate_tone(duration, 100, fs)
         test *= audio.cosine_fade_window(test, 10e-3, fs)
         testing.assert_equal(sig, test)
 
@@ -269,8 +268,8 @@ class test_oaudio(unittest.TestCase):
         sig.add_tone(100)
         sig[:, 0].phase_shift(np.pi)
 
-        test1 = audio.generate_tone(100, duration, fs, np.pi)
-        test2 = audio.generate_tone(100, duration, fs)
+        test1 = audio.generate_tone(duration, 100, fs, np.pi)
+        test2 = audio.generate_tone(duration, 100, fs)
         test = np.column_stack([test1, test2])
 
         testing.assert_almost_equal(sig, test)
@@ -280,7 +279,7 @@ class test_oaudio(unittest.TestCase):
         sig = Signal(1, 1, fs).add_tone(100)
         sig.add_cos_modulator(5, 1)
 
-        test = audio.generate_tone(100, 1, fs)
+        test = audio.generate_tone(1, 100, fs)
         test *= audio.cos_amp_modulator(test, 5, fs)
 
         testing.assert_array_equal(sig, test)
@@ -289,7 +288,7 @@ class test_oaudio(unittest.TestCase):
         sig = Signal(2, 1, fs).add_tone(100)
         sig.add_cos_modulator(5, 1)
 
-        test = audio.generate_tone(100, 1, fs)
+        test = audio.generate_tone(1, 100, fs)
         test *= audio.cos_amp_modulator(test, 5, fs)
 
         testing.assert_array_equal(sig[:, 0], test)
@@ -309,39 +308,30 @@ class test_oaudio(unittest.TestCase):
         assert np.var(sig.ch[0]) == np.var(sig.ch[1])
         testing.assert_almost_equal(np.var(sig), 2)
 
-
-    # def test_amplitude_spectrum(self):
-    #     fs = 48000
-    #     sig = Signal(1, 1, 48000).add_tone(1e3)
-
-    #     df = fs / sig.n_samples
-    #     n_1000 = (sig.n_samples // 2) + int(1000 / df)
-
-    #     a, b = sig.amplitude_spectrum()
-
-    #     assert a[n_1000] == 1000
-    #     testing.assert_almost_equal(np.abs(b[n_1000]), 0.5)
-
-    def test_freqdomain(self):
+    def test_add_noise(self):
         fs = 48000
         sig = Signal(1, 1, 48000).add_noise()
-        sig_c = sig.copy()
-        sig = sig.to_freqdomain()
-        sig = sig.to_timedomain()
-        testing.assert_almost_equal(sig_c, sig)
+        assert sig.max() != 0
+        sig = Signal(2, 1, 48000).add_noise()
+        assert np.all(sig.max(axis=0) != 0)
 
-        sig = Signal(1, 3, 48000).add_noise()
-        sig_c = sig.copy()
-        sig = sig.to_freqdomain()
-        sig = sig.to_timedomain()
-        testing.assert_almost_equal(sig_c, sig)
+        sig = Signal((2, 2), 1, 48000).add_noise()
+        assert np.all(sig.max(axis=0) != 0)
+
+        sig = Signal((2, 2), 1, 48000).add_noise(variance = 2)
+        assert np.var(sig.ch[0]) == np.var(sig.ch[1])
+        testing.assert_almost_equal(np.var(sig), 2)
 
 
-    def test_crest_factor(self):
-        sig = Signal(1, 1, 48000).add_tone(1e3)
-        cfac = sig.calc_crest_factor()
+    def test_add_uncorr_noise(self):
+        fs = 48000
+        sig = Signal(5, 1, fs).add_uncorr_noise()
+        # lower trianglular matrix should be  0
+        testing.assert_almost_equal(np.tril(np.cov(sig.T), -1), 0)
 
-        testing.assert_almost_equal(cfac, np.sqrt(2))
+        #Multidimensional case
+        sig = Signal((2, 2), 1, fs).add_uncorr_noise()
+        assert(sig.n_channels == (2, 2))
 
     def test_clip(self):
         sig = Signal(2, 1, 48000).add_noise()
@@ -395,11 +385,15 @@ class test_oaudio(unittest.TestCase):
         testing.assert_equal(sig_a[old_n:], sig_b)
 
     def test_bandpass_brickwall(self):
-        sig = audio.Signal((2, 2), 1, 48000).add_noise().bandpass(500, 100, 'brickwall')
+        sig = audio.Signal((2, 2), 1, 48000)
+        sig.add_noise().bandpass(500, 100, 'brickwall')
         sig = sig.to_freqdomain()
-        testing.assert_array_almost_equal(sig[np.abs(sig.freq) > 550], 0)
-        testing.assert_array_almost_equal(sig[np.abs(sig.freq) < 450], 0)
-        assert np.all(sig[(np.abs(sig.freq) < 550) & (np.abs(sig.freq) > 450)] != 0)
+        testing.assert_array_almost_equal(sig[np.abs(sig.freq) > 550],
+                                          0)
+        testing.assert_array_almost_equal(sig[np.abs(sig.freq) < 450],
+                                          0)
+        assert np.all(sig[(np.abs(sig.freq) < 550)
+                          & (np.abs(sig.freq) > 450)] != 0)
 
     def test_bandpass_gammatone(self):
         # check real valued output
@@ -425,9 +419,39 @@ class test_oaudio(unittest.TestCase):
 
         # check kwargs
         sig = audio.Signal(1, 1, 48000).add_tone(500)
-        out = audio.filter.gammatone(sig, sig2.fs, 500, 100, order=2, attenuation_db=-1)
-        sig.bandpass(500, 100, 'gammatone', order=2, attenuation_db=-1)
+        out = audio.filter.gammatone(sig, 500, 100,
+                                     sig2.fs, order=2,
+                                     attenuation_db=-1)
+        sig.bandpass(500, 100, 'gammatone', order=2,
+                     attenuation_db=-1)
         testing.assert_array_equal(sig, out.real)
+
+    def test_bandpass_butterworth(self):
+        sig = audio.Signal(1, 1, 48000).add_noise()
+
+        sig2 = audio.filter.butterworth(sig, 100, 300)
+        sig = sig.bandpass(200, 200, 'butter')
+        testing.assert_array_equal(sig, sig2)
+
+    def test_lowpass(self):
+        types = ['brickwall', 'butter']
+        f_cut = 300
+
+        for ftype in types:
+            sig = audio.Signal((2, 2), 1, 48000).add_uncorr_noise()
+            sig2 = audio.filter.lowpass(sig, f_cut, ftype)
+            sig.lowpass(f_cut, ftype)
+            testing.assert_array_equal(sig, sig2)
+
+    def test_highpass(self):
+        types = ['brickwall', 'butter']
+        f_cut = 300
+
+        for ftype in types:
+            sig = audio.Signal(2, 1, 48000).add_noise()
+            sig2 = audio.filter.highpass(sig, f_cut, ftype)
+            sig.highpass(f_cut, ftype)
+            testing.assert_array_equal(sig, sig2)
 
     def test_channel_indexing(self):
         sig = Signal((2, 2), 1, 48000).add_noise()
@@ -439,5 +463,55 @@ class test_oaudio(unittest.TestCase):
         assert np.all(sig[:, 0] == 1)
 
         sig.ch[1].add_tone(500)
-        tone_2 = audio.generate_tone(500, sig.duration, sig.fs)
+        tone_2 = audio.generate_tone(sig.duration, 500, sig.fs)
         testing.assert_equal(sig.ch[1], tone_2)
+
+        #Indexing only one channel should still work
+        sig = Signal(1, 1, 40000).add_noise()
+        testing.assert_equal(sig.ch[0], sig)
+        sig.ch[0] = 1
+        testing.assert_equal(sig.ch[0], 1)
+
+
+    def test_time_offset(self):
+        sig = Signal(1, 1, 48000)
+        assert sig.time_offset == 0
+        sig.time_offset = -5
+        assert sig.time_offset == -5
+
+        sig2 = sig.copy()
+        assert sig2.time_offset == -5
+
+    def test_plot(self):
+        sig = audio.Signal(2, 1, 48000).add_noise()
+        fig, ax = sig.plot()
+        assert len(ax.lines) == sig.n_channels
+        # Test for the correct colors in case of two channels
+        assert ax.lines[0].get_color() == '#5c5cd6'
+        assert ax.lines[1].get_color() == '#d65c5c'
+
+    def test_analytical(self):
+        sig = audio.Signal((2, 2), 1, 48000).add_noise()
+        asig = sig.to_analytical()
+        testing.assert_almost_equal(sig, asig.real)
+
+    def test_to_signal(self):
+        fs = 480000
+        sig_array = np.random.random(1000)
+        sig = audio.as_signal(sig_array, fs)
+        assert isinstance(sig, audio.Signal)
+        testing.assert_array_equal(sig, sig_array)
+
+        # test multiple dimensions
+        fs = 480000
+        sig_array = np.random.random([1000, 3, 4])
+        sig = audio.as_signal(sig_array, fs)
+        assert isinstance(sig, audio.Signal)
+        testing.assert_array_equal(sig, sig_array)
+
+        # test datatype
+        fs = 480000
+        sig_array = np.ones([1000], dtype=complex)
+        sig = audio.as_signal(sig_array, fs)
+        assert isinstance(sig, audio.Signal)
+        testing.assert_array_equal(sig, sig_array)

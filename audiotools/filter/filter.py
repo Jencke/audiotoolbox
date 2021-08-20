@@ -1,177 +1,131 @@
 import numpy as np
-from scipy.stats import norm
-from numpy import pi
-from . import gammatone_filt as gt
 
-def gammatone(signal, fs, cf, bw, order=4, attenuation_db=-3, return_complex=True):
-    """Apply a gammatone filter to the signal
+from .gammatone_filt import gammatone
+from .butterworth_filt import butterworth
+from .brickwall_filt import brickwall
+from .. import audiotools as audio
 
-    Applys a gammatone filter following [1]_ to the input signal
-    and returns the filtered signal.
+
+def bandpass(signal, fc, bw, filter_type, fs=None, **kwargs):
+    """Apply a bandpass filter to the Signal.
+
+    This function provieds a unified interface to all bandpass filters
+    implemented in audiotools.
 
     Parameters
     ----------
-    signal : ndarray
-        The input signal
-    fs : int
-      The sample frequency in Hz
-    cf : scalar
-      The center frequency of the filter in Hz
-    bw : scalar
-      The bandwidth of the filter in Hz
-    order : int
-      The filter order (default = 4)
-    attenuation_db: scalar
-      The attenuation at half bandwidth in dB (default = -3)
-    return_complex : bool
-      Whether the complex filter output or only it's real
-      part is returned (default = True)
+    signal : ndarray or Signal
+      The input signal.
+    fc : float
+      The center frequency in Hz.
+    bw : float
+      The bandwidth in Hz
+    filter_type : string
+      The filter type, 'gammatone', 'butter', 'brickwall'
+    fs : None or int
+      The sampling frequency, must be provided if not using the Signal
+      class.
+    **kwargs :
+      Further arguments such as 'order' that are passed to the filter
+      functions.
 
     Returns
     -------
-      The filtered signal.
-
-    References
-    ----------
-    .. [1] Hohmann, V., Frequency analysis and synthesis using a
-          Gammatone filterbank, Acta Acustica, Vol 88 (2002), 43 -3442
+    Signal : The filtered Signal
 
     """
+    duration, fs, n_channels = audio._duration_is_signal(signal, fs)
 
-    b, a = gt.design_gammatone(cf, bw, fs, order, attenuation_db)
-
-    out_signal = np.zeros_like(signal, complex)
-
-    if signal.ndim > 1:
-        n_channel = signal.shape[1]
-        for i_c in range(n_channel):
-            out_signal[:, i_c], _ = gt.gammatonefos_apply(signal[:, i_c], b, a, order)
+    low_f = fc - bw / 2
+    high_f = fc + bw / 2
+    if filter_type == 'butter':
+        sig_out = butterworth(signal, low_f, high_f, fs,
+                              **kwargs)
+    elif filter_type == 'gammatone':
+        sig_out = gammatone(signal, fc, bw, fs, **kwargs)
+    elif filter_type == 'brickwall':
+        sig_out = brickwall(signal, low_f, high_f, fs, **kwargs)
     else:
-        out_signal[:], _ = gt.gammatonefos_apply(signal, b, a, order)
+        raise(ValueError, f'Filtertype {filter_type} not implemented.')
+        return None
 
-    if not return_complex:
-        out_signal = out_signal.real
-
-    return out_signal
+    return sig_out
 
 
-def brickwall(signal, fs, low_f, high_f):
-    '''Brickwall bandpass filter
+def lowpass(signal, f_cut, filter_type, fs=None, **kwargs):
+    """Apply a lowpass filter to the Signal.
 
-    Bandpass filters an input signal by setting all frequency
-    outside of the passband [low_f, high_f] to zero.
+    This function provieds a unified interface to all lowpass filters
+    implemented in audiotools.
 
     Parameters
     ----------
-    signal : ndarray
-        The input signal
-    fs :  scalar
-        The signals sampling rate in Hz
-    low_f : scalar or None
-        The lower cutoff frequency in Hz
-    high_f : scalar
-        The upper cutoff frequency in Hz
+    signal : ndarray or Signal
+      The input signal.
+    f_cut : float
+      The cutoff frequency in Hz
+    filter_type : string
+      The filter type, 'butter', 'brickwall'
+    fs : None or int
+      The sampling frequency, must be provided if not using the Signal
+      class.
+    **kwargs :
+      Further arguments such as 'order' that are passed to the filter
+      functions.
 
     Returns
     -------
-        The filtered signal
+    Signal : The filtered Signal
 
-    '''
+    """
+    duration, fs, n_channels = audio._duration_is_signal(signal, fs)
 
-
-    spec = np.fft.fft(signal, axis=0)
-    freqs = np.fft.fftfreq(len(signal), 1. / fs)
-    sel_freq = ~((np.abs(freqs) <= high_f) & (np.abs(freqs) >= low_f))
-    spec[sel_freq] = 0
-    filtered_signal = np.fft.ifft(spec, axis=0)
-    filtered_signal = np.real_if_close(filtered_signal, 1000)
-
-    return filtered_signal
-
-
-def gauss(signal, fs, low_f, high_f):
-    '''Gauss bandpass filter in frequency domain.
-
-    Bandpass filters an input signal by multiplying a gaussian
-    function in the frequency domain. The cutoff frequencies are
-    defined as the -3dB points
-
-    Parameters:
-    -----------
-    signal : ndarray
-        The input signal
-    fs :  scalar
-        The signals sampling rate in Hz
-    low_f : scalar or None
-        The lower cutoff frequency in Hz setting the lower frequency
-        to None will center the the filter at zero and thus create a
-        low-pass filter with a bandwidth of 0.5 * high_f
-    high_f : scalar
-        The upper cutoff frequency in Hz
-
-    Returns
-    -------
-    ndarray
-        The filtered signal
-
-    '''
-    spec = np.fft.fft(signal)
-    freqs = np.fft.fftfreq(len(signal), 1. / fs)
-
-    if low_f == None:
-        cf = 0
-        bw = high_f * 2
-        # half_width = high_f
+    if filter_type == 'butter':
+        sig_out = butterworth(signal, None, f_cut, fs,
+                              **kwargs)
+    elif filter_type == 'brickwall':
+        sig_out = brickwall(signal, None, f_cut, fs,
+                            **kwargs)
     else:
-        cf = (low_f + high_f) / 2
-        bw = np.abs(high_f - low_f)
+        raise(ValueError, f'Filtertype {filter_type} not implemented.')
+        return None
 
-    # Calculate the std param to gain -3dB (amplitude) at the corner
-    # frequencies
-    db3val = np.sqrt(0.5)
-    s = np.sqrt(-(bw / 2)**2 / (2 * np.log(db3val)))
-
-    mag_spec1 = np.exp(-(freqs - cf)**2 / (2 * s**2))
-    mag_spec1[freqs < 0] = 0
-    mag_spec2 = np.exp(-(freqs + cf)**2 / (2 * s**2))
-    mag_spec2[freqs >= 0] = 0
-    # mag_spec = norm.pdf(freqs, loc=cf, scale=half_width)
-    spec *= (mag_spec1 + mag_spec2)
-
-    filtered_signal = np.fft.ifft(spec)
-    filtered_signal = np.real_if_close(filtered_signal, 1000)
-
-    return filtered_signal
+    return sig_out
 
 
+def highpass(signal, f_cut, filter_type, fs=None, **kwargs):
+    """Apply a highpass filter to the Signal.
 
+    This function provieds a unified interface to all highpass filters
+    implemented in audiotools.
 
-# def middle_ear_filter(signal, fs):
-#     f1 = 4000 / fs
-#     f2 = 1000 / fs
-#     q = 2 - np.cos(2 * pi * f1) - np.sqrt((np.cos(2 * pi * f1)-2)**2-1)
-#     r = 2 - np.cos(2 * pi * f2) - np.sqrt((np.cos(2 * pi * f2)-2)**2-1)
+    Parameters
+    ----------
+    signal : ndarray or Signal
+      The input signal.
+    f_cut : float
+      The cutoff frequency in Hz
+    filter_type : string
+      The filter type, 'butter', 'brickwall'
+    **kwargs :
+      Further arguments such as 'order' that are passed to the filter
+      functions.
 
-#     sig_len = len(signal) + 2
-#     n_channels = signal.shape[1]
-#     y = np.zeros((sig_len, n_channels))
-#     x = np.zeros((sig_len, n_channels))
-#     x[2:] = signal
+    Returns
+    -------
+    Signal : The filtered Signal
 
-#     for i in range(2, sig_len):
-#         y[i] = (+ (1 - q) * r * x[i]
-#                 - (1 - q) * r * x[i - 1]
-#                 - (q + r) * y[i - 1]
-#                 - (q * r) * y[i - 2])
-#     return y[2:]
+    """
+    duration, fs, n_channels = audio._duration_is_signal(signal, fs)
 
+    if filter_type == 'butter':
+        sig_out = butterworth(signal, f_cut, None, fs,
+                              **kwargs)
+    elif filter_type == 'brickwall':
+        sig_out = brickwall(signal, f_cut, None, fs,
+                            **kwargs)
+    else:
+        raise(ValueError, f'Filtertype {filter_type} not implemented.')
+        return None
 
-# import matplotlib.pyplot as plt
-
-# signal = np.random.random([1000000, 2])
-# signal -= 0.5
-# out = middle_ear_filter(signal, 100e3)
-
-# plt.plot(np.abs(np.fft.fft(signal[:, 0])))
-
-# plt.plot(np.abs(np.fft.fft(out[:, 0])) / np.abs(np.fft.fft(signal[:, 0])))
+    return sig_out

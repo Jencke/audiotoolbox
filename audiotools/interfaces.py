@@ -26,25 +26,30 @@ class StructPAcVolume(ctypes.Structure):
         ('values', ctypes.c_uint32 * PA_CHANNELS_MAX)
     ]
 
-PA_SAMPLE_FORMAT = { 'PA_SAMPLE_U8' : 0, # Unsigned 8 Bit PCM
-                     'PA_SAMPLE_ALAW' : 1, # 8 Bit a-Law
-                     'PA_SAMPLE_ULAW' : 2,#  8 Bit mu-Law
-                     'PA_SAMPLE_S16LE' : 3, # Signed 16 Bit PCM, little endian (PC)
-                     'PA_SAMPLE_S16BE' : 4, # Signed 16 Bit PCM, big endian
-                     'PA_SAMPLE_FLOAT32LE' : 5, # 32 Bit IEEE floating point, little endian (PC), range -1.0 to 1.0
-                     'PA_SAMPLE_FLOAT32BE' : 6, # 32 Bit IEEE floating point, big endian, range -1.0 to 1.0
-                     'PA_SAMPLE_S32LE' : 7, # Signed 32 Bit PCM, little endian (PC)
-                     'PA_SAMPLE_S32BE' : 8, # Signed 32 Bit PCM, big endian
-                     'PA_SAMPLE_S24LE' : 9, # Signed 24 Bit PCM packed, little endian (PC). \since 0.9.15
-                     'PA_SAMPLE_S24BE' : 10, # Signed 24 Bit PCM packed, big endian. \since 0.9.15
-                     'PA_SAMPLE_S24_32LE' : 11, # Signed 24 Bit PCM in LSB of 32 Bit words, little endian (PC). \since 0.9.15
-                     'PA_SAMPLE_S24_32BE' : 12 # Signed 24 Bit PCM in LSB of 32 Bit words, big endian. \since 0.9.15
+PA_SAMPLE_FORMAT = { 'PA_SAMPLE_U8': 0, # Unsigned 8 Bit PCM
+                     'PA_SAMPLE_ALAW': 1, # 8 Bit a-Law
+                     'PA_SAMPLE_ULAW': 2,#  8 Bit mu-Law
+                     'PA_SAMPLE_S16LE': 3, # Signed 16 Bit PCM, little endian (PC)
+                     'PA_SAMPLE_S16BE': 4, # Signed 16 Bit PCM, big endian
+                     'PA_SAMPLE_FLOAT32LE': 5, # 32 Bit IEEE floating point, little endian (PC), range -1.0 to 1.0
+                     'PA_SAMPLE_FLOAT32BE': 6, # 32 Bit IEEE floating point, big endian, range -1.0 to 1.0
+                     'PA_SAMPLE_S32LE': 7, # Signed 32 Bit PCM, little endian (PC)
+                     'PA_SAMPLE_S32BE': 8, # Signed 32 Bit PCM, big endian
+                     'PA_SAMPLE_S24LE': 9, # Signed 24 Bit PCM packed, little endian (PC). \since 0.9.15
+                     'PA_SAMPLE_S24BE': 10, # Signed 24 Bit PCM packed, big endian. \since 0.9.15
+                     'PA_SAMPLE_S24_32LE': 11, # Signed 24 Bit PCM in LSB of 32 Bit words, little endian (PC). \since 0.9.15
+                     'PA_SAMPLE_S24_32BE': 12 # Signed 24 Bit PCM in LSB of 32 Bit words, big endian. \since 0.9.15
 }
 
 PA_STREAM_PLAYBACK = 1
 
-def play(signal, fs, bitdepth, buffsize=1024):
 
+def play(signal, fs, bitdepth, buffsize=1024):  # pragma: no cover
+    """Play a sound signal.
+
+    This function plays a sound-signal using pulseaudio.
+
+    """
     byte_signal = array_to_byte(signal, bitdepth)
 
     if bitdepth == 16:
@@ -81,7 +86,9 @@ def play(signal, fs, bitdepth, buffsize=1024):
     nint = buffsize * 2
     n_run = len(byte_signal) // nint
     for i in range(n_run):
-        buf = byte_signal[i*nint:(i+1)*nint]
+        start = i * nint
+        end = (i + 1) * nint
+        buf = byte_signal[start:end]
         if pa.pa_simple_write(s, buf, len(buf), error):
             raise Exception('Could not play file!')
 
