@@ -8,5 +8,4 @@ if not (version_info.major == 3
 from .audiotools import *
 from . oaudio import Signal, as_signal
 from . oaudio import FrequencyDomainSignal
-from . filter import create_filterbank
 from . import interfaces
