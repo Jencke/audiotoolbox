@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="pyaudiotools",
+    name="audiotoolbox",
     version="0.61",
     author="Jörg Encke",
     author_email="joerg.encke@posteo.de",

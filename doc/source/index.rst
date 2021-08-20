@@ -1,7 +1,3 @@
-.. audiotools documentation master file, created by
-   sphinx-quickstart on Thu Jan 14 08:08:13 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
 .. toctree::
    :maxdepth: 2
@@ -53,7 +49,19 @@ More information and a detailed documentation of the methods and functions provi
 Installation
 ============
 
-Currently, the easiest method is to install audiotools by cloning the git repository:
+Using pip
+----------
+
+You can use pip to install audiotools
+
+.. code-block:: bash
+
+    pip install audiotoolbox
+
+From GitHub
+-----------
+
+Or directly from GitHub
 
  1. Clone the repository: `git clone https://github.com/Jencke/audiotools.git`
  2. Install the package: `pip install ./`

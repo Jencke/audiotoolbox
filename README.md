@@ -6,6 +6,12 @@ A python package for creating acoustic stimuli primariliy aimed at auditory rese
 [![codecov](https://codecov.io/gh/Jencke/audiotools/branch/develop/graph/badge.svg?token=SI8BRM2ZYZ)](https://codecov.io/gh/Jencke/audiotools)
 
 ## How to install audiotools
+### Using pip
+  If you use `pip`, you can install audiotools with:
+
+ `pip install audiotoolbox`
+
+### From GitHub
  * Clone the repository: `git clone https://github.com/Jencke/audiotools.git`
  * Install the package: `pip install ./`
  * Optionally run the tests: `pytest`
