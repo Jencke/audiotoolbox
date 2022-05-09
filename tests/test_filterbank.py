@@ -83,6 +83,20 @@ class test_oaudio(unittest.TestCase):
         # Amplitudes hould be 1 (one sided spectrum)
         assert np.all((amps - 1) <= 0.01)
 
+        # Output shape should remain unchanged if filterbank consists of only
+        # one filter
+        sig = audio.Signal(1, 1, 48000)
+        gamma = create_filterbank(500, 79, 'gammatone', 48000)
+        out = gamma.filt(sig)
+        assert(sig.shape == out.shape)
+
+        # make sure that other dimensions that have only 1 compontent  are kept
+        sig = audio.Signal((2, 1), 1, 48000)
+        gamma = create_filterbank([100, 200], [79, 80], 'gammatone', 48000)
+        out = gamma.filt(sig)
+        assert(out.shape[1:] == (2, 1, 2))
+
+
 
     def test_brickwall(self):
         # Test the gain at fc
