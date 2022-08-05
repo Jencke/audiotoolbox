@@ -36,7 +36,7 @@ def create_filterbank(fc, bw, filter_type, fs, **kwargs):
     elif filter_type == 'gammatone':
         bank = GammaToneBank(fc, bw, fs, **kwargs)
     elif filter_type == 'brickwall':
-        bank = BrickBank(fc, bw, fs)        
+        bank = BrickBank(fc, bw, fs)
     return bank
 
 
@@ -51,16 +51,16 @@ class FilterBank(object):
         Filter Bandwidths in Hz
     fs : int
         Sampling frequency
-    **kwargs
+    **kwargs :
         Further paramters such as filter order to pass to the Filter
-        function, see filter documenation for details. Value can either be
-        an ndarray that matches the length of `fc` or a single value in
-        which case this value is used for all filters.
+        function, see filter documenation for details. Value can
+        either be an ndarray that matches the length of `fc` or a
+        single value in which case this value is used for all filters.
 
     '''
     def __init__(self, fc, bw, fs, **kwargs):
-        self.fc = np.asarray(fc)
-        self.bw = np.asarray(bw)
+        self.fc = np.asarray([fc]).flatten()
+        self.bw = np.asarray([bw]).flatten()
         self.fs = fs
         self.n_filters = len(self.fc)
 
@@ -136,7 +136,7 @@ class GammaToneBank(FilterBank):
         for i_filt in range(self.n_filters):
             current_params = {k: v[i_filt]
                               for k, v in self.params.items()}
-            
+
             order = current_params['order']
             b, a = gamma.design_gammatone(self.fc[i_filt],
                                           self.bw[i_filt], self.fs,
@@ -155,6 +155,10 @@ class GammaToneBank(FilterBank):
             a = coeff[2:]
             out, states = gamma.gammatonefos_apply(signal, b, a, order)
             out_sig.T[i_filt] = out.T
+
+        # squeeze to leave dimensions unchanged if n_filters == 1
+        if out_sig.shape[-1] == 1:
+            out_sig = out_sig.squeeze(-1)
         return out_sig
 
 
@@ -172,4 +176,3 @@ class BrickBank(FilterBank):
             out = brick.brickwall(signal, low_f, high_f, self.fs)
             out_sig.T[i_filt] = out.T
         return out_sig
-    

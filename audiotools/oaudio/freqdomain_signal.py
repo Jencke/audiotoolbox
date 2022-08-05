@@ -1,29 +1,49 @@
 import numpy as np
 import audiotools as audio
-from copy import deepcopy
 
-from .base_signal import BaseSignal
+from . import base_signal
+
 
 def _copy_to_dim(array, dim):
-    if np.ndim(dim) == 0: dim = (dim,)
+    if np.ndim(dim) == 0:
+        dim = (dim,)
 
-    #tile by the number of dimensions
+    # tile by the number of dimensions
     tiled_array = np.tile(array, (*dim[::-1], 1)).T
-    #squeeze to remove axis of lenght 1
+    # squeeze to remove axis of lenght 1
     tiled_array = np.squeeze(tiled_array)
 
     return tiled_array
 
 
-class FrequencyDomainSignal(BaseSignal):
+class FrequencyDomainSignal(base_signal.BaseSignal):
+    """Base class for signals in the frequency domain.
+
+    Parameters
+    ----------
+    n_channels : int or tuple
+      Number of channels to be used, can be N-dimensional
+    duration : float
+      Stimulus duration in seconds
+    fs : int
+      Sampling rate  in Hz
+    dtype : complex, optional
+      Datatype of the array (default is float)
+
+    Returns
+    -------
+    Signal : The new object.
+
+    """
 
     def __new__(cls, n_channels, duration, fs, dtype=complex):
-        obj = BaseSignal.__new__(cls, n_channels, duration, fs, dtype)
+        obj = base_signal.BaseSignal.__new__(cls, n_channels,
+                                             duration, fs, dtype)
         return obj
 
     @property
     def freq(self):
-        r"""Returns the frequency axis
+        r"""Return the frequency axis
 
         Returns
         -------
@@ -35,7 +55,7 @@ class FrequencyDomainSignal(BaseSignal):
 
     @property
     def omega(self):
-        r"""Returns the angular frequency axis
+        r"""Return the angular frequency axis
 
         Returns
         -------
@@ -58,7 +78,7 @@ class FrequencyDomainSignal(BaseSignal):
 
     @property
     def mag(self):
-        r"""Retruns the magnitudes of the frequency components
+        r"""Returns the magnitudes of the frequency components
 
         equivalent to :meth:`audiotools.FrequencyDomainSignal.abs()`
 

@@ -6,7 +6,7 @@ from scipy.interpolate import interp1d
 from scipy.signal import hilbert
 
 from .oaudio import Signal
-from .filter import brickwall
+from . import filter
 
 COLOR_R = '#d65c5c'
 COLOR_L = '#5c5cd6'
@@ -285,7 +285,7 @@ def generate_low_noise_noise(duration, fc, bw, fs=None,
 
     # Generate initial noise
     noise = generate_noise(duration, fs, ntype='white', n_channels=n_ch)
-    noise = brickwall(noise, fc - bw / 2, fc + bw / 2, fs)
+    noise = filter.brickwall(noise, fc - bw / 2, fc + bw / 2, fs)
     std = noise.std(axis=0)
 
     for i in range(n_rep):
@@ -294,7 +294,7 @@ def generate_low_noise_noise(duration, fc, bw, fs=None,
 
         # diveide through envelope and restrict
         noise /= env
-        noise = brickwall(noise, fc - bw/2, fc + bw/2, fs)
+        noise = filter.brickwall(noise, fc - bw/2, fc + bw/2, fs)
         noise /= noise.std(axis=0) * std
 
     return noise

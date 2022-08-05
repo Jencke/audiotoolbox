@@ -5,10 +5,10 @@ from scipy.signal import lfilter
 
 
 def design_gammatone(fc, bw, fs, order=4, attenuation_db='erb'):
-    """Returns the coefficient of a gammatone filter.
+    """Return the coefficient of a gammatone filter.
 
     Calculates the filter coefficents for a gammatone filter following
-    Eq. 11 and 12 of [1]_.
+    Eq. 11 and 12 of [hohmann2002b]_.
 
 
     Parameters
@@ -35,8 +35,9 @@ def design_gammatone(fc, bw, fs, order=4, attenuation_db='erb'):
 
     References
     ----------
-    ..[1] Hohmann, V., Frequency analysis and synthesis using a
-          Gammatone filterbank, Acta Acustica, Vol 88 (2002), 43 -3442
+    ..[hohmann2002b] Hohmann, V., Frequency analysis and synthesis
+          using a Gammatone filterbank, Acta Acustica, Vol 88 (2002),
+          43 -3442
 
     """
     # in case the bandwith is stated in equivalent rectangular
@@ -128,8 +129,8 @@ def gammatone(signal, fc, bw, fs, order=4, attenuation_db='erb',
               return_complex=True):
     """Apply a gammatone filter to the signal.
 
-    Applys a gammatone filter following [1]_ to the input signal
-    and returns the filtered signal.
+    Applys a gammatone filter following [Hohmann2002]_ to the input
+    signal and returns the filtered signal.
 
     Parameters
     ----------
@@ -157,8 +158,9 @@ def gammatone(signal, fc, bw, fs, order=4, attenuation_db='erb',
 
     References
     ----------
-    .. [1] Hohmann, V., Frequency analysis and synthesis using a
-          Gammatone filterbank, Acta Acustica, Vol 88 (2002), 43 -3442
+    .. [Hohmann2002] Hohmann, V., Frequency analysis and synthesis
+          using a Gammatone filterbank, Acta Acustica, Vol 88 (2002),
+          43 -3442
 
     """
     b, a = design_gammatone(fc, bw, fs, order, attenuation_db)
