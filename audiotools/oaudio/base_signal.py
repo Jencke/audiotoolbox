@@ -1,6 +1,6 @@
 import numpy as np
 import audiotools as audio
-import copy
+
 
 class BaseSignal(np.ndarray):
     r""" Basic Signal class inherited by all Signal representations
@@ -10,31 +10,32 @@ class BaseSignal(np.ndarray):
 
         n_samples = audio.nsamples(duration, fs)
 
-        if not np.ndim(n_channels): #if channels is only an integer
+        if not np.ndim(n_channels):  # if channels is only an integer
             if n_channels == 1:
                 obj = super(BaseSignal, cls).__new__(cls, shape=(n_samples),
                                                      dtype=dtype)
             else:
-                obj = super(BaseSignal, cls).__new__(cls, shape=(n_samples, n_channels),
+                obj = super(BaseSignal, cls).__new__(cls, shape=(n_samples,
+                                                                 n_channels),
                                                      dtype=dtype)
         else:
-            obj = super(BaseSignal, cls).__new__(cls, shape=[n_samples] + list(n_channels),
-                                                     dtype=dtype)
+            obj = super(BaseSignal, cls).__new__(cls, shape=[n_samples] +
+                                                 list(n_channels),
+                                                 dtype=dtype)
         obj._fs = fs
         obj.fill(0)
         return obj
 
     def __array_finalize__(self, obj):
         # If called explicitely, obj = None
-        if obj is None: return
+        if obj is None:
+            return
 
         # If it was called after e.g slicing, copy
         # copy sample rate
         self._fs = getattr(obj, '_fs', None)
 
-
-    # getter to handle the sample rates
-    @property
+    @property  # getter to handle the sample rates
     def fs(self):
         """Sampling rate of the signal in Hz"""
 
@@ -170,9 +171,11 @@ class BaseSignal(np.ndarray):
 
 
 class _chIndexer(object):
-    """ Channel Indexer
+    """Channel Indexer
 
-    Allowes channels to be indexed directly without needing to care about samples
+    Allowes channels to be indexed directly without needing to care about
+    3samples
+
     """
 
     def __init__(self, obj):
