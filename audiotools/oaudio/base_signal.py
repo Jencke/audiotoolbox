@@ -196,7 +196,7 @@ class _chIndexer(object):
     """Channel Indexer
 
     Allowes channels to be indexed directly without needing to care about
-    3samples
+    samples
 
     """
 
