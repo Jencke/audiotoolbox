@@ -169,6 +169,28 @@ class BaseSignal(np.ndarray):
         out[:] = 0
         return out
 
+    def summary(self):
+        if self.duration < 1:
+            duration = f'{self.duration * 1000:2}ms'
+        else:
+            duration = f'{self.duration:2}s'
+
+        if self.fs < 1000:
+            fs = f"{self.fs}Hz"
+        else:
+            fs = f"{self.fs / 1000:.1f}kHz"
+
+        samp = f'{self.n_samples} samples'
+
+        chan = f'{self.n_channels} channel'
+
+        repr = (duration
+                + ' @ ' + fs
+                + " = " + samp
+                + ' in ' + chan
+                + ' | dtype: ' + str(self.dtype))
+        return repr
+
 
 class _chIndexer(object):
     """Channel Indexer
