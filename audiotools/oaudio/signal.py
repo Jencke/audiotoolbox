@@ -6,8 +6,7 @@ from .. import wav
 from .. import interfaces
 from .freqdomain_signal import FrequencyDomainSignal
 from . import base_signal
-from ..filter import bandpass, lowpass, highpass
-
+from .. import filter as filt
 
 class Signal(base_signal.BaseSignal):
     """Base class for signals in the timedomain.
@@ -171,7 +170,8 @@ class Signal(base_signal.BaseSignal):
         self[:] = (self.T + noise.T * np.sqrt(variance)).T
         return self
 
-    def add_uncorr_noise(self, corr=0, variance=1, seed=None):
+    def add_uncorr_noise(self, corr=0, variance=1, seed=None,
+                         bandpass=None, highpass=None, lowpass=None):
         r"""Add partly uncorrelated noise.
 
         This function adds partly uncorrelated noise using the N+1
@@ -202,6 +202,15 @@ class Signal(base_signal.BaseSignal):
         seed : int or 1-d array_like, optional
             Seed for `RandomState`.
             Must be convertible to 32 bit unsigned integers.
+        bandpass : dict, optional
+            Parameters for an bandpass filter, these are passed as arguments to
+            the audiotools.filter.bandpass function
+        lowpass : dict, optional
+            Parameters for an lowpass filter, these are passed as arguments to
+            the audiotools.filter.lowpass function
+        highpass : dict, optional
+            Parameters for an highpass filter, these are passed as arguments to
+            the audiotools.filter.highpass function
 
         Returns
         -------
@@ -225,7 +234,10 @@ class Signal(base_signal.BaseSignal):
                                             fs=self.fs,
                                             n_channels=self.n_channels,
                                             corr=corr,
-                                            seed=seed)
+                                            seed=seed,
+                                            bandpass=bandpass,
+                                            highpass=highpass,
+                                            lowpass=lowpass)
 
         self += noise * np.sqrt(variance)
 
@@ -364,7 +376,7 @@ class Signal(base_signal.BaseSignal):
             if 'return_complex' not in kwargs:
                 kwargs['return_complex'] = False
 
-        filt_signal = bandpass(self, fc, bw, filter_type, **kwargs)
+        filt_signal = filt.bandpass(self, fc, bw, filter_type, **kwargs)
 
         # in case of complex output, signal needs to be reshaped and
         # typecast
@@ -416,7 +428,7 @@ class Signal(base_signal.BaseSignal):
         audiotools.filter.butterworth
 
         """
-        filt_signal = lowpass(self, f_cut, filter_type, **kwargs)
+        filt_signal = filt.lowpass(self, f_cut, filter_type, **kwargs)
 
         self[:] = filt_signal
         return self
@@ -461,7 +473,7 @@ class Signal(base_signal.BaseSignal):
         audiotools.filter.butterworth
 
         """
-        filt_signal = highpass(self, f_cut, filter_type, **kwargs)
+        filt_signal = filt.highpass(self, f_cut, filter_type, **kwargs)
 
         self[:] = filt_signal
         return self

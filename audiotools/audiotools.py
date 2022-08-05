@@ -414,7 +414,8 @@ def generate_noise(duration, fs=None, ntype='white', n_channels=1, seed=None):
     return noise
 
 
-def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None):
+def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None,
+                          bandpass=None, lowpass=None, highpass=None):
     r"""Generate partly uncorrelated noise
 
     This function generates partly uncorrelated noise using the N+1
@@ -432,6 +433,10 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None):
     :math:`X_{n}` the nth indipendent noise and :math:`X_{N=1}` is the
     common noise.
 
+    bandpass, lowpass and highpass filters can optionally be applied before
+    using the Gram-Schmidt process. This ensures that the signal correlation
+    uneffected by the filter.
+
     for two noise tokens, this is identical to the assymetric
     three-generator method described in [1]_
 
@@ -448,6 +453,15 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None):
     seed : int or 1-d array_like, optional
         Seed for `RandomState`.
         Must be convertible to 32 bit unsigned integers.
+    bandpass : dict, optional
+        Parameters for an bandpass filter, these are passed as arguments to the
+        audiotools.filter.bandpass function
+    lowpass : dict, optional
+        Parameters for an lowpass filter, these are passed as arguments to the
+        audiotools.filter.lowpass function
+    highpass : dict, optional
+        Parameters for an highpass filter, these are passed as arguments to the
+        audiotools.filter.highpass function
 
     Returns
     -------
@@ -481,6 +495,14 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None):
     len_signal = nsamples(duration, fs)
     noise = np.random.randn(len_signal, n_channels+1)
     noise -= noise.mean(axis=0)
+
+    if bandpass is not None:
+        noise = filter.bandpass(signal=noise, fs=fs, **bandpass)
+    if lowpass is not None:
+        noise = filter.lowpass(signal=noise, fs=fs, **lowpass)
+    if highpass is not None:
+        noise = filter.highpass(signal=noise, fs=fs, **highpass)
+
     # normalize variance
     noise /= noise.std(axis=0)
 
