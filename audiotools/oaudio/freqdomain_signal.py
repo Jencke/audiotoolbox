@@ -160,7 +160,6 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
         self *= np.exp(shift_val)
         return self
 
-
     def from_timedomain(self, signal):
         self[:] = np.fft.fft(signal, axis=0)
         self /= signal.n_samples
@@ -184,7 +183,8 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
         self *= self.n_samples
         wv = np.fft.ifft(self, axis=0)
         wv = np.real_if_close(wv)
-        signal = audio.Signal(self.n_channels, self.duration, self.fs, dtype = wv.dtype)
+        signal = audio.Signal(self.n_channels, self.duration,
+                              self.fs, dtype=wv.dtype)
         signal[:] = wv
         return signal
 
