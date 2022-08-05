@@ -59,8 +59,8 @@ class FilterBank(object):
 
     '''
     def __init__(self, fc, bw, fs, **kwargs):
-        self.fc = np.asarray(fc)
-        self.bw = np.asarray(bw)
+        self.fc = np.asarray([fc]).flatten()
+        self.bw = np.asarray([bw]).flatten()
         self.fs = fs
         self.n_filters = len(self.fc)
 
@@ -155,6 +155,10 @@ class GammaToneBank(FilterBank):
             a = coeff[2:]
             out, states = gamma.gammatonefos_apply(signal, b, a, order)
             out_sig.T[i_filt] = out.T
+
+        # squeeze to leave dimensions unchanged if n_filters == 1
+        if out_sig.shape[-1] == 1:
+            out_sig = out_sig.squeeze(-1)
         return out_sig
 
 
