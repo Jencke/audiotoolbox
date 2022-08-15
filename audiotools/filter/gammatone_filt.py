@@ -145,9 +145,9 @@ def gammatone(signal, fc, bw, fs, order=4, attenuation_db='erb',
     order : int
       The filter order (default = 4)
     attenuation_db: scalar or 'erb'
-      The attenuation at half bandwidth in dB (default = -3).
+      The attenuation at half bandwidth in dB (default = 'erb').
       If set to 'erb', the bandwidth is interpreted as the rectangular
-      equivalent bw
+      equivalent bw.
     return_complex : bool
       Whether the complex filter output or only it's real
       part is returned (default = True)
