@@ -72,7 +72,8 @@ def from_wav(filename, fullscale=True):
 
 
 def pad_for_fft(signal):
-    r"""Zero buffer a signal with zeros so that it reaches the next closest :math`$2^n$` length.
+    r"""Zero buffer a signal with zeros so that it reaches the next
+        closest :math`$2^n$` length.
 
        This Function attaches zeros to a signal to adjust the length
        of the signal to a multiple of 2 for efficent FFT calculation.
@@ -1719,11 +1720,11 @@ def crest_factor(signal, axis=0):
 
 
 def calc_coherence(signal):
-    r"""normalized complex valued coherence
+    r"""normalized complex valued cross-correlation function
 
-    This function calculates the normalized complex valued degree of
-    coherence between two signals :math:`f(t)` and :math:`g(t)`. It is
-    defined as:
+    This function calculates the normalized complex valued cross correlation
+    function between two signals :math:`f(t)` and :math:`g(t)`. It is defined
+    as:
 
     .. math:: \gamma(tau) = \frac{<f_a(t)g^*_a(t-\tau)>}{\sqrt{<|f_a(t)|^2><|g_a(t)|^2>}}
 
@@ -1732,9 +1733,9 @@ def calc_coherence(signal):
     signal of :math:`g(t)`. :math:`<\dots>` symbolizes the mean over
     time.
 
-    Requires an input signal with the shape (N, 2).  If only a
-    one-dimensional signal is provided, the auto-coherence function
-    where :math:`f(t) = g(t)` is calculated.
+    Requires an input signal with the shape (N, 2).  If only a one-dimensional
+    signal is provided, the auto-cross correlation function where :math:`f(t) =
+    g(t)` is calculated.
 
     The real part of the complex valued coherence equals the
     normalized cross-correlation.
