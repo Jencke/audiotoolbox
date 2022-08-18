@@ -752,6 +752,33 @@ class test_oaudio(unittest.TestCase):
         coh = audio.calc_coherence(sig)
         testing.assert_allclose(coh.abs()[coh.time==0], 0.5, rtol=0.05)
 
+    def test_cmplx_correlation(self):
+        signal = audio.Signal(1, 1, 48000)
+        self.assertRaises(ValueError, lambda: audio.cmplx_corr(signal))
+        signal = audio.Signal(3, 1, 48000)
+        self.assertRaises(ValueError, lambda: audio.cmplx_corr(signal))
+
+        signal = audio.Signal(2, 1, 48000).add_noise()
+        ccc = complex(audio.cmplx_corr(signal))
+        testing.assert_allclose(np.abs(ccc), 1)
+        assert np.angle(ccc) == 0
+
+        signal = audio.Signal(2, 1, 48000).add_noise()
+        signal *= 5.2
+        ccc = complex(audio.cmplx_corr(signal))
+        testing.assert_allclose(np.abs(ccc), 1)
+
+        signal = audio.Signal(2, 1, 48000).add_noise()
+        signal.ch[1].phase_shift(np.pi/2)
+        ccc = audio.cmplx_corr(signal)
+        testing.assert_allclose(np.angle(ccc), np.pi/2)
+
+        signal = audio.Signal(2, 1, 48000).add_uncorr_noise(0.2)
+        ccc = audio.cmplx_corr(signal)
+        testing.assert_allclose(np.abs(ccc), 0.2, atol=0.001)
+        testing.assert_allclose(np.angle(ccc), 0, atol=0.1)
+
+
     def test_duration_is_signal(self):
 
         #direct input

@@ -5,7 +5,7 @@ from numpy import pi
 from scipy.interpolate import interp1d
 from scipy.signal import hilbert
 
-from .oaudio import Signal
+from .oaudio import Signal, as_signal
 from . import filter
 
 COLOR_R = '#d65c5c'
@@ -1717,6 +1717,51 @@ def crest_factor(signal, axis=0):
     # crest_factor = 20*np.log10(a_max / a_effective)
 
     return a_max / a_effective
+
+
+def cmplx_corr(signal, fs=None):
+    """The complex valued correlation coefficent.
+
+    This function calculates the complex valued correlation coefficent which
+    equals the value of the complex_valued_cross_correlation at :math:`\tau=0`
+
+    .. math:: \gamma = \frac{<f_a(t)^*_g_a(t)>}{\sqrt{<|f_a(t)|^2><|g_a(t)|^2>}}
+
+    where :math:`f_a(t)` is the analytic signals of :math:`f(t)` and
+    and :math:`g^*_a(t)` is the complex conjugate of the analytic
+    signal of :math:`g(t)`. :math:`<\dots>` symbolizes the mean over
+    time.
+
+    Parameters
+    ----------
+    signal : Signal or ndarray
+        The input signal. The shape must be (N, 2) where N are the
+        samples.
+
+    Returns
+    -------
+    The coherence vector: Signal or ndarray
+
+    """
+
+    if np.ndim(signal) != 2:
+        raise ValueError('Input shape must be (N, 2)')
+    if np.shape(signal)[1] != 2:
+        raise ValueError('Input shape must be (N, 2)')
+
+    sig = as_signal(signal, fs)
+    asig = sig.to_analytical()
+
+    ccm = np.mean(asig.ch[0] * asig.ch[1].conjugate())
+    norm1 = np.mean(np.abs(asig.ch[0])**2)
+    norm2 = np.mean(np.abs(asig.ch[1])**2)
+
+    corrcov = ccm / np.sqrt(norm1 * norm2)
+
+    return corrcov
+
+
+
 
 
 def calc_coherence(signal):
