@@ -1726,7 +1726,7 @@ def calc_coherence(signal):
     function between two signals :math:`f(t)` and :math:`g(t)`. It is defined
     as:
 
-    .. math:: \gamma(tau) = \frac{<f_a(t)g^*_a(t-\tau)>}{\sqrt{<|f_a(t)|^2><|g_a(t)|^2>}}
+    .. math:: \gamma(tau) = \frac{<f_a(t)^*g_a(t-\tau)>}{\sqrt{<|f_a(t)|^2><|g_a(t)|^2>}}
 
     where :math:`f_a(t)` is the analytic signals of :math:`f(t)` and
     and :math:`g^*_a(t)` is the complex conjugate of the analytic
