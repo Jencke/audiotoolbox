@@ -1761,10 +1761,7 @@ def cmplx_corr(signal, fs=None):
     return corrcov
 
 
-
-
-
-def calc_coherence(signal):
+def cmplx_crosscorr(signal):
     r"""normalized complex valued cross-correlation function
 
     This function calculates the normalized complex valued cross correlation

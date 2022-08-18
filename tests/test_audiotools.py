@@ -719,11 +719,11 @@ class test_oaudio(unittest.TestCase):
         cfac = audio.crest_factor(signal)
         testing.assert_almost_equal(cfac, np.sqrt(2))
 
-    def test_calc_coherence(self):
+    def test_cmplx_crosscorr(self):
         cf = 500
         bw = 100
         sig = audio.Signal(2, 100, 48000).add_noise().bandpass(cf, bw, 'brickwall')
-        coh = audio.calc_coherence(sig)
+        coh = audio.cmplx_crosscorr(sig)
 
         # Analytic coherence for aboves signal
         coh_analytic = (np.sin(np.pi * bw * sig.time[1:])
@@ -738,19 +738,20 @@ class test_oaudio(unittest.TestCase):
                                 coh_analytic[:nsamp-1], rtol=0, atol=0.03)
 
         # calculate auto-coherrence
-        coh2 = audio.calc_coherence(sig.ch[0])
+        coh2 = audio.cmplx_crosscorr(sig.ch[0])
         testing.assert_array_equal(coh, coh2)
 
         # test using numpy arrays
         sig = np.asarray(sig)
-        coh3 = audio.calc_coherence(sig)
+        coh3 = audio.cmplx_crosscorr(sig)
         testing.assert_array_equal(coh3, coh)
 
         cf = 500
         bw = 100
-        sig = audio.Signal(2, 100, 48000).add_uncorr_noise(0.5).bandpass(cf, bw, 'brickwall')
-        coh = audio.calc_coherence(sig)
-        testing.assert_allclose(coh.abs()[coh.time==0], 0.5, rtol=0.05)
+        sig = audio.Signal(2, 100, 48000).add_uncorr_noise(0.5)
+        sig.bandpass(cf, bw, 'brickwall')
+        coh = audio.cmplx_crosscorr(sig)
+        testing.assert_allclose(coh.abs()[coh.time == 0], 0.5, rtol=0.05)
 
     def test_cmplx_correlation(self):
         signal = audio.Signal(1, 1, 48000)
