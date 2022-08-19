@@ -1744,7 +1744,7 @@ def cmplx_corr(signal, fs=None):
 
     """
 
-    if np.ndim(signal) != 2:
+    if np.ndim(signal) < 2:
         raise ValueError('Input shape must be (N, 2)')
     if np.shape(signal)[1] != 2:
         raise ValueError('Input shape must be (N, 2)')
@@ -1752,9 +1752,9 @@ def cmplx_corr(signal, fs=None):
     sig = as_signal(signal, fs)
     asig = sig.to_analytical()
 
-    ccm = np.mean(asig.ch[0] * asig.ch[1].conjugate())
-    norm1 = np.mean(np.abs(asig.ch[0])**2)
-    norm2 = np.mean(np.abs(asig.ch[1])**2)
+    ccm = np.mean(asig.ch[0] * asig.ch[1].conjugate(), axis=0)
+    norm1 = np.mean(np.abs(asig.ch[0])**2, axis=0)
+    norm2 = np.mean(np.abs(asig.ch[1])**2, axis=0)
 
     corrcov = ccm / np.sqrt(norm1 * norm2)
 
