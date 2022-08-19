@@ -32,6 +32,13 @@ class test_stats(unittest.TestCase):
         dbspl = audio.calc_dbspl(sig)
         testing.assert_array_almost_equal(sig.stats.dbspl(), dbspl)
 
+    def test_dbfs(self):
+        sig = audio.Signal((2, 2), 1, 48000).add_noise()
+        sig *= np.sqrt(2)
+        dbspl = audio.calc_dbfs(sig)
+        testing.assert_array_almost_equal(sig.stats.dbfs(), dbspl)
+        assert sig.stats.dbfs().shape == (2, 2)
+
     def test_crest_factor(self):
         sig = audio.Signal((2, 2), 1, 48000).add_noise()
         sig *= np.sqrt(2)
