@@ -1,4 +1,5 @@
 Develop branch
+ - Deleted the long depricated Signal.add_noise_noise method
  - Implemented Signal.stats submodule
  - Added deprecationwarning to Signal.calc_dbfs and Signal.calc_dbspl which
    moved to the Signal.stats submodule

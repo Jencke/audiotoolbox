@@ -112,23 +112,6 @@ class Signal(base_signal.BaseSignal):
 
         return self
 
-    def add_low_noise_noise(self, low_f, high_f, n_rep=10, seed=None):
-        """Depricated in the next version."""
-        noise = audio.generate_low_noise_noise(duration=self.duration,
-                                               fs=self.fs,
-                                               low_f=low_f,
-                                               high_f=high_f,
-                                               n_rep=n_rep,
-                                               seed=seed)
-        if self.n_channels > 1:
-            summed_wv = self + noise[:, None]
-        else:
-            summed_wv = self + noise
-
-        self[:] = summed_wv
-
-        return self
-
     def add_noise(self, ntype='white', variance=1, seed=None):
         r"""Add uncorrelated noise to the signal.
 
