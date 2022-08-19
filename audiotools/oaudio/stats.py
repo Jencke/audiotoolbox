@@ -47,3 +47,8 @@ class SignalStats(BaseStats):
         audiotools.crest_factor
         """
         return audio.crest_factor(self.sig)
+
+
+class FreqDomainStats(BaseStats):
+    def __init__(self, sig):
+        BaseStats.__init__(self, sig)
