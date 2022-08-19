@@ -4,8 +4,8 @@ import numpy as np
 class BaseStats(object):
     """Class containing """
 
-    def __init__(self, obj):
-        self.sig = obj
+    def __init__(self, sig):
+        self.sig = sig
 
     def mean(self):
         """aritmetic mean"""
@@ -15,6 +15,11 @@ class BaseStats(object):
     def var(self):
         """variance"""
         return np.var(self.sig, axis=0)
+
+
+class SignalStats(BaseStats):
+    def __init__(self, sig):
+        BaseStats.__init__(self, sig)
 
     def dbspl(self):
         """Soundpressure level relative to 20uPa in dB
@@ -42,6 +47,3 @@ class BaseStats(object):
         audiotools.crest_factor
         """
         return audio.crest_factor(self.sig)
-
-# def SignalStats(BaseStats):
-#     def __init__(self, obj)

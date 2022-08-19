@@ -7,6 +7,7 @@ from .. import interfaces
 from .freqdomain_signal import FrequencyDomainSignal
 from . import base_signal
 from .. import filter as filt
+from .stats import SignalStats
 
 
 class Signal(base_signal.BaseSignal):
@@ -42,6 +43,7 @@ class Signal(base_signal.BaseSignal):
         """Create new objects."""
         obj = base_signal.BaseSignal.__new__(cls, n_channels,
                                              duration, fs, dtype)
+        obj.stats = SignalStats(obj)
         return obj
 
     def __array_finalize__(self, obj):
