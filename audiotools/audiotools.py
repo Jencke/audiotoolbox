@@ -1111,11 +1111,11 @@ def freqspace(min_frequency, max_frequency, n, scale='bark'):
 
 
 def freqarange(min_frequency, max_frequency, step=1, scale='bark'):
-    r"""Calculate a of frequencies with a predifined spacing on the bark or erb
-        scale.
+    r"""Calculate a of frequencies with a predifined spacing on a given frequency
+    scale.
 
     Returns frequencies between min_frequency and max_frequency with
-    the stepsize step on the bark or erb scale.
+    a given stepsize step on a frequency scale.
 
     Parameters
     ----------
@@ -1126,14 +1126,14 @@ def freqarange(min_frequency, max_frequency, step=1, scale='bark'):
       maximal frequency in Hz
 
     step: float
-      stepsize on the erb or bark scale
+      stepsize on the scale
 
     scale: str
-      scale to use 'bark' or 'erb'. (default='bark')
+      scale to use 'bark' or 'erb' or 'octave'. (default='bark')
 
     Returns
     -------
-    ndarray: frequencies spaced following step on bark or erb scale
+    ndarray: frequencies spaced following step on respective scale
 
     """
     if scale == 'bark':
@@ -1146,6 +1146,10 @@ def freqarange(min_frequency, max_frequency, step=1, scale='bark'):
                                                  max_frequency]))
         erbs = np.arange(min_erb, max_erb, step)
         freqs = erb_to_freq(erbs)
+    elif scale == 'octave':
+        n_steps = int(np.log2(max_frequency / min_frequency) / step)
+        exponents = step * (np.arange(n_steps) + 1)
+        freqs = max_frequency / 2**exponents[::-1]
     else:
         raise NotImplementedError('only ERB and Bark implemented')
 

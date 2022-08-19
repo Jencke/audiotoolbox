@@ -321,7 +321,6 @@ class test_oaudio(unittest.TestCase):
         diff = np.diff(erbs)
         testing.assert_almost_equal(diff[0], 0.5)
 
-
         freqs = audio.freqarange(100, 1200, 1)
         barks = audio.freq_to_bark(freqs)
         diff = np.diff(barks)
@@ -332,6 +331,14 @@ class test_oaudio(unittest.TestCase):
         diff = np.diff(barks)
         testing.assert_almost_equal(diff[0], 0.5)
 
+        freqs = audio.freqarange(16, 16000, 1, 'octave')
+        assert freqs[-2] == 4000
+
+        freqs = audio.freqarange(16, 16000, 1/3, 'octave')
+        assert freqs[-6] == 4000
+
+        freqs = audio.freqarange(16, 16000, 1/2, 'octave')
+        assert freqs[-4] == 4000
 
 
 
