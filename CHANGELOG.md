@@ -1,8 +1,7 @@
-stats branch
- - Implemented stats submethod
- - Added deprecationwarning to Signal.calc_dbfs and Signal.calc_dbspl
-
 Develop branch
+ - Implemented Signal.stats submodule
+ - Added deprecationwarning to Signal.calc_dbfs and Signal.calc_dbspl which
+   moved to the Signal.stats submodule
  - Added the option to directly  apply filters when generating partly correlated noise
  - Added the audiotools.cmplx_corr function which calculates the
    complex-valued correlation coefficent
