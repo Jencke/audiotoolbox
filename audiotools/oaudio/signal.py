@@ -8,6 +8,7 @@ from .freqdomain_signal import FrequencyDomainSignal
 from . import base_signal
 from .. import filter as filt
 
+
 class Signal(base_signal.BaseSignal):
     """Base class for signals in the timedomain.
 

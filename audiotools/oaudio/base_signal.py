@@ -1,6 +1,6 @@
 import numpy as np
 import audiotools as audio
-
+from .stats import BaseStats
 
 class BaseSignal(np.ndarray):
     r""" Basic Signal class inherited by all Signal representations
@@ -23,7 +23,9 @@ class BaseSignal(np.ndarray):
                                                  list(n_channels),
                                                  dtype=dtype)
         obj._fs = fs
+        obj.stats = BaseStats(obj)
         obj.fill(0)
+
         return obj
 
     def __array_finalize__(self, obj):
@@ -202,6 +204,7 @@ class _chIndexer(object):
 
     def __init__(self, obj):
         self.idx_obj = obj
+
 
     def __getitem__(self, key):
 
