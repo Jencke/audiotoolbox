@@ -8,20 +8,39 @@ class BaseStats(object):
         self.sig = obj
 
     def mean(self):
-        '''aritmetic mean'''
+        """aritmetic mean"""
         mean = np.mean(self.sig, axis=0)
         return mean
 
     def var(self):
-        '''variance'''
+        """variance"""
         return np.var(self.sig, axis=0)
 
     def dbspl(self):
-        '''Soundpressure level relative to 20uPa in dB'''
+        """Soundpressure level relative to 20uPa in dB
+
+        See Also
+        --------
+        audiotools.calc_dbspl
+        """
         return audio.calc_dbspl(self.sig)
 
+    def dbfs(self):
+        """Level in dB full scale
+
+        See Also
+        --------
+        audiotools.calc_dbfs
+        """
+        return audio.calc_dbfs(self.sig)
+
     def crest_factor(self):
-        '''Soundpressure level relative to 20uPa in dB'''
+        """Soundpressure level relative to 20uPa in dB
+
+        See Also
+        --------
+        audiotools.crest_factor
+        """
         return audio.crest_factor(self.sig)
 
 # def SignalStats(BaseStats):

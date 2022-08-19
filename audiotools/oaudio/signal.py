@@ -329,6 +329,9 @@ class Signal(base_signal.BaseSignal):
         float : The dBFS RMS value
 
         """
+        raise PendingDeprecationWarning('calc_dbfs method Will be removed'
+                                        + ' in the future. Use stats.dbfs'
+                                        + ' instead')
         dbfs = audio.calc_dbfs(self)
         return dbfs
 
@@ -370,7 +373,6 @@ class Signal(base_signal.BaseSignal):
         audiotools.filter.brickwall
         audiotools.filter.gammatone
         audiotools.filter.butterworth
-
         """
         # Default gammatone to real valued implementation
         if filter_type == 'gammatone':
@@ -492,6 +494,9 @@ class Signal(base_signal.BaseSignal):
         float : The sound pressure level in dB
 
         """
+        raise PendingDeprecationWarning('calc_dbspl method Will be removed'
+                                        + ' in the future. Use stats.dbspl'
+                                        + ' instead')
         dbspl = audio.calc_dbspl(self)
         return dbspl
 
