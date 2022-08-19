@@ -7,6 +7,8 @@ from .. import interfaces
 from .freqdomain_signal import FrequencyDomainSignal
 from . import base_signal
 from .. import filter as filt
+from .stats import SignalStats
+
 
 class Signal(base_signal.BaseSignal):
     """Base class for signals in the timedomain.
@@ -41,6 +43,7 @@ class Signal(base_signal.BaseSignal):
         """Create new objects."""
         obj = base_signal.BaseSignal.__new__(cls, n_channels,
                                              duration, fs, dtype)
+        obj.stats = SignalStats(obj)
         return obj
 
     def __array_finalize__(self, obj):
@@ -328,6 +331,9 @@ class Signal(base_signal.BaseSignal):
         float : The dBFS RMS value
 
         """
+        raise PendingDeprecationWarning('calc_dbfs method Will be removed'
+                                        + ' in the future. Use stats.dbfs'
+                                        + ' instead')
         dbfs = audio.calc_dbfs(self)
         return dbfs
 
@@ -369,7 +375,6 @@ class Signal(base_signal.BaseSignal):
         audiotools.filter.brickwall
         audiotools.filter.gammatone
         audiotools.filter.butterworth
-
         """
         # Default gammatone to real valued implementation
         if filter_type == 'gammatone':
@@ -491,6 +496,9 @@ class Signal(base_signal.BaseSignal):
         float : The sound pressure level in dB
 
         """
+        raise PendingDeprecationWarning('calc_dbspl method Will be removed'
+                                        + ' in the future. Use stats.dbspl'
+                                        + ' instead')
         dbspl = audio.calc_dbspl(self)
         return dbspl
 

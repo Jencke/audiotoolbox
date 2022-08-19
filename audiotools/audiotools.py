@@ -959,7 +959,7 @@ def set_dbspl(signal, dbspl_val):
     else:
         rms_val = signal
 
-    p0 = 20e-6 # ref_value
+    p0 = 20e-6  # ref_value
 
     factor = (p0 * 10**(float(dbspl_val) / 20)) / rms_val
 

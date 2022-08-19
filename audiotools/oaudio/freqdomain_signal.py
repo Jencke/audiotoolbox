@@ -2,7 +2,7 @@ import numpy as np
 import audiotools as audio
 
 from . import base_signal
-
+from .stats import FreqDomainStats
 
 def _copy_to_dim(array, dim):
     if np.ndim(dim) == 0:
@@ -39,6 +39,7 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
     def __new__(cls, n_channels, duration, fs, dtype=complex):
         obj = base_signal.BaseSignal.__new__(cls, n_channels,
                                              duration, fs, dtype)
+        obj.stats = FreqDomainStats(obj)
         return obj
 
     @property

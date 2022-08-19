@@ -779,6 +779,10 @@ class test_oaudio(unittest.TestCase):
         testing.assert_allclose(np.abs(ccc), 0.2, atol=0.001)
         testing.assert_allclose(np.angle(ccc), 0, atol=0.1)
 
+        signal = audio.Signal((2, 3, 2), 1, 48000).add_uncorr_noise(0.2)
+        ccc = audio.cmplx_corr(signal)
+        testing.assert_allclose(np.abs(ccc), 0.2, atol=0.001)
+        testing.assert_allclose(np.angle(ccc), 0, atol=0.1)
 
     def test_duration_is_signal(self):
 
