@@ -1,5 +1,5 @@
 Develop branch
- - moved filterbanks from audiotools.filter to audiotools.filter.bank submodule
+ - Moved filterbanks from audiotools.filter to audiotools.filter.bank submodule
  - Added a default gammatone filterbank: filter.auditory_gamma_bank
  - audiotools.freqarange now supports octave spacing
  - Deleted the long depricated Signal.add_noise_noise method
