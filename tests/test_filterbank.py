@@ -7,6 +7,7 @@ from audiotools.filter import gammatone_filt
 from audiotools.filter import butterworth_filt
 import numpy.testing as testing
 from audiotools.filter import create_filterbank
+from audiotools.filter import auditory_gamma_bank
 
 
 class test_oaudio(unittest.TestCase):
@@ -117,7 +118,6 @@ class test_oaudio(unittest.TestCase):
         # Amplitudes hould be 0.5 (double sided spectrum)
         assert np.all((amps - 0.5) <= 0.01)
 
-
     def test_set_params(self):
         fc = [100, 200, 5000]
         bw = [10, 5, 8]
@@ -134,3 +134,10 @@ class test_oaudio(unittest.TestCase):
             a_bank = gamma.coefficents[2:, i_filt]
             testing.assert_array_equal(a, a_bank)
             testing.assert_array_equal(b, b_bank)
+
+    def test_auditory_gamma_bank(self):
+        filt_bank = auditory_gamma_bank(fs = 48000)
+        assert isinstance(filt_bank, bank.GammaToneBank)
+
+        fcs = audio.freqarange(16, 16000, 1, 'erb')
+        testing.assert_array_equal(filt_bank.fc, fcs)

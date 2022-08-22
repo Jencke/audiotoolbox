@@ -1,6 +1,7 @@
 from .. import audiotools as audio
 from . filterbank import create_filterbank
 
+
 def auditory_gamma_bank(fs, flow=16, fhigh=16000, step=1, **kwargs):
     """Equivalent Rectangular Bandwidth spaced gammatone filterbank.
 

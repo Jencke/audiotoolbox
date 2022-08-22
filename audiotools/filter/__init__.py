@@ -6,3 +6,4 @@ from .brickwall_filt import brickwall
 from .butterworth_filt import butterworth
 from .gammatone_filt import gammatone
 from . filterbank import create_filterbank
+from .default_banks import auditory_gamma_bank
