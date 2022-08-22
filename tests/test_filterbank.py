@@ -2,12 +2,12 @@ import unittest
 import numpy as np
 
 import audiotools as audio
-import audiotools.filter.filterbank as bank
+import audiotools.filter.bank.filterbank as bank
 from audiotools.filter import gammatone_filt
 from audiotools.filter import butterworth_filt
 import numpy.testing as testing
-from audiotools.filter import create_filterbank
-from audiotools.filter import auditory_gamma_bank
+from audiotools.filter.bank import create_filterbank
+from audiotools.filter.bank import auditory_gamma_bank
 
 
 class test_oaudio(unittest.TestCase):
@@ -51,7 +51,6 @@ class test_oaudio(unittest.TestCase):
         # Amplitudes should be 0.5 (two sided spectrum)
         assert np.all((amps - 0.5) <= 0.01)
 
-
     def test_gammatone(self):
         # Test if filter coefficents are equivalent tho those of
         # individual filters
@@ -76,7 +75,7 @@ class test_oaudio(unittest.TestCase):
         # create filterbank an run signal
         bank = create_filterbank(fc, bw, 'gammatone', 48000)
         sig_out = bank.filt(sig)
-        #check amplitudes at fc of every filter
+        # check amplitudes at fc of every filter
         amps = np.zeros(len(fc))
         for i_fc, f in enumerate(fc):
             spec = sig_out.ch[i_fc].to_freqdomain()
@@ -97,8 +96,6 @@ class test_oaudio(unittest.TestCase):
         out = gamma.filt(sig)
         assert(out.shape[1:] == (2, 1, 2))
 
-
-
     def test_brickwall(self):
         # Test the gain at fc
         sig = audio.Signal(1, 1, 48000)
@@ -110,7 +107,7 @@ class test_oaudio(unittest.TestCase):
         # create filterbank an run signal
         bank = create_filterbank(fc, bw, 'brickwall', 48000)
         sig_out = bank.filt(sig)
-        #check amplitudes at fc of every filter
+        # check amplitudes at fc of every filter
         amps = np.zeros(len(fc))
         for i_fc, f in enumerate(fc):
             spec = sig_out.ch[i_fc].to_freqdomain()

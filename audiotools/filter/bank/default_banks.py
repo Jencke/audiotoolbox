@@ -1,4 +1,4 @@
-from .. import audiotools as audio
+from ... import audiotools as audio
 from . filterbank import create_filterbank
 
 

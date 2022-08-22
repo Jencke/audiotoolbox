@@ -1,9 +1,9 @@
 import numpy as np
 
-from . import gammatone_filt as gamma
-from . import butterworth_filt as butter
-from . import brickwall_filt as brick
-from .. import audiotools as audio
+from .. import gammatone_filt as gamma
+from .. import butterworth_filt as butter
+from .. import brickwall_filt as brick
+from ... import audiotools as audio
 
 
 def create_filterbank(fc, bw, filter_type, fs, **kwargs):
