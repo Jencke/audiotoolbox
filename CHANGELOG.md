@@ -1,4 +1,6 @@
 Develop branch
+ - Added a default gammatone filterbank: filter.auditory_gamma_bank
+ - audiotools.freqarange now supports octave spacing
  - Deleted the long depricated Signal.add_noise_noise method
  - Implemented Signal.stats submodule
  - Added deprecationwarning to Signal.calc_dbfs and Signal.calc_dbspl which
