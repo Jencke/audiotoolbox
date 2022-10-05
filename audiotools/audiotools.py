@@ -966,16 +966,28 @@ def set_dbspl(signal, dbspl_val):
     return signal * factor
 
 
-def set_dbfs(signal, dbfs_val):
+def set_dbfs(signal, dbfs_val, norm='rms'):
     r"""Full scale normalization of the signal.
 
-    Normalizes the signal to dB Fullscale
-    for this, the Signal is multiplied with the factor :math:`A`
+    Normalizes the signal to dB Fullscale for this, the Signal is multiplied
+    with the factor :math:`A`.
+
+    By default, setting a signal to 0 dB Fullscale results in an rms of one so
+    that:
 
     .. math:: A = \frac{1}{\sqrt{2}\sigma} 10^\frac{L}{20}
 
     where :math:`L` is the goal Level, and :math:`\sigma` is the
     RMS of the signal.
+
+    If the parameter `norm` is set to `peak`, normalization will be in respect
+    to the peak level so that 0 dB Fullscale will result in a peak value of
+    1. In this case, A will be set following
+
+    .. math:: A = \frac{1}{\hat{x}} 10\frac{L}{20}
+
+    where :math:`L` is the goal Level, and :math:`\hat{x}` the peak value of the
+    signal
 
     Parameters
     ----------
@@ -983,6 +995,8 @@ def set_dbfs(signal, dbfs_val):
         The input signal
     dbfs_val : float
         The db full scale value to reach
+    norm : 'rms' or 'peak'
+        Defines if the normalization is relative to RMS or peek level
 
     Returns
     -------
@@ -1000,14 +1014,26 @@ def set_dbfs(signal, dbfs_val):
 
     """
 
-    rms0 = 1 / np.sqrt(2)
+    if norm == 'rms':
+        rms0 = 1 / np.sqrt(2)
 
-    if np.ndim(signal) != 0:
-        rms_val = np.sqrt(np.mean(signal**2, axis=0))
+        if np.ndim(signal) != 0:
+            rms_val = np.sqrt(np.mean(signal**2, axis=0))
+        else:
+            rms_val = signal
+
+        factor = (rms0 * 10**(float(dbfs_val) / 20)) / rms_val
+    elif norm == 'peak':
+
+        if np.ndim(signal) != 0:
+            peak_val = np.max(signal, axis=0)
+        else:
+            peak_val = signal
+
+        factor = (10**(float(dbfs_val) / 20)) / peak_val
+
     else:
-        rms_val = signal
-
-    factor = (rms0 * 10**(float(dbfs_val) / 20)) / rms_val
+        raise(ValueError('norm must be "rms" or "peak"'))
 
     return signal * factor
 

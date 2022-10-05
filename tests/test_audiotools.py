@@ -401,6 +401,7 @@ class test_oaudio(unittest.TestCase):
         l_tone = 20*np.log10(np.sqrt(0.5) / 20e-6)
         assert audio.calc_dbspl(sig) == l_tone
 
+
     def test_set_dbsl(self):
         fs = 100e3
         signal = audio.generate_tone(100, 1, fs)
@@ -430,6 +431,10 @@ class test_oaudio(unittest.TestCase):
         signal = audio.set_dbfs(signal, -5)
         assert(signal.max() == m)
 
+        assert audio.set_dbfs(2, 0, norm='peak') == 1
+        signal = audio.generate_tone(1000, 8, 48000)
+        assert audio.set_dbfs(signal, 0, 'peak').max() == 1
+        assert audio.set_dbfs(signal, -3, 'peak').max() == 10**(-3/20)
 
     def test_phon_to_dbspl(self):
         # Test some specific Values
