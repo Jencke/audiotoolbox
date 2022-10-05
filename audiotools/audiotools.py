@@ -172,7 +172,7 @@ def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1,
     audiotools.Signal.add_cos_modulator
     """
     duration, fs, n_channels = _duration_is_signal(duration, fs)
-    n_samples = nsamples(duration, fs)
+
     time = get_time(duration, fs)
 
     modulator = 1 + mod_index * np.cos(2 * pi * modulator_freq * time
@@ -481,7 +481,6 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None,
     """
     np.random.seed(seed)
 
-    sign = np.sign(corr)
     corr = np.abs(corr)
     # if more then one dimension in n_channels
     if np.ndim(n_channels) > 0:
@@ -986,8 +985,8 @@ def set_dbfs(signal, dbfs_val, norm='rms'):
 
     .. math:: A = \frac{1}{\hat{x}} 10\frac{L}{20}
 
-    where :math:`L` is the goal Level, and :math:`\hat{x}` the peak value of the
-    signal
+    where :math:`L` is the goal Level, and :math:`\hat{x}` the peak value of
+    the signal
 
     Parameters
     ----------
@@ -1746,7 +1745,7 @@ def crest_factor(signal, axis=0):
 
 
 def cmplx_corr(signal, fs=None):
-    """The complex valued correlation coefficent.
+    r"""The complex valued correlation coefficent.
 
     This function calculates the complex valued correlation coefficent which
     equals the value of the complex_valued_cross_correlation at :math:`\tau=0`
