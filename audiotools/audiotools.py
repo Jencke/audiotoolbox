@@ -5,7 +5,7 @@ from numpy import pi
 from scipy.interpolate import interp1d
 from scipy.signal import hilbert
 
-from .oaudio import Signal
+from .oaudio import Signal, as_signal
 from . import filter
 
 COLOR_R = '#d65c5c'
@@ -72,7 +72,8 @@ def from_wav(filename, fullscale=True):
 
 
 def pad_for_fft(signal):
-    r"""Zero buffer a signal with zeros so that it reaches the next closest :math`$2^n$` length.
+    r"""Zero buffer a signal with zeros so that it reaches the next
+        closest :math`$2^n$` length.
 
        This Function attaches zeros to a signal to adjust the length
        of the signal to a multiple of 2 for efficent FFT calculation.
@@ -171,7 +172,7 @@ def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1,
     audiotools.Signal.add_cos_modulator
     """
     duration, fs, n_channels = _duration_is_signal(duration, fs)
-    n_samples = nsamples(duration, fs)
+
     time = get_time(duration, fs)
 
     modulator = 1 + mod_index * np.cos(2 * pi * modulator_freq * time
@@ -414,7 +415,8 @@ def generate_noise(duration, fs=None, ntype='white', n_channels=1, seed=None):
     return noise
 
 
-def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None):
+def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None,
+                          bandpass=None, lowpass=None, highpass=None):
     r"""Generate partly uncorrelated noise
 
     This function generates partly uncorrelated noise using the N+1
@@ -432,6 +434,10 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None):
     :math:`X_{n}` the nth indipendent noise and :math:`X_{N=1}` is the
     common noise.
 
+    bandpass, lowpass and highpass filters can optionally be applied before
+    using the Gram-Schmidt process. This ensures that the signal correlation
+    uneffected by the filter.
+
     for two noise tokens, this is identical to the assymetric
     three-generator method described in [1]_
 
@@ -448,6 +454,15 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None):
     seed : int or 1-d array_like, optional
         Seed for `RandomState`.
         Must be convertible to 32 bit unsigned integers.
+    bandpass : dict, optional
+        Parameters for an bandpass filter, these are passed as arguments to the
+        audiotools.filter.bandpass function
+    lowpass : dict, optional
+        Parameters for an lowpass filter, these are passed as arguments to the
+        audiotools.filter.lowpass function
+    highpass : dict, optional
+        Parameters for an highpass filter, these are passed as arguments to the
+        audiotools.filter.highpass function
 
     Returns
     -------
@@ -466,7 +481,6 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None):
     """
     np.random.seed(seed)
 
-    sign = np.sign(corr)
     corr = np.abs(corr)
     # if more then one dimension in n_channels
     if np.ndim(n_channels) > 0:
@@ -481,6 +495,14 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None):
     len_signal = nsamples(duration, fs)
     noise = np.random.randn(len_signal, n_channels+1)
     noise -= noise.mean(axis=0)
+
+    if bandpass is not None:
+        noise = filter.bandpass(signal=noise, fs=fs, **bandpass)
+    if lowpass is not None:
+        noise = filter.lowpass(signal=noise, fs=fs, **lowpass)
+    if highpass is not None:
+        noise = filter.highpass(signal=noise, fs=fs, **highpass)
+
     # normalize variance
     noise /= noise.std(axis=0)
 
@@ -936,23 +958,35 @@ def set_dbspl(signal, dbspl_val):
     else:
         rms_val = signal
 
-    p0 = 20e-6 # ref_value
+    p0 = 20e-6  # ref_value
 
     factor = (p0 * 10**(float(dbspl_val) / 20)) / rms_val
 
     return signal * factor
 
 
-def set_dbfs(signal, dbfs_val):
+def set_dbfs(signal, dbfs_val, norm='rms'):
     r"""Full scale normalization of the signal.
 
-    Normalizes the signal to dB Fullscale
-    for this, the Signal is multiplied with the factor :math:`A`
+    Normalizes the signal to dB Fullscale for this, the Signal is multiplied
+    with the factor :math:`A`.
+
+    By default, setting a signal to 0 dB Fullscale results in an rms of one so
+    that:
 
     .. math:: A = \frac{1}{\sqrt{2}\sigma} 10^\frac{L}{20}
 
     where :math:`L` is the goal Level, and :math:`\sigma` is the
     RMS of the signal.
+
+    If the parameter `norm` is set to `peak`, normalization will be in respect
+    to the peak level so that 0 dB Fullscale will result in a peak value of
+    1. In this case, A will be set following
+
+    .. math:: A = \frac{1}{\hat{x}} 10\frac{L}{20}
+
+    where :math:`L` is the goal Level, and :math:`\hat{x}` the peak value of
+    the signal
 
     Parameters
     ----------
@@ -960,6 +994,8 @@ def set_dbfs(signal, dbfs_val):
         The input signal
     dbfs_val : float
         The db full scale value to reach
+    norm : 'rms' or 'peak'
+        Defines if the normalization is relative to RMS or peek level
 
     Returns
     -------
@@ -977,14 +1013,26 @@ def set_dbfs(signal, dbfs_val):
 
     """
 
-    rms0 = 1 / np.sqrt(2)
+    if norm == 'rms':
+        rms0 = 1 / np.sqrt(2)
 
-    if np.ndim(signal) != 0:
-        rms_val = np.sqrt(np.mean(signal**2, axis=0))
+        if np.ndim(signal) != 0:
+            rms_val = np.sqrt(np.mean(signal**2, axis=0))
+        else:
+            rms_val = signal
+
+        factor = (rms0 * 10**(float(dbfs_val) / 20)) / rms_val
+    elif norm == 'peak':
+
+        if np.ndim(signal) != 0:
+            peak_val = np.max(signal, axis=0)
+        else:
+            peak_val = signal
+
+        factor = (10**(float(dbfs_val) / 20)) / peak_val
+
     else:
-        rms_val = signal
-
-    factor = (rms0 * 10**(float(dbfs_val) / 20)) / rms_val
+        raise(ValueError('norm must be "rms" or "peak"'))
 
     return signal * factor
 
@@ -1696,23 +1744,65 @@ def crest_factor(signal, axis=0):
     return a_max / a_effective
 
 
-def calc_coherence(signal):
-    r"""normalized complex valued coherence
+def cmplx_corr(signal, fs=None):
+    r"""The complex valued correlation coefficent.
 
-    This function calculates the normalized complex valued degree of
-    coherence between two signals :math:`f(t)` and :math:`g(t)`. It is
-    defined as:
+    This function calculates the complex valued correlation coefficent which
+    equals the value of the complex_valued_cross_correlation at :math:`\tau=0`
 
-    .. math:: \gamma(tau) = \frac{<f_a(t)g^*_a(t-\tau)>}{\sqrt{<|f_a(t)|^2><|g_a(t)|^2>}}
+    .. math:: \gamma = \frac{<f_a(t)^*_g_a(t)>}{\sqrt{<|f_a(t)|^2><|g_a(t)|^2>}}
 
     where :math:`f_a(t)` is the analytic signals of :math:`f(t)` and
     and :math:`g^*_a(t)` is the complex conjugate of the analytic
     signal of :math:`g(t)`. :math:`<\dots>` symbolizes the mean over
     time.
 
-    Requires an input signal with the shape (N, 2).  If only a
-    one-dimensional signal is provided, the auto-coherence function
-    where :math:`f(t) = g(t)` is calculated.
+    Parameters
+    ----------
+    signal : Signal or ndarray
+        The input signal. The shape must be (N, 2) where N are the
+        samples.
+
+    Returns
+    -------
+    The coherence vector: Signal or ndarray
+
+    """
+
+    if np.ndim(signal) < 2:
+        raise ValueError('Input shape must be (N, 2)')
+    if np.shape(signal)[1] != 2:
+        raise ValueError('Input shape must be (N, 2)')
+
+    sig = as_signal(signal, fs)
+    asig = sig.to_analytical()
+
+    ccm = np.mean(asig.ch[0] * asig.ch[1].conjugate(), axis=0)
+    norm1 = np.mean(np.abs(asig.ch[0])**2, axis=0)
+    norm2 = np.mean(np.abs(asig.ch[1])**2, axis=0)
+
+    corrcov = ccm / np.sqrt(norm1 * norm2)
+
+    return corrcov
+
+
+def cmplx_crosscorr(signal):
+    r"""normalized complex valued cross-correlation function
+
+    This function calculates the normalized complex valued cross correlation
+    function between two signals :math:`f(t)` and :math:`g(t)`. It is defined
+    as:
+
+    .. math:: \gamma(tau) = \frac{<f_a(t)^*g_a(t-\tau)>}{\sqrt{<|f_a(t)|^2><|g_a(t)|^2>}}
+
+    where :math:`f_a(t)` is the analytic signals of :math:`f(t)` and
+    and :math:`g^*_a(t)` is the complex conjugate of the analytic
+    signal of :math:`g(t)`. :math:`<\dots>` symbolizes the mean over
+    time.
+
+    Requires an input signal with the shape (N, 2).  If only a one-dimensional
+    signal is provided, the auto-cross correlation function where :math:`f(t) =
+    g(t)` is calculated.
 
     The real part of the complex valued coherence equals the
     normalized cross-correlation.

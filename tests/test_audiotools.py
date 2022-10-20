@@ -401,11 +401,12 @@ class test_oaudio(unittest.TestCase):
         l_tone = 20*np.log10(np.sqrt(0.5) / 20e-6)
         assert audio.calc_dbspl(sig) == l_tone
 
+
     def test_set_dbsl(self):
         fs = 100e3
         signal = audio.generate_tone(100, 1, fs)
-        signal = audio.set_dbspl(signal, 22)
-        assert audio.calc_dbspl(signal) == 22
+        signal = audio.set_dbspl(signal, 15)
+        testing.assert_almost_equal(audio.calc_dbspl(signal), 15)
         assert audio.set_dbspl(1, 0) == 20e-6
 
     def test_calc_dbfs(self):
@@ -430,6 +431,10 @@ class test_oaudio(unittest.TestCase):
         signal = audio.set_dbfs(signal, -5)
         assert(signal.max() == m)
 
+        assert audio.set_dbfs(2, 0, norm='peak') == 1
+        signal = audio.generate_tone(1000, 8, 48000)
+        assert audio.set_dbfs(signal, 0, 'peak').max() == 1
+        assert audio.set_dbfs(signal, -3, 'peak').max() == 10**(-3/20)
 
     def test_phon_to_dbspl(self):
         # Test some specific Values
@@ -547,25 +552,27 @@ class test_oaudio(unittest.TestCase):
         # Test equal Power assumption
         testing.assert_almost_equal(noise1.var(), noise2.var())
 
-        #Test multichannel
-        res_noise = audio.generate_uncorr_noise(1, fs=48000, n_channels=100, corr=0)
+        # Test multichannel
+        res_noise = audio.generate_uncorr_noise(1, fs=48000,
+                                                n_channels=100, corr=0)
         cv = np.corrcoef(res_noise.T)
         lower_tri = np.tril(cv, -1)
-        lower_tri[lower_tri==0] = np.nan
+        lower_tri[lower_tri == 0] = np.nan
         testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0)
 
-        #Test multichannel
-        res_noise = audio.generate_uncorr_noise(1, fs=48000, n_channels=3, corr=0.5)
+        # Test multichannel
+        res_noise = audio.generate_uncorr_noise(1, fs=48000,
+                                                n_channels=3, corr=0.5)
         cv = np.corrcoef(res_noise.T)
         lower_tri = np.tril(cv, -1)
-        lower_tri[lower_tri==0] = np.nan
+        lower_tri[lower_tri == 0] = np.nan
         testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5)
 
-        #Test vor variance = 1
+        # Test vor variance = 1
         noise = audio.generate_uncorr_noise(duration, fs, 2, corr=0.5)
         testing.assert_almost_equal(noise.var(axis=0), 1)
 
-        #Test multiple dimensions:
+        # Test multiple dimensions:
         noise = audio.generate_uncorr_noise(duration, fs, (2, 3, 4), corr=0.5)
         assert noise.shape[1:] == (2, 3, 4)
         noise = noise.reshape([len(noise), 2 * 3 * 4])
@@ -573,6 +580,73 @@ class test_oaudio(unittest.TestCase):
         lower_tri = np.tril(cv, -1)
         lower_tri[lower_tri == 0] = np.nan
         testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5)
+
+    def test_generate_uncorr_noise_filter(self):
+        # Test brickwall
+        duration = 1
+        fs = 100000
+        fc = 300
+        bw = 200
+        bandpass = {'fc': fc, 'bw': bw, 'filter_type': 'brickwall'}
+        noise = audio.generate_uncorr_noise(duration,
+                                            fs, 2, corr=0.5,
+                                            bandpass=bandpass)
+        flow = fc - bw / 2
+        fhigh = fc + bw / 2
+        spec = np.abs(np.fft.fft(noise, axis=0))
+        freqs = np.fft.fftfreq(len(spec), 1. / fs)
+        passband = (np.abs(freqs) >= flow) & (np.abs(freqs) <= fhigh)
+        non_zero = ~np.isclose(spec, 0)
+        assert np.array_equal(non_zero[:, 0], passband)
+        assert np.array_equal(non_zero[:, 1], passband)
+
+        # test coherence value
+        bandpass = {'fc': fc, 'bw': bw, 'filter_type': 'brickwall'}
+        noise = audio.generate_uncorr_noise(duration,
+                                            fs, 4, corr=0.5,
+                                            bandpass=bandpass)
+        cv = np.corrcoef(noise.T)
+        lower_tri = np.tril(cv, -1)
+        lower_tri[lower_tri == 0] = np.nan
+        testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5)
+
+        bandpass = {'fc': fc, 'bw': bw, 'filter_type': 'butter'}
+        noise = audio.generate_uncorr_noise(duration,
+                                            fs, 4, corr=0.5,
+                                            bandpass=bandpass)
+        cv = np.corrcoef(noise.T)
+        lower_tri = np.tril(cv, -1)
+        lower_tri[lower_tri == 0] = np.nan
+        testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5,
+                                    decimal=6)
+
+        bandpass = {'fc': fc, 'bw': bw, 'filter_type': 'gammatone'}
+        noise = audio.generate_uncorr_noise(duration,
+                                            fs, 4, corr=0.5,
+                                            bandpass=bandpass)
+        cv = np.corrcoef(noise.T)
+        lower_tri = np.tril(cv, -1)
+        lower_tri[lower_tri == 0] = np.nan
+        testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5,
+                                    decimal=5)
+
+        fcut = 500
+        lowpass = {'f_cut': fcut, 'filter_type': 'brickwall'}
+        noise = audio.generate_uncorr_noise(duration,
+                                            fs, 4, corr=0.5,
+                                            lowpass=lowpass)
+        cv = np.corrcoef(noise.T)
+        lower_tri = np.tril(cv, -1)
+        lower_tri[lower_tri == 0] = np.nan
+        testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5,
+                                    decimal=5)
+
+        fcut = 500
+        highpass = {'f_cut': fcut, 'filter_type': 'brickwall'}
+        noise = audio.generate_uncorr_noise(duration,
+                                            fs, 4, corr=0.33,
+                                            highpass=highpass)
+
 
     def test_extract_binaural_differences(self):
 
@@ -650,11 +724,11 @@ class test_oaudio(unittest.TestCase):
         cfac = audio.crest_factor(signal)
         testing.assert_almost_equal(cfac, np.sqrt(2))
 
-    def test_calc_coherence(self):
+    def test_cmplx_crosscorr(self):
         cf = 500
         bw = 100
         sig = audio.Signal(2, 100, 48000).add_noise().bandpass(cf, bw, 'brickwall')
-        coh = audio.calc_coherence(sig)
+        coh = audio.cmplx_crosscorr(sig)
 
         # Analytic coherence for aboves signal
         coh_analytic = (np.sin(np.pi * bw * sig.time[1:])
@@ -669,19 +743,51 @@ class test_oaudio(unittest.TestCase):
                                 coh_analytic[:nsamp-1], rtol=0, atol=0.03)
 
         # calculate auto-coherrence
-        coh2 = audio.calc_coherence(sig.ch[0])
+        coh2 = audio.cmplx_crosscorr(sig.ch[0])
         testing.assert_array_equal(coh, coh2)
 
         # test using numpy arrays
         sig = np.asarray(sig)
-        coh3 = audio.calc_coherence(sig)
+        coh3 = audio.cmplx_crosscorr(sig)
         testing.assert_array_equal(coh3, coh)
 
         cf = 500
         bw = 100
-        sig = audio.Signal(2, 100, 48000).add_uncorr_noise(0.5).bandpass(cf, bw, 'brickwall')
-        coh = audio.calc_coherence(sig)
-        testing.assert_allclose(coh.abs()[coh.time==0], 0.5, rtol=0.05)
+        sig = audio.Signal(2, 100, 48000).add_uncorr_noise(0.5)
+        sig.bandpass(cf, bw, 'brickwall')
+        coh = audio.cmplx_crosscorr(sig)
+        testing.assert_allclose(coh.abs()[coh.time == 0], 0.5, rtol=0.05)
+
+    def test_cmplx_correlation(self):
+        signal = audio.Signal(1, 1, 48000)
+        self.assertRaises(ValueError, lambda: audio.cmplx_corr(signal))
+        signal = audio.Signal(3, 1, 48000)
+        self.assertRaises(ValueError, lambda: audio.cmplx_corr(signal))
+
+        signal = audio.Signal(2, 1, 48000).add_noise()
+        ccc = complex(audio.cmplx_corr(signal))
+        testing.assert_allclose(np.abs(ccc), 1)
+        assert np.angle(ccc) == 0
+
+        signal = audio.Signal(2, 1, 48000).add_noise()
+        signal *= 5.2
+        ccc = complex(audio.cmplx_corr(signal))
+        testing.assert_allclose(np.abs(ccc), 1)
+
+        signal = audio.Signal(2, 1, 48000).add_noise()
+        signal.ch[1].phase_shift(np.pi/2)
+        ccc = audio.cmplx_corr(signal)
+        testing.assert_allclose(np.angle(ccc), np.pi/2)
+
+        signal = audio.Signal(2, 1, 48000).add_uncorr_noise(0.2)
+        ccc = audio.cmplx_corr(signal)
+        testing.assert_allclose(np.abs(ccc), 0.2, atol=0.001)
+        testing.assert_allclose(np.angle(ccc), 0, atol=0.1)
+
+        signal = audio.Signal((2, 3, 2), 1, 48000).add_uncorr_noise(0.2)
+        ccc = audio.cmplx_corr(signal)
+        testing.assert_allclose(np.abs(ccc), 0.2, atol=0.001)
+        testing.assert_allclose(np.angle(ccc), 0, atol=0.1)
 
     def test_duration_is_signal(self):
 

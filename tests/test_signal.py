@@ -81,16 +81,6 @@ class test_oaudio(unittest.TestCase):
 
         testing.assert_equal(sig, test)
 
-    def test_calcdbspl(self):
-        fs = 48000
-        duration = 100e-3
-
-        sig = Signal(1, duration, fs)
-        sig.add_tone(100).set_dbspl(50)
-        db = sig.calc_dbspl()
-
-        assert db == 50
-
     def test_setdbfs_calcdbfs(self):
         fs = 48000
         duration = 100e-3
@@ -99,7 +89,7 @@ class test_oaudio(unittest.TestCase):
         sig.add_tone(100).set_dbfs(-5)
 
         assert(audio.calc_dbfs(sig) == -5)
-        assert(sig.calc_dbfs() == -5)
+        assert(sig.stats.dbfs() == -5)
 
 
     def test_zeropad(self):

@@ -6,7 +6,8 @@ from .. import wav
 from .. import interfaces
 from .freqdomain_signal import FrequencyDomainSignal
 from . import base_signal
-from ..filter import bandpass, lowpass, highpass
+from .. import filter as filt
+from .stats import SignalStats
 
 
 class Signal(base_signal.BaseSignal):
@@ -42,6 +43,7 @@ class Signal(base_signal.BaseSignal):
         """Create new objects."""
         obj = base_signal.BaseSignal.__new__(cls, n_channels,
                                              duration, fs, dtype)
+        obj.stats = SignalStats(obj)
         return obj
 
     def __array_finalize__(self, obj):
@@ -110,23 +112,6 @@ class Signal(base_signal.BaseSignal):
 
         return self
 
-    def add_low_noise_noise(self, low_f, high_f, n_rep=10, seed=None):
-        """Depricated in the next version."""
-        noise = audio.generate_low_noise_noise(duration=self.duration,
-                                               fs=self.fs,
-                                               low_f=low_f,
-                                               high_f=high_f,
-                                               n_rep=n_rep,
-                                               seed=seed)
-        if self.n_channels > 1:
-            summed_wv = self + noise[:, None]
-        else:
-            summed_wv = self + noise
-
-        self[:] = summed_wv
-
-        return self
-
     def add_noise(self, ntype='white', variance=1, seed=None):
         r"""Add uncorrelated noise to the signal.
 
@@ -171,7 +156,8 @@ class Signal(base_signal.BaseSignal):
         self[:] = (self.T + noise.T * np.sqrt(variance)).T
         return self
 
-    def add_uncorr_noise(self, corr=0, variance=1, seed=None):
+    def add_uncorr_noise(self, corr=0, variance=1, seed=None,
+                         bandpass=None, highpass=None, lowpass=None):
         r"""Add partly uncorrelated noise.
 
         This function adds partly uncorrelated noise using the N+1
@@ -202,6 +188,15 @@ class Signal(base_signal.BaseSignal):
         seed : int or 1-d array_like, optional
             Seed for `RandomState`.
             Must be convertible to 32 bit unsigned integers.
+        bandpass : dict, optional
+            Parameters for an bandpass filter, these are passed as arguments to
+            the audiotools.filter.bandpass function
+        lowpass : dict, optional
+            Parameters for an lowpass filter, these are passed as arguments to
+            the audiotools.filter.lowpass function
+        highpass : dict, optional
+            Parameters for an highpass filter, these are passed as arguments to
+            the audiotools.filter.highpass function
 
         Returns
         -------
@@ -225,7 +220,10 @@ class Signal(base_signal.BaseSignal):
                                             fs=self.fs,
                                             n_channels=self.n_channels,
                                             corr=corr,
-                                            seed=seed)
+                                            seed=seed,
+                                            bandpass=bandpass,
+                                            highpass=highpass,
+                                            lowpass=lowpass)
 
         self += noise * np.sqrt(variance)
 
@@ -316,6 +314,9 @@ class Signal(base_signal.BaseSignal):
         float : The dBFS RMS value
 
         """
+        raise PendingDeprecationWarning('calc_dbfs method Will be removed'
+                                        + ' in the future. Use stats.dbfs'
+                                        + ' instead')
         dbfs = audio.calc_dbfs(self)
         return dbfs
 
@@ -357,14 +358,13 @@ class Signal(base_signal.BaseSignal):
         audiotools.filter.brickwall
         audiotools.filter.gammatone
         audiotools.filter.butterworth
-
         """
         # Default gammatone to real valued implementation
         if filter_type == 'gammatone':
             if 'return_complex' not in kwargs:
                 kwargs['return_complex'] = False
 
-        filt_signal = bandpass(self, fc, bw, filter_type, **kwargs)
+        filt_signal = filt.bandpass(self, fc, bw, filter_type, **kwargs)
 
         # in case of complex output, signal needs to be reshaped and
         # typecast
@@ -416,7 +416,7 @@ class Signal(base_signal.BaseSignal):
         audiotools.filter.butterworth
 
         """
-        filt_signal = lowpass(self, f_cut, filter_type, **kwargs)
+        filt_signal = filt.lowpass(self, f_cut, filter_type, **kwargs)
 
         self[:] = filt_signal
         return self
@@ -461,7 +461,7 @@ class Signal(base_signal.BaseSignal):
         audiotools.filter.butterworth
 
         """
-        filt_signal = highpass(self, f_cut, filter_type, **kwargs)
+        filt_signal = filt.highpass(self, f_cut, filter_type, **kwargs)
 
         self[:] = filt_signal
         return self
@@ -479,6 +479,9 @@ class Signal(base_signal.BaseSignal):
         float : The sound pressure level in dB
 
         """
+        raise PendingDeprecationWarning('calc_dbspl method Will be removed'
+                                        + ' in the future. Use stats.dbspl'
+                                        + ' instead')
         dbspl = audio.calc_dbspl(self)
         return dbspl
 

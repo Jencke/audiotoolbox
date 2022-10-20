@@ -6,8 +6,6 @@ import numpy as np
 import numpy.testing as testing
 import pytest
 
-# import matplotlib.pyplot as plt
-
 
 class test_oaudio(unittest.TestCase):
 
