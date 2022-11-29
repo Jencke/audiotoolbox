@@ -450,7 +450,7 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None,
     n_channels : int
         number of indipendant noise channels
     corr : int, optional
-        Desired correlation of the noise tokens, (default=0)
+        Desired correlation of the noise tokens, (default=0).
     seed : int or 1-d array_like, optional
         Seed for `RandomState`.
         Must be convertible to 32 bit unsigned integers.
@@ -481,6 +481,10 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None,
     """
     np.random.seed(seed)
 
+    if corr < 0:
+        Warning(ValueError('Resulting correlations will be positive'
+                           + ' to gain negative correlations, multiply'
+                           + ' channel with -1'))
     corr = np.abs(corr)
     # if more then one dimension in n_channels
     if np.ndim(n_channels) > 0:
