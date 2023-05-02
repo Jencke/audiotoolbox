@@ -172,7 +172,7 @@ def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1,
     audiotools.Signal.add_cos_modulator
     """
     duration, fs, n_channels = _duration_is_signal(duration, fs)
-    n_samples = nsamples(duration, fs)
+
     time = get_time(duration, fs)
 
     modulator = 1 + mod_index * np.cos(2 * pi * modulator_freq * time
@@ -450,7 +450,7 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None,
     n_channels : int
         number of indipendant noise channels
     corr : int, optional
-        Desired correlation of the noise tokens, (default=0)
+        Desired correlation of the noise tokens, (default=0).
     seed : int or 1-d array_like, optional
         Seed for `RandomState`.
         Must be convertible to 32 bit unsigned integers.
@@ -481,7 +481,10 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None,
     """
     np.random.seed(seed)
 
-    sign = np.sign(corr)
+    if corr < 0:
+        Warning(ValueError('Resulting correlations will be positive'
+                           + ' to gain negative correlations, multiply'
+                           + ' channel with -1'))
     corr = np.abs(corr)
     # if more then one dimension in n_channels
     if np.ndim(n_channels) > 0:
@@ -966,16 +969,28 @@ def set_dbspl(signal, dbspl_val):
     return signal * factor
 
 
-def set_dbfs(signal, dbfs_val):
+def set_dbfs(signal, dbfs_val, norm='rms'):
     r"""Full scale normalization of the signal.
 
-    Normalizes the signal to dB Fullscale
-    for this, the Signal is multiplied with the factor :math:`A`
+    Normalizes the signal to dB Fullscale for this, the Signal is multiplied
+    with the factor :math:`A`.
+
+    By default, setting a signal to 0 dB Fullscale results in an rms of one so
+    that:
 
     .. math:: A = \frac{1}{\sqrt{2}\sigma} 10^\frac{L}{20}
 
     where :math:`L` is the goal Level, and :math:`\sigma` is the
     RMS of the signal.
+
+    If the parameter `norm` is set to `peak`, normalization will be in respect
+    to the peak level so that 0 dB Fullscale will result in a peak value of
+    1. In this case, A will be set following
+
+    .. math:: A = \frac{1}{\hat{x}} 10\frac{L}{20}
+
+    where :math:`L` is the goal Level, and :math:`\hat{x}` the peak value of
+    the signal
 
     Parameters
     ----------
@@ -983,6 +998,8 @@ def set_dbfs(signal, dbfs_val):
         The input signal
     dbfs_val : float
         The db full scale value to reach
+    norm : 'rms' or 'peak'
+        Defines if the normalization is relative to RMS or peek level
 
     Returns
     -------
@@ -1000,14 +1017,26 @@ def set_dbfs(signal, dbfs_val):
 
     """
 
-    rms0 = 1 / np.sqrt(2)
+    if norm == 'rms':
+        rms0 = 1 / np.sqrt(2)
 
-    if np.ndim(signal) != 0:
-        rms_val = np.sqrt(np.mean(signal**2, axis=0))
+        if np.ndim(signal) != 0:
+            rms_val = np.sqrt(np.mean(signal**2, axis=0))
+        else:
+            rms_val = signal
+
+        factor = (rms0 * 10**(float(dbfs_val) / 20)) / rms_val
+    elif norm == 'peak':
+
+        if np.ndim(signal) != 0:
+            peak_val = np.max(signal, axis=0)
+        else:
+            peak_val = signal
+
+        factor = (10**(float(dbfs_val) / 20)) / peak_val
+
     else:
-        rms_val = signal
-
-    factor = (rms0 * 10**(float(dbfs_val) / 20)) / rms_val
+        raise(ValueError('norm must be "rms" or "peak"'))
 
     return signal * factor
 
@@ -1724,7 +1753,7 @@ def crest_factor(signal, axis=0):
 
 
 def cmplx_corr(signal, fs=None):
-    """The complex valued correlation coefficent.
+    r"""The complex valued correlation coefficent.
 
     This function calculates the complex valued correlation coefficent which
     equals the value of the complex_valued_cross_correlation at :math:`\tau=0`
