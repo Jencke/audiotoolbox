@@ -155,8 +155,15 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
 
         """
 
+
         shift_val = - 1.0j * phase * np.sign(self.freq)
         shift_val = _copy_to_dim(shift_val, self.shape[1:])
+
+        # if even number of samples, do not apply phase shift to the overhanging
+        # negative frequency bin as this results in a non real-valued inverse
+        # FFT
+        if self.n_samples % 2 == 0:
+            shift_val[self.n_samples//2] = 0
 
         self *= np.exp(shift_val)
         return self

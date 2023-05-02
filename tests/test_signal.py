@@ -264,6 +264,10 @@ class test_oaudio(unittest.TestCase):
 
         testing.assert_almost_equal(sig, test)
 
+        sig = Signal(2, duration, fs)
+        sig.add_noise()
+        sig[:, 0].phase_shift(np.pi/4)
+
     def test_cos_amp_modulator(self):
         fs = 48000
         sig = Signal(1, 1, fs).add_tone(100)
