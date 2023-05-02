@@ -693,19 +693,6 @@ class test_oaudio(unittest.TestCase):
         c = audio.crest_factor(signal)
         testing.assert_almost_equal(c, 20*np.log10(2))
 
-
-    # def test_phaseshift(self):
-    #     signal = audio.generate_tone(100, 1, 100e3)
-    #     signal2 = audio.generate_tone(100, 1, 100e3, np.pi)
-    #     signal3 = audio.phase_shift(signal, np.pi, 100e3)
-    #     testing.assert_almost_equal(signal2, signal3)
-
-    #     signal1 = audio.generate_tone(100, 1, 100e3)
-    #     signal2 = audio.generate_tone(200, 1, 100e3, np.pi)
-    #     signal = np.column_stack([signal1, signal2])
-    #     signal = audio.phase_shift(signal, np.pi, 100e3)
-
-
     def test_band2rms(self):
 
         band = audio.band2rms(50, 1)

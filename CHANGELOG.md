@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 0.62 -> 0.63
+=======
+0.62 -> 0.64
+>>>>>>> new_release
  - Added parameter to auditools.dbfs to specify if dB fullscale is relative to peak or rms level
  - Deleted the long depricated Signal.add_noise_noise method
  - Implemented Signal.stats submodule
@@ -8,6 +12,7 @@
  - Added the audiotools.cmplx_corr function which calculates the
    complex-valued correlation coefficent
  - Renamed calc_coherence to cmplx_crosscorr
+ - Fixed a bug in signal.phase_shift that sometimes resulted in a complex valued signal
 
 0.61 -> 0.62
  - Fixed the shape of the channels after appling a filterbank
