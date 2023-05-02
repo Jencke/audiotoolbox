@@ -8,6 +8,7 @@ Develop branch
  - Added the audiotools.cmplx_corr function which calculates the
    complex-valued correlation coefficent
  - Renamed calc_coherence to cmplx_crosscorr
+ - Fixed a bug in signal.phase_shift that sometimes resulted in a complex valued signal
 
 0.61 -> 0.62
  - Fixed the shape of the channels after appling a filterbank
