@@ -98,3 +98,10 @@ class test_oaudio(unittest.TestCase):
         fsig.to_analytical()
         asig = fsig.to_timedomain()
         testing.assert_almost_equal(asig.real, sig)
+
+    def test_freqdomain_multiple_copy(self):
+        sig = audio.Signal((2, 2), 1, 48000).add_noise()
+        fsig = sig.to_freqdomain()
+        fsig_orig = fsig.copy()
+        fsig.to_timedomain()
+        np.testing.assert_array_equal(fsig_orig, fsig)
