@@ -1836,7 +1836,7 @@ def cmplx_crosscorr(signal):
 
     # calculate coherence by convolving first channel with complex
     # conjugate of the second channel (done by multiplying fft)
-    coh = ((fsig.ch[0] * fsig.ch[1].conj()) / sig.n_samples**2).to_timedomain()
+    coh = ((fsig.ch[0] * fsig.ch[1].conj())).to_timedomain()
 
     # normalize by energy so that we gain the normalized coherence function
     coh /= np.sqrt(np.product(np.mean(np.abs(asig)**2, axis=0), axis=0))
