@@ -1,3 +1,6 @@
+0.64 -> 0.64.1
+ - Fixed a bug in the FrequencyDomainSignal.to_timedomain() method
+
 0.62 -> 0.64
  - Added parameter to auditools.dbfs to specify if dB fullscale is relative to peak or rms level
  - Deleted the long depricated Signal.add_noise_noise method
