@@ -188,11 +188,12 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
         """
 
         # revert normalization
-        self *= self.n_samples
-        wv = np.fft.ifft(self, axis=0)
+        fsig = self.copy()
+        fsig *= fsig.n_samples
+        wv = np.fft.ifft(fsig, axis=0)
         wv = np.real_if_close(wv)
-        signal = audio.Signal(self.n_channels, self.duration,
-                              self.fs, dtype=wv.dtype)
+        signal = audio.Signal(fsig.n_channels, fsig.duration,
+                              fsig.fs, dtype=wv.dtype)
         signal[:] = wv
         return signal
 

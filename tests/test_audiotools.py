@@ -714,7 +714,8 @@ class test_oaudio(unittest.TestCase):
     def test_cmplx_crosscorr(self):
         cf = 500
         bw = 100
-        sig = audio.Signal(2, 100, 48000).add_noise().bandpass(cf, bw, 'brickwall')
+        sig = audio.Signal(2, 100, 48000).add_noise()
+        sig.bandpass(cf, bw, 'brickwall')
         coh = audio.cmplx_crosscorr(sig)
 
         # Analytic coherence for aboves signal
@@ -762,9 +763,12 @@ class test_oaudio(unittest.TestCase):
         testing.assert_allclose(np.abs(ccc), 1)
 
         signal = audio.Signal(2, 1, 48000).add_noise()
+        signal.lowpass(20000, 'brickwall')
         signal.ch[1].phase_shift(np.pi/2)
         ccc = audio.cmplx_corr(signal)
         testing.assert_allclose(np.angle(ccc), np.pi/2)
+
+        #If the
 
         signal = audio.Signal(2, 1, 48000).add_uncorr_noise(0.2)
         ccc = audio.cmplx_corr(signal)
