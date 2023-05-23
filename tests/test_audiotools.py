@@ -5,15 +5,16 @@ import numpy as np
 import numpy.testing as testing
 import pytest
 
+
 class test_oaudio(unittest.TestCase):
     def test_pad_for_fft(self):
         signal1 = np.ones(100)
         padded = audio.pad_for_fft(signal1)
 
-        #check correct length
+        # check correct length
         assert len(padded) == 128
 
-        #check zeros in the end and unchanged in beginning
+        # check zeros in the end and unchanged in beginning
         assert np.array_equal(padded[100:], np.zeros(28))
         assert np.array_equal(padded[:100], signal1)
 
@@ -22,7 +23,7 @@ class test_oaudio(unittest.TestCase):
         # check correct length
         assert len(padded) == 128
 
-        #check zeros in the end and unchanged in beginning
+        # check zeros in the end and unchanged in beginning
         assert np.array_equal(padded[100:, :], np.zeros([28, 2]))
         assert np.array_equal(padded[:100, :], signal1)
 
@@ -68,11 +69,11 @@ class test_oaudio(unittest.TestCase):
         tone = audio.generate_tone(1, 1, 1e3)
         time = audio.get_time(tone, 1e3)
 
-        #Test sampling rate
-        assert time[2] - time[1] == 1./1e3
+        # Test sampling rate
+        assert time[2] - time[1] == 1.0 / 1e3
 
-        #Test duration
-        assert time[-1] == 1 - 1./1e3
+        # Test duration
+        assert time[-1] == 1 - 1.0 / 1e3
 
         tone1 = audio.generate_tone(1, 1, 1e3)
         tone2 = audio.generate_tone(1, 1, 1e3)
@@ -83,11 +84,11 @@ class test_oaudio(unittest.TestCase):
 
         assert len(time) == len(tone_two_channel)
 
-        #Test sampling rate
-        assert time[2] - time[1] == 1./1e3
+        # Test sampling rate
+        assert time[2] - time[1] == 1.0 / 1e3
 
-        #Test duration
-        assert time[-1] == 1 - 1./1e3
+        # Test duration
+        assert time[-1] == 1 - 1.0 / 1e3
 
         # Test appearence of extra sample due to numerics
         fs = 48e3
@@ -97,27 +98,25 @@ class test_oaudio(unittest.TestCase):
 
     def test_cosine_fade_window(self):
         window = audio.cosine_fade_window(np.zeros(1000), 100e-3, 1e3)
-        n_window = 100
 
-        #test symmentry
+        # test symmentry
         assert np.array_equal(window[:100], window[-100:][::-1])
 
-        #test starts with 0
+        # test starts with 0
         assert window[0] == 0
 
         window = audio.cosine_fade_window(np.zeros(1000), 100e-3, 1e3)
-        n_window = 100
 
-        #test if the window is a cosine curve of the right type
+        # test if the window is a cosine curve of the right type
         cos_curve = np.concatenate([window[:100], window[-101:]])
-        sin = (0.5 * audio.generate_tone(0.2 + 1. / 1e3, 5, 1e3,
-                                         start_phase=np.pi)) + 0.5
+        sin = (
+            0.5 * audio.generate_tone(0.2 + 1.0 / 1e3, 5, 1e3, start_phase=np.pi)
+        ) + 0.5
         testing.assert_array_almost_equal(cos_curve, sin)
 
         # Test that the last sample in the window is not equal to 1
         nsamp = audio.nsamples(200e-3, 1e3)
-        window = audio.cosine_fade_window(np.zeros(nsamp + 1), 100e-3 , 1e3)
-        n_window = 100
+        window = audio.cosine_fade_window(np.zeros(nsamp + 1), 100e-3, 1e3)
         assert window[int(nsamp / 2)] == 1
         assert window[int(nsamp / 2 - 1)] != 1
         assert window[int(nsamp / 2 + 1)] != 1
@@ -131,27 +130,31 @@ class test_oaudio(unittest.TestCase):
         sig = audio.Signal((2, 3), 1, 48000)
         win = audio.cosine_fade_window(sig, 100e-3)
         assert win.shape == sig.shape
-        testing.assert_array_equal (win[:, 1, 0], win[:, 0, 1])
+        testing.assert_array_equal(win[:, 1, 0], win[:, 0, 1])
 
+        # make sure that it also works if the last dimension equals 1
+        sig = audio.Signal((2, 1), 1, 48000)
+        win = audio.cosine_fade_window(sig, 100e-3)
+        assert win.shape == sig.shape
+        testing.assert_array_equal(win[:, 1, 0], win[:, 0, 0])
 
     def test_gauss_fade_window(self):
         window = audio.gaussian_fade_window(np.zeros(1000), 100e-3, 1e3)
-        n_window = 100
 
-        #test symmentry
+        # test symmentry
         assert np.array_equal(window[:100], window[-100:][::-1])
 
-        #test starts at -60dB
+        # test starts at -60dB
         testing.assert_almost_equal(window[0], 0.001)
 
-        #test setting cutoff
-        window = audio.gaussian_fade_window(np.zeros(1000), 100e-3, 1e3, cutoff=-20)
+        # test setting cutoff
+        window = audio.gaussian_fade_window(np.zeros(1000), 100e-3, 1e3,
+                                            cutoff=-20)
         testing.assert_almost_equal(window[0], 0.1)
 
         # Test that the last sample in the window is not equal to 1
         nsamp = audio.nsamples(200e-3, 1e3)
-        window = audio.gaussian_fade_window(np.zeros(nsamp + 1), 100e-3 , 1e3)
-        n_window = 100
+        window = audio.gaussian_fade_window(np.zeros(nsamp + 1), 100e-3, 1e3)
 
         assert window[int(nsamp / 2)] == 1
         assert window[int(nsamp / 2 - 1)] != 1
@@ -166,9 +169,7 @@ class test_oaudio(unittest.TestCase):
         sig = audio.Signal((2, 3), 1, 48000)
         win = audio.gaussian_fade_window(sig, 100e-3)
         assert win.shape == sig.shape
-        testing.assert_array_equal (win[:, 1, 0], win[:, 0, 1])
-
-
+        testing.assert_array_equal(win[:, 1, 0], win[:, 0, 1])
 
     # def test_shift_signal(self):
 
@@ -192,11 +193,10 @@ class test_oaudio(unittest.TestCase):
     #     assert np.all(sig[:2] == 1)
     #     assert np.all(sig[-2:] == 0)
 
-
     def test_delay_signal(self):
 
-        signal = audio.generate_tone(1, 1, 1e3, start_phase = 0.5 * np.pi)
-        signal += audio.generate_tone(1, 2, 1e3, start_phase = 0.5 * np.pi)
+        signal = audio.generate_tone(1, 1, 1e3, start_phase=0.5 * np.pi)
+        signal += audio.generate_tone(1, 2, 1e3, start_phase=0.5 * np.pi)
 
         delayed = audio.delay_signal(signal, 1.5e-3, 1e3)
 
@@ -220,7 +220,7 @@ class test_oaudio(unittest.TestCase):
         fs = 48e3
         noise = audio.generate_noise(duration, fs=fs)
         noise *= audio.cosine_fade_window(noise, 20e-3, fs)
-        dt = 1. / fs
+        dt = 1.0 / fs
         delayed = audio.delay_signal(noise, dt * 5, fs)
         testing.assert_almost_equal(delayed[5:, 1], delayed[:-5, 0])
 
@@ -229,7 +229,7 @@ class test_oaudio(unittest.TestCase):
 
         buffered = audio.zeropad(signal, 10)
 
-        assert len(buffered) - len(signal)  == 20
+        assert len(buffered) - len(signal) == 20
         assert np.array_equal(buffered[:10], buffered[-10:])
         assert np.array_equal(buffered[:10], np.zeros(10))
 
@@ -259,8 +259,6 @@ class test_oaudio(unittest.TestCase):
         zpsig = audio.zeropad(sig, [2, 2])
         assert zpsig.shape == (5, 2, 3)
 
-
-
     def test_bark(self):
         # Compare the tabled values to the ones resulting from the equation
 
@@ -284,7 +282,7 @@ class test_oaudio(unittest.TestCase):
     def test_freqspace(self):
         freqs = audio.freqspace(100, 12000, 23)
         barks = audio.freq_to_bark(freqs)
-        diff =  np.diff(barks)
+        diff = np.diff(barks)
 
         # should be very close to one bark distance
         assert np.round(diff[0], 2) == 1.0
@@ -292,35 +290,33 @@ class test_oaudio(unittest.TestCase):
         # check if the array is equally spaced in barks
         testing.assert_array_almost_equal(diff, diff[::-1])
 
-        freqs = audio.freqspace(100, 1200, 22, scale='erb')
+        freqs = audio.freqspace(100, 1200, 22, scale="erb")
         erbs = audio.freq_to_erb(freqs)
         diff = np.diff(erbs)
 
         # check if really equally spaced in erbs
         testing.assert_array_almost_equal(diff, diff[::-1])
 
-
     def test_freq_to_erb(self):
         # test that scale starts with 0
         assert audio.freq_to_erb(0) == 0
 
         # compare results with original equation
-        freq = np.array([100., 1000, 10000])
-        nerb =  audio.freq_to_erb(freq)
+        freq = np.array([100.0, 1000, 10000])
+        nerb = audio.freq_to_erb(freq)
         nerb2 = (1000 / (24.7 * 4.37)) * np.log(4.37 * (freq / 1000) + 1)
         assert np.array_equal(nerb, nerb2)
 
     def test_freqarange(self):
-        freqs = audio.freqarange(100, 1200, 1, scale='erb')
+        freqs = audio.freqarange(100, 1200, 1, scale="erb")
         erbs = audio.freq_to_erb(freqs)
         diff = np.diff(erbs)
         testing.assert_almost_equal(diff, diff[::-1])
 
-        freqs = audio.freqarange(100, 1200, 0.5, scale='erb')
+        freqs = audio.freqarange(100, 1200, 0.5, scale="erb")
         erbs = audio.freq_to_erb(freqs)
         diff = np.diff(erbs)
         testing.assert_almost_equal(diff[0], 0.5)
-
 
         freqs = audio.freqarange(100, 1200, 1)
         barks = audio.freq_to_bark(freqs)
@@ -332,12 +328,9 @@ class test_oaudio(unittest.TestCase):
         diff = np.diff(barks)
         testing.assert_almost_equal(diff[0], 0.5)
 
-
-
-
     def test_erb_to_freq(self):
         # Test by inversion from freq_to_erb
-        freq = np.array([100., 1000, 10000])
+        freq = np.array([100.0, 1000, 10000])
         nerb = audio.freq_to_erb(freq)
 
         freq2 = audio.erb_to_freq(nerb)
@@ -393,14 +386,12 @@ class test_oaudio(unittest.TestCase):
         sig = audio.Signal((2, 3), 1, 48000).add_tone(5) + 1
         mod = audio.cos_amp_modulator(sig, 5, 1)
 
-
     def test_calc_dbspl(self):
         assert audio.calc_dbspl(2e-3) == 40
         assert audio.calc_dbspl(20e-6) == 0
         sig = audio.Signal(1, 1, 48000).add_tone(500)
-        l_tone = 20*np.log10(np.sqrt(0.5) / 20e-6)
+        l_tone = 20 * np.log10(np.sqrt(0.5) / 20e-6)
         assert audio.calc_dbspl(sig) == l_tone
-
 
     def test_set_dbsl(self):
         fs = 100e3
@@ -424,17 +415,17 @@ class test_oaudio(unittest.TestCase):
         testing.assert_almost_equal(audio.calc_dbfs(signal), -5)
 
         # RMS value of a -5 db sine
-        m = (10**(-5 / 20)) / np.sqrt(2)
+        m = (10 ** (-5 / 20)) / np.sqrt(2)
 
         signal = np.concatenate([-np.ones(10), np.ones(10)])
         signal = np.tile(signal, 100)
         signal = audio.set_dbfs(signal, -5)
-        assert(signal.max() == m)
+        assert signal.max() == m
 
-        assert audio.set_dbfs(2, 0, norm='peak') == 1
+        assert audio.set_dbfs(2, 0, norm="peak") == 1
         signal = audio.generate_tone(1000, 8, 48000)
-        assert audio.set_dbfs(signal, 0, 'peak').max() == 1
-        assert audio.set_dbfs(signal, -3, 'peak').max() == 10**(-3/20)
+        assert audio.set_dbfs(signal, 0, "peak").max() == 1
+        assert audio.set_dbfs(signal, -3, "peak").max() == 10 ** (-3 / 20)
 
     def test_phon_to_dbspl(self):
         # Test some specific Values
@@ -465,38 +456,37 @@ class test_oaudio(unittest.TestCase):
         # Test some specific Values
         l_pressure = audio.phon_to_dbspl(160, 30)
         l_phon = audio.dbspl_to_phon(160, l_pressure)
-        assert(np.round(l_phon, 1) == 30)
+        assert np.round(l_phon, 1) == 30
 
         l_pressure = audio.phon_to_dbspl(1238, 78, interpolate=True)
         l_phon = audio.dbspl_to_phon(1238, l_pressure, interpolate=True)
-        assert(np.round(l_phon, 1) == 78)
-
+        assert np.round(l_phon, 1) == 78
 
     def test_audfilter_bw(self):
 
         cf = np.array([200, 1000])
         bws = audio.calc_bandwidth(cf)
-        bws2 = 25 + 75 * (1 + 1.4 * (cf / 1000.)**2)**0.69
+        bws2 = 25 + 75 * (1 + 1.4 * (cf / 1000.0) ** 2) ** 0.69
         assert np.array_equal(bws, bws2)
 
-        bws = audio.calc_bandwidth(cf, 'erb')
-        bws2 = 24.7 * (4.37 * (cf/ 1000.) + 1)
+        bws = audio.calc_bandwidth(cf, "erb")
+        bws2 = 24.7 * (4.37 * (cf / 1000.0) + 1)
         assert np.array_equal(bws, bws2)
 
-        bw = audio.calc_bandwidth(1000.)
-        bw2 = audio.calc_bandwidth(1000, 'cbw')
+        bw = audio.calc_bandwidth(1000.0)
+        bw2 = audio.calc_bandwidth(1000, "cbw")
 
-        #default is cbw and type is float for both
+        # default is cbw and type is float for both
         assert type(bw) == type(float())
         assert bw == bw2
 
-        #test that the function also works if providing integer input
-        bw = audio.calc_bandwidth(555.)
+        # test that the function also works if providing integer input
+        bw = audio.calc_bandwidth(555.0)
         bw2 = audio.calc_bandwidth(555)
         assert bw == bw2
 
-        bw = audio.calc_bandwidth(555., 'erb')
-        bw2 = audio.calc_bandwidth(555, 'erb')
+        bw = audio.calc_bandwidth(555.0, "erb")
+        bw2 = audio.calc_bandwidth(555, "erb")
         assert bw == bw2
 
     def test_generate_noise(self):
@@ -528,7 +518,6 @@ class test_oaudio(unittest.TestCase):
         testing.assert_array_equal(noise[:, 0, :], noise[:, 1, :])
         testing.assert_array_equal(noise[:, :, 0], noise[:, :, 1])
 
-
         # test directly handing over signal
         noise = audio.generate_noise(1, 10, n_channels=(2, 3))
         assert noise.shape == (10, 2, 3)
@@ -536,7 +525,7 @@ class test_oaudio(unittest.TestCase):
         testing.assert_array_equal(noise[:, :, 0], noise[:, :, 1])
 
         # test multichannel
-        noise = audio.generate_noise(1, 10, n_channels=(2, 3), ntype='pink')
+        noise = audio.generate_noise(1, 10, n_channels=(2, 3), ntype="pink")
         assert noise.shape == (10, 2, 3)
         testing.assert_array_equal(noise[:, 0, :], noise[:, 1, :])
         testing.assert_array_equal(noise[:, :, 0], noise[:, :, 1])
@@ -553,16 +542,14 @@ class test_oaudio(unittest.TestCase):
         testing.assert_almost_equal(noise1.var(), noise2.var())
 
         # Test multichannel
-        res_noise = audio.generate_uncorr_noise(1, fs=48000,
-                                                n_channels=100, corr=0)
+        res_noise = audio.generate_uncorr_noise(1, fs=48000, n_channels=100, corr=0)
         cv = np.corrcoef(res_noise.T)
         lower_tri = np.tril(cv, -1)
         lower_tri[lower_tri == 0] = np.nan
         testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0)
 
         # Test multichannel
-        res_noise = audio.generate_uncorr_noise(1, fs=48000,
-                                                n_channels=3, corr=0.5)
+        res_noise = audio.generate_uncorr_noise(1, fs=48000, n_channels=3, corr=0.5)
         cv = np.corrcoef(res_noise.T)
         lower_tri = np.tril(cv, -1)
         lower_tri[lower_tri == 0] = np.nan
@@ -587,66 +574,60 @@ class test_oaudio(unittest.TestCase):
         fs = 100000
         fc = 300
         bw = 200
-        bandpass = {'fc': fc, 'bw': bw, 'filter_type': 'brickwall'}
-        noise = audio.generate_uncorr_noise(duration,
-                                            fs, 2, corr=0.5,
-                                            bandpass=bandpass)
+        bandpass = {"fc": fc, "bw": bw, "filter_type": "brickwall"}
+        noise = audio.generate_uncorr_noise(
+            duration, fs, 2, corr=0.5, bandpass=bandpass
+        )
         flow = fc - bw / 2
         fhigh = fc + bw / 2
         spec = np.abs(np.fft.fft(noise, axis=0))
-        freqs = np.fft.fftfreq(len(spec), 1. / fs)
+        freqs = np.fft.fftfreq(len(spec), 1.0 / fs)
         passband = (np.abs(freqs) >= flow) & (np.abs(freqs) <= fhigh)
         non_zero = ~np.isclose(spec, 0)
         assert np.array_equal(non_zero[:, 0], passband)
         assert np.array_equal(non_zero[:, 1], passband)
 
         # test coherence value
-        bandpass = {'fc': fc, 'bw': bw, 'filter_type': 'brickwall'}
-        noise = audio.generate_uncorr_noise(duration,
-                                            fs, 4, corr=0.5,
-                                            bandpass=bandpass)
+        bandpass = {"fc": fc, "bw": bw, "filter_type": "brickwall"}
+        noise = audio.generate_uncorr_noise(
+            duration, fs, 4, corr=0.5, bandpass=bandpass
+        )
         cv = np.corrcoef(noise.T)
         lower_tri = np.tril(cv, -1)
         lower_tri[lower_tri == 0] = np.nan
         testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5)
 
-        bandpass = {'fc': fc, 'bw': bw, 'filter_type': 'butter'}
-        noise = audio.generate_uncorr_noise(duration,
-                                            fs, 4, corr=0.5,
-                                            bandpass=bandpass)
+        bandpass = {"fc": fc, "bw": bw, "filter_type": "butter"}
+        noise = audio.generate_uncorr_noise(
+            duration, fs, 4, corr=0.5, bandpass=bandpass
+        )
         cv = np.corrcoef(noise.T)
         lower_tri = np.tril(cv, -1)
         lower_tri[lower_tri == 0] = np.nan
-        testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5,
-                                    decimal=6)
+        testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5, decimal=6)
 
-        bandpass = {'fc': fc, 'bw': bw, 'filter_type': 'gammatone'}
-        noise = audio.generate_uncorr_noise(duration,
-                                            fs, 4, corr=0.5,
-                                            bandpass=bandpass)
+        bandpass = {"fc": fc, "bw": bw, "filter_type": "gammatone"}
+        noise = audio.generate_uncorr_noise(
+            duration, fs, 4, corr=0.5, bandpass=bandpass
+        )
         cv = np.corrcoef(noise.T)
         lower_tri = np.tril(cv, -1)
         lower_tri[lower_tri == 0] = np.nan
-        testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5,
-                                    decimal=5)
+        testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5, decimal=5)
 
         fcut = 500
-        lowpass = {'f_cut': fcut, 'filter_type': 'brickwall'}
-        noise = audio.generate_uncorr_noise(duration,
-                                            fs, 4, corr=0.5,
-                                            lowpass=lowpass)
+        lowpass = {"f_cut": fcut, "filter_type": "brickwall"}
+        noise = audio.generate_uncorr_noise(duration, fs, 4, corr=0.5, lowpass=lowpass)
         cv = np.corrcoef(noise.T)
         lower_tri = np.tril(cv, -1)
         lower_tri[lower_tri == 0] = np.nan
-        testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5,
-                                    decimal=5)
+        testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5, decimal=5)
 
         fcut = 500
-        highpass = {'f_cut': fcut, 'filter_type': 'brickwall'}
-        noise = audio.generate_uncorr_noise(duration,
-                                            fs, 4, corr=0.33,
-                                            highpass=highpass)
-
+        highpass = {"f_cut": fcut, "filter_type": "brickwall"}
+        noise = audio.generate_uncorr_noise(
+            duration, fs, 4, corr=0.33, highpass=highpass
+        )
 
     def test_extract_binaural_differences(self):
 
@@ -654,8 +635,8 @@ class test_oaudio(unittest.TestCase):
 
         # Check phase_difference
         fs = 48000
-        signal1 = audio.generate_tone(1, 500,  fs)
-        signal2 = audio.generate_tone(1, 500,  fs, start_phase=0.5 * np.pi)
+        signal1 = audio.generate_tone(1, 500, fs)
+        signal2 = audio.generate_tone(1, 500, fs, start_phase=0.5 * np.pi)
         signal = np.column_stack([signal1, signal2])
         ipd, ild = audio.extract_binaural_differences(signal)
 
@@ -675,8 +656,7 @@ class test_oaudio(unittest.TestCase):
         signal1 = audio.generate_tone(1, 500, fs)
         signal2 = audio.generate_tone(1, 500, fs) * 0.5
         signal = np.column_stack([signal1, signal2])
-        ipd, ild = audio.extract_binaural_differences(signal,
-                                                           log_ilds=False)
+        ipd, ild = audio.extract_binaural_differences(signal, log_ilds=False)
         assert np.all(np.isclose(ild, 2))
         assert np.all(np.isclose(ipd, 0))
 
@@ -685,26 +665,25 @@ class test_oaudio(unittest.TestCase):
         # Test that c for sine is equal to sqrt(2)
         signal = audio.generate_tone(100, 1, 100e3)
         c = audio.crest_factor(signal)
-        testing.assert_almost_equal(c, 20*np.log10(np.sqrt(2)))
+        testing.assert_almost_equal(c, 20 * np.log10(np.sqrt(2)))
 
         # test that c for half wave rect. sine is 2
         signal = audio.generate_tone(100, 1, 100e3)
         signal[signal < 0] = 0
         c = audio.crest_factor(signal)
-        testing.assert_almost_equal(c, 20*np.log10(2))
+        testing.assert_almost_equal(c, 20 * np.log10(2))
 
     def test_band2rms(self):
 
         band = audio.band2rms(50, 1)
         assert band == 50
         band = audio.band2rms(50, 20)
-        assert(band == 50 + 10 * np.log10(20))
-
+        assert band == 50 + 10 * np.log10(20)
 
         band = audio.rms2band(50, 1)
         assert band == 50
         band = audio.rms2band(50, 20)
-        assert(band == 50 - 10 * np.log10(20))
+        assert band == 50 - 10 * np.log10(20)
 
     def test_crest_factor(self):
         signal = audio.generate_tone(100, 1, 100e3)
@@ -715,20 +694,23 @@ class test_oaudio(unittest.TestCase):
         cf = 500
         bw = 100
         sig = audio.Signal(2, 100, 48000).add_noise()
-        sig.bandpass(cf, bw, 'brickwall')
+        sig.bandpass(cf, bw, "brickwall")
         coh = audio.cmplx_crosscorr(sig)
 
         # Analytic coherence for aboves signal
-        coh_analytic = (np.sin(np.pi * bw * sig.time[1:])
-                        / (np.pi * bw * sig.time[1:])
-                        * np.exp(1j * 2 * np.pi * cf * sig.time[1:]))
+        coh_analytic = (
+            np.sin(np.pi * bw * sig.time[1:])
+            / (np.pi * bw * sig.time[1:])
+            * np.exp(1j * 2 * np.pi * cf * sig.time[1:])
+        )
 
         assert isinstance(coh, audio.Signal)
-        testing.assert_almost_equal(np.abs(coh[coh.time==0]), 1)
+        testing.assert_almost_equal(np.abs(coh[coh.time == 0]), 1)
         nsamp = 1000
         start = np.where(coh.time == 0)[0][0]
-        testing.assert_allclose(coh[start+1:start + nsamp],
-                                coh_analytic[:nsamp-1], rtol=0, atol=0.03)
+        testing.assert_allclose(
+            coh[start + 1 : start + nsamp], coh_analytic[: nsamp - 1], rtol=0, atol=0.03
+        )
 
         # calculate auto-coherrence
         coh2 = audio.cmplx_crosscorr(sig.ch[0])
@@ -742,7 +724,7 @@ class test_oaudio(unittest.TestCase):
         cf = 500
         bw = 100
         sig = audio.Signal(2, 100, 48000).add_uncorr_noise(0.5)
-        sig.bandpass(cf, bw, 'brickwall')
+        sig.bandpass(cf, bw, "brickwall")
         coh = audio.cmplx_crosscorr(sig)
         testing.assert_allclose(coh.abs()[coh.time == 0], 0.5, rtol=0.05)
 
@@ -763,12 +745,12 @@ class test_oaudio(unittest.TestCase):
         testing.assert_allclose(np.abs(ccc), 1)
 
         signal = audio.Signal(2, 1, 48000).add_noise()
-        signal.lowpass(20000, 'brickwall')
-        signal.ch[1].phase_shift(np.pi/2)
+        signal.lowpass(20000, "brickwall")
+        signal.ch[1].phase_shift(np.pi / 2)
         ccc = audio.cmplx_corr(signal)
-        testing.assert_allclose(np.angle(ccc), np.pi/2)
+        testing.assert_allclose(np.angle(ccc), np.pi / 2)
 
-        #If the
+        # If the
 
         signal = audio.Signal(2, 1, 48000).add_uncorr_noise(0.2)
         ccc = audio.cmplx_corr(signal)
@@ -782,7 +764,7 @@ class test_oaudio(unittest.TestCase):
 
     def test_duration_is_signal(self):
 
-        #direct input
+        # direct input
         duration, fs, n_ch = audio.audiotools._duration_is_signal(1, 2, 3)
         assert duration == 1
         assert fs == 2
@@ -793,14 +775,14 @@ class test_oaudio(unittest.TestCase):
         assert fs == 2
         assert n_ch == None
 
-        #signal as input
+        # signal as input
         sig = audio.Signal((2, 3), 1, 2)
         duration, fs, n_ch = audio.audiotools._duration_is_signal(sig)
         assert duration == 1
         assert fs == 2
         assert n_ch == (2, 3)
 
-        #Numpy array as input
+        # Numpy array as input
         sig = np.zeros((11, 2, 3))
         duration, fs, n_ch = audio.audiotools._duration_is_signal(sig, 3)
         assert duration == 11 / 3
