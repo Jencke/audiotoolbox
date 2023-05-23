@@ -15,11 +15,13 @@ COLOR_L = '#5c5cd6'
 def _copy_to_dim(array, dim):
     if np.ndim(dim) == 0:
         dim = (dim,)
-
     # tile by the number of dimensions
     tiled_array = np.tile(array, (*dim[::-1], 1)).T
-    # squeeze to remove axis of lenght 1
-    tiled_array = np.squeeze(tiled_array)
+    # make sure that dimensions are only squeezed if the last dimension of the
+    # goal dimension does not equal 1
+    if not (len(dim) > 1 & dim[-1] == 1):
+        # squeeze to remove axis of lenght 1
+        tiled_array = np.squeeze(tiled_array)
 
     return tiled_array
 
