@@ -1,5 +1,6 @@
 Develop
  - Fixed a small bug in _copy_to_dim which would remove the last dimension of an error if it equaled 1
+ - Deleted broken audio playback functionality
 
 0.64 -> 0.64.1
  - Fixed a bug in the FrequencyDomainSignal.to_timedomain() method
