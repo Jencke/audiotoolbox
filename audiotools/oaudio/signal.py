@@ -3,7 +3,6 @@
 import numpy as np
 from .. import audiotools as audio
 from .. import wav
-from .. import interfaces
 from .freqdomain_signal import FrequencyDomainSignal
 from . import base_signal
 from .. import filter as filt
@@ -722,14 +721,6 @@ class Signal(base_signal.BaseSignal):
         self.resize(newshape, refcheck=False)
 
         return self
-
-    def play(self, bitdepth=32, buffsize=1024):
-        """Play the signal over Soundard - Very experimental."""
-        wv = self
-        interfaces.play(signal=wv,
-                        fs=self.fs,
-                        bitdepth=bitdepth,
-                        buffsize=buffsize)
 
     def plot(self, ax=None):
         """Plot the Signal using matplotlib.

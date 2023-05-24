@@ -119,10 +119,8 @@ class test_oaudio(unittest.TestCase):
         fc = [100, 200, 5000]
         bw = [10, 5, 8]
         fs = 48000
-        print()
         gamma = create_filterbank(fc, bw, 'gammatone', fs,
                                   order=5, attenuation_db=-3)
-        print('--')
 
         for i_filt, (fc, bw) in enumerate(zip(fc, bw)):
             b, a = gammatone_filt.design_gammatone(fc, bw, fs, order=5,
