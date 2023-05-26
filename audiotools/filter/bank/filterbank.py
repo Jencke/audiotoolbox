@@ -4,40 +4,8 @@ from .. import gammatone_filt as gamma
 from .. import butterworth_filt as butter
 from .. import brickwall_filt as brick
 from ... import audiotools as audio
-
-
-def create_filterbank(fc, bw, filter_type, fs, **kwargs):
-    '''Creates a filterbank object
-
-    Parameters
-    ----------
-    fc : ndarray
-        Center frequencies in Hz
-    bw : ndarray
-        Filter Bandwidths in Hz
-    filter_type : 'butter', 'gammatone'
-        Type of Bandpass filter
-    fs : int
-        Sampling frequency
-    **kwargs
-        Further paramters such as filter order to pass to the Filter
-        function, see filter documenation for details. Value can either be
-        an ndarray that matches the length of `fc` or a single value in
-        which case this value is used for all filters.
-
-    Returns
-    -------
-       FilterBank Object
-
-    '''
-
-    if filter_type == 'butter':
-        bank = ButterworthBank(fc, bw, fs, **kwargs)
-    elif filter_type == 'gammatone':
-        bank = GammaToneBank(fc, bw, fs, **kwargs)
-    elif filter_type == 'brickwall':
-        bank = BrickBank(fc, bw, fs)
-    return bank
+from typing import Literal
+from numpy.typing import ArrayLike
 
 
 class FilterBank(object):
@@ -86,7 +54,7 @@ def _update_params(param, n_val, **kwargs):
 
 class ButterworthBank(FilterBank):
     def __init__(self, fc, bw, fs, **kwargs):
-        FilterBank.__init__(self, fc, bw, fs, **kwargs)
+        super().__init__(fc, bw, fs, **kwargs)
 
         # set default parameters
         self.params = {'order': self.n_filters * [2]}
@@ -115,7 +83,7 @@ class ButterworthBank(FilterBank):
             order = self.params['order'][i_filt]
             # sos has to be C-contigous
             sos = self.coefficents[:order, :, i_filt].copy(order='C')
-            out, states = butter.apply_sos(signal, sos, states=True)
+            out, states = butter.apply_sos(signal, sos)
             out_sig.T[i_filt] = out.T
         return out_sig
 
@@ -176,3 +144,41 @@ class BrickBank(FilterBank):
             out = brick.brickwall(signal, low_f, high_f, self.fs)
             out_sig.T[i_filt] = out.T
         return out_sig
+
+
+def create_filterbank(fc: ArrayLike,
+                      bw: ArrayLike,
+                      filter_type: Literal['butter', 'gammatone', 'brickwall'],
+                      fs: int,
+                      **kwargs) -> FilterBank:
+    '''Creates a filterbank object
+
+    Parameters
+    ----------
+    fc : ndarray
+        Center frequencies in Hz
+    bw : ndarray
+        Filter Bandwidths in Hz
+    filter_type : 'butter', 'gammatone'
+        Type of Bandpass filter
+    fs : int
+        Sampling frequency
+    **kwargs
+        Further paramters such as filter order to pass to the Filter
+        function, see filter documenation for details. Value can either be
+        an ndarray that matches the length of `fc` or a single value in
+        which case this value is used for all filters.
+
+    Returns
+    -------
+       FilterBank Object
+
+    '''
+
+    if filter_type == 'butter':
+        bank = ButterworthBank(fc, bw, fs, **kwargs)
+    elif filter_type == 'gammatone':
+        bank = GammaToneBank(fc, bw, fs, **kwargs)
+    elif filter_type == 'brickwall':
+        bank = BrickBank(fc, bw, fs)
+    return bank

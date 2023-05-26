@@ -136,3 +136,15 @@ class test_oaudio(unittest.TestCase):
 
         fcs = audio.freqarange(16, 16000, 1, 'erb')
         testing.assert_array_equal(filt_bank.fc, fcs)
+
+    def test_butterworth_zero(self):
+        # Catch a fixed bug where filters would oscillate due to wrong inital
+        # states
+        fs = 48000
+        sig = audio.Signal(1, 1, fs)
+        fb = create_filterbank([125, 500, 1000],
+                               [50, 55, 58],
+                               'butter', fs,
+                               order=4)
+        out = fb.filt(sig)
+        testing.assert_allclose(out, 0)
