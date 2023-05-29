@@ -7,7 +7,7 @@ from audiotools.filter import gammatone_filt
 from audiotools.filter import butterworth_filt
 import numpy.testing as testing
 from audiotools.filter.bank import create_filterbank
-from audiotools.filter.bank import auditory_gamma_bank
+from audiotools.filter.bank import auditory_gamma_bank, octave_bank
 
 
 class test_oaudio(unittest.TestCase):
@@ -148,3 +148,13 @@ class test_oaudio(unittest.TestCase):
                                order=4)
         out = fb.filt(sig)
         testing.assert_allclose(out, 0)
+
+    def test_default_octave_bank(self):
+        # Test that power in all channels is aproximatly equal when applyting to
+        # white noise
+        fs = 48000
+        filt_bank = octave_bank(fs)
+        noise = audio.Signal(1, 10, 48000).add_noise('pink')
+        bank_out = filt_bank.filt(noise)
+        power = np.var(bank_out, axis=0)
+        assert power.std() < 0.01
