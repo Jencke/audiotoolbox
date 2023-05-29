@@ -51,11 +51,11 @@ def design_gammatone(fc, bw, fs, order=4, attenuation_db='erb'):
     beta = 2 * pi * fc / fs     # Eq. 10 [Hohmann2002]
 
     alpha = 10**(0.1 * attenuation_db / order)       # Eq. 12 [Hohmann2002]
-    p = (-2 + 2 * alpha * np.cos(phi)) / (1 - alpha) # Eq. 12 [Hohmann2002]
+    p = (-2 + 2 * alpha * np.cos(phi)) / (1 - alpha)  # Eq. 12 [Hohmann2002]
 
-    l = -p / 2 - np.sqrt(p**2 / 4 - 1) # Eq. 12 [Hohmann2002]
+    lvar = -p / 2 - np.sqrt(p**2 / 4 - 1)  # Eq. 12 [Hohmann2002]
 
-    coef = l * np.exp(1j * beta)   # Eq. 1 [Hohmann2002]
+    coef = lvar * np.exp(1j * beta)   # Eq. 1 [Hohmann2002]
     factor = 2 * (1 - np.abs(coef))**order
 
     b = np.array(factor),
