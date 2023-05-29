@@ -81,6 +81,14 @@ class test_oaudio(unittest.TestCase):
 
         testing.assert_equal(sig, test)
 
+    def test_stats(self):
+        sig = Signal(1, 1, 48000)
+        assert hasattr(sig, 'stats')
+
+        sig = Signal(1, 1, 48000)
+        sig = sig.copy()
+        assert hasattr(sig, 'stats')
+
     def test_setdbfs_calcdbfs(self):
         fs = 48000
         duration = 100e-3

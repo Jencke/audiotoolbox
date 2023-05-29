@@ -40,8 +40,7 @@ class Signal(base_signal.BaseSignal):
 
     def __new__(cls, n_channels, duration, fs, dtype=float):
         """Create new objects."""
-        obj = base_signal.BaseSignal.__new__(cls, n_channels,
-                                             duration, fs, dtype)
+        obj = super().__new__(cls, n_channels, duration, fs, dtype)
         obj.stats = SignalStats(obj)
         return obj
 
@@ -60,6 +59,7 @@ class Signal(base_signal.BaseSignal):
         else:
             # When copying or slicing
             self.time_offset = getattr(obj, 'time_offset', None)
+            self.stats = SignalStats(self)
 
         return obj
 

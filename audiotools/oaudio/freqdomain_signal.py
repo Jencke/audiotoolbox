@@ -37,7 +37,7 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
     """
 
     def __new__(cls, n_channels, duration, fs, dtype=complex):
-        obj = base_signal.BaseSignal.__new__(cls, n_channels,
+        obj = super().__new__(cls, n_channels,
                                              duration, fs, dtype)
         obj.stats = FreqDomainStats(obj)
         return obj
