@@ -105,7 +105,6 @@ class GammaToneBank(FilterBank):
             current_params = {k: v[i_filt]
                               for k, v in self.params.items()}
 
-            order = current_params['order']
             b, a = gamma.design_gammatone(self.fc[i_filt],
                                           self.bw[i_filt], self.fs,
                                           **current_params)

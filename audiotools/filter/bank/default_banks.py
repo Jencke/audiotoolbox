@@ -23,14 +23,15 @@ def auditory_gamma_bank(fs, flow=16, fhigh=16000, step=1, **kwargs):
     step : scalar (optional)
       Stepsize between filters on the ERB scale. Defauls to 1 filter per ERB
     **kwargs
-        Further paramters such as filter order to pass to the
-        filter.GammaToneBank function. Values can either be an ndarray that
-        matches the length of `fc` or a single value in which case this value is
-        used for all filters.
+      Further paramters such as filter order to pass to the
+      filter.GammaToneBank function. Values can either be an ndarray that
+      matches the length of `fc` or a single value in which case this value is
+      used for all filters.
 
     Returns
     _______
         GammaToneBank : The filterbank.
+
     """
     fc = audio.freqarange(flow, fhigh, step=step, scale='erb')
     bw = audio.calc_bandwidth(fc, 'erb')
