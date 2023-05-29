@@ -42,7 +42,7 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
                 n_channels: Union[int, tuple, list],
                 duration: float,
                 fs: int,
-                dtype=complex) -> FrequencyDomainSignal:
+                dtype=complex):
 
         obj = super().__new__(cls, n_channels, duration, fs, dtype)
         obj.stats = FreqDomainStats(obj)

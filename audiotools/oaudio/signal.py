@@ -43,7 +43,7 @@ class Signal(base_signal.BaseSignal):
                 n_channels: Union[int, tuple, list],
                 duration: float,
                 fs: int,
-                dtype=float) -> Signal:
+                dtype=float):
         """Create new objects."""
         obj = super().__new__(cls, n_channels, duration, fs, dtype)
         obj.stats = SignalStats(obj)
