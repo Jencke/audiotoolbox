@@ -328,6 +328,15 @@ class test_oaudio(unittest.TestCase):
         diff = np.diff(barks)
         testing.assert_almost_equal(diff[0], 0.5)
 
+        freqs = audio.freqarange(16, 16000, 1, 'octave')
+        assert freqs[-2] == 4000
+
+        freqs = audio.freqarange(16, 16000, 1/3, 'octave')
+        assert freqs[-6] == 4000
+
+        freqs = audio.freqarange(16, 16000, 1/2, 'octave')
+        assert freqs[-4] == 4000
+
     def test_erb_to_freq(self):
         # Test by inversion from freq_to_erb
         freq = np.array([100.0, 1000, 10000])

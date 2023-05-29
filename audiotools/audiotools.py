@@ -1142,11 +1142,11 @@ def freqspace(min_frequency, max_frequency, n, scale='bark'):
 
 
 def freqarange(min_frequency, max_frequency, step=1, scale='bark'):
-    r"""Calculate a of frequencies with a predifined spacing on the bark or erb
-        scale.
+    r"""Calculate a of frequencies with a predifined spacing on a given frequency
+    scale.
 
     Returns frequencies between min_frequency and max_frequency with
-    the stepsize step on the bark or erb scale.
+    a given stepsize step on a frequency scale.
 
     Parameters
     ----------
@@ -1157,14 +1157,14 @@ def freqarange(min_frequency, max_frequency, step=1, scale='bark'):
       maximal frequency in Hz
 
     step: float
-      stepsize on the erb or bark scale
+      stepsize on the scale
 
     scale: str
-      scale to use 'bark' or 'erb'. (default='bark')
+      scale to use 'bark' or 'erb' or 'octave'. (default='bark')
 
     Returns
     -------
-    ndarray: frequencies spaced following step on bark or erb scale
+    ndarray: frequencies spaced following step on respective scale
 
     """
     if scale == 'bark':
@@ -1177,6 +1177,10 @@ def freqarange(min_frequency, max_frequency, step=1, scale='bark'):
                                                  max_frequency]))
         erbs = np.arange(min_erb, max_erb, step)
         freqs = erb_to_freq(erbs)
+    elif scale == 'octave':
+        n_steps = int(np.log2(max_frequency / min_frequency) / step)
+        exponents = step * (np.arange(n_steps) + 1)
+        freqs = max_frequency / 2**exponents[::-1]
     else:
         raise NotImplementedError('only ERB and Bark implemented')
 
@@ -1212,6 +1216,54 @@ def bark_to_freq(bark):
     bark[bark > 20.1] = (bark[bark > 20.1] + 4.422) / 1.22
     f = 1960 * (bark + 0.53) / (26.28 - bark)
     return f
+
+
+def octband_to_freq(band_nr, oct_fraction: int = 3, base_system: int = 2):
+    """Octave bandnumber to frequency conversion."""
+    b = oct_fraction
+
+    if base_system == 10:
+        gbase = 10**(3/10)
+    elif base_system == 2:
+        gbase = 2
+    else:
+        raise(ValueError("base_system must be 2 or 10"))
+
+    if b % 2:                   # if odd
+        freq = gbase**((band_nr - 30.) / b) * 1e3
+    else:                       # if even:
+        freq = gbase**((2 * band_nr - 59.) / (2 * b)) * 1e3
+    return freq
+
+
+def freq_to_octband(frequency, oct_fraction: int = 3, base_system: int = 2):
+    """Frequency to octave bandnumber conversion.
+
+    Scales are normalized so that band 1000Hz is band 30
+
+    Parameters
+    ----------
+    frequency: scalar or ndarray
+        The frequency in Hz.
+    oct_fraction: int
+        The fractional octave scale to use. e.g 3 for 1/3 octave bands.
+        default = 3
+    base_system: 2 or 10
+      The base system used for calcuation. default = 2
+    """
+    b = oct_fraction
+    if base_system == 10:
+        gbase = 10**(3/10)
+    elif base_system == 2:
+        gbase = 2
+    else:
+        raise(ValueError("base_system must be 2 or 10"))
+    if b % 2:
+        band_nr = np.log(frequency / 1000) / np.log(gbase) * b + 30
+    else:
+        band_nr = 0.5 * (np.log(frequency / 1000) / np.log(gbase)
+                         * 2 * b + 59)
+    return band_nr
 
 
 def freq_to_bark(frequency, use_table=False):
