@@ -38,7 +38,7 @@ def get_edge_frequencies(
     return f_l, f_h
 
 
-def octave_filter_bank(
+def octave_bank(
     fs: int,
     flow: float = 24.8,
     fhigh: float = 20158.0,
