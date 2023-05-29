@@ -1,6 +1,7 @@
 import numpy as np
 import audiotools as audio
 
+
 class BaseSignal(np.ndarray):
     r""" Basic Signal class inherited by all Signal representations
 

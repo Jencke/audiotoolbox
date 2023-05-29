@@ -77,7 +77,6 @@ def erb_to_3db(
     return bw
 
 
-
 def gammatonefos_apply(signal, b, a, order, states=None):
     """Process an input signal by applying the filter `order` times.
 
