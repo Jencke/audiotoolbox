@@ -1,11 +1,10 @@
 """Definition for the Signal class."""
 
 import numpy as np
-from .. import audiotools as audio
-from .. import wav
-from .freqdomain_signal import FrequencyDomainSignal
+
 from . import base_signal
-from .. import filter as filt
+from .. import audiotools as audio, wav, filter as filt
+from .freqdomain_signal import FrequencyDomainSignal
 from .stats import SignalStats
 
 
