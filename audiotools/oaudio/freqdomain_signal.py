@@ -1,3 +1,5 @@
+from typing import Type, cast, Union
+
 import numpy as np
 import audiotools as audio
 
@@ -36,11 +38,15 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
 
     """
 
-    def __new__(cls, n_channels, duration, fs, dtype=complex):
-        obj = super().__new__(cls, n_channels,
-                                             duration, fs, dtype)
+    def __new__(cls: Type[base_signal.BaseSignal],
+                n_channels: Union[int, tuple, list],
+                duration: float,
+                fs: int,
+                dtype=complex) -> FrequencyDomainSignal:
+
+        obj = super().__new__(cls, n_channels, duration, fs, dtype)
         obj.stats = FreqDomainStats(obj)
-        return obj
+        return cast(FrequencyDomainSignal, obj)
 
     @property
     def freq(self):

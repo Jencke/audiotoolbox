@@ -1,5 +1,7 @@
 """Definition for the Signal class."""
 
+from typing import Type, cast, Union
+
 import numpy as np
 
 from . import base_signal
@@ -37,11 +39,15 @@ class Signal(base_signal.BaseSignal):
 
     """
 
-    def __new__(cls, n_channels, duration, fs, dtype=float):
+    def __new__(cls: Type[base_signal.BaseSignal],
+                n_channels: Union[int, tuple, list],
+                duration: float,
+                fs: int,
+                dtype=float) -> Signal:
         """Create new objects."""
         obj = super().__new__(cls, n_channels, duration, fs, dtype)
         obj.stats = SignalStats(obj)
-        return obj
+        return cast(Signal, obj)
 
     def __array_finalize__(self, obj):
         """Finalyze signal."""
