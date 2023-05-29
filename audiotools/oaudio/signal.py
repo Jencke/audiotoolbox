@@ -854,3 +854,6 @@ def as_signal(signal, fs):
         sig_out = Signal(n_channels, duration, fs, dtype=signal.dtype)
         sig_out[:] = signal
     return sig_out
+
+
+__all__ = ['Signal', 'as_signal']
