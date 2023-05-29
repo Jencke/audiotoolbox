@@ -7,19 +7,22 @@ from scipy.signal import hilbert
 
 from .oaudio import Signal, as_signal
 from . import filter
+from . import din_iso_226
 
-COLOR_R = '#d65c5c'
-COLOR_L = '#5c5cd6'
+COLOR_R = "#d65c5c"
+COLOR_L = "#5c5cd6"
 
 
 def _copy_to_dim(array, dim):
     if np.ndim(dim) == 0:
         dim = (dim,)
-
     # tile by the number of dimensions
     tiled_array = np.tile(array, (*dim[::-1], 1)).T
-    # squeeze to remove axis of lenght 1
-    tiled_array = np.squeeze(tiled_array)
+    # make sure that dimensions are only squeezed if the last dimension of the
+    # goal dimension does not equal 1
+    if not (len(dim) > 1 & dim[-1] == 1):
+        # squeeze to remove axis of lenght 1
+        tiled_array = np.squeeze(tiled_array)
 
     return tiled_array
 
@@ -73,19 +76,19 @@ def from_wav(filename, fullscale=True):
 
 def pad_for_fft(signal):
     r"""Zero buffer a signal with zeros so that it reaches the next
-        closest :math`$2^n$` length.
+     closest :math`$2^n$` length.
 
-       This Function attaches zeros to a signal to adjust the length
-       of the signal to a multiple of 2 for efficent FFT calculation.
+    This Function attaches zeros to a signal to adjust the length
+    of the signal to a multiple of 2 for efficent FFT calculation.
 
-       Parameters
-       -----------
-       signal : ndarray
-           The input signal
+    Parameters
+    -----------
+    signal : ndarray
+        The input signal
 
-       Returns
-       --------
-       ndarray : The zero bufferd output signal.
+    Returns
+    --------
+    ndarray : The zero bufferd output signal.
 
     """
 
@@ -99,7 +102,7 @@ def pad_for_fft(signal):
         out_signal = np.zeros(int(n_out))
     else:
         out_signal = np.zeros([int(n_out), n_channels])
-    out_signal[:len(signal)] = signal
+    out_signal[: len(signal)] = signal
 
     return out_signal
 
@@ -139,8 +142,7 @@ def rms2band(rmslevel, bw):
     return bandlevel
 
 
-def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1,
-                      start_phase=0):
+def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1, start_phase=0):
     r"""Cosinus amplitude modulator.
 
     Returns a cosinus amplitude modulator following the equation:
@@ -175,8 +177,7 @@ def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1,
 
     time = get_time(duration, fs)
 
-    modulator = 1 + mod_index * np.cos(2 * pi * modulator_freq * time
-                                       + start_phase)
+    modulator = 1 + mod_index * np.cos(2 * pi * modulator_freq * time + start_phase)
 
     modulator = _copy_to_dim(modulator, n_channels)
 
@@ -249,8 +250,9 @@ def nsamples(duration, fs=None):
     return len_signal
 
 
-def generate_low_noise_noise(duration, fc, bw, fs=None,
-                             n_channels=1, n_rep=10, seed=None):
+def generate_low_noise_noise(
+    duration, fc, bw, fs=None, n_channels=1, n_rep=10, seed=None
+):
     r"""Low-noise Noise
 
     Generate Low-noise noise as defined in [1]_.
@@ -285,7 +287,7 @@ def generate_low_noise_noise(duration, fc, bw, fs=None,
     duration, fs, n_ch = _duration_is_signal(duration, fs, n_channels)
 
     # Generate initial noise
-    noise = generate_noise(duration, fs, ntype='white', n_channels=n_ch)
+    noise = generate_noise(duration, fs, ntype="white", n_channels=n_ch)
     noise = filter.brickwall(noise, fc - bw / 2, fc + bw / 2, fs)
     std = noise.std(axis=0)
 
@@ -295,13 +297,13 @@ def generate_low_noise_noise(duration, fc, bw, fs=None,
 
         # diveide through envelope and restrict
         noise /= env
-        noise = filter.brickwall(noise, fc - bw/2, fc + bw/2, fs)
+        noise = filter.brickwall(noise, fc - bw / 2, fc + bw / 2, fs)
         noise /= noise.std(axis=0) * std
 
     return noise
 
 
-def generate_noise(duration, fs=None, ntype='white', n_channels=1, seed=None):
+def generate_noise(duration, fs=None, ntype="white", n_channels=1, seed=None):
     r"""Generate Noise
 
     Generate gaussian noise with a variance of 1 and different
@@ -358,7 +360,7 @@ def generate_noise(duration, fs=None, ntype='white', n_channels=1, seed=None):
     len_signal = nsamples(duration, fs)
 
     # If noise type is white just use the random number generator
-    if ntype == 'white':
+    if ntype == "white":
         noise = np.random.randn(len_signal)
         noise -= noise.mean(axis=0)
         # normalize variance
@@ -373,22 +375,22 @@ def generate_noise(duration, fs=None, ntype='white', n_channels=1, seed=None):
     len_signal = nsamples(duration, fs)
     nfft = nextpower2(len_signal)
 
-    df = fs/nfft                # Frequency resolution
-    nybin = nfft // 2 + 1       # nyquist bin
+    df = fs / nfft  # Frequency resolution
+    nybin = nfft // 2 + 1  # nyquist bin
 
-    lowbin = 1               # no offset start at one
+    lowbin = 1  # no offset start at one
     highbin = nybin
 
     freqs = np.arange(0, nybin) * df
 
     # amplitude weighting factor
     f_weights = np.zeros(nfft)
-    if ntype == 'pink':
+    if ntype == "pink":
         # Power proportinal to 1 / f
-        f_weights[lowbin:highbin] = 1. / np.sqrt(freqs[lowbin:])
-    elif ntype == 'brown':
+        f_weights[lowbin:highbin] = 1.0 / np.sqrt(freqs[lowbin:])
+    elif ntype == "brown":
         # Power proportional to 1 / f**2
-        f_weights[lowbin:highbin] = 1. / freqs[lowbin:]
+        f_weights[lowbin:highbin] = 1.0 / freqs[lowbin:]
 
     # generate noise
     a = np.zeros([nfft])
@@ -415,8 +417,16 @@ def generate_noise(duration, fs=None, ntype='white', n_channels=1, seed=None):
     return noise
 
 
-def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None,
-                          bandpass=None, lowpass=None, highpass=None):
+def generate_uncorr_noise(
+    duration,
+    fs,
+    n_channels=2,
+    corr=0,
+    seed=None,
+    bandpass=None,
+    lowpass=None,
+    highpass=None,
+):
     r"""Generate partly uncorrelated noise
 
     This function generates partly uncorrelated noise using the N+1
@@ -482,9 +492,13 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None,
     np.random.seed(seed)
 
     if corr < 0:
-        Warning(ValueError('Resulting correlations will be positive'
-                           + ' to gain negative correlations, multiply'
-                           + ' channel with -1'))
+        Warning(
+            ValueError(
+                "Resulting correlations will be positive"
+                + " to gain negative correlations, multiply"
+                + " channel with -1"
+            )
+        )
     corr = np.abs(corr)
     # if more then one dimension in n_channels
     if np.ndim(n_channels) > 0:
@@ -497,7 +511,7 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None,
     # N+1 generator method
 
     len_signal = nsamples(duration, fs)
-    noise = np.random.randn(len_signal, n_channels+1)
+    noise = np.random.randn(len_signal, n_channels + 1)
     noise -= noise.mean(axis=0)
 
     if bandpass is not None:
@@ -511,7 +525,7 @@ def generate_uncorr_noise(duration, fs, n_channels=2, corr=0, seed=None,
     noise /= noise.std(axis=0)
 
     # Orthogonalize the noise tokens
-    Q, R = np.linalg.qr(noise, 'reduced')
+    Q, R = np.linalg.qr(noise, "reduced")
 
     # normalizing the individual noise energies somewhat reduces
     # the trial-by-trial variance of correlation values
@@ -605,7 +619,7 @@ def get_time(duration, fs=None):
 
     duration, fs, _ = _duration_is_signal(duration, fs=fs)
 
-    dt = 1. / fs
+    dt = 1.0 / fs
     nsamp = nsamples(duration, fs)
 
     time = np.arange(nsamp) * dt
@@ -699,14 +713,14 @@ def gaussian_fade_window(duration, rise_time, fs=None, cutoff=-60):
     n_samples = nsamples(duration, fs)
     window = np.ones(n_samples)
 
-    cutoff_val = 10**(cutoff / 20)  # value at which to cut gaussian
+    cutoff_val = 10 ** (cutoff / 20)  # value at which to cut gaussian
     r = int(np.round(rise_time * fs)) + 1  # number of values in window
     win_time = np.linspace(0, rise_time, r)
-    sigma = np.sqrt((-(rise_time)**2 / np.log(cutoff_val)) / 2)
-    flank = np.exp(-(win_time - rise_time)**2 / (2 * sigma**2))
+    sigma = np.sqrt((-((rise_time) ** 2) / np.log(cutoff_val)) / 2)
+    flank = np.exp(-((win_time - rise_time) ** 2) / (2 * sigma**2))
 
     # Set the beginning and and to the window to equal the flank
-    window[:r-1] = flank[:-1]
+    window[: r - 1] = flank[:-1]
     window[-r:] = flank[::-1]
 
     window = _copy_to_dim(window, ndim)
@@ -791,6 +805,7 @@ def shift_signal(signal, nr_samples):
 
     return sig
 
+
 # def fftshift_signal(signal, delay, fs):
 #     r"""Delay the `signal` by time `delay` in the frequncy domain.
 
@@ -845,7 +860,8 @@ def shift_signal(signal, nr_samples):
 
 #     return shifted_signal
 
-def delay_signal(signal, delay, fs, method='fft', mode='zeros'):
+
+def delay_signal(signal, delay, fs, method="fft", mode="zeros"):
 
     if delay < 0:
         neg_delay = True
@@ -868,7 +884,7 @@ def delay_signal(signal, delay, fs, method='fft', mode='zeros'):
 
     # Calculate the phases need for shifting and apply them to the
     # spectrum
-    freqs = np.fft.fftfreq(len(ft_signal), 1. / fs)
+    freqs = np.fft.fftfreq(len(ft_signal), 1.0 / fs)
     ft_signal *= np.exp(-1j * 2 * pi * delay * freqs)
 
     # Inverse transform the spectrum and leave away the imag. part if
@@ -879,7 +895,7 @@ def delay_signal(signal, delay, fs, method='fft', mode='zeros'):
     both = np.column_stack([signal, shifted_signal])
 
     # cut away the buffering
-    both = both[n_pad:len_sig + 2 * n_pad, :]
+    both = both[n_pad : len_sig + 2 * n_pad, :]
 
     # If negative delay then just invert the two signals
     if neg_delay:
@@ -964,12 +980,12 @@ def set_dbspl(signal, dbspl_val):
 
     p0 = 20e-6  # ref_value
 
-    factor = (p0 * 10**(float(dbspl_val) / 20)) / rms_val
+    factor = (p0 * 10 ** (float(dbspl_val) / 20)) / rms_val
 
     return signal * factor
 
 
-def set_dbfs(signal, dbfs_val, norm='rms'):
+def set_dbfs(signal, dbfs_val, norm="rms"):
     r"""Full scale normalization of the signal.
 
     Normalizes the signal to dB Fullscale for this, the Signal is multiplied
@@ -1017,7 +1033,7 @@ def set_dbfs(signal, dbfs_val, norm='rms'):
 
     """
 
-    if norm == 'rms':
+    if norm == "rms":
         rms0 = 1 / np.sqrt(2)
 
         if np.ndim(signal) != 0:
@@ -1025,18 +1041,18 @@ def set_dbfs(signal, dbfs_val, norm='rms'):
         else:
             rms_val = signal
 
-        factor = (rms0 * 10**(float(dbfs_val) / 20)) / rms_val
-    elif norm == 'peak':
+        factor = (rms0 * 10 ** (float(dbfs_val) / 20)) / rms_val
+    elif norm == "peak":
 
         if np.ndim(signal) != 0:
             peak_val = np.max(signal, axis=0)
         else:
             peak_val = signal
 
-        factor = (10**(float(dbfs_val) / 20)) / peak_val
+        factor = (10 ** (float(dbfs_val) / 20)) / peak_val
 
     else:
-        raise(ValueError('norm must be "rms" or "peak"'))
+        raise (ValueError('norm must be "rms" or "peak"'))
 
     return signal * factor
 
@@ -1090,13 +1106,37 @@ def get_bark_limits():
            248-248. http://dx.doi.org/10.1121/1.1908630
 
     """
-    bark_table = [20, 100, 200, 300, 400, 510, 630, 770, 920, 1080,
-                  1270, 1480, 1720, 2000, 2320, 2700, 3150, 3700,
-                  4400, 5300, 6400, 7700, 9500, 12000, 15500]
+    bark_table = [
+        20,
+        100,
+        200,
+        300,
+        400,
+        510,
+        630,
+        770,
+        920,
+        1080,
+        1270,
+        1480,
+        1720,
+        2000,
+        2320,
+        2700,
+        3150,
+        3700,
+        4400,
+        5300,
+        6400,
+        7700,
+        9500,
+        12000,
+        15500,
+    ]
     return bark_table
 
 
-def freqspace(min_frequency, max_frequency, n, scale='bark'):
+def freqspace(min_frequency, max_frequency, n, scale="bark"):
     r"""Calculate a given number of frequencies that eare equally spaced on
         the bark or erb scale.
 
@@ -1123,28 +1163,26 @@ def freqspace(min_frequency, max_frequency, n, scale='bark'):
 
     """
 
-    if scale == 'bark':
-        min_bark, max_bark = freq_to_bark(np.array([min_frequency,
-                                                    max_frequency]))
+    if scale == "bark":
+        min_bark, max_bark = freq_to_bark(np.array([min_frequency, max_frequency]))
         barks = np.linspace(min_bark, max_bark, n)
         freqs = bark_to_freq(barks)
-    elif scale == 'erb':
-        min_erb, max_erb = freq_to_erb(np.array([min_frequency,
-                                                 max_frequency]))
+    elif scale == "erb":
+        min_erb, max_erb = freq_to_erb(np.array([min_frequency, max_frequency]))
         erbs = np.linspace(min_erb, max_erb, n)
         freqs = erb_to_freq(erbs)
     else:
-        raise NotImplementedError('only ERB and Bark implemented')
+        raise NotImplementedError("only ERB and Bark implemented")
 
     return freqs
 
 
-def freqarange(min_frequency, max_frequency, step=1, scale='bark'):
-    r"""Calculate a of frequencies with a predifined spacing on the bark or erb
-        scale.
+def freqarange(min_frequency, max_frequency, step=1, scale="bark"):
+    r"""Calculate a of frequencies with a predifined spacing on a given frequency
+    scale.
 
     Returns frequencies between min_frequency and max_frequency with
-    the stepsize step on the bark or erb scale.
+    a given stepsize step on a frequency scale.
 
     Parameters
     ----------
@@ -1155,28 +1193,30 @@ def freqarange(min_frequency, max_frequency, step=1, scale='bark'):
       maximal frequency in Hz
 
     step: float
-      stepsize on the erb or bark scale
+      stepsize on the scale
 
     scale: str
-      scale to use 'bark' or 'erb'. (default='bark')
+      scale to use 'bark' or 'erb' or 'octave'. (default='bark')
 
     Returns
     -------
-    ndarray: frequencies spaced following step on bark or erb scale
+    ndarray: frequencies spaced following step on respective scale
 
     """
-    if scale == 'bark':
-        min_bark, max_bark = freq_to_bark(np.array([min_frequency,
-                                                    max_frequency]))
+    if scale == "bark":
+        min_bark, max_bark = freq_to_bark(np.array([min_frequency, max_frequency]))
         bark = np.arange(min_bark, max_bark, step)
         freqs = bark_to_freq(bark)
-    elif scale == 'erb':
-        min_erb, max_erb = freq_to_erb(np.array([min_frequency,
-                                                 max_frequency]))
+    elif scale == "erb":
+        min_erb, max_erb = freq_to_erb(np.array([min_frequency, max_frequency]))
         erbs = np.arange(min_erb, max_erb, step)
         freqs = erb_to_freq(erbs)
+    elif scale == "octave":
+        n_steps = int(np.log2(max_frequency / min_frequency) / step)
+        exponents = step * (np.arange(n_steps) + 1)
+        freqs = max_frequency / 2 ** exponents[::-1]
     else:
-        raise NotImplementedError('only ERB and Bark implemented')
+        raise NotImplementedError("only ERB and Bark implemented")
 
     return freqs
 
@@ -1210,6 +1250,53 @@ def bark_to_freq(bark):
     bark[bark > 20.1] = (bark[bark > 20.1] + 4.422) / 1.22
     f = 1960 * (bark + 0.53) / (26.28 - bark)
     return f
+
+
+def octband_to_freq(band_nr, oct_fraction: int = 3, base_system: int = 2):
+    """Octave bandnumber to frequency conversion."""
+    b = oct_fraction
+
+    if base_system == 10:
+        gbase = 10 ** (3 / 10)
+    elif base_system == 2:
+        gbase = 2
+    else:
+        raise (ValueError("base_system must be 2 or 10"))
+
+    if b % 2:  # if odd
+        freq = gbase ** ((band_nr - 30.0) / b) * 1e3
+    else:  # if even:
+        freq = gbase ** ((2 * band_nr - 59.0) / (2 * b)) * 1e3
+    return freq
+
+
+def freq_to_octband(frequency, oct_fraction: int = 3, base_system: int = 2):
+    """Frequency to octave bandnumber conversion.
+
+    Scales are normalized so that band 1000Hz is band 30
+
+    Parameters
+    ----------
+    frequency: scalar or ndarray
+        The frequency in Hz.
+    oct_fraction: int
+        The fractional octave scale to use. e.g 3 for 1/3 octave bands.
+        default = 3
+    base_system: 2 or 10
+      The base system used for calcuation. default = 2
+    """
+    b = oct_fraction
+    if base_system == 10:
+        gbase = 10 ** (3 / 10)
+    elif base_system == 2:
+        gbase = 2
+    else:
+        raise (ValueError("base_system must be 2 or 10"))
+    if b % 2:
+        band_nr = np.log(frequency / 1000) / np.log(gbase) * b + 30
+    else:
+        band_nr = 0.5 * (np.log(frequency / 1000) / np.log(gbase) * 2 * b + 59)
+    return band_nr
 
 
 def freq_to_bark(frequency, use_table=False):
@@ -1291,8 +1378,7 @@ def freq_to_erb(frequency):
 
     """
 
-    n_erb = ((1000. / (24.7 * 4.37))
-             * np.log(4.37 * frequency / 1000 + 1))
+    n_erb = (1000.0 / (24.7 * 4.37)) * np.log(4.37 * frequency / 1000 + 1)
     return n_erb
 
 
@@ -1377,51 +1463,15 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
             assert l_phon <= 80
 
     # Equation Parameters
-    frequency_list = np.array([20, 25, 31.5,
-                               40, 50, 63,
-                               80, 100, 125,
-                               160, 200, 250,
-                               315, 400, 500,
-                               630, 800, 1000,
-                               1250, 1600, 2000,
-                               2500, 3150, 4000,
-                               5000, 6300, 8000,
-                               10000, 12500])
+    frequency_list = din_iso_226.frequency_list
 
-    alpha_f_list = np.array([0.532, 0.506, 0.480,
-                             0.455, 0.432, 0.409,
-                             0.387, 0.367, 0.349,
-                             0.330, 0.315, 0.301,
-                             0.288, 0.276, 0.267,
-                             0.259, 0.253, 0.250,
-                             0.246, 0.244, 0.243,
-                             0.243, 0.243, 0.242,
-                             0.242, 0.245, 0.254,
-                             0.271, 0.301])
+    alpha_f_list = din_iso_226.alpha_f_list
 
     # transfer function normed at 1000Hz
-    l_u_list = np.array([-31.6, -27.2, -23.0,
-                         -19.1, -15.9, -13.0,
-                         -10.3, -8.1, -6.2,
-                         -4.5, -3.1, -2.0,
-                         -1.1, -0.4, 0.0,
-                         0.3, 0.5, 0.0,
-                         -2.7, -4.1, -1.0,
-                         1.7, 2.5, 1.2,
-                         -2.1, -7.1, -11.2,
-                         -10.7, -3.1])
+    l_u_list = din_iso_226.l_u_list
 
     # Hearing threshold t_f
-    t_f_list = np.array([78.5, 68.7, 59.5,
-                         51.1, 44.0, 37.5,
-                         31.5, 26.5, 22.1,
-                         17.9, 14.4, 11.4,
-                         8.6, 6.2, 4.4,
-                         3.0, 2.2, 2.4,
-                         3.5, 1.7, -1.3,
-                         -4.2, -6.0, -5.4,
-                         -1.5, 6.0, 12.6,
-                         13.9, 12.3])
+    t_f_list = din_iso_226.t_f_list
 
     if interpolate is False:
         assert frequency in frequency_list
@@ -1431,16 +1481,15 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
         l_u = l_u_list[n_param]
         t_f = t_f_list[n_param]
     else:
-        i_type = 'cubic'
-        alpha_f = interp1d(frequency_list,
-                           alpha_f_list, kind=i_type)(frequency)
-        l_u = interp1d(frequency_list,
-                       l_u_list, kind=i_type)(frequency)
-        t_f = interp1d(frequency_list,
-                       t_f_list, kind=i_type)(frequency)
+        i_type = "cubic"
+        alpha_f = interp1d(frequency_list, alpha_f_list, kind=i_type)(frequency)
+        l_u = interp1d(frequency_list, l_u_list, kind=i_type)(frequency)
+        t_f = interp1d(frequency_list, t_f_list, kind=i_type)(frequency)
 
-    a_f = (4.47e-3 * (10**(0.025 * l_phon) - 1.15)
-           + (0.4 * 10**((t_f + l_u) / 10 - 9))**alpha_f)
+    a_f = (
+        4.47e-3 * (10 ** (0.025 * l_phon) - 1.15)
+        + (0.4 * 10 ** ((t_f + l_u) / 10 - 9)) ** alpha_f
+    )
     l_pressure = 10 / alpha_f * np.log10(a_f) - l_u + 94
 
     return l_pressure
@@ -1487,51 +1536,14 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
 
     """
     # Equation Parameters
-    frequency_list = np.array([20, 25, 31.5,
-                               40, 50, 63,
-                               80, 100, 125,
-                               160, 200, 250,
-                               315, 400, 500,
-                               630, 800, 1000,
-                               1250, 1600, 2000,
-                               2500, 3150, 4000,
-                               5000, 6300, 8000,
-                               10000, 12500])
-
-    alpha_f_list = np.array([0.532, 0.506, 0.480,
-                             0.455, 0.432, 0.409,
-                             0.387, 0.367, 0.349,
-                             0.330, 0.315, 0.301,
-                             0.288, 0.276, 0.267,
-                             0.259, 0.253, 0.250,
-                             0.246, 0.244, 0.243,
-                             0.243, 0.243, 0.242,
-                             0.242, 0.245, 0.254,
-                             0.271, 0.301])
+    frequency_list = din_iso_226.frequency_list
+    alpha_f_list = din_iso_226.alpha_f_list
 
     # transfer function normed at 1000Hz
-    l_u_list = np.array([-31.6, -27.2, -23.0,
-                         -19.1, -15.9, -13.0,
-                         -10.3, -8.1, -6.2,
-                         -4.5, -3.1, -2.0,
-                         -1.1, -0.4, 0.0,
-                         0.3, 0.5, 0.0,
-                         -2.7, -4.1, -1.0,
-                         1.7, 2.5, 1.2,
-                         -2.1, -7.1, -11.2,
-                         -10.7, -3.1])
+    l_u_list = din_iso_226.l_u_list
 
     # Hearing threshold t_f
-    t_f_list = np.array([78.5, 68.7, 59.5,
-                         51.1, 44.0, 37.5,
-                         31.5, 26.5, 22.1,
-                         17.9, 14.4, 11.4,
-                         8.6, 6.2, 4.4,
-                         3.0, 2.2, 2.4,
-                         3.5, 1.7, -1.3,
-                         -4.2, -6.0, -5.4,
-                         -1.5, 6.0, 12.6,
-                         13.9, 12.3])
+    t_f_list = din_iso_226.t_f_list
 
     if interpolate is False:
         assert frequency in frequency_list
@@ -1541,16 +1553,16 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
         l_u = l_u_list[n_param]
         t_f = t_f_list[n_param]
     else:
-        i_type = 'cubic'
-        alpha_f = interp1d(frequency_list,
-                           alpha_f_list, kind=i_type)(frequency)
-        l_u = interp1d(frequency_list,
-                       l_u_list, kind=i_type)(frequency)
-        t_f = interp1d(frequency_list,
-                       t_f_list, kind=i_type)(frequency)
+        i_type = "cubic"
+        alpha_f = interp1d(frequency_list, alpha_f_list, kind=i_type)(frequency)
+        l_u = interp1d(frequency_list, l_u_list, kind=i_type)(frequency)
+        t_f = interp1d(frequency_list, t_f_list, kind=i_type)(frequency)
 
-    b_f = ((0.4 * 10**((l_dbspl + l_u) / 10 - 9))**alpha_f
-           - (0.4 * 10**((t_f + l_u) / 10 - 9))**alpha_f + 0.005135)
+    b_f = (
+        (0.4 * 10 ** ((l_dbspl + l_u) / 10 - 9)) ** alpha_f
+        - (0.4 * 10 ** ((t_f + l_u) / 10 - 9)) ** alpha_f
+        + 0.005135
+    )
     l_phon = 40 * np.log10(b_f) + 94
 
     if limit:
@@ -1565,7 +1577,7 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
     return l_phon
 
 
-def calc_bandwidth(fc, scale='cbw'):
+def calc_bandwidth(fc, scale="cbw"):
     r"""Calculate approximation of auditory filter bandwidth
 
     This Function calculates aproximations for the auditory filter
@@ -1601,10 +1613,10 @@ def calc_bandwidth(fc, scale='cbw'):
 
     """
 
-    if 'cbw' in scale:
-        bw = 25 + 75 * (1 + 1.4 * (fc / 1000.)**2)**0.69
-    elif 'erb' in scale:
-        bw = 24.7 * (4.37 * (fc / 1000.) + 1)
+    if "cbw" in scale:
+        bw = 25 + 75 * (1 + 1.4 * (fc / 1000.0) ** 2) ** 0.69
+    elif "erb" in scale:
+        bw = 24.7 * (4.37 * (fc / 1000.0) + 1)
 
     return bw
 
@@ -1664,7 +1676,7 @@ def extract_binaural_differences(signal, log_ilds=True):
     return ipd, ild
 
 
-def schroeder_phase(harmonics, amplitudes, phi0=0.):
+def schroeder_phase(harmonics, amplitudes, phi0=0.0):
     r"""Phases for a schroeder phase harmonic complex
 
     This function calculates the phases for a schroeder phase harmonic
@@ -1705,8 +1717,7 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.):
 
     phi_schroeder = np.zeros(len(harmonics))
     for i_n, n in enumerate(harmonics):
-        phi_shift = 2 * pi * np.sum((n - harmonics[:i_n])
-                                    * power[:i_n])
+        phi_shift = 2 * pi * np.sum((n - harmonics[:i_n]) * power[:i_n])
         phi_schroeder[i_n] = phi0 - phi_shift
 
     return phi_schroeder
@@ -1774,16 +1785,16 @@ def cmplx_corr(signal, fs=None):
     """
 
     if np.ndim(signal) < 2:
-        raise ValueError('Input shape must be (N, 2)')
+        raise ValueError("Input shape must be (N, 2)")
     if np.shape(signal)[1] != 2:
-        raise ValueError('Input shape must be (N, 2)')
+        raise ValueError("Input shape must be (N, 2)")
 
     sig = as_signal(signal, fs)
     asig = sig.to_analytical()
 
     ccm = np.mean(asig.ch[0] * asig.ch[1].conjugate(), axis=0)
-    norm1 = np.mean(np.abs(asig.ch[0])**2, axis=0)
-    norm2 = np.mean(np.abs(asig.ch[1])**2, axis=0)
+    norm1 = np.mean(np.abs(asig.ch[0]) ** 2, axis=0)
+    norm2 = np.mean(np.abs(asig.ch[1]) ** 2, axis=0)
 
     corrcov = ccm / np.sqrt(norm1 * norm2)
 
@@ -1839,14 +1850,14 @@ def cmplx_crosscorr(signal):
     coh = ((fsig.ch[0] * fsig.ch[1].conj())).to_timedomain()
 
     # normalize by energy so that we gain the normalized coherence function
-    coh /= np.sqrt(np.product(np.mean(np.abs(asig)**2, axis=0), axis=0))
+    coh /= np.sqrt(np.product(np.mean(np.abs(asig) ** 2, axis=0), axis=0))
 
     # if input was an ndarray convert output back to ndarray
-    coh[:] = np.roll(coh, coh.n_samples//2, axis=0)
+    coh[:] = np.roll(coh, coh.n_samples // 2, axis=0)
 
     if not isinstance(signal, Signal):
         coh = np.asarray(coh)
     else:
-        coh.time_offset = -coh.n_samples//2 * 1 / coh.fs
+        coh.time_offset = -coh.n_samples // 2 * 1 / coh.fs
 
     return coh

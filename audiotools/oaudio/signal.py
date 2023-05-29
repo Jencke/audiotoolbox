@@ -1,12 +1,12 @@
 """Definition for the Signal class."""
 
+from typing import Type, cast, Union
+
 import numpy as np
-from .. import audiotools as audio
-from .. import wav
-from .. import interfaces
-from .freqdomain_signal import FrequencyDomainSignal
+
 from . import base_signal
-from .. import filter as filt
+from .. import audiotools as audio, wav, filter as filt
+from .freqdomain_signal import FrequencyDomainSignal
 from .stats import SignalStats
 
 
@@ -39,12 +39,15 @@ class Signal(base_signal.BaseSignal):
 
     """
 
-    def __new__(cls, n_channels, duration, fs, dtype=float):
+    def __new__(cls: Type[base_signal.BaseSignal],
+                n_channels: Union[int, tuple, list],
+                duration: float,
+                fs: int,
+                dtype=float):
         """Create new objects."""
-        obj = base_signal.BaseSignal.__new__(cls, n_channels,
-                                             duration, fs, dtype)
+        obj = super().__new__(cls, n_channels, duration, fs, dtype)
         obj.stats = SignalStats(obj)
-        return obj
+        return cast(Signal, obj)
 
     def __array_finalize__(self, obj):
         """Finalyze signal."""
@@ -61,6 +64,7 @@ class Signal(base_signal.BaseSignal):
         else:
             # When copying or slicing
             self.time_offset = getattr(obj, 'time_offset', None)
+            self.stats = SignalStats(self)
 
         return obj
 
@@ -723,14 +727,6 @@ class Signal(base_signal.BaseSignal):
 
         return self
 
-    def play(self, bitdepth=32, buffsize=1024):
-        """Play the signal over Soundard - Very experimental."""
-        wv = self
-        interfaces.play(signal=wv,
-                        fs=self.fs,
-                        bitdepth=bitdepth,
-                        buffsize=buffsize)
-
     def plot(self, ax=None):
         """Plot the Signal using matplotlib.
 
@@ -863,3 +859,6 @@ def as_signal(signal, fs):
         sig_out = Signal(n_channels, duration, fs, dtype=signal.dtype)
         sig_out[:] = signal
     return sig_out
+
+
+__all__ = ['Signal', 'as_signal']

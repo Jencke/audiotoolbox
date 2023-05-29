@@ -1,3 +1,13 @@
+
+0.641 -> 0.65
+ - Added a default auditory gammatone filterbank
+ - Added a default fractional octave filterbank
+ - Added function to convert frequency into band number following ANSI norm
+ - Fixed a small bug in _copy_to_dim which would remove the last dimension of an error if it equaled 1
+ - Deleted broken audio playback functionality
+ - Moved filterbanks from audiotools.filter to audiotools.filter.bank submodule
+ - audiotools.freqarange now supports octave spacing
+
 0.64 -> 0.64.1
  - Fixed a bug in the FrequencyDomainSignal.to_timedomain() method
 

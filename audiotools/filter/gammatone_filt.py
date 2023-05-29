@@ -44,27 +44,37 @@ def design_gammatone(fc, bw, fs, order=4, attenuation_db='erb'):
     # bandwidth:
     if attenuation_db == 'erb':
         # Using Eq. 14 and 15 [Hohmann2002]
-        c = 2 * np.sqrt(2**(1 / order) - 1)
-        alpha = ((np.pi * np.math.factorial(2 * order - 2) * 2**(2 - 2 * order))
-                 / np.math.factorial(order - 1)**2)
-        bw = c / alpha * bw
+        bw = erb_to_3db(bw, order)
         attenuation_db = -3
 
     phi = pi * bw / fs          # Eq. 12 [Hohmann2002]
     beta = 2 * pi * fc / fs     # Eq. 10 [Hohmann2002]
 
     alpha = 10**(0.1 * attenuation_db / order)       # Eq. 12 [Hohmann2002]
-    p = (-2 + 2 * alpha * np.cos(phi)) / (1 - alpha) # Eq. 12 [Hohmann2002]
+    p = (-2 + 2 * alpha * np.cos(phi)) / (1 - alpha)  # Eq. 12 [Hohmann2002]
 
-    l = -p / 2 - np.sqrt(p**2 / 4 - 1) # Eq. 12 [Hohmann2002]
+    lvar = -p / 2 - np.sqrt(p**2 / 4 - 1)  # Eq. 12 [Hohmann2002]
 
-    coef = l * np.exp(1j * beta)   # Eq. 1 [Hohmann2002]
+    coef = lvar * np.exp(1j * beta)   # Eq. 1 [Hohmann2002]
     factor = 2 * (1 - np.abs(coef))**order
 
     b = np.array(factor),
     a = np.array([1., -coef])
 
     return b, a
+
+
+def erb_to_3db(
+        equivalent_rect_bw: float,
+        order: int
+) -> float:
+    """ERB to -3db bw conversion for gammatone filter of given order."""
+    c = 2 * np.sqrt(2**(1 / order) - 1)
+    alpha = ((np.pi * np.math.factorial(2 * order - 2)
+              * 2**(2 - 2 * order))
+             / np.math.factorial(order - 1)**2)
+    bw = c / alpha * equivalent_rect_bw
+    return bw
 
 
 def gammatonefos_apply(signal, b, a, order, states=None):
