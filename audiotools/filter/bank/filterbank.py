@@ -1,11 +1,12 @@
-import numpy as np
+from typing import Literal
+from copy import deepcopy
 
-from .. import gammatone_filt as gamma
-from .. import butterworth_filt as butter
+import numpy as np
+from numpy.typing import ArrayLike
+
+from .. import gammatone_filt as gamma, butterworth_filt as butter
 from .. import brickwall_filt as brick
 from ... import audiotools as audio
-from typing import Literal
-from numpy.typing import ArrayLike
 
 
 class FilterBank(object):
@@ -30,26 +31,42 @@ class FilterBank(object):
         self.fc = np.asarray([fc]).flatten()
         self.bw = np.asarray([bw]).flatten()
         self.fs = fs
-        self.n_filters = len(self.fc)
+        self.params = dict()
 
         if self.fc.shape != self.bw.shape:
             raise Exception(
                 'Length of center frequencies must equal length of bandwidths')
 
+        self._update_params(**kwargs)
 
-def _update_params(param, n_val, **kwargs):
-    ''' Used to update the parameter dict
-    '''
-    for k, v in kwargs.items():
-        if k in param:
+    @property
+    def n_filters(self):
+        return len(self.fc)
+
+    def _update_params(self, **kwargs):
+        ''' Used to update the parameter dict
+        '''
+        n_val = self.n_filters
+        for k, v in kwargs.items():
             if np.ndim(v):
                 if len(v) == n_val:
-                    param[k] = v
+                    self.params[k] = np.asarray(v)
                 else:
                     raise Exception(f'Size missmatch in parameter \'{k}\'')
             else:
-                param[k] = n_val * [v]
-    return param
+                self.params[k] = np.asarray(n_val * [v])
+
+    def __len__(self):
+        return self.n_filters
+
+    def __getitem__(self, i):
+        bank = deepcopy(self)
+        bank.bw = self.bw[i]
+        bank.fc = self.fc[i]
+        bank.fs = self.fs
+        for k, v in self.params.items():
+            bank.params[k] = v[i]
+        return bank
 
 
 class ButterworthBank(FilterBank):
@@ -57,9 +74,8 @@ class ButterworthBank(FilterBank):
         super().__init__(fc, bw, fs, **kwargs)
 
         # set default parameters
-        self.params = {'order': self.n_filters * [2]}
-        # update defaults with predefined parameters
-        self.params = _update_params(self.params, self.n_filters, **kwargs)
+        if 'order' not in self.params.keys():
+            self._update_params(order=2)
 
         # Calculate filter coefficents
         self.coefficents = np.zeros((np.max(self.params['order']), 6,
@@ -87,16 +103,22 @@ class ButterworthBank(FilterBank):
             out_sig.T[i_filt] = out.T
         return out_sig
 
+    def __getitem__(self, i):
+        bank = super().__getitem__(i)
+        bank.coefficents = self.coefficents[:, :, i]
+        return bank
+
 
 class GammaToneBank(FilterBank):
     def __init__(self, fc, bw, fs, **kwargs):
         FilterBank.__init__(self, fc, bw, fs, **kwargs)
 
+        self._update_params(**kwargs)
         # set default parameters
-        self.params = {'order': self.n_filters * [4],
-                       'attenuation_db': self.n_filters * ['erb']}
-        # update defaults with predefined parameters
-        self.params = _update_params(self.params, self.n_filters, **kwargs)
+        if 'order' not in self.params.keys():
+            self._update_params(order=4)
+        if 'attenuation_db' not in self.params.keys():
+            self._update_params(attenuation_db='erb')
 
         # Calculate filter coefficents
         self.coefficents = np.zeros([4, self.n_filters], complex)
@@ -127,6 +149,11 @@ class GammaToneBank(FilterBank):
         if out_sig.shape[-1] == 1:
             out_sig = out_sig.squeeze(-1)
         return out_sig
+
+    def __getitem__(self, i):
+        bank = super().__getitem__(i)
+        bank.coefficents = self.coefficents[:, i]
+        return bank
 
 
 class BrickBank(FilterBank):

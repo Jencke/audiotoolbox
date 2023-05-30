@@ -18,17 +18,10 @@ A python package for creating acoustic stimuli primariliy aimed at auditory rese
 
 ## Documentation
 The package documentation can be found at: https://audiotools.readthedocs.io/en/master/
+However, it is a bit outdated and does not document all the features. Help would be highly appreciated
 
 ## Contributions
-The Project is happy about any kind of contribution. If you find bugs,
-think the documentation could be improved, have comments or ideas,
-just open a ticket within the issue tracker
-https://github.com/Jencke/audiotools/issues or contact me via email.
-If you implement new features, I'm happy to receive merge requests or
-code-snippets.
+The Project is happy about any contribution. If you find bugs, think the documentation could be improved, or have comments or ideas, open a ticket within the issue tracker https://github.com/Jencke/audiotools/issues or contact me via email. If you implement new features, I'm happy to receive merge requests or code-snippets.
 
 ## Acknowledgments
-This software package was developed during my PHD in the group of
-Prof. Werner Hemmert at the Technical University of Munich and further
-developed during my time as a post-doc in the Group of Prof. Mathias
-Dietz at the University of Oldenburg.
+This software package was developed during my PHD in the group of Prof. Werner Hemmert at the Technical University of Munich and further developed during my time as a post-doc in the Group of Prof. Mathias Dietz at the University of Oldenburg.

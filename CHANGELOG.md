@@ -1,5 +1,9 @@
+0.65 -> 0.65.1
+ - Made filterbanks indexable to gain excess to individual filters
+ - fixed a small bug in the erb to 3db calculation function of the gammatone
+   filter which could result in a type error
 
-0.641 -> 0.65
+0.64.1 -> 0.65
  - Added a default auditory gammatone filterbank
  - Added a default fractional octave filterbank
  - Added function to convert frequency into band number following ANSI norm

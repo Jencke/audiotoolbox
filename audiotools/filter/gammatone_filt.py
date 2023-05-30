@@ -71,7 +71,7 @@ def erb_to_3db(
     """ERB to -3db bw conversion for gammatone filter of given order."""
     c = 2 * np.sqrt(2**(1 / order) - 1)
     alpha = ((np.pi * np.math.factorial(2 * order - 2)
-              * 2**(2 - 2 * order))
+              * 2.**(2 - 2 * order))
              / np.math.factorial(order - 1)**2)
     bw = c / alpha * equivalent_rect_bw
     return bw
