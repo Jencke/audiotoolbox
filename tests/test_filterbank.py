@@ -8,6 +8,7 @@ import numpy.testing as testing
 from audiotools.filter.bank import create_filterbank
 from audiotools.filter.bank import auditory_gamma_bank, octave_bank
 from audiotools.filter.bank.filterbank import FilterBank, ButterworthBank
+from audiotools.filter.bank.filterbank import GammaToneBank
 
 
 
@@ -52,6 +53,28 @@ def test_sub_butterbank():
     for i in idx_vec:
         sub = bank[i]
         assert isinstance(sub, ButterworthBank)
+        np.testing.assert_equal(sub.bw, bank.bw[i])
+        np.testing.assert_equal(sub.fs, bank.fs)
+        np.testing.assert_equal(sub.fc, bank.fc[i])
+        np.testing.assert_equal(sub.params['order'],
+                                bank.params['order'][i])
+        sub_out = sub.filt(sig)
+        np.testing.assert_equal(main_out.ch[i], sub_out)
+
+
+def test_sub_gamma():
+    bank = create_filterbank(fc=np.random.randint(500, 1000, 10),
+                             bw=np.random.randint(10, 50, 10),
+                             fs=48000,
+                             filter_type='gammatone',
+                             order=np.random.randint(1, 10, 10))
+    idx_vec = [np.random.randint(0, 10, 3) for i in range(3)]
+
+    sig = audio.Signal(1, 1, 48000).add_noise()
+    main_out = bank.filt(sig)
+    for i in idx_vec:
+        sub = bank[i]
+        assert isinstance(sub, GammaToneBank)
         np.testing.assert_equal(sub.bw, bank.bw[i])
         np.testing.assert_equal(sub.fs, bank.fs)
         np.testing.assert_equal(sub.fc, bank.fc[i])

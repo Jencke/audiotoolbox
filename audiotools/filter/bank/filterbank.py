@@ -150,6 +150,11 @@ class GammaToneBank(FilterBank):
             out_sig = out_sig.squeeze(-1)
         return out_sig
 
+    def __getitem__(self, i):
+        bank = super().__getitem__(i)
+        bank.coefficents = self.coefficents[:, i]
+        return bank
+
 
 class BrickBank(FilterBank):
     def __init__(self, fc, bw, fs):
