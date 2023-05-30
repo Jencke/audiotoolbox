@@ -7,6 +7,58 @@ from audiotools.filter import butterworth_filt
 import numpy.testing as testing
 from audiotools.filter.bank import create_filterbank
 from audiotools.filter.bank import auditory_gamma_bank, octave_bank
+from audiotools.filter.bank.filterbank import FilterBank, ButterworthBank
+
+
+
+def test_base_signal():
+    bank = FilterBank([500, 200], [10, 2], 48000, myparam=3)
+    assert len(bank) == 2
+    assert np.all(bank.params['myparam'] == [3, 3])
+
+    assert isinstance(bank[0], FilterBank)
+    assert bank[0].bw == 10
+    assert bank[1].fc == 200
+    assert bank[0].fs == bank.fs
+    assert bank[0].params['myparam'] == 3
+
+    bank = FilterBank(np.random.random(10),
+                      np.random.random(10), 48000,
+                      myparam1=np.random.random(10),
+                      myparam2=np.random.random(10))
+    idx_vec = [np.random.randint(0, 10, 3) for i in range(3)]
+
+    for i in idx_vec:
+        sub = bank[i]
+        np.testing.assert_equal(sub.bw, bank.bw[i])
+        np.testing.assert_equal(sub.fs, bank.fs)
+        np.testing.assert_equal(sub.fc, bank.fc[i])
+        np.testing.assert_equal(sub.params['myparam1'],
+                                bank.params['myparam1'][i])
+        np.testing.assert_equal(sub.params['myparam2'],
+                                bank.params['myparam2'][i])
+
+
+def test_sub_butterbank():
+    bank = create_filterbank(fc=np.random.randint(500, 1000, 10),
+                             bw=np.random.randint(10, 50, 10),
+                             fs=48000,
+                             filter_type='butter',
+                             order=np.random.randint(1, 10, 10))
+    idx_vec = [np.random.randint(0, 10, 3) for i in range(3)]
+
+    sig = audio.Signal(1, 1, 48000).add_noise()
+    main_out = bank.filt(sig)
+    for i in idx_vec:
+        sub = bank[i]
+        assert isinstance(sub, ButterworthBank)
+        np.testing.assert_equal(sub.bw, bank.bw[i])
+        np.testing.assert_equal(sub.fs, bank.fs)
+        np.testing.assert_equal(sub.fc, bank.fc[i])
+        np.testing.assert_equal(sub.params['order'],
+                                bank.params['order'][i])
+        sub_out = sub.filt(sig)
+        np.testing.assert_equal(main_out.ch[i], sub_out)
 
 
 def test_create_filterbank():
@@ -14,6 +66,7 @@ def test_create_filterbank():
     bw = [10, 20]
     butter = create_filterbank(fc, bw, "butter", 48000)
     assert isinstance(butter, bank.ButterworthBank)
+    assert butter.n_filters == 2
 
     gamma = create_filterbank(fc, bw, "gammatone", 48000)
     assert isinstance(gamma, bank.GammaToneBank)
