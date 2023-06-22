@@ -561,8 +561,6 @@ def test_generate_noise():
 
 
 def test_generate_uncorr_noise():
-    from scipy.stats import pearsonr
-
     duration = 1
     fs = 100e3
     noise = audio.generate_uncorr_noise(duration, fs, n_channels=2)
@@ -580,6 +578,14 @@ def test_generate_uncorr_noise():
 
     # Test multichannel
     res_noise = audio.generate_uncorr_noise(1, fs=48000, n_channels=3, corr=0.5)
+    cv = np.corrcoef(res_noise.T)
+    lower_tri = np.tril(cv, -1)
+    lower_tri[lower_tri == 0] = np.nan
+    testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5)
+
+    # Test multichannel
+    res_noise = audio.generate_uncorr_noise(1, fs=48000, n_channels=3,
+                                            corr=0.5, ntype='pink')
     cv = np.corrcoef(res_noise.T)
     lower_tri = np.tril(cv, -1)
     lower_tri[lower_tri == 0] = np.nan
@@ -828,17 +834,3 @@ def test_copy_to_ndim():
 
     b = audio.audiotools._copy_to_dim(a, 3)
     assert b.shape == (1000, 3)
-
-    # def test_from_wav():
-    #     fs = 41200
-    #     signal = audio.Signal(2, 2, fs)
-    #     signal[:] = np.linspace(-1, 1, signal.n_samples)[:, None]
-
-    #     bitdepth = 16
-    #     audio.wav.writewav('test.wav', signal, signal.fs, 32)
-
-    #     signal_out = audio.from_wav('test.wav')
-    #     testing.assert_allclose(signal_out,
-    #                             signal,
-    #                             atol=2 / 2**bitdepth,
-    #                             rtol=1)

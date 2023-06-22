@@ -234,3 +234,13 @@ def test_default_octave_bank():
     bank_out = filt_bank.filt(noise)
     power = np.var(bank_out, axis=0)
     assert power.std() < 0.01
+
+    fs = 48000
+    filt_bank = octave_bank(fs)
+    noise = audio.Signal(2, 20, 48000).add_uncorr_noise(0, ntype="pink")
+    bank_out = filt_bank.filt(noise.ch[0])
+    power = np.var(bank_out, axis=0)
+    assert power.std() < 0.01
+    bank_out = filt_bank.filt(noise.ch[1])
+    power = np.var(bank_out, axis=0)
+    assert power.std() < 0.01

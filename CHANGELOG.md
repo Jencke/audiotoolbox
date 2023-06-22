@@ -1,3 +1,6 @@
+0.65.1 -> 0.66
+ - Added option to generate partly correlated noise with different spectral shapes
+
 0.65 -> 0.65.1
  - Made filterbanks indexable to gain excess to individual filters
  - fixed a small bug in the erb to 3db calculation function of the gammatone

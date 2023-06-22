@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="audiotoolbox",
-    version="0.65.1",
+    version="0.66",
     author="Jörg Encke",
     author_email="joerg.encke@posteo.de",
     description="Toolbox for generating and working with audio signals",

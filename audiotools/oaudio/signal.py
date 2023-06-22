@@ -122,7 +122,7 @@ class Signal(base_signal.BaseSignal):
         add gaussian noise with a defined variance and different
         spectral shapes. The noise is generated in the frequency domain
         using the gaussian pseudorandom generator ``numpy.random.randn``.
-        The real and imaginary part of each frequency component is set
+        The real and imaginarny part of each frequency component is set
         using the psudorandom generator. Each frequency bin is then
         weighted dependent on the spectral shape. The resulting spektrum
         is then transformed into the time domain using ``numpy.fft.ifft``
@@ -160,7 +160,7 @@ class Signal(base_signal.BaseSignal):
         self[:] = (self.T + noise.T * np.sqrt(variance)).T
         return self
 
-    def add_uncorr_noise(self, corr=0, variance=1, seed=None,
+    def add_uncorr_noise(self, corr=0, variance=1, ntype='white', seed=None,
                          bandpass=None, highpass=None, lowpass=None):
         r"""Add partly uncorrelated noise.
 
@@ -189,6 +189,8 @@ class Signal(base_signal.BaseSignal):
             Desired correlation of the noise tokens, (default=0)
         variance : scalar, optional
             The desired variance of the noise, (default=1)
+        ntype : {'white', 'pink', 'brown'}
+            spectral shape of the noise
         seed : int or 1-d array_like, optional
             Seed for `RandomState`.
             Must be convertible to 32 bit unsigned integers.
@@ -223,6 +225,7 @@ class Signal(base_signal.BaseSignal):
         noise = audio.generate_uncorr_noise(duration=self.duration,
                                             fs=self.fs,
                                             n_channels=self.n_channels,
+                                            ntype=ntype,
                                             corr=corr,
                                             seed=seed,
                                             bandpass=bandpass,
