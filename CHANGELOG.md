@@ -1,4 +1,4 @@
-Develop
+0.65.1 -> 0.66
  - Added option to generate partly correlated noise with different spectral shapes
 
 0.65 -> 0.65.1
