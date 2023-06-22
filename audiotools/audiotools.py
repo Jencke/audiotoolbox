@@ -302,7 +302,6 @@ def generate_low_noise_noise(
 
     return noise
 
-
 def generate_noise(duration, fs=None, ntype="white", n_channels=1, seed=None):
     r"""Generate Noise
 
@@ -391,6 +390,8 @@ def generate_noise(duration, fs=None, ntype="white", n_channels=1, seed=None):
     elif ntype == "brown":
         # Power proportional to 1 / f**2
         f_weights[lowbin:highbin] = 1.0 / freqs[lowbin:]
+    else:
+        raise(ValueError('ntype not implemented'))
 
     # generate noise
     a = np.zeros([nfft])
@@ -422,6 +423,7 @@ def generate_uncorr_noise(
     fs,
     n_channels=2,
     corr=0,
+    ntype='white',
     seed=None,
     bandpass=None,
     lowpass=None,
@@ -461,6 +463,8 @@ def generate_uncorr_noise(
         number of indipendant noise channels
     corr : int, optional
         Desired correlation of the noise tokens, (default=0).
+    ntype : {'white', 'pink', 'brown'}
+        spectral shape of the noise
     seed : int or 1-d array_like, optional
         Seed for `RandomState`.
         Must be convertible to 32 bit unsigned integers.
@@ -489,7 +493,7 @@ def generate_uncorr_noise(
       292–301. http://dx.doi.org/10.1121/1.3596475
 
     """
-    np.random.seed(seed)
+    # np.random.seed(seed)
 
     if corr < 0:
         Warning(
@@ -511,7 +515,20 @@ def generate_uncorr_noise(
     # N+1 generator method
 
     len_signal = nsamples(duration, fs)
-    noise = np.random.randn(len_signal, n_channels + 1)
+
+    noise = generate_noise(duration,
+                           fs=fs,
+                           ntype=ntype,
+                           n_channels=1,
+                           seed=seed)
+    for i in range(n_channels):
+        n_noise = generate_noise(duration,
+                                 fs=fs,
+                                 ntype=ntype,
+                                 n_channels=1,
+                                 seed=seed)
+        noise = np.column_stack([noise, n_noise])
+
     noise -= noise.mean(axis=0)
 
     if bandpass is not None:
