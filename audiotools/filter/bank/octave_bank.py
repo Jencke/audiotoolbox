@@ -6,7 +6,7 @@ from ... import audiotools as audio
 
 def get_edge_frequencies(
     fc: float, oct_fraction: int = 3, base_system: int = 2
-) -> tuple[float, float]:
+) -> tuple:
     """Calculate band edge frequencies following ANSI S1.11-2004.
 
     Calculates the upper and lower band edge frequencies for a given center
