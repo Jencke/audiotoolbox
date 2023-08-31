@@ -233,3 +233,15 @@ def test_c_weight():
     assert np.abs(fw.c_weight(10) + 14.3) < 0.09
     assert np.abs(fw.c_weight(100) + 0.3) < 0.9
     assert np.abs(fw.c_weight(2500) + 0.3) < 0.9
+
+def test_a_weighting():
+    def get_gain(f):
+        sig = audio.Signal(1, 1, 48000).add_tone(f)
+        out = filter.a_weighting(sig, None)
+        return out.stats.dbfs - sig.stats.dbfs
+
+    assert np.abs(get_gain(1000)) < 0.01
+    assert np.abs(get_gain(10) + 70.4) < 0.5 # for Class 1 +3.5 / -inf
+    assert np.abs(get_gain(4000) - 1.0) < 0.1
+    assert np.abs(get_gain(200) + 10.9) < 0.1
+    assert get_gain(20000) + 9.3 < 0 # for Class 1 +4.0 / -inf
