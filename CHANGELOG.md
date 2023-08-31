@@ -1,3 +1,7 @@
+
+in Develop:
+ - Changed entries in stats to property
+
 0.66 -> 0.66.1
  - Changed a type hint for better backward compatibility
 
