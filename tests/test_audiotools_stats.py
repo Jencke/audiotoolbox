@@ -44,3 +44,15 @@ def test_crest_factor():
     sig *= np.sqrt(2)
     comp_val = audio.crest_factor(sig)
     testing.assert_array_almost_equal(sig.stats.crest_factor, comp_val)
+
+
+def test_dba():
+    sig = audio.Signal(1, 1, 48000).add_tone(1000)
+    sig.set_dbspl(70)
+    assert np.abs(sig.stats.dba - 70) < 0.2
+
+    sig = audio.Signal(1, 1, 48000).add_noise()
+    dba = sig.stats.dba
+    siga = audio.filter.a_weighting(sig)
+    dba2 = siga.stats.dbspl
+    assert dba == dba2

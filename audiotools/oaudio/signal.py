@@ -274,6 +274,7 @@ class Signal(base_signal.BaseSignal):
 
         return self
 
+
     def set_dbfs(self, dbfs):
         r"""Normalize the signal to a given dBFS RMS value.
 

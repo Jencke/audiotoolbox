@@ -53,6 +53,18 @@ class SignalStats(BaseStats):
         """
         return audio.crest_factor(self.sig)
 
+    @property
+    def dba(self):
+        """A weighted sound pressure level in dB
+
+
+        See Also
+        --------
+        audiotools.filter.a_weighting
+        """
+        a_weighted = audio.filter.a_weighting(self.sig)
+        return a_weighted.stats.dbspl
+
 
 class FreqDomainStats(BaseStats):
     def __init__(self, sig):
