@@ -531,3 +531,18 @@ def test_to_signal():
     sig = audio.as_signal(sig_array, fs)
     assert isinstance(sig, audio.Signal)
     testing.assert_array_equal(sig, sig_array)
+
+def test_apply_gain():
+    sig = audio.Signal(1, 1, 48000).add_noise()
+    sig.set_dbfs(-20)
+    sig.apply_gain(10)
+    testing.assert_almost_equal(sig.stats.dbfs, -10)
+
+    sig.apply_gain(10)
+    testing.assert_almost_equal(sig.stats.dbfs, 0)
+
+
+    sig = audio.Signal(3, 1, 48000).add_uncorr_noise()
+    sig.set_dbfs(-20)
+    sig.apply_gain(10)
+    testing.assert_almost_equal(sig.stats.dbfs, -10)
