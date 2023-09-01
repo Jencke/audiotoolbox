@@ -56,3 +56,14 @@ def test_dba():
     siga = audio.filter.a_weighting(sig)
     dba2 = siga.stats.dbspl
     assert dba == dba2
+
+def test_dbc():
+    sig = audio.Signal(1, 1, 48000).add_tone(1000).add_fade_window(30e-3)
+    sig.set_dbspl(70)
+    assert np.abs(sig.stats.dba - 70) < 0.2
+
+    sig = audio.Signal(1, 1, 48000).add_noise().add_fade_window(30e-3)
+    dba = sig.stats.dba
+    siga = audio.filter.a_weighting(sig)
+    dba2 = siga.stats.dbspl
+    assert dba == dba2

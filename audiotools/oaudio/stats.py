@@ -1,8 +1,9 @@
 from .. import audiotools as audio
 import numpy as np
 
+
 class BaseStats(object):
-    """Class containing """
+    """Class containing"""
 
     def __init__(self, sig):
         self.sig = sig
@@ -64,6 +65,18 @@ class SignalStats(BaseStats):
         """
         a_weighted = audio.filter.a_weighting(self.sig)
         return a_weighted.stats.dbspl
+
+    @property
+    def dbc(self):
+        """A weighted sound pressure level in dB
+
+
+        See Also
+        --------
+        audiotools.filter.a_weighting
+        """
+        c_weighted = audio.filter.c_weighting(self.sig)
+        return c_weighted.stats.dbspl
 
 
 class FreqDomainStats(BaseStats):
