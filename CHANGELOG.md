@@ -1,3 +1,8 @@
+
+in Develop:
+ - Changed functions in stats to property
+ - Implemented functions for A and C frequency weighting
+
 0.66 -> 0.66.1
  - Changed a type hint for better backward compatibility
 
