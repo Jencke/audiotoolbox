@@ -90,14 +90,23 @@ def a_weight(freq):
     return a_freq
 
 
-# from scipy.signal import zpk2sos, sosfilt, freqs_zpk, freqz_zpk
-# import audiotools as audio
-# import matplotlib.pyplot as plt
-
-# f1, f2, f3, f4 = calc_analog_poles()
-
-
 def design_a_filter(fs, ftype="sos"):
+    """Digital filter design for A-weighting.
+
+    Designs a digital a-weighting filter following IEC 61672-1
+
+    Parameters
+    ----------
+    fs : int
+        The sampling frequency
+    ftype: sos, zpk, ba, optional
+        The filter coefficents that should be returned. default is zpk
+
+    Returns
+    -------
+        The filter coefficents. sos in case of sos, (z, p, k) in case of zpk and
+        b, a in case of ba.
+    """
     f1, f2, f3, f4 = calc_analog_poles()
     z_analog = [0, 0, 0, 0]
     p_analog = np.array([-f1, -f1, -f2, -f3, -f4, -f4]) * 2 * np.pi
@@ -118,9 +127,25 @@ def design_a_filter(fs, ftype="sos"):
 
 
 def design_c_filter(fs, ftype="sos"):
+    """Digital filter design for C-weighting.
+
+    Designs a digital C-weighting filter following IEC 61672-1
+
+    Parameters
+    ----------
+    fs : int
+        The sampling frequency
+    ftype: sos, zpk, ba, optional
+        The filter coefficents that should be returned. default is zpk
+
+    Returns
+    -------
+        The filter coefficents. sos in case of sos, (z, p, k) in case of zpk and
+        b, a in case of ba.
+    """
     f1, f2, f3, f4 = calc_analog_poles()
-    z_analog = [0, 0, 0, 0]
-    p_analog = np.array([-f1, -f1, -f2, -f3, -f4, -f4]) * 2 * np.pi
+    z_analog = [0, 0]
+    p_analog = np.array([-f1, -f1, -f4, -f4]) * 2 * np.pi
     # determine k so that gain is 0 dB at 1Khz
     k_analog = np.abs(freqs_zpk(z_analog, p_analog, 1, worN=[1000 * 2 * pi])[1]) ** -1
     k_analog = k_analog[0]
@@ -138,6 +163,55 @@ def design_c_filter(fs, ftype="sos"):
 
 
 def a_weighting(signal, fs=None):
+    """Apply A weighting filter to a signal.
+
+    Apply an digital A-weighting filter following IEC 61672-1.
+    Take care that the sampling frequency is high enough to prevent steep
+    high frequency drop-off. A sampling frequency of about 48 kHz should be
+    sufficent to result in a Class 1 filter following IEC 61672-1.
+
+    Parameters:
+    -----------
+    signal : Signal or np.ndarray
+        The input signal
+    fs : scalar or None
+      The signals sampling rate in Hz.
+
+    Returns
+    -------
+        The filtered signal.
+    """
+    _, fs, _ = audio._duration_is_signal(signal, fs, None)
+
+    sos = design_a_filter(fs)
+    out, _ = apply_sos(signal, sos, states=True)
+
+    if isinstance(signal, audio.Signal):
+        out = audio.as_signal(out, fs)
+
+    return out
+
+
+
+def c_weighting(signal, fs=None):
+    """Apply C weighting filter to a signal.
+
+    Apply an digital C-weighting filter following IEC 61672-1.
+    Take care that the sampling frequency is high enough to prevent steep
+    high frequency drop-off. A sampling frequency of about 48 kHz should be
+    sufficent to result in a Class 1 filter following IEC 61672-1.
+
+    Parameters:
+    -----------
+    signal : Signal or np.ndarray
+        The input signal
+    fs : scalar or None
+      The signals sampling rate in Hz.
+
+    Returns
+    -------
+        The filtered signal.
+    """
     _, fs, _ = audio._duration_is_signal(signal, fs, None)
 
     sos = design_a_filter(fs)
