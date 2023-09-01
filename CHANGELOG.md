@@ -1,5 +1,4 @@
-
-in Develop:
+0.66.1 -> 0.67
  - Changed functions in stats to property
  - Implemented functions for A and C frequency weighting
  - Implemented an add_gain method to the signal class
