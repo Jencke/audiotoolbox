@@ -208,6 +208,15 @@ def test_highpass():
     testing.assert_array_equal(sig_out, sig_out2)
 
 
+def test_c_weight():
+    #Compare with values of Tbl. 2 in IEC 61672-1
+    assert fw.c_weight(1000) == 0
+    assert np.abs(fw.c_weight(20000) + 11.2) < 0.09
+    assert np.abs(fw.c_weight(10) + 14.3) < 0.09
+    assert np.abs(fw.c_weight(100) + 0.3) < 0.9
+    assert np.abs(fw.c_weight(2500) + 0.3) < 0.9
+
+
 
 def test_a_weight():
     #Compare with values of Tbl. 2 in IEC 61672-1
@@ -226,14 +235,6 @@ def test_ac_poles():
     assert np.abs(f3 - 737.9) < 0.04
     assert np.abs(f4 - 12194) < 0.22
 
-def test_c_weight():
-    #Compare with values of Tbl. 2 in IEC 61672-1
-    assert fw.c_weight(1000) == 0
-    assert np.abs(fw.c_weight(20000) + 11.2) < 0.09
-    assert np.abs(fw.c_weight(10) + 14.3) < 0.09
-    assert np.abs(fw.c_weight(100) + 0.3) < 0.9
-    assert np.abs(fw.c_weight(2500) + 0.3) < 0.9
-
 def test_a_weighting():
     def get_gain(f):
         sig = audio.Signal(1, 1, 48000).add_tone(f)
@@ -245,3 +246,20 @@ def test_a_weighting():
     assert np.abs(get_gain(4000) - 1.0) < 0.1
     assert np.abs(get_gain(200) + 10.9) < 0.1
     assert get_gain(20000) + 9.3 < 0 # for Class 1 +4.0 / -inf
+
+
+def test_c_weighting():
+    def get_gain(f):
+        sig = audio.Signal(1, 1, 48000).add_tone(f)
+        out = filter.c_weighting(sig, None)
+        return out.stats.dbfs - sig.stats.dbfs
+
+    assert np.abs(get_gain(1000)) < 0.02
+    assert np.abs(get_gain(10) + 14.3) < 0.5 # for Class 1 +3.5 / -inf
+    assert np.abs(get_gain(4000) + 0.8) < 0.1
+    assert np.abs(get_gain(200)) < 0.02
+    assert get_gain(16000) +8.5 > -17 # for Class 1 +3.5 / -17
+    assert get_gain(16000) +8.5 < 3.5 # for Class 1 +3.5 / -17
+    assert get_gain(16) +8.5 < 2.5 # for Class 1 +2.5 / -4.5
+    assert get_gain(16) +8.5 > -4.5 # for Class 1 +2.5 / -4.5
+    assert get_gain(20000) + 11.2 < 0 # for Class 1 +4.0 / -inf

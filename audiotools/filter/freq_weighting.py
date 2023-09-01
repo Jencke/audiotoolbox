@@ -214,7 +214,7 @@ def c_weighting(signal, fs=None):
     """
     _, fs, _ = audio._duration_is_signal(signal, fs, None)
 
-    sos = design_a_filter(fs)
+    sos = design_c_filter(fs)
     out, _ = apply_sos(signal, sos, states=True)
 
     if isinstance(signal, audio.Signal):
