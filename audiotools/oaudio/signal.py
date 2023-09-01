@@ -834,6 +834,29 @@ class Signal(base_signal.BaseSignal):
         a_signal = fd_signal.to_analytical().to_timedomain()
         return a_signal
 
+    def apply_gain(self, gain):
+        r""" Applys gain factor to the signal
+
+        Fixed gain by multiplying the signal with a fixed factor calculated as
+
+        .. math:: 10^{(G / 20)}
+
+        where G is the gain.
+
+        Parameters:
+        -----------
+        gain : float
+            The gain factor in dB
+
+        Returns
+        -------
+        Returns itself : Signal
+
+        """
+        mult_fac = 10**(gain / 20)
+        self *= mult_fac
+
+        return self
 
 def as_signal(signal, fs):
     """Convert Numpy array to Signal class.
