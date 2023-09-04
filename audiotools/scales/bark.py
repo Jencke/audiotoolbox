@@ -1,5 +1,52 @@
 import numpy as np
 
+def get_bark_limits():
+    r"""Limits of the Bark scale
+
+    Returns the limit of the Bark scale as defined in [1]_.
+
+
+    Returns
+    -------
+    list : Limits of the Bark scale
+
+    References
+    ----------
+    .. [1] Zwicker, E. (1961). Subdivision of the audible frequency range into
+           critical bands (frequenzgruppen). The Journal of the Acoustical
+           Society of America, 33(2),
+           248-248. http://dx.doi.org/10.1121/1.1908630
+
+    """
+    bark_table = [
+        20,
+        100,
+        200,
+        300,
+        400,
+        510,
+        630,
+        770,
+        920,
+        1080,
+        1270,
+        1480,
+        1720,
+        2000,
+        2320,
+        2700,
+        3150,
+        3700,
+        4400,
+        5300,
+        6400,
+        7700,
+        9500,
+        12000,
+        15500,
+    ]
+    return bark_table
+
 
 def from_freq(frequency, use_table=False):
     r"""Frequency to Bark conversion
