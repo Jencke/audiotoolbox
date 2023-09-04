@@ -19,7 +19,8 @@ setup(
         'scipy',
         'matplotlib',
         'pytest',
-        'coverage'
+        'coverage',
+        'soundfile'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
