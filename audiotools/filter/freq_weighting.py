@@ -5,7 +5,7 @@ from .. import audiotools as audio
 from .butterworth_filt import apply_sos
 
 
-def calc_analog_poles():
+def calc_analog_poles() -> tuple:
     """Poles of the analog A and C weighting filters following IEC 61672-1."""
 
     # Equations follow IEC 61672-1 (2002)
@@ -99,8 +99,8 @@ def design_a_filter(fs, ftype="sos"):
     ----------
     fs : int
         The sampling frequency
-    ftype: sos, zpk, ba, optional
-        The filter coefficents that should be returned. default is zpk
+    ftype: {'sos', 'zpk', 'ba'}, optional
+        The filter coefficents that should be returned. default is 'zpk'
 
     Returns
     -------
@@ -135,8 +135,8 @@ def design_c_filter(fs, ftype="sos"):
     ----------
     fs : int
         The sampling frequency
-    ftype: sos, zpk, ba, optional
-        The filter coefficents that should be returned. default is zpk
+    ftype: {'sos', 'zpk', 'ba'}, optional
+        The filter coefficents that should be returned. default is 'zpk'
 
     Returns
     -------
