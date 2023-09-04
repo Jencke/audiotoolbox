@@ -546,3 +546,12 @@ def test_apply_gain():
     sig.set_dbfs(-20)
     sig.apply_gain(10)
     testing.assert_almost_equal(sig.stats.dbfs, -10)
+
+def test_writefile():
+    sig = audio.Signal(1, 1, 48000).add_noise()
+    sig.writefile('test.wav')
+    sig.set_dbfs(-20)
+    rsig = audio.from_file('test.wav')
+    import matplotlib.pyplot as plt
+
+    print(rsig.max(), sig.max())
