@@ -55,12 +55,12 @@ def _duration_is_signal(duration, fs=None, n_channels=None):
     return real_duration, real_fs, real_nch
 
 
-def from_wav(filename, fullscale=True):
+def from_file(filename):
     """Read signal from wav file"""
     from .oaudio import Signal
-    from .wav import readwav
+    from .wav import readfile
 
-    wv, fs = readwav(filename, fullscale)
+    wv, fs = readfile(filename)
 
     if wv.ndim > 1:
         n_channels = wv.shape[1]
