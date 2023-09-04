@@ -4,9 +4,11 @@ import audiotools as audio
 
 def readwav(filename):
     sig, fs = readfile(filename)
+    raise(DeprecationWarning('readwav is depricated please use readfile'))
     return sig, fs
 
 def writewav(filename, signal, fs):
+    raise(DeprecationWarning('writewav is depricated please use writefile'))
     writefile(filename, signal, fs)
 
 def readfile(filename):
@@ -36,13 +38,13 @@ def writefile(filename, signal, fs, **kwargs):
 
     Per default, the major format to be stored is determined by the file
     extension. E.g. a .wav ending indicates a WAV (Microsoft) file. See
-    audiotools.wav.available_formats for a list of availible formats and
-    endings. The major format can be forced by passing a format argument.
+    `audiotools.wav.available_formats` for a list of availible formats and
+    endings. The major format can be forced by passing a `format` argument.
 
     If not specifically designed, the subtype (such as Signed 32 bit PCM) is
     chosen as the default for a given format. Avilible subtypes can be checked
-    through the audiotools.wav.available_subtypes function and forec by passing
-    a subtype argument.
+    through the `audiotools.wav.available_subtypes` function and forced by
+    passing a `subtype` argument.
 
 
     Parameters
@@ -54,7 +56,7 @@ def writefile(filename, signal, fs, **kwargs):
     fs : int
       The sampling rate
     **kwargs :
-      Other parameters directly passed to the soundfile.write function
+      Other parameters directly passed to the `soundfile.write` function
 
     """
     soundfile.write(file=filename,
