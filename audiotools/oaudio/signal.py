@@ -822,9 +822,9 @@ class Signal(base_signal.BaseSignal):
           The frequency domain representation of the signal
 
         """
-        fd = FrequencyDomainSignal(self.n_channels,
-                                   self.duration, self.fs,
-                                   dtype=complex)
+        fd = FrequencyDomainSignal(
+            self.n_channels, self.duration, self.fs, dtype=complex
+        )
         fd.from_timedomain(self)
 
         return fd
@@ -846,7 +846,7 @@ class Signal(base_signal.BaseSignal):
         return a_signal
 
     def apply_gain(self, gain):
-        r""" Applys gain factor to the signal
+        r"""Applys gain factor to the signal
 
         Fixed gain by multiplying the signal with a fixed factor calculated as
 
@@ -899,4 +899,4 @@ def as_signal(signal, fs):
     return sig_out
 
 
-__all__ = ['Signal', 'as_signal']
+__all__ = ["Signal", "as_signal"]

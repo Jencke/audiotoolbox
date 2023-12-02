@@ -588,8 +588,9 @@ def test_generate_uncorr_noise():
     testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5)
 
     # Test multichannel
-    res_noise = audio.generate_uncorr_noise(1, fs=48000, n_channels=3,
-                                            corr=0.5, ntype='pink')
+    res_noise = audio.generate_uncorr_noise(
+        1, fs=48000, n_channels=3, corr=0.5, ntype="pink"
+    )
     cv = np.corrcoef(res_noise.T)
     lower_tri = np.tril(cv, -1)
     lower_tri[lower_tri == 0] = np.nan
@@ -800,7 +801,6 @@ def test_cmplx_correlation():
 
 
 def test_duration_is_signal():
-
     # direct input
     duration, fs, n_ch = audio.audiotools._duration_is_signal(1, 2, 3)
     assert duration == 1

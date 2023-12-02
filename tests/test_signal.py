@@ -532,6 +532,7 @@ def test_to_signal():
     assert isinstance(sig, audio.Signal)
     testing.assert_array_equal(sig, sig_array)
 
+
 def test_apply_gain():
     sig = audio.Signal(1, 1, 48000).add_noise()
     sig.set_dbfs(-20)
