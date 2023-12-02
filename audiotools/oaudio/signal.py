@@ -39,11 +39,13 @@ class Signal(base_signal.BaseSignal):
 
     """
 
-    def __new__(cls: Type[base_signal.BaseSignal],
-                n_channels: Union[int, tuple, list],
-                duration: float,
-                fs: int,
-                dtype=float):
+    def __new__(
+        cls: Type[base_signal.BaseSignal],
+        n_channels: Union[int, tuple, list],
+        duration: float,
+        fs: int,
+        dtype=float,
+    ):
         """Create new objects."""
         obj = super().__new__(cls, n_channels, duration, fs, dtype)
         obj.stats = SignalStats(obj)
@@ -63,7 +65,7 @@ class Signal(base_signal.BaseSignal):
             self.time_offset = 0
         else:
             # When copying or slicing
-            self.time_offset = getattr(obj, 'time_offset', None)
+            self.time_offset = getattr(obj, "time_offset", None)
             self.stats = SignalStats(self)
 
         return obj
@@ -104,10 +106,7 @@ class Signal(base_signal.BaseSignal):
         audiotools.generate_tone
 
         """
-        wv = audio.generate_tone(self.duration,
-                                 frequency,
-                                 self.fs,
-                                 start_phase)
+        wv = audio.generate_tone(self.duration, frequency, self.fs, start_phase)
 
         # If multiple channels are defined, stack them.
         # if self.n_channels > 1:
@@ -116,7 +115,7 @@ class Signal(base_signal.BaseSignal):
 
         return self
 
-    def add_noise(self, ntype='white', variance=1, seed=None):
+    def add_noise(self, ntype="white", variance=1, seed=None):
         r"""Add uncorrelated noise to the signal.
 
         add gaussian noise with a defined variance and different
@@ -153,15 +152,23 @@ class Signal(base_signal.BaseSignal):
         audiotools.generate_uncorr_noise
         audiotools.Signal.add_uncorr_noise
         """
-        noise = audio.generate_noise(self.duration, self.fs,
-                                     ntype=ntype, n_channels=1,
-                                     seed=seed)
+        noise = audio.generate_noise(
+            self.duration, self.fs, ntype=ntype, n_channels=1, seed=seed
+        )
 
         self[:] = (self.T + noise.T * np.sqrt(variance)).T
         return self
 
-    def add_uncorr_noise(self, corr=0, variance=1, ntype='white', seed=None,
-                         bandpass=None, highpass=None, lowpass=None):
+    def add_uncorr_noise(
+        self,
+        corr=0,
+        variance=1,
+        ntype="white",
+        seed=None,
+        bandpass=None,
+        highpass=None,
+        lowpass=None,
+    ):
         r"""Add partly uncorrelated noise.
 
         This function adds partly uncorrelated noise using the N+1
@@ -222,15 +229,17 @@ class Signal(base_signal.BaseSignal):
           292–301. http://dx.doi.org/10.1121/1.3596475
 
         """
-        noise = audio.generate_uncorr_noise(duration=self.duration,
-                                            fs=self.fs,
-                                            n_channels=self.n_channels,
-                                            ntype=ntype,
-                                            corr=corr,
-                                            seed=seed,
-                                            bandpass=bandpass,
-                                            highpass=highpass,
-                                            lowpass=lowpass)
+        noise = audio.generate_uncorr_noise(
+            duration=self.duration,
+            fs=self.fs,
+            n_channels=self.n_channels,
+            ntype=ntype,
+            corr=corr,
+            seed=seed,
+            bandpass=bandpass,
+            highpass=highpass,
+            lowpass=lowpass,
+        )
 
         self += noise * np.sqrt(variance)
 
@@ -273,7 +282,6 @@ class Signal(base_signal.BaseSignal):
         self[:] = res[:]
 
         return self
-
 
     def set_dbfs(self, dbfs):
         r"""Normalize the signal to a given dBFS RMS value.
@@ -322,9 +330,11 @@ class Signal(base_signal.BaseSignal):
         float : The dBFS RMS value
 
         """
-        raise PendingDeprecationWarning('calc_dbfs method Will be removed'
-                                        + ' in the future. Use stats.dbfs'
-                                        + ' instead')
+        raise PendingDeprecationWarning(
+            "calc_dbfs method Will be removed"
+            + " in the future. Use stats.dbfs"
+            + " instead"
+        )
         dbfs = audio.calc_dbfs(self)
         return dbfs
 
@@ -368,9 +378,9 @@ class Signal(base_signal.BaseSignal):
         audiotools.filter.butterworth
         """
         # Default gammatone to real valued implementation
-        if filter_type == 'gammatone':
-            if 'return_complex' not in kwargs:
-                kwargs['return_complex'] = False
+        if filter_type == "gammatone":
+            if "return_complex" not in kwargs:
+                kwargs["return_complex"] = False
 
         filt_signal = filt.bandpass(self, fc, bw, filter_type, **kwargs)
 
@@ -487,9 +497,11 @@ class Signal(base_signal.BaseSignal):
         float : The sound pressure level in dB
 
         """
-        raise PendingDeprecationWarning('calc_dbspl method Will be removed'
-                                        + ' in the future. Use stats.dbspl'
-                                        + ' instead')
+        raise PendingDeprecationWarning(
+            "calc_dbspl method Will be removed"
+            + " in the future. Use stats.dbspl"
+            + " instead"
+        )
         dbspl = audio.calc_dbspl(self)
         return dbspl
 
@@ -523,9 +535,9 @@ class Signal(base_signal.BaseSignal):
         """
         # Only one number or duration must be stated
         if duration is None and number is None:
-            raise ValueError('Must state duration or number of zeros')
+            raise ValueError("Must state duration or number of zeros")
         elif duration is None and number is None:
-            raise ValueError('Must state only duration or number of zeros')
+            raise ValueError("Must state only duration or number of zeros")
             return
 
         # If duration instead of number is stated, calculate the
@@ -540,8 +552,7 @@ class Signal(base_signal.BaseSignal):
 
         # Can only be applied to the whole signal not to a slice
         if not isinstance(self.base, type(None)):
-            raise RuntimeError('Zeropad can only be applied to'
-                               ' the whole signal')
+            raise RuntimeError("Zeropad can only be applied to" " the whole signal")
         else:
             wv = audio.zeropad(self, number)
             self.resize(wv.shape, refcheck=False)
@@ -549,7 +560,7 @@ class Signal(base_signal.BaseSignal):
 
         return self
 
-    def add_fade_window(self, rise_time, type='cos', **kwargs):
+    def add_fade_window(self, rise_time, type="cos", **kwargs):
         r"""Add a fade in/out window to the signal.
 
         This function multiplies a fade window with a given rise time
@@ -577,12 +588,10 @@ class Signal(base_signal.BaseSignal):
         audiotools.cosine_fade_window
 
         """
-        if type == 'gauss':
-            win = audio.gaussian_fade_window(self, rise_time,
-                                             self.fs, **kwargs)
-        elif type == 'cos':
-            win = audio.cosine_fade_window(self, rise_time,
-                                           self.fs, **kwargs)
+        if type == "gauss":
+            win = audio.gaussian_fade_window(self, rise_time, self.fs, **kwargs)
+        elif type == "cos":
+            win = audio.cosine_fade_window(self, rise_time, self.fs, **kwargs)
         self *= win
         return self
 
@@ -615,15 +624,17 @@ class Signal(base_signal.BaseSignal):
         audiotools.cos_amp_modulator
 
         """
-        mod = audio.cos_amp_modulator(duration=self,
-                                      modulator_freq=frequency,
-                                      fs=self.fs,
-                                      mod_index=m,
-                                      start_phase=start_phase)
+        mod = audio.cos_amp_modulator(
+            duration=self,
+            modulator_freq=frequency,
+            fs=self.fs,
+            mod_index=m,
+            start_phase=start_phase,
+        )
         self *= mod
         return self
 
-    def delay(self, delay, method='fft'):
+    def delay(self, delay, method="fft"):
         r"""Delays the signal by circular shifting.
 
         Circular shift the functions foreward to create a certain time
@@ -658,10 +669,10 @@ class Signal(base_signal.BaseSignal):
         audio.FreqDomainSignal.time_shift
 
         """
-        if method == 'sample':
+        if method == "sample":
             nshift = audio.nsamples(delay, self.fs)
             shifted = audio.shift_signal(self, nshift)
-        elif method == 'fft':
+        elif method == "fft":
             shifted = self.to_freqdomain().time_shift(delay).to_timedomain()
 
         self[:] = shifted
@@ -711,7 +722,7 @@ class Signal(base_signal.BaseSignal):
             Returns itself
         """
         if not isinstance(self.base, type(None)):
-            raise RuntimeError('Clipping can not be applied to slices')
+            raise RuntimeError("Clipping can not be applied to slices")
 
         # calculate the indices at which the signal should be cliped
         i_start = audio.nsamples(t_start, self.fs)
@@ -723,7 +734,7 @@ class Signal(base_signal.BaseSignal):
             i_end = self.n_samples
 
         #  store the cliped part in the signal
-        self[0:i_end-i_start, :] = self[i_start:i_end, :]
+        self[0 : i_end - i_start, :] = self[i_start:i_end, :]
 
         newshape = list(self.shape)
         newshape[0] = i_end - i_start
