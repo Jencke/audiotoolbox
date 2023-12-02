@@ -66,7 +66,6 @@ def test_generate_tone():
 
 
 def test_get_time():
-
     tone = audio.generate_tone(1, 1, 1e3)
     time = audio.get_time(tone, 1e3)
 
@@ -196,7 +195,6 @@ def test_gauss_fade_window():
 
 
 def test_delay_signal():
-
     signal = audio.generate_tone(1, 1, 1e3, start_phase=0.5 * np.pi)
     signal += audio.generate_tone(1, 2, 1e3, start_phase=0.5 * np.pi)
 
@@ -489,6 +487,7 @@ def test_dbspl_to_phon():
     l_phon = audio.dbspl_to_phon(1238, l_pressure, interpolate=True)
     assert np.round(l_phon, 1) == 78
 
+
 def test_bark_bw():
     cf = np.array([200, 1000])
     bws = audio.bark.bandwidth(cf)
@@ -663,7 +662,6 @@ def test_generate_uncorr_noise_filter():
 
 
 def test_extract_binaural_differences():
-
     from scipy.signal import hilbert
 
     # Check phase_difference
@@ -695,7 +693,6 @@ def test_extract_binaural_differences():
 
 
 def test_crest_factor():
-
     # Test that c for sine is equal to sqrt(2)
     signal = audio.generate_tone(100, 1, 100e3)
     c = audio.crest_factor(signal)
@@ -709,7 +706,6 @@ def test_crest_factor():
 
 
 def test_band2rms():
-
     band = audio.band2rms(50, 1)
     assert band == 50
     band = audio.band2rms(50, 20)
