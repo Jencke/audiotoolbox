@@ -542,8 +542,44 @@ def test_apply_gain():
     sig.apply_gain(10)
     testing.assert_almost_equal(sig.stats.dbfs, 0)
 
-
     sig = audio.Signal(3, 1, 48000).add_uncorr_noise()
     sig.set_dbfs(-20)
     sig.apply_gain(10)
     testing.assert_almost_equal(sig.stats.dbfs, -10)
+
+
+def test_crossfade():
+    sig = audio.Signal((2, 2), 1, 48000).add_uncorr_noise(0)
+
+    sig.crossfade(100e-3, 500e-3)
+    sig.plot()
+
+    # duration = 100e-3
+    # t_cf = 500e-3
+    # channels = [0, 1]
+    # fade_type = "linear"
+
+    # n_cf = audio.nsamples(t_cf, sig.fs)
+
+    # ch1 = sig.ch[:, channels[0]]
+    # ch2 = sig.ch[:, channels[1]]
+
+    # fade = audio.Signal(1, duration, sig.fs)
+
+    # if fade_type == "cos":
+    #     fade[:] = np.cos(np.pi / 2 * fade.time / duration)
+    # if fade_type == "linear":
+    #     fade[:] = (duration - fade.time) / duration
+
+    # n_start = n_cf
+    # n_end = n_cf + fade.n_samples
+    # ch1[n_start:n_end] *= fade[:, None]
+    # ch2[n_start:n_end] *= fade[::-1, None]
+    # ch1[n_end:] = 0
+    # ch2[:n_start] = 0
+
+    # ax = sig.plot()
+    return ax
+
+
+ax = test_crossfade()
