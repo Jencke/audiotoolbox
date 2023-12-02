@@ -828,10 +828,23 @@ def test_duration_is_signal():
 
 
 def test_copy_to_ndim():
-
     a = np.random.random(1000)
     b = audio.audiotools._copy_to_dim(a, (2, 3))
     assert b.shape == (1000, 2, 3)
 
     b = audio.audiotools._copy_to_dim(a, 3)
     assert b.shape == (1000, 3)
+
+
+def test_crossfade():
+    # Energy in cos faded uncorrelated noise should be constant
+    sig = audio.Signal((2, 2, 10), 1, 48000).add_uncorr_noise(0)
+    sig.crossfade(200e-3, 450e-3, fade_type="cos")
+    sumsig = sig.sum(axis=-2)
+    assert np.abs(1 - sumsig.stats.var.mean()) < 0.01
+
+    # Energy in linear faded correlated noise should be constant
+    sig = audio.Signal((2, 2, 10), 1, 48000).add_noise()
+    sig.crossfade(200e-3, 450e-3, fade_type="linear")
+    sumsig = sig.sum(axis=-2)
+    assert np.abs(1 - sumsig.stats.var.mean()) < 1.0e-4
