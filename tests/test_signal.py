@@ -99,7 +99,7 @@ def test_setdbfs_calcdbfs():
     sig.add_tone(100).set_dbfs(-5)
 
     assert audio.calc_dbfs(sig) == -5
-    assert sig.stats.dbfs() == -5
+    assert sig.stats.dbfs == -5
 
 
 def test_zeropad():
@@ -549,37 +549,14 @@ def test_apply_gain():
 
 
 def test_crossfade():
-    sig = audio.Signal((2, 2), 1, 48000).add_uncorr_noise(0)
+    # Energy in cos faded uncorrelated noise should be constant
+    sig = audio.Signal((2, 2, 10), 1, 48000).add_uncorr_noise(0)
+    sig.crossfade(200e-3, 450e-3, fade_type="cos")
+    sumsig = sig.sum(axis=-2)
+    assert np.abs(1 - sumsig.stats.var.mean()) < 0.01
 
-    sig.crossfade(100e-3, 500e-3)
-    sig.plot()
-
-    # duration = 100e-3
-    # t_cf = 500e-3
-    # channels = [0, 1]
-    # fade_type = "linear"
-
-    # n_cf = audio.nsamples(t_cf, sig.fs)
-
-    # ch1 = sig.ch[:, channels[0]]
-    # ch2 = sig.ch[:, channels[1]]
-
-    # fade = audio.Signal(1, duration, sig.fs)
-
-    # if fade_type == "cos":
-    #     fade[:] = np.cos(np.pi / 2 * fade.time / duration)
-    # if fade_type == "linear":
-    #     fade[:] = (duration - fade.time) / duration
-
-    # n_start = n_cf
-    # n_end = n_cf + fade.n_samples
-    # ch1[n_start:n_end] *= fade[:, None]
-    # ch2[n_start:n_end] *= fade[::-1, None]
-    # ch1[n_end:] = 0
-    # ch2[:n_start] = 0
-
-    # ax = sig.plot()
-    return ax
-
-
-ax = test_crossfade()
+    # Energy in linear faded correlated noise should be constant
+    sig = audio.Signal((2, 2, 10), 1, 48000).add_noise()
+    sig.crossfade(200e-3, 450e-3, fade_type="linear")
+    sumsig = sig.sum(axis=-2)
+    assert np.abs(1 - sumsig.stats.var.mean()) < 1.0e-4
