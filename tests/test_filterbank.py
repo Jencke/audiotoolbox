@@ -11,22 +11,24 @@ from audiotools.filter.bank.filterbank import FilterBank, ButterworthBank
 from audiotools.filter.bank.filterbank import GammaToneBank
 
 
-
 def test_base_signal():
     bank = FilterBank([500, 200], [10, 2], 48000, myparam=3)
     assert len(bank) == 2
-    assert np.all(bank.params['myparam'] == [3, 3])
+    assert np.all(bank.params["myparam"] == [3, 3])
 
     assert isinstance(bank[0], FilterBank)
     assert bank[0].bw == 10
     assert bank[1].fc == 200
     assert bank[0].fs == bank.fs
-    assert bank[0].params['myparam'] == 3
+    assert bank[0].params["myparam"] == 3
 
-    bank = FilterBank(np.random.random(10),
-                      np.random.random(10), 48000,
-                      myparam1=np.random.random(10),
-                      myparam2=np.random.random(10))
+    bank = FilterBank(
+        np.random.random(10),
+        np.random.random(10),
+        48000,
+        myparam1=np.random.random(10),
+        myparam2=np.random.random(10),
+    )
     idx_vec = [np.random.randint(0, 10, 3) for i in range(3)]
 
     for i in idx_vec:
@@ -34,18 +36,18 @@ def test_base_signal():
         np.testing.assert_equal(sub.bw, bank.bw[i])
         np.testing.assert_equal(sub.fs, bank.fs)
         np.testing.assert_equal(sub.fc, bank.fc[i])
-        np.testing.assert_equal(sub.params['myparam1'],
-                                bank.params['myparam1'][i])
-        np.testing.assert_equal(sub.params['myparam2'],
-                                bank.params['myparam2'][i])
+        np.testing.assert_equal(sub.params["myparam1"], bank.params["myparam1"][i])
+        np.testing.assert_equal(sub.params["myparam2"], bank.params["myparam2"][i])
 
 
 def test_sub_butterbank():
-    bank = create_filterbank(fc=np.random.randint(500, 1000, 10),
-                             bw=np.random.randint(10, 50, 10),
-                             fs=48000,
-                             filter_type='butter',
-                             order=np.random.randint(1, 10, 10))
+    bank = create_filterbank(
+        fc=np.random.randint(500, 1000, 10),
+        bw=np.random.randint(10, 50, 10),
+        fs=48000,
+        filter_type="butter",
+        order=np.random.randint(1, 10, 10),
+    )
     idx_vec = [np.random.randint(0, 10, 3) for i in range(3)]
 
     sig = audio.Signal(1, 1, 48000).add_noise()
@@ -56,18 +58,19 @@ def test_sub_butterbank():
         np.testing.assert_equal(sub.bw, bank.bw[i])
         np.testing.assert_equal(sub.fs, bank.fs)
         np.testing.assert_equal(sub.fc, bank.fc[i])
-        np.testing.assert_equal(sub.params['order'],
-                                bank.params['order'][i])
+        np.testing.assert_equal(sub.params["order"], bank.params["order"][i])
         sub_out = sub.filt(sig)
         np.testing.assert_equal(main_out.ch[i], sub_out)
 
 
 def test_sub_gamma():
-    bank = create_filterbank(fc=np.random.randint(500, 1000, 10),
-                             bw=np.random.randint(10, 50, 10),
-                             fs=48000,
-                             filter_type='gammatone',
-                             order=np.random.randint(1, 10, 10))
+    bank = create_filterbank(
+        fc=np.random.randint(500, 1000, 10),
+        bw=np.random.randint(10, 50, 10),
+        fs=48000,
+        filter_type="gammatone",
+        order=np.random.randint(1, 10, 10),
+    )
     idx_vec = [np.random.randint(0, 10, 3) for i in range(3)]
 
     sig = audio.Signal(1, 1, 48000).add_noise()
@@ -78,8 +81,7 @@ def test_sub_gamma():
         np.testing.assert_equal(sub.bw, bank.bw[i])
         np.testing.assert_equal(sub.fs, bank.fs)
         np.testing.assert_equal(sub.fc, bank.fc[i])
-        np.testing.assert_equal(sub.params['order'],
-                                bank.params['order'][i])
+        np.testing.assert_equal(sub.params["order"], bank.params["order"][i])
         sub_out = sub.filt(sig)
         np.testing.assert_equal(main_out.ch[i], sub_out)
 
@@ -122,7 +124,7 @@ def test_butterworth():
     amps = np.zeros(len(fc))
     for i_fc, f in enumerate(fc):
         spec = sig_out.ch[i_fc].to_freqdomain()
-        amps[i_fc] = np.abs(spec[spec.freq == f])
+        amps[i_fc] = np.abs(spec[spec.freq == f])[0]
     # Amplitudes should be 0.5 (two sided spectrum)
     assert np.all((amps - 0.5) <= 0.01)
 
@@ -155,7 +157,7 @@ def test_gammatone():
     amps = np.zeros(len(fc))
     for i_fc, f in enumerate(fc):
         spec = sig_out.ch[i_fc].to_freqdomain()
-        amps[i_fc] = np.abs(spec[spec.freq == f])
+        amps[i_fc] = np.abs(spec[spec.freq == f])[0]
     # Amplitudes hould be 1 (one sided spectrum)
     assert np.all((amps - 1) <= 0.01)
 
@@ -188,7 +190,7 @@ def test_brickwall():
     amps = np.zeros(len(fc))
     for i_fc, f in enumerate(fc):
         spec = sig_out.ch[i_fc].to_freqdomain()
-        amps[i_fc] = np.abs(spec[spec.freq == f])
+        amps[i_fc] = np.abs(spec[spec.freq == f])[0]
     # Amplitudes hould be 0.5 (double sided spectrum)
     assert np.all((amps - 0.5) <= 0.01)
 
