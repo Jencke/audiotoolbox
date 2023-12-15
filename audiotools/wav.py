@@ -4,7 +4,7 @@ import wave
 
 def readwav(filename, fullscale=True):
     """Read a wav file."""
-    wf = wave.open(filename, 'rb')
+    wf = wave.open(filename, "rb")
 
     # get information
     nframes = wf.getnframes()
@@ -27,7 +27,7 @@ def readwav(filename, fullscale=True):
     elif sampwidth == 4:
         dtype = np.int64
     else:
-        raise(ValueError, f'Unknown sample width {sampwidth}byte')
+        raise (ValueError, f"Unknown sample width {sampwidth}byte")
 
     bitdepth = sampwidth * 8
 
@@ -74,8 +74,7 @@ def int_to_fullscale(signal, bitdepth):
     # only valid if maximum value in bound of bitdepth
     assert np.abs(signal).max() <= np.iinfo(dtype).max
 
-    fullscalesignal = (np.array(signal, dtype=np.float64)
-                       / np.iinfo(dtype).max)
+    fullscalesignal = np.array(signal, dtype=np.float64) / np.iinfo(dtype).max
 
     return fullscalesignal
 
@@ -135,24 +134,24 @@ def array_to_byte(signal, bitdepth):
 
     """
     intsignal = fullscale_to_int(signal, bitdepth)
-    intsignal = intsignal.reshape(np.product(intsignal.shape))
+    intsignal = intsignal.reshape(np.prod(intsignal.shape))
     bytesignal = intsignal.tobytes()
 
     return bytesignal
 
-def writewav(filename, signal, fs, bitdepth):
 
+def writewav(filename, signal, fs, bitdepth):
     # get information
     nchannels = 1 if np.ndim(signal) == 0 else signal.shape[1]
 
     if bitdepth % 8 != 0 or bitdepth > 32:
-        raise ValueError('bitdepth must be a multiple of 8 and < 32')
+        raise ValueError("bitdepth must be a multiple of 8 and < 32")
 
     sampwidth = bitdepth // 8
 
     bytesignal = array_to_byte(signal, bitdepth)
 
-    wf = wave.open(filename, 'wb')
+    wf = wave.open(filename, "wb")
 
     wf.setnchannels(nchannels)
     wf.setframerate(fs)
