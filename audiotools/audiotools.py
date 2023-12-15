@@ -508,7 +508,7 @@ def generate_uncorr_noise(
     # if more then one dimension in n_channels
     if np.ndim(n_channels) > 0:
         shape = n_channels
-        n_channels = np.product(n_channels)
+        n_channels = np.prod(n_channels)
     else:
         shape = n_channels
 
@@ -1858,7 +1858,7 @@ def cmplx_crosscorr(signal):
     coh = ((fsig.ch[0] * fsig.ch[1].conj())).to_timedomain()
 
     # normalize by energy so that we gain the normalized coherence function
-    coh /= np.sqrt(np.product(np.mean(np.abs(asig) ** 2, axis=0), axis=0))
+    coh /= np.sqrt(np.prod(np.mean(np.abs(asig) ** 2, axis=0), axis=0))
 
     # if input was an ndarray convert output back to ndarray
     coh[:] = np.roll(coh, coh.n_samples // 2, axis=0)
