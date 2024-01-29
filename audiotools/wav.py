@@ -2,14 +2,17 @@ import numpy as np
 import soundfile
 import audiotools as audio
 
+
 def readwav(filename):
     sig, fs = readfile(filename)
-    raise(DeprecationWarning('readwav is depricated please use readfile'))
+    raise (DeprecationWarning("readwav is depricated please use readfile"))
     return sig, fs
 
+
 def writewav(filename, signal, fs):
-    raise(DeprecationWarning('writewav is depricated please use writefile'))
+    raise (DeprecationWarning("writewav is depricated please use writefile"))
     writefile(filename, signal, fs)
+
 
 def readfile(filename):
     """Read audiofile using libsndfile.
@@ -30,6 +33,7 @@ def readfile(filename):
     """
     sig_array, fs = soundfile.read(filename)
     return sig_array, fs
+
 
 def writefile(filename, signal, fs, **kwargs):
     """Write audiofile using libsndfile.
@@ -59,14 +63,13 @@ def writefile(filename, signal, fs, **kwargs):
       Other parameters directly passed to the `soundfile.write` function
 
     """
-    soundfile.write(file=filename,
-                    data=signal,
-                    samplerate=fs,
-                    **kwargs)
+    soundfile.write(file=filename, data=signal, samplerate=fs, **kwargs)
+
 
 def available_formats():
     """Return a dictionary of available major formats."""
     return soundfile.available_formats()
+
 
 def available_subtypes(format):
     """Return a dictionary of available subtypes.
