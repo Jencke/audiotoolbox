@@ -1,3 +1,7 @@
+develop
+ - Started refracturing structure for auditory scales
+ -
+
 0.66.1 -> 0.67
  - Changed functions in stats to property
  - Implemented functions for A and C frequency weighting

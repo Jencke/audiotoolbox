@@ -760,6 +760,7 @@ class Signal(base_signal.BaseSignal):
 
         """
         import matplotlib.pyplot as plt
+
         if not ax:
             fig, ax = plt.subplots(1, 1)
         else:
@@ -870,6 +871,7 @@ class Signal(base_signal.BaseSignal):
         return self
 
     def crossfade(self, t_fade, fade_duration, fade_type="linear", channels=[0, 1]):
+        """Crossfades between two channels."""
         n_cf = audio.nsamples(t_fade, self.fs)
 
         ch1 = self.ch[:, channels[0]]
