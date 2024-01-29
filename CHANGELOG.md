@@ -1,3 +1,6 @@
+0.67 -> 0.68
+ - Reading and Writing Audiofiles is now handled using the soundfile library
+
 0.66.1 -> 0.67
  - Changed functions in stats to property
  - Implemented functions for A and C frequency weighting
