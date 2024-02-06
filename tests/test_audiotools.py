@@ -66,7 +66,6 @@ def test_generate_tone():
 
 
 def test_get_time():
-
     tone = audio.generate_tone(1, 1, 1e3)
     time = audio.get_time(tone, 1e3)
 
@@ -196,7 +195,6 @@ def test_gauss_fade_window():
 
 
 def test_delay_signal():
-
     signal = audio.generate_tone(1, 1, 1e3, start_phase=0.5 * np.pi)
     signal += audio.generate_tone(1, 2, 1e3, start_phase=0.5 * np.pi)
 
@@ -491,7 +489,6 @@ def test_dbspl_to_phon():
 
 
 def test_audfilter_bw():
-
     cf = np.array([200, 1000])
     bws = audio.calc_bandwidth(cf)
     bws2 = 25 + 75 * (1 + 1.4 * (cf / 1000.0) ** 2) ** 0.69
@@ -584,8 +581,9 @@ def test_generate_uncorr_noise():
     testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5)
 
     # Test multichannel
-    res_noise = audio.generate_uncorr_noise(1, fs=48000, n_channels=3,
-                                            corr=0.5, ntype='pink')
+    res_noise = audio.generate_uncorr_noise(
+        1, fs=48000, n_channels=3, corr=0.5, ntype="pink"
+    )
     cv = np.corrcoef(res_noise.T)
     lower_tri = np.tril(cv, -1)
     lower_tri[lower_tri == 0] = np.nan
@@ -658,7 +656,6 @@ def test_generate_uncorr_noise_filter():
 
 
 def test_extract_binaural_differences():
-
     from scipy.signal import hilbert
 
     # Check phase_difference
@@ -690,7 +687,6 @@ def test_extract_binaural_differences():
 
 
 def test_crest_factor():
-
     # Test that c for sine is equal to sqrt(2)
     signal = audio.generate_tone(100, 1, 100e3)
     c = audio.crest_factor(signal)
@@ -704,7 +700,6 @@ def test_crest_factor():
 
 
 def test_band2rms():
-
     band = audio.band2rms(50, 1)
     assert band == 50
     band = audio.band2rms(50, 20)
@@ -799,7 +794,6 @@ def test_cmplx_correlation():
 
 
 def test_duration_is_signal():
-
     # direct input
     duration, fs, n_ch = audio.audiotools._duration_is_signal(1, 2, 3)
     assert duration == 1
@@ -827,7 +821,6 @@ def test_duration_is_signal():
 
 
 def test_copy_to_ndim():
-
     a = np.random.random(1000)
     b = audio.audiotools._copy_to_dim(a, (2, 3))
     assert b.shape == (1000, 2, 3)
