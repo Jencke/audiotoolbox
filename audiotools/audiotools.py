@@ -302,6 +302,7 @@ def generate_low_noise_noise(
 
     return noise
 
+
 def generate_noise(duration, fs=None, ntype="white", n_channels=1, seed=None):
     r"""Generate Noise
 
@@ -391,7 +392,7 @@ def generate_noise(duration, fs=None, ntype="white", n_channels=1, seed=None):
         # Power proportional to 1 / f**2
         f_weights[lowbin:highbin] = 1.0 / freqs[lowbin:]
     else:
-        raise(ValueError('ntype not implemented'))
+        raise (ValueError("ntype not implemented"))
 
     # generate noise
     a = np.zeros([nfft])
@@ -423,7 +424,7 @@ def generate_uncorr_noise(
     fs,
     n_channels=2,
     corr=0,
-    ntype='white',
+    ntype="white",
     seed=None,
     bandpass=None,
     lowpass=None,
@@ -507,7 +508,7 @@ def generate_uncorr_noise(
     # if more then one dimension in n_channels
     if np.ndim(n_channels) > 0:
         shape = n_channels
-        n_channels = np.product(n_channels)
+        n_channels = np.prod(n_channels)
     else:
         shape = n_channels
 
@@ -516,17 +517,9 @@ def generate_uncorr_noise(
 
     len_signal = nsamples(duration, fs)
 
-    noise = generate_noise(duration,
-                           fs=fs,
-                           ntype=ntype,
-                           n_channels=1,
-                           seed=seed)
+    noise = generate_noise(duration, fs=fs, ntype=ntype, n_channels=1, seed=seed)
     for i in range(n_channels):
-        n_noise = generate_noise(duration,
-                                 fs=fs,
-                                 ntype=ntype,
-                                 n_channels=1,
-                                 seed=seed)
+        n_noise = generate_noise(duration, fs=fs, ntype=ntype, n_channels=1, seed=seed)
         noise = np.column_stack([noise, n_noise])
 
     noise -= noise.mean(axis=0)
@@ -879,7 +872,6 @@ def shift_signal(signal, nr_samples):
 
 
 def delay_signal(signal, delay, fs, method="fft", mode="zeros"):
-
     if delay < 0:
         neg_delay = True
         delay = np.abs(delay)
@@ -1060,7 +1052,6 @@ def set_dbfs(signal, dbfs_val, norm="rms"):
 
         factor = (rms0 * 10 ** (float(dbfs_val) / 20)) / rms_val
     elif norm == "peak":
-
         if np.ndim(signal) != 0:
             peak_val = np.max(signal, axis=0)
         else:
@@ -1867,7 +1858,7 @@ def cmplx_crosscorr(signal):
     coh = ((fsig.ch[0] * fsig.ch[1].conj())).to_timedomain()
 
     # normalize by energy so that we gain the normalized coherence function
-    coh /= np.sqrt(np.product(np.mean(np.abs(asig) ** 2, axis=0), axis=0))
+    coh /= np.sqrt(np.prod(np.mean(np.abs(asig) ** 2, axis=0), axis=0))
 
     # if input was an ndarray convert output back to ndarray
     coh[:] = np.roll(coh, coh.n_samples // 2, axis=0)
