@@ -15,8 +15,9 @@ def _copy_to_dim(array, dim):
     return tiled_array
 
 
-def butterworth(signal, low_f, high_f, fs=None, order=2,
-                return_states=False, states=None):
+def butterworth(
+    signal, low_f, high_f, fs=None, order=2, return_states=False, states=None
+):
     r"""Apply a butterwoth filter
 
     Applies the cascated second-order sections representation of a
@@ -87,14 +88,13 @@ def design_butterworth(low_f, high_f, fs, order=2):
     """
     # Determine filtertype
     if low_f is None and high_f is not None:
-        sos = sig.butter(order, high_f, btype='lowpass', output='sos', fs=fs)
+        sos = sig.butter(order, high_f, btype="lowpass", output="sos", fs=fs)
     elif low_f is not None and high_f is None:
-        sos = sig.butter(order, low_f, btype='highpass', output='sos', fs=fs)
+        sos = sig.butter(order, low_f, btype="highpass", output="sos", fs=fs)
     elif low_f is not None and high_f is not None:
-        sos = sig.butter(order, [low_f, high_f], btype='bandpass',
-                         output='sos', fs=fs)
+        sos = sig.butter(order, [low_f, high_f], btype="bandpass", output="sos", fs=fs)
     else:
-        raise Exception('low_f and/or high_f must be provided')
+        raise Exception("low_f and/or high_f must be provided")
     return sos
 
 
@@ -139,9 +139,9 @@ def apply_sos(signal, sos, states=None, axis=0):
         if np.ndim(n_channel) == 0:
             if n_channel == 1:  # only one channel
                 shape = [order, 2]
-            else:               # more then one channels
+            else:  # more then one channels
                 shape = [order, 2, n_channel]
-        else:                   # Multiple dimensions
+        else:  # Multiple dimensions
             shape = [order, 2, *n_channel]
         states = np.zeros(shape)
 
