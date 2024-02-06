@@ -99,7 +99,7 @@ def test_setdbfs_calcdbfs():
     sig.add_tone(100).set_dbfs(-5)
 
     assert audio.calc_dbfs(sig) == -5
-    assert sig.stats.dbfs() == -5
+    assert sig.stats.dbfs == -5
 
 
 def test_zeropad():
