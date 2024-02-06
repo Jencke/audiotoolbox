@@ -772,7 +772,7 @@ def test_cmplx_correlation():
     signal = audio.Signal(2, 1, 48000).add_noise()
     ccc = complex(audio.cmplx_corr(signal))
     testing.assert_allclose(np.abs(ccc), 1)
-    assert np.angle(ccc) == 0
+    testing.assert_almost_equal(np.angle(ccc), 0)
 
     signal = audio.Signal(2, 1, 48000).add_noise()
     signal *= 5.2
