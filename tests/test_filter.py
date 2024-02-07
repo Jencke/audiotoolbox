@@ -237,6 +237,10 @@ def test_ac_poles():
 
 
 def test_a_weighting():
+    import matplotlib.pyplot as plt
+
+    plt.ioff()
+
     def get_gain(f):
         sig = audio.Signal(1, 1, 48000).add_tone(f)
         out = filter.a_weighting(sig)

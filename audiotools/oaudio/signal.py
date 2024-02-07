@@ -793,7 +793,7 @@ class Signal(base_signal.BaseSignal):
         self[self < 0] = 0
         return self
 
-    def writewav(self, filename, bitdepth=16):
+    def writefile(self, filename, **kwargs):
         """Save the signal as a wav file.
 
         Experimental method to write the signal as a wav file.
@@ -802,10 +802,11 @@ class Signal(base_signal.BaseSignal):
         ----------
         filename : string
           The filename that should be used.
-        bitdepth : int
-          The bitdepth used for saving
+        **kwargs
+          Extra arguments such as format and subtype to be passed to the
+          audiotools.wav.writefile function
         """
-        wav.writewav(filename, self, self.fs, bitdepth)
+        wav.writefile(filename, self, self.fs, **kwargs)
 
     def to_freqdomain(self):
         r"""Convert to frequency domain by applying a DFT.

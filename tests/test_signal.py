@@ -560,3 +560,10 @@ def test_crossfade():
     sig.crossfade(200e-3, 450e-3, fade_type="linear")
     sumsig = sig.sum(axis=-2)
     assert np.abs(1 - sumsig.stats.var.mean()) < 1.0e-4
+
+
+def test_writefile():
+    sig = audio.Signal(1, 1, 48000).add_noise()
+    sig.writefile("test.wav")
+    sig.set_dbfs(-20)
+    rsig = audio.from_file("test.wav")

@@ -16,6 +16,9 @@ A python package for creating acoustic stimuli primariliy aimed at auditory rese
  * Install the package: `pip install ./`
  * Optionally run the tests: `pytest`
 
+### Requirements
+  audiotools depends on the libsndfile library. The libray should be installed automatically when using pip.
+
 ## Documentation
 The package documentation can be found at: https://audiotools.readthedocs.io/en/master/
 However, it is a bit outdated and does not document all the features. Help would be highly appreciated

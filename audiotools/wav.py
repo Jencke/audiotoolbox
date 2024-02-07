@@ -1,161 +1,83 @@
 import numpy as np
-import wave
+import soundfile
+import audiotools as audio
 
 
-def readwav(filename, fullscale=True):
-    """Read a wav file."""
-    wf = wave.open(filename, "rb")
-
-    # get information
-    nframes = wf.getnframes()
-    sampwidth = wf.getsampwidth()
-    nchannels = wf.getnchannels()
-    fs = wf.getframerate()
-
-    # read whole file
-    byte_data = wf.readframes(nframes)
-
-    wf.close()
-
-    # decide on datatype
-    if sampwidth == 1:
-        dtype = np.int8
-    elif sampwidth == 2:
-        dtype = np.int16
-    elif sampwidth == 3:
-        dtype = np.int32
-    elif sampwidth == 4:
-        dtype = np.int64
-    else:
-        raise (ValueError, f"Unknown sample width {sampwidth}byte")
-
-    bitdepth = sampwidth * 8
-
-    # convert to int array
-    intsignal = np.frombuffer(byte_data, dtype=dtype)
-    if nchannels == 2:
-        intsignal = intsignal.reshape(nframes, 2)
-
-    #
-    if fullscale:
-        signal = int_to_fullscale(intsignal, bitdepth)
-    else:
-        signal = intsignal
-
-    return signal, fs
+def readwav(filename):
+    sig, fs = readfile(filename)
+    raise (DeprecationWarning("readwav is depricated please use readfile"))
+    return sig, fs
 
 
-def int_to_fullscale(signal, bitdepth):
-    """Convert integer to fullscale (64bit float).
+def writewav(filename, signal, fs):
+    raise (DeprecationWarning("writewav is depricated please use writefile"))
+    writefile(filename, signal, fs)
 
-    Converts a integer signal to its 64bit fullscale representation.
 
-    Parameters:
-    -----------
+def readfile(filename):
+    """Read audiofile using libsndfile.
+
+    Read an audiofile using libsndfile through the soundfile python library.
+
+    Parameters
+    ----------
+    filename : str
+       The path to the file.
+
+    Returns
+    -------
+    sig_array : np.ndarray
+      The data read from the file
+    fs : int
+      The sampling frequency
+    """
+    sig_array, fs = soundfile.read(filename)
+    return sig_array, fs
+
+
+def writefile(filename, signal, fs, **kwargs):
+    """Write audiofile using libsndfile.
+
+    Write a soundfile using libsndfile through the soundile python library.
+
+    Per default, the major format to be stored is determined by the file
+    extension. E.g. a .wav ending indicates a WAV (Microsoft) file. See
+    `audiotools.wav.available_formats` for a list of availible formats and
+    endings. The major format can be forced by passing a `format` argument.
+
+    If not specifically designed, the subtype (such as Signed 32 bit PCM) is
+    chosen as the default for a given format. Avilible subtypes can be checked
+    through the `audiotools.wav.available_subtypes` function and forced by
+    passing a `subtype` argument.
+
+
+    Parameters
+    ----------
+    filename : str
+      Filname of the audiofile
     signal : ndarray
-        The input signal
-    bitdepth : int
-        The bitdepth of the input signal (8, 16, 32 or 64)
-
-    Returns:
-    --------
-    ndarray : The converted signal
+      The data
+    fs : int
+      The sampling rate
+    **kwargs :
+      Other parameters directly passed to the `soundfile.write` function
 
     """
-    if bitdepth == 8:
-        dtype = np.int8
-    if bitdepth == 16:
-        dtype = np.int16
-    if bitdepth == 32:
-        dtype = np.int32
-    if bitdepth == 64:
-        dtype = np.int64
 
-    # only valid if maximum value in bound of bitdepth
-    assert np.abs(signal).max() <= np.iinfo(dtype).max
-
-    fullscalesignal = np.array(signal, dtype=np.float64) / np.iinfo(dtype).max
-
-    return fullscalesignal
+    soundfile.write(file=filename, data=signal, samplerate=fs, **kwargs)
 
 
-def fullscale_to_int(signal, bitdepth):
-    """Convert a fullscale to int (64bit float).
+def available_formats():
+    """Return a dictionary of available major formats."""
+    return soundfile.available_formats()
 
-    Converts a fullscale signal into an integer signal of predefined
 
-    Parameters:
-    -----------
-    signal : ndarray
-        The input signal
-    bitdepth : int
-        The bitdepth of the input signal (8, 16, 32 or 64)
+def available_subtypes(format):
+    """Return a dictionary of available subtypes.
 
-    Returns:
-    --------
-    ndarray : The converted signal
-
+    Parameters
+    ----------
+    format : str
+        If given, only compatible subtypes are returned.
     """
-    if bitdepth == 8:
-        dtype = np.int8
-    if bitdepth == 16:
-        dtype = np.int16
-    if bitdepth == 32:
-        dtype = np.int32
-    if bitdepth == 64:
-        dtype = np.int64
-
-    # only valid if maximum smaller 1 (fulsscale)
-    assert np.abs(signal).max() <= 1
-
-    # has to be array
-    signal = np.array(signal)
-
-    intsignal = np.array(signal * np.iinfo(dtype).max, dtype=dtype)
-    return intsignal
-
-
-def array_to_byte(signal, bitdepth):
-    """Convert a fullscale array into a bytesignal.
-
-    Convert a fullscale array into a bytesignal for streaming to
-    soundcard
-
-    Parameters:
-    -----------
-    signal : ndarray
-        The input signal
-    bitdepth : int
-        The bitdepth of the input signal (8, 16, 32 or 64)
-
-    Returns:
-    --------
-    ndarray : The bitstream
-
-    """
-    intsignal = fullscale_to_int(signal, bitdepth)
-    intsignal = intsignal.reshape(np.prod(intsignal.shape))
-    bytesignal = intsignal.tobytes()
-
-    return bytesignal
-
-
-def writewav(filename, signal, fs, bitdepth):
-    # get information
-    nchannels = 1 if np.ndim(signal) == 0 else signal.shape[1]
-
-    if bitdepth % 8 != 0 or bitdepth > 32:
-        raise ValueError("bitdepth must be a multiple of 8 and < 32")
-
-    sampwidth = bitdepth // 8
-
-    bytesignal = array_to_byte(signal, bitdepth)
-
-    wf = wave.open(filename, "wb")
-
-    wf.setnchannels(nchannels)
-    wf.setframerate(fs)
-    wf.setsampwidth(sampwidth)
-    wf.writeframes(bytesignal)
-
-    wf.close()
+    return soundfile.available_subtypes(format)

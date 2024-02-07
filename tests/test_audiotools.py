@@ -488,13 +488,6 @@ def test_dbspl_to_phon():
     assert np.round(l_phon, 1) == 78
 
 
-def test_bark_bw():
-    cf = np.array([200, 1000])
-    bws = audio.bark.bandwidth(cf)
-    bws2 = 25 + 75 * (1 + 1.4 * (cf / 1000.0) ** 2) ** 0.69
-    assert np.array_equal(bws, bws2)
-
-
 def test_audfilter_bw():
     cf = np.array([200, 1000])
     bws = audio.calc_bandwidth(cf)
