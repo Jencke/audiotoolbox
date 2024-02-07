@@ -551,9 +551,10 @@ def test_apply_gain():
 def test_crossfade():
     # Energy in cos faded uncorrelated noise should be constant
     sig = audio.Signal((2, 2, 10), 1, 48000).add_uncorr_noise(0)
-    sig.crossfade(200e-3, 450e-3, fade_type="cos")
+    sig.crossfade(t_fade=200e-3, fade_duration=450e-3, fade_type="cos")
     sumsig = sig.sum(axis=-2)
     assert np.abs(1 - sumsig.stats.var.mean()) < 0.01
+    print(sig.duration)
 
     # Energy in linear faded correlated noise should be constant
     sig = audio.Signal((2, 2, 10), 1, 48000).add_noise()
