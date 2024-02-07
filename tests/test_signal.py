@@ -99,7 +99,7 @@ def test_setdbfs_calcdbfs():
     sig.add_tone(100).set_dbfs(-5)
 
     assert audio.calc_dbfs(sig) == -5
-    assert sig.stats.dbfs() == -5
+    assert sig.stats.dbfs == -5
 
 
 def test_zeropad():
@@ -532,6 +532,7 @@ def test_to_signal():
     assert isinstance(sig, audio.Signal)
     testing.assert_array_equal(sig, sig_array)
 
+
 def test_apply_gain():
     sig = audio.Signal(1, 1, 48000).add_noise()
     sig.set_dbfs(-20)
@@ -541,8 +542,14 @@ def test_apply_gain():
     sig.apply_gain(10)
     testing.assert_almost_equal(sig.stats.dbfs, 0)
 
-
     sig = audio.Signal(3, 1, 48000).add_uncorr_noise()
     sig.set_dbfs(-20)
     sig.apply_gain(10)
     testing.assert_almost_equal(sig.stats.dbfs, -10)
+
+
+def test_writefile():
+    sig = audio.Signal(1, 1, 48000).add_noise()
+    sig.writefile("test.wav")
+    sig.set_dbfs(-20)
+    rsig = audio.from_file("test.wav")
