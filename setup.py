@@ -12,7 +12,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://jencke.github.io/audiotools/",
-    python_requires=">=3",
+    python_requires=">=3.11",
     packages=find_packages(),
     install_requires=[
         "numpy",

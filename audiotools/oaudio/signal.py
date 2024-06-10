@@ -1,6 +1,6 @@
 """Definition for the Signal class."""
 
-from typing import Type, cast, Union
+from typing import Type, cast, Union, Self
 
 import numpy as np
 
@@ -871,7 +871,9 @@ class Signal(base_signal.BaseSignal):
 
         return self
 
-    def crossfade(self, t_fade, fade_duration, fade_type="linear", channels=[0, 1]):
+    def crossfade(
+        self, t_fade: float, fade_duration: float, fade_type="linear", channels=[0, 1]
+    ) -> Self:
         """Crossfades between two channels."""
         n_cf = audio.nsamples(t_fade, self.fs)
 
@@ -892,6 +894,8 @@ class Signal(base_signal.BaseSignal):
         ch2[n_start:n_end] *= audio._copy_to_dim(fade[::-1], ch2.n_channels)
         ch1[n_end:] = 0
         ch2[:n_start] = 0
+
+        return self
 
 
 def as_signal(signal, fs):
