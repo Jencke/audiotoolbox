@@ -1877,7 +1877,28 @@ def crossfade(
     sig2: Signal,
     fade_duration: float,
     fade_type: Literal["linear", "cos"] = "linear",
-):
+) -> Signal:
+    """Crossfade two Signals
+
+    Apply a crossfade between the end of the first and the beginning of the
+    second signal.
+
+    Parameters
+    ----------
+    sig1 : Signal
+        First signal
+    sig2 : Signal
+        Second signal
+    fade_duration : float
+        duration of the fade in seconds
+    fade_type : Literal["linear", "cos"]
+        Type of the crossfade
+
+    Returns
+    -------
+    Signal
+        The resulting signal.
+    """
     if sig1.n_channels != sig2.n_channels:
         raise (ValueError("The two signals need to match in number of channels."))
     if sig1.fs != sig2.fs:
