@@ -1,7 +1,7 @@
 
 develop
  - Started refracturing structure for auditory scales
- -
+ - Implemented a crossfade function
 
 0.67 -> 0.68
  - Reading and Writing Audiofiles is now handled using the soundfile library
