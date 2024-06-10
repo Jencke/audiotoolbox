@@ -63,6 +63,7 @@ def writefile(filename, signal, fs, **kwargs):
       Other parameters directly passed to the `soundfile.write` function
 
     """
+
     soundfile.write(file=filename, data=signal, samplerate=fs, **kwargs)
 
 

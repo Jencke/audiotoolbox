@@ -1,5 +1,6 @@
 """Function based interface to audiotools."""
 
+from typing import Literal
 import numpy as np
 from numpy import pi
 from scipy.interpolate import interp1d
@@ -1869,3 +1870,65 @@ def cmplx_crosscorr(signal):
         coh.time_offset = -coh.n_samples // 2 * 1 / coh.fs
 
     return coh
+
+
+def crossfade(
+    sig1: Signal,
+    sig2: Signal,
+    fade_duration: float,
+    fade_type: Literal["linear", "cos"] = "linear",
+) -> Signal:
+    """Crossfade two Signals
+
+    Apply a crossfade between the end of the first and the beginning of the
+    second signal.
+
+    Parameters
+    ----------
+    sig1 : Signal
+        First signal
+    sig2 : Signal
+        Second signal
+    fade_duration : float
+        duration of the fade in seconds
+    fade_type : Literal["linear", "cos"]
+        Type of the crossfade
+
+    Returns
+    -------
+    Signal
+        The resulting signal.
+    """
+    if sig1.n_channels != sig2.n_channels:
+        raise (ValueError("The two signals need to match in number of channels."))
+    if sig1.fs != sig2.fs:
+        raise (ValueError("The sample rate of the two signals has to match."))
+    fs = sig1.fs
+    n_channels = sig1.n_channels
+
+    # sig1 = sig1.copy()
+    # sig2 = sig2.copy()
+
+    fade = Signal(1, fade_duration, fs)
+    if fade_type == "cos":
+        fade[:] = np.cos(np.pi / 2 * fade.time / fade_duration)
+    elif fade_type == "linear":
+        fade[:] = (fade_duration - fade.time) / fade_duration
+    else:
+        raise (ValueError("fade_type not implemented"))
+
+    n_out = sig1.n_samples + sig2.n_samples - fade.n_samples
+    out_duration = n_out / fs
+    out_sig = Signal((2,) + tuple(np.atleast_1d(n_channels)), out_duration, fs)
+
+    out_sig[: sig1.n_samples, 0] = sig1
+    out_sig[-sig2.n_samples :, 1] = sig2
+
+    fade_s = sig1.n_samples - fade.n_samples
+    fade_e = fade_s + fade.n_samples
+
+    out_sig[fade_s:fade_e, 0] *= _copy_to_dim(fade, n_channels)
+    out_sig[fade_s:fade_e, 1] *= _copy_to_dim(fade[::-1], n_channels)
+
+    out_sig = out_sig.sum(axis=1)
+    return out_sig  # sig1 + sig2

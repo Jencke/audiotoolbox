@@ -243,7 +243,7 @@ def test_a_weighting():
 
     def get_gain(f):
         sig = audio.Signal(1, 1, 48000).add_tone(f)
-        out = filter.a_weighting(sig, None)
+        out = filter.a_weighting(sig)
         return out.stats.dbfs - sig.stats.dbfs
 
     assert np.abs(get_gain(1000)) < 0.01
@@ -256,7 +256,7 @@ def test_a_weighting():
 def test_c_weighting():
     def get_gain(f):
         sig = audio.Signal(1, 1, 48000).add_tone(f)
-        out = filter.c_weighting(sig, None)
+        out = filter.c_weighting(sig)
         return out.stats.dbfs - sig.stats.dbfs
 
     assert np.abs(get_gain(1000)) < 0.02

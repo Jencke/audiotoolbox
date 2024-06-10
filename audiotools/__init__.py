@@ -6,5 +6,6 @@ if not (version_info.major == 3
     exit(1)
 
 from .audiotools import *
+from .scales import erb, bark, octave
 from . oaudio import Signal, as_signal
 from . oaudio import FrequencyDomainSignal
