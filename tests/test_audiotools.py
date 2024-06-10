@@ -827,3 +827,17 @@ def test_copy_to_ndim():
 
     b = audio.audiotools._copy_to_dim(a, 3)
     assert b.shape == (1000, 3)
+
+
+def test_crossfade():
+    # cosine fade between uncorrelated noise should keep equal variance
+    sig1 = audio.Signal((2, 10), 1, 48000).add_noise()
+    sig2 = audio.Signal((2, 10), 1, 48000).add_noise()
+    out = audio.crossfade(sig1, sig2, 450e-3, fade_type="cos")
+    assert np.abs(1 - out.stats.var.mean()) < 0.01
+
+    # linear fade between uncorrelated noise should decrease variance
+    sig1 = audio.Signal((2, 10), 1, 48000).add_noise()
+    sig2 = audio.Signal((2, 10), 1, 48000).add_noise()
+    out = audio.crossfade(sig1, sig2, 1, fade_type="linear")
+    assert np.abs(1 - out.stats.var.mean()) > 0.1
