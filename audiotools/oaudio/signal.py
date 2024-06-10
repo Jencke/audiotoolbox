@@ -871,41 +871,6 @@ class Signal(base_signal.BaseSignal):
 
         return self
 
-    def crossfade(
-        self,
-        t_fade: float,
-        fade_duration: float,
-        fade_type: Literal["linear", "cos"] = "linear",
-        channels: list = [0, 1],
-    ) -> Self:
-        """Crossfades between two channels."""
-
-        # Select the two channels to crossfade
-        ch1 = self.ch[:, channels[0]]
-        ch2 = self.ch[:, channels[1]]
-
-        # Create fade
-        fade = audio.Signal(1, fade_duration, self.fs)
-        if fade_type == "cos":
-            fade[:] = np.cos(np.pi / 2 * fade.time / fade_duration)
-        if fade_type == "linear":
-            fade[:] = (fade_duration - fade.time) / fade_duration
-
-        # Samples for start and end of fade
-        n_cf = audio.nsamples(t_fade, self.fs)
-        n_start = n_cf
-        n_end = n_cf + fade.n_samples
-
-        # Add the fade function into the two channels
-        ch1[n_start:n_end] *= audio._copy_to_dim(fade, ch1.n_channels)
-        ch2[n_start:n_end] *= audio._copy_to_dim(fade[::-1], ch2.n_channels)
-
-        # Set beginning and end of channel to zero
-        ch1[n_end:] = 0
-        ch2[:n_start] = 0
-
-        return self
-
 
 def as_signal(signal, fs):
     """Convert Numpy array to Signal class.
