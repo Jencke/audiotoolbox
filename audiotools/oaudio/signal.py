@@ -884,10 +884,14 @@ class Signal(base_signal.BaseSignal):
             dim_overlap = 0
 
         # Squeeze the last dimension if it is 1
+        squeeze_idx_k = ()
+        squeeze_idx_sig = ()
         if dim_kernel[-1] == 1:
             dim_kernel = dim_kernel[:-1]
+            squeeze_idx_k = (0,)
         if dim_sig[-1] == 1:
             dim_sig = dim_sig[:-1]
+            squeeze_idx_sig = (0,)
 
         new_nch = (*dim_sig, *dim_kernel[dim_overlap:])
         new_nsamp = self.n_samples
@@ -906,13 +910,12 @@ class Signal(base_signal.BaseSignal):
                 else:
                     idx_sig = np.unravel_index(i_sig, dim_sig)
                 idx_k = np.unravel_index(i_k, dim_kernel[dim_overlap:])
-                a = self.ch[*idx_sig]
-                b = kernel.ch[*(slice(None, None, None),) * dim_overlap, *idx_k]
-                newsig_idx = (
-                    *(slice(None, None, None),) * dim_overlap,
-                    *idx_sig,
-                    *idx_k,
-                )
+
+                overlap_slice = (slice(None, None, None),) * dim_overlap
+                a = self.ch[*idx_sig, *overlap_slice, *squeeze_idx_sig]
+                b = kernel.ch[*overlap_slice, *idx_k, *squeeze_idx_k]
+                newsig_idx = (*idx_sig, *overlap_slice, *idx_k)
+
                 new_signal.ch[*newsig_idx] = fftconvolve(a, b, "same", axes=0)
         self.resize(new_signal.shape, refcheck=False)
         self[:] = new_signal

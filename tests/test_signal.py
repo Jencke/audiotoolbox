@@ -572,6 +572,16 @@ def test_convolve():
     sig.convolve(kernel)
     assert sig.n_channels == 2
 
+    # test squeezing with multiple dimensins
+    sig = audio.Signal((2, 1), 1, 48000).add_noise()
+    kernel = audio.Signal(3, 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == (2, 3)
+    sig = audio.Signal((3, 1), 1, 48000).add_noise()
+    kernel = audio.Signal((4), 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == (3, 4)
+
     # test extension of non-matching dimension
     sig = audio.Signal(2, 1, 48000).add_noise()
     kernel = audio.Signal(3, 100e-3, 48000)
@@ -597,3 +607,48 @@ def test_convolve():
     kernel = audio.Signal((2, 2), 100e-3, 48000)
     sig.convolve(kernel)
     assert sig.n_channels == (2, 2)
+
+    # Test channel matching with multiple channels
+    sig = audio.Signal((2, 2), 1, 48000).add_noise()
+    kernel = audio.Signal((2, 2, 3), 100e-3, 48000)
+    sig.convolve(kernel, overlap_dimensions=True)
+    assert sig.n_channels == (2, 2, 3)
+    sig = audio.Signal((1, 3, 3), 1, 48000).add_noise()
+    kernel = audio.Signal((3, 3, 4), 100e-3, 48000)
+    sig.convolve(kernel, overlap_dimensions=True)
+    assert sig.n_channels == (1, 3, 3, 4)
+
+    # Test channel matching with multiple channels
+    sig = audio.Signal((2, 2), 1, 48000).add_noise()
+    kernel = audio.Signal((2, 2, 1), 100e-3, 48000)
+    sig.convolve(kernel, overlap_dimensions=True)
+    print(sig.n_channels)
+
+
+def test_new2():
+    fs = 1
+    sig = audio.Signal(1, 10, fs)
+    sig[:] = 1
+    kernel = audio.Signal(1, 1, fs)
+    kernel[:] = 2
+    sig.convolve(kernel)
+    assert np.all(sig == 2)
+
+    fs = 1
+    sig = audio.Signal(2, 10, fs)
+    sig[:] = 1
+    kernel = audio.Signal(2, 1, fs)
+    kernel.ch[0] += 1
+    kernel.ch[1] += 2
+    sig.convolve(kernel)
+    assert np.all(sig.ch[0] == 1) & np.all(sig.ch[1] == 2)
+
+    fs = 1
+    sig = audio.Signal((2, 3), 10, fs)
+    sig[:] = 1
+    kernel = audio.Signal(2, 1, fs)
+    kernel.ch[0] += 1
+    kernel.ch[1] += 2
+    sig.convolve(kernel)
+    print(sig)
+    # assert np.all(sig.ch[0] == 1) & np.all(sig.ch[1] == 2)
