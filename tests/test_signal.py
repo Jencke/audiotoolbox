@@ -553,3 +553,47 @@ def test_writefile():
     sig.writefile("test.wav")
     sig.set_dbfs(-20)
     rsig = audio.from_file("test.wav")
+
+
+def test_convolve():
+    # test simple convolution shape
+    sig = audio.Signal(1, 1, 48000).add_noise()
+    kernel = audio.Signal(1, 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == 1
+
+    # test squeezing of single dimensions
+    sig = audio.Signal(2, 1, 48000).add_noise()
+    kernel = audio.Signal(1, 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == 2
+    sig = audio.Signal(1, 1, 48000).add_noise()
+    kernel = audio.Signal(2, 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == 2
+
+    # test extension of non-matching dimension
+    sig = audio.Signal(2, 1, 48000).add_noise()
+    kernel = audio.Signal(3, 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == (2, 3)
+    sig = audio.Signal((2, 4), 1, 48000).add_noise()
+    kernel = audio.Signal(3, 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == (2, 4, 3)
+    sig = audio.Signal((2, 4), 1, 48000).add_noise()
+    kernel = audio.Signal((3, 4), 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == (2, 4, 3, 4)
+
+    # Test channel matching with one channel
+    sig = audio.Signal(2, 1, 48000).add_noise()
+    kernel = audio.Signal(2, 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == 2
+
+    # Test channel matching with multiple channels
+    sig = audio.Signal((2, 2), 1, 48000).add_noise()
+    kernel = audio.Signal((2, 2), 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == (2, 2)

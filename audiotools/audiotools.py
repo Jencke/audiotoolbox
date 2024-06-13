@@ -1932,3 +1932,38 @@ def crossfade(
 
     out_sig = out_sig.sum(axis=1)
     return out_sig  # sig1 + sig2
+
+
+def _get_dim_overlap(dim1, dim2):
+    """
+    Calculates the number of matching elements from the end of dim1 and
+    the beginning of dim2.
+
+    Parameters
+    ----------
+    dim1 : tuple or list
+        The first sequence of elements.
+    dim2 : tuple or list
+        The second sequence of elements.
+
+    Returns
+    -------
+    int
+        The maximum number of consecutive elements that match between the
+        end of `dim1` and the beginning of `dim2`. If there are no matching
+        elements, returns 0.
+
+    Examples
+    --------
+    >>> get_dim_overlap((1, 2, 3, 4), (3, 4, 5))
+    2
+    >>> get_dim_overlap((8, 9), (1, 2, 3))
+    0
+    """
+    dim1 = tuple(dim1)
+    dim2 = tuple(dim2)
+    max_overlap = min(len(dim1), len(dim2))
+    for overlap_length in range(max_overlap, 0, -1):
+        if dim1[-overlap_length:] == dim2[:overlap_length]:
+            return overlap_length
+    return 0

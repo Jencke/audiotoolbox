@@ -8,6 +8,7 @@ from . import base_signal
 from .. import audiotools as audio, wav, filter as filt
 from .freqdomain_signal import FrequencyDomainSignal
 from .stats import SignalStats
+from scipy.signal import fftconvolve
 
 
 class Signal(base_signal.BaseSignal):
@@ -704,7 +705,7 @@ class Signal(base_signal.BaseSignal):
     def clip(self, t_start, t_end=None):
         r"""Clip the signal between two points in time.
 
-        removes the number of semples according to t_start and
+        removes the number of saamples according to t_start and
         t_end. This method can not be applied to a single channel or
         slice.
 
@@ -869,6 +870,52 @@ class Signal(base_signal.BaseSignal):
         mult_fac = 10 ** (gain / 20)
         self *= mult_fac
 
+        return self
+
+    def convolve(self, kernel, overlap_dimensions: bool = True) -> Self:
+        fs = self.fs
+        dim_sig = np.atleast_1d(self.n_channels)
+        dim_kernel = np.atleast_1d(kernel.n_channels)
+
+        # Determine if some of the dimension overlap
+        if overlap_dimensions:
+            dim_overlap = audio._get_dim_overlap(dim_sig, dim_kernel)
+        else:
+            dim_overlap = 0
+
+        # Squeeze the last dimension if it is 1
+        if dim_kernel[-1] == 1:
+            dim_kernel = dim_kernel[:-1]
+        if dim_sig[-1] == 1:
+            dim_sig = dim_sig[:-1]
+
+        new_nch = (*dim_sig, *dim_kernel[dim_overlap:])
+        new_nsamp = self.n_samples
+        new_signal = audio.Signal(new_nch, new_nsamp / fs, fs)
+
+        if dim_overlap != 0:
+            n_sig = np.prod(dim_sig[:-dim_overlap])
+        else:
+            n_sig = np.prod(dim_sig)
+        n_kernel = np.prod(dim_kernel[dim_overlap:])
+        for i_sig in range(n_sig):
+            for i_k in range(n_kernel):
+                # only indeces that do not overlap need to be looked at
+                if dim_overlap != 0:
+                    idx_sig = np.unravel_index(i_sig, dim_sig[:-dim_overlap])
+                else:
+                    idx_sig = np.unravel_index(i_sig, dim_sig)
+                idx_k = np.unravel_index(i_k, dim_kernel[dim_overlap:])
+                a = self.ch[*idx_sig]
+                b = kernel.ch[*(slice(None, None, None),) * dim_overlap, *idx_k]
+                newsig_idx = (
+                    *(slice(None, None, None),) * dim_overlap,
+                    *idx_sig,
+                    *idx_k,
+                )
+                new_signal.ch[*newsig_idx] = fftconvolve(a, b, "same", axes=0)
+        self.resize(new_signal.shape, refcheck=False)
+        self[:] = new_signal
         return self
 
 
