@@ -872,7 +872,16 @@ class Signal(base_signal.BaseSignal):
 
         return self
 
-    def convolve(self, kernel, overlap_dimensions: bool = True) -> Self:
+    def convolve(
+        self,
+        kernel,
+        mode: Literal[
+            "full",
+            "valid",
+            "same",
+        ] = "full",
+        overlap_dimensions: bool = True,
+    ) -> Self:
         r"""Convolves the current signal with the given kernel.
 
         This method performs a convolution operation between the current signal
@@ -887,6 +896,8 @@ class Signal(base_signal.BaseSignal):
         ----------
         kernel : Signal
             The kernel to convolve with.
+        mode : str {'full', 'valid', 'same'}, optional
+            The convolution mode for fftconvolve (default=full)
         overlap_dimensions : bool, optional
             Whether to convolve only along overlapping dimensions. If True, the
             convolution is performed only along the dimensions that overlap between
@@ -948,7 +959,14 @@ class Signal(base_signal.BaseSignal):
             squeeze_idx_sig = (0,)
 
         new_nch = (*dim_sig, *dim_kernel[dim_overlap:])
-        new_nsamp = self.n_samples
+        if mode == "same":
+            new_nsamp = self.n_samples
+        elif mode == "full":
+            new_nsamp = self.n_samples + kernel.n_samples - 1
+        elif mode == "valid":
+            new_nsamp = self.n_samples - kernel.n_samples + 1
+        else:
+            raise ValueError("mode not implemented")
         new_signal = audio.Signal(new_nch, new_nsamp / fs, fs)
 
         if dim_overlap != 0:
@@ -970,7 +988,7 @@ class Signal(base_signal.BaseSignal):
                 b = kernel.ch[*overlap_slice, *idx_k, *squeeze_idx_k]
                 newsig_idx = (*idx_sig, *overlap_slice, *idx_k)
 
-                new_signal.ch[*newsig_idx] = fftconvolve(a, b, "same", axes=0)
+                new_signal.ch[*newsig_idx] = fftconvolve(a, b, mode=mode, axes=0)
         self.resize(new_signal.shape, refcheck=False)
         self[:] = new_signal
         return self

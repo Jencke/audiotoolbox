@@ -649,6 +649,25 @@ def test_convolve():
     sig.convolve(kernel)
     assert np.all(sig.ch[:, 0] == 1) & np.all(sig.ch[:, 1] == 2)
 
+    # Test modes:
+    fs = 1
+    sig = audio.Signal(2, 10, fs)
+    kernel = audio.Signal(3, 5, fs)
+    sig.convolve(kernel)
+    assert sig.n_samples == 14
+
+    fs = 1
+    sig = audio.Signal(2, 10, fs)
+    kernel = audio.Signal(3, 5, fs)
+    sig.convolve(kernel, mode="same")
+    assert sig.n_samples == 10
+
+    fs = 1
+    sig = audio.Signal(2, 10, fs)
+    kernel = audio.Signal(3, 5, fs)
+    sig.convolve(kernel, mode="valid")
+    assert sig.n_samples == 6
+
 
 signal = audio.Signal((2, 3), 1, 48000)
 kernel = audio.Signal(3, 100e-3, 48000)
