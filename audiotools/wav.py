@@ -1,6 +1,7 @@
 import numpy as np
 import soundfile
 import audiotools as audio
+from typing import Optional
 
 
 def readwav(filename):
@@ -14,7 +15,7 @@ def writewav(filename, signal, fs):
     writefile(filename, signal, fs)
 
 
-def readfile(filename):
+def readfile(filename: str, start: int = 0, stop: Optional[int] = None):
     """Read audiofile using libsndfile.
 
     Read an audiofile using libsndfile through the soundfile python library.
@@ -23,6 +24,10 @@ def readfile(filename):
     ----------
     filename : str
        The path to the file.
+    start : int (optional)
+      The first sample to read (default=0)
+    stop : int (optional)
+      The last sample to read, None reads the whole file (default=None)
 
     Returns
     -------
@@ -31,7 +36,7 @@ def readfile(filename):
     fs : int
       The sampling frequency
     """
-    sig_array, fs = soundfile.read(filename)
+    sig_array, fs = soundfile.read(filename, start=start, stop=stop)
     return sig_array, fs
 
 

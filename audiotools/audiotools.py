@@ -1,6 +1,6 @@
 """Function based interface to audiotools."""
 
-from typing import Literal
+from typing import Literal, Optional
 import numpy as np
 from numpy import pi
 from scipy.interpolate import interp1d
@@ -56,12 +56,12 @@ def _duration_is_signal(duration, fs=None, n_channels=None):
     return real_duration, real_fs, real_nch
 
 
-def from_file(filename):
+def from_file(filename, start: int = 0, stop: Optional[int] = None):
     """Read signal from wav file"""
     from .oaudio import Signal
     from .wav import readfile
 
-    wv, fs = readfile(filename)
+    wv, fs = readfile(filename, start=start, stop=stop)
 
     if wv.ndim > 1:
         n_channels = wv.shape[1]
