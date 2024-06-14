@@ -56,7 +56,7 @@ def _duration_is_signal(duration, fs=None, n_channels=None):
     return real_duration, real_fs, real_nch
 
 
-def from_file(filename, start: int = 0, stop: Optional[int] = None):
+def from_file(filename, start: int = 0, stop: Optional[int] = None) -> Signal:
     """Read signal from wav file"""
     from .oaudio import Signal
     from .wav import readfile
