@@ -873,6 +873,60 @@ class Signal(base_signal.BaseSignal):
         return self
 
     def convolve(self, kernel, overlap_dimensions: bool = True) -> Self:
+        r"""Convolves the current signal with the given kernel.
+
+        This method performs a convolution operation between the current signal
+        and the provided kernel. The convolution is performed along the
+        overlapping dimensions of the two signals, if `overlap_dimensions` is
+        True. If `overlap_dimensions` is False, the convolution is performed
+        along all dimensions. Please see examples below.
+
+        this method uses scipy.Signal.fftconvolve for the convolution.
+
+        Parameters
+        ----------
+        kernel : Signal
+            The kernel to convolve with.
+        overlap_dimensions : bool, optional
+            Whether to convolve only along overlapping dimensions. If True, the
+            convolution is performed only along the dimensions that overlap between
+            the two signals. If False, the convolution is performed along all
+            dimensions. Defaults to True.
+
+        Returns
+        -------
+        Self
+            The convolved signal.
+
+        Examples
+        --------
+        If the last dimension of signal and the first dimension of kernel match,
+        convolution takes place along this axis. This means that the first
+        channel of the signal is convolved with the first channel of the kernel,
+        the second with the second.
+
+        >>> signal = Signal(2, 1, 48000)
+        >>> kernel = Signal(2, 100e-3, 48000)
+        >>> signal.convolve(kernel)
+        >>> signal.n_channels
+        (2, 3)
+
+        This also works with multiple overlapping dimensions.
+        >>> signal = Signal((5, 2, 3), 1, 48000)
+        >>> kernel = Signal((2, 3), 100e-3, 48000)
+        >>> signal.convolve(kernel)
+        >>> signal.n_channels
+        (5, 2, 3)
+
+        The 'overlap_dimensions' keyword can be set to falls if all signal
+        channels should instead be convolved with all kernels.
+        >>> signal = Signal(2, 1, 48000)
+        >>> kernel = Signal(2, 100e-3, 48000)
+        >>> signal.convolve(kernel, overlap_dimensions=False)
+        >>> signal.n_channels
+        (2, 2)
+
+        """
         fs = self.fs
         dim_sig = np.atleast_1d(self.n_channels)
         dim_kernel = np.atleast_1d(kernel.n_channels)

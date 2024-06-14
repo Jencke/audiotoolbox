@@ -622,10 +622,7 @@ def test_convolve():
     sig = audio.Signal((2, 2), 1, 48000).add_noise()
     kernel = audio.Signal((2, 2, 1), 100e-3, 48000)
     sig.convolve(kernel, overlap_dimensions=True)
-    print(sig.n_channels)
 
-
-def test_new2():
     fs = 1
     sig = audio.Signal(1, 10, fs)
     sig[:] = 1
@@ -644,11 +641,16 @@ def test_new2():
     assert np.all(sig.ch[0] == 1) & np.all(sig.ch[1] == 2)
 
     fs = 1
-    sig = audio.Signal((2, 3), 10, fs)
+    sig = audio.Signal(2, 10, fs)
     sig[:] = 1
-    kernel = audio.Signal(2, 1, fs)
+    kernel = audio.Signal(3, 1, fs)
     kernel.ch[0] += 1
     kernel.ch[1] += 2
     sig.convolve(kernel)
-    print(sig)
-    # assert np.all(sig.ch[0] == 1) & np.all(sig.ch[1] == 2)
+    assert np.all(sig.ch[:, 0] == 1) & np.all(sig.ch[:, 1] == 2)
+
+
+signal = audio.Signal((2, 3), 1, 48000)
+kernel = audio.Signal(3, 100e-3, 48000)
+signal.convolve(kernel)
+signal.n_channels
