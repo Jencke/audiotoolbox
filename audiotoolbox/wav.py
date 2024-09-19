@@ -15,6 +15,12 @@ def writewav(filename, signal, fs):
     writefile(filename, signal, fs)
 
 
+def info(filename: str) -> soundfile._SoundFileInfo:
+    """Returns an object with information about a `SoundFile`."""
+    info = soundfile.info(filename)
+    return info
+
+
 def readfile(filename: str, start: int = 0, stop: Optional[int] = None):
     """Read audiofile using libsndfile.
 

@@ -1,4 +1,4 @@
-import audiotools as audio
+import audiotoolbox as audio
 import numpy as np
 import numpy.testing as testing
 
@@ -56,6 +56,7 @@ def test_dba():
     siga = audio.filter.a_weighting(sig)
     dba2 = siga.stats.dbspl
     assert dba == dba2
+
 
 def test_dbc():
     sig = audio.Signal(1, 1, 48000).add_tone(1000).add_fade_window(30e-3)

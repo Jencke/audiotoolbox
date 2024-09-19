@@ -993,6 +993,20 @@ class Signal(base_signal.BaseSignal):
         self[:] = new_signal
         return self
 
+    def from_file(self, filename: str, start: int = 0, channels="all") -> Self:
+        sig = audio.from_file(filename, start=start, stop=self.n_samples + start)
+        if channels == "all":
+            channels = slice(None)
+
+        sig = sig.ch[*channels]
+        print(sig.shape)
+        print(self.shape)
+        if sig.n_channels != self.n_channels:
+            raise ValueError("Number of channels must match.")
+
+        self[:] = sig
+        return self
+
 
 def as_signal(signal, fs):
     """Convert Numpy array to Signal class.
