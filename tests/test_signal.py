@@ -1,5 +1,5 @@
-from audiotools import Signal
-import audiotools as audio
+from audiotoolbox import Signal
+import audiotoolbox as audio
 import numpy as np
 import numpy.testing as testing
 

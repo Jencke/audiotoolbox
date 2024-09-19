@@ -1,7 +1,7 @@
-import audiotools as audio
-import audiotools.filter as filter
-import audiotools.filter.freq_weighting as fw
-import audiotools.filter.gammatone_filt as gt
+import audiotoolbox as audio
+import audiotoolbox.filter as filter
+import audiotoolbox.filter.freq_weighting as fw
+import audiotoolbox.filter.gammatone_filt as gt
 import numpy as np
 import numpy.testing as testing
 

@@ -1,4 +1,4 @@
-import audiotools as audio
+import audiotoolbox as audio
 import numpy as np
 
 

@@ -1,14 +1,14 @@
 import numpy as np
 
-import audiotools as audio
-import audiotools.filter.bank.filterbank as bank
-from audiotools.filter import gammatone_filt
-from audiotools.filter import butterworth_filt
+import audiotoolbox as audio
+import audiotoolbox.filter.bank.filterbank as bank
+from audiotoolbox.filter import gammatone_filt
+from audiotoolbox.filter import butterworth_filt
 import numpy.testing as testing
-from audiotools.filter.bank import create_filterbank
-from audiotools.filter.bank import auditory_gamma_bank, octave_bank
-from audiotools.filter.bank.filterbank import FilterBank, ButterworthBank
-from audiotools.filter.bank.filterbank import GammaToneBank
+from audiotoolbox.filter.bank import create_filterbank
+from audiotoolbox.filter.bank import auditory_gamma_bank, octave_bank
+from audiotoolbox.filter.bank.filterbank import FilterBank, ButterworthBank
+from audiotoolbox.filter.bank.filterbank import GammaToneBank
 
 
 def test_base_signal():
