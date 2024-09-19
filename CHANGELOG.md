@@ -1,9 +1,11 @@
 
 develop
+ - Renaming everything to audiotoolbox
  - Started refracturing structure for auditory scales
  - Implemented a crossfade function
  - Added a convolve method to the Signal class
  - Added the option to define the first and last sample to be read from file
+ - Added info function to extract information about an audio file without having to read it
 
 0.67 -> 0.68
  - Reading and Writing Audiofiles is now handled using the soundfile library

@@ -7,12 +7,9 @@ directly availible through the :func:`Signal` class.
 
 
 .. automodule:: audiotools
-    :members: generate_tone, generate_noise, set_dbspl, calc_dbspl,
-              set_dbfs, calc_dbfs, crest_factor, zeropad,
-              gaussian_fade_window, cosine_fade_window,
-              cos_amp_modulator, shift_signal, generate_uncorr_noise,
+    :members: crest_factor, shift_signal,
               calc_coherence, schroeder_phase, phon_to_dbspl,
-              time2phase, phase2time, nsamples, lowpass
+              time2phase, phase2time, nsamples, lowpass, crossfade
 
 
 audiotools.filter

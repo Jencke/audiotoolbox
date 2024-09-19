@@ -4,6 +4,7 @@
    :caption: Contents:
 
    introduction
+   user_guide
    api
 
 
