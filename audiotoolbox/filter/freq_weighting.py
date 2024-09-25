@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import pi, sqrt, log10
 from scipy.signal import zpk2sos, zpk2tf, bilinear_zpk, freqs_zpk
-from .. import audiotools as audio
+from .. import audiotoolbox as audio
 from .butterworth_filt import apply_sos
 
 
@@ -47,9 +47,7 @@ def c_weight(freq):
     f1, f2, f3, f4 = calc_analog_poles()
 
     def c_weight(f):
-        c_weight = 20 * log10(
-            (f4**2 * f**2) / ((f**2 + f1**2) * (f**2 + f4**2))
-        )
+        c_weight = 20 * log10((f4**2 * f**2) / ((f**2 + f1**2) * (f**2 + f4**2)))
         return c_weight
 
     c1000 = c_weight(1000)

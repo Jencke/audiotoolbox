@@ -1,6 +1,6 @@
 import scipy.signal as sig
 import numpy as np
-from .. import audiotools as audio
+from .. import audiotoolbox as audio
 
 
 def _copy_to_dim(array, dim):

@@ -1,4 +1,4 @@
-from .. import audiotools as audio
+from .. import audiotoolbox as audio
 import numpy as np
 
 
@@ -30,7 +30,7 @@ class SignalStats(BaseStats):
 
         See Also
         --------
-        audiotools.calc_dbspl
+        audiotoolbox.calc_dbspl
         """
         return audio.calc_dbspl(self.sig)
 
@@ -40,7 +40,7 @@ class SignalStats(BaseStats):
 
         See Also
         --------
-        audiotools.calc_dbfs
+        audiotoolbox.calc_dbfs
         """
         return audio.calc_dbfs(self.sig)
 
@@ -50,7 +50,7 @@ class SignalStats(BaseStats):
 
         See Also
         --------
-        audiotools.crest_factor
+        audiotoolbox.crest_factor
         """
         return audio.crest_factor(self.sig)
 
@@ -61,7 +61,7 @@ class SignalStats(BaseStats):
 
         See Also
         --------
-        audiotools.filter.a_weighting
+        audiotoolbox.filter.a_weighting
         """
         a_weighted = audio.filter.a_weighting(self.sig)
         return a_weighted.stats.dbspl
@@ -73,7 +73,7 @@ class SignalStats(BaseStats):
 
         See Also
         --------
-        audiotools.filter.a_weighting
+        audiotoolbox.filter.a_weighting
         """
         c_weighted = audio.filter.c_weighting(self.sig)
         return c_weighted.stats.dbspl

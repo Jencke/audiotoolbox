@@ -4,14 +4,14 @@
 Introduction
 ============
 
-**audiotools** is a python package designed to generate and anlyze
+**audiotoolbox** is a python package designed to generate and anlyze
 acoustic stimuli for use in auditory research. It aims to provide an
 easy to use and intuitive interface.
 
 Fluent Interface
 ----------------
 
-The main API of audiotools provides a fluent interface for generating
+The main API of audiotoolbox provides a fluent interface for generating
 and analyzing signals. In a fluent interface, methods are applied
 in-place and the object itself is returend which allowes methods to be
 stacked.
@@ -19,7 +19,7 @@ stacked.
 The Signal class
 ----------------
 
-The audiotools.Signal class is used to work with signals in the time
+The audiotoolbox.Signal class is used to work with signals in the time
 domain. Like all other classes that are used, the Signal class is
 inherited from the numpy.ndarray_ class and thus also inherits all its
 methods. It is also directly compatible with most of the packages in
@@ -84,12 +84,12 @@ time-domain and frequency-domain representation of a signal.
 
 >>> sig = audio.Signal(2, 1, 48000).add_noise()
 >>> print(type(sig))
-<class 'audiotools.oaudio.signal.Signal'>
+<class 'audiotoolbox.oaudio.signal.Signal'>
 >>> fdomain_sig = sig.to_freqdomain()
 >>> print(type(fdomain_sig))
-<class 'audiotools.oaudio.freqdomain_signal.FrequencyDomainSignal'>
+<class 'audiotoolbox.oaudio.freqdomain_signal.FrequencyDomainSignal'>
 
-calling the method ``audiotools.Signal.to_freqdomain()`` returns a
+calling the method ``audiotoolbox.Signal.to_freqdomain()`` returns a
 FrequencyDomainSignal object which contains the FFT transformed
 signal. It is important to note that the object does not directly
 contain the FFT transformed but that all frequency components where

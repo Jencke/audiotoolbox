@@ -5,7 +5,7 @@ from numpy import pi
 from scipy.signal import lfilter
 from math import factorial
 
-from .. import audiotools as audio
+from .. import audiotoolbox as audio
 
 
 def design_gammatone(fc, bw, fs, order=4, attenuation_db="erb"):

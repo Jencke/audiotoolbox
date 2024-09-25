@@ -1,4 +1,4 @@
-"""Function based interface to audiotools."""
+"""Function based interface to audiotoolbox."""
 
 from typing import Literal, Optional
 import numpy as np
@@ -172,7 +172,7 @@ def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1, start_phas
     See Also
     --------
 
-    audiotools.Signal.add_cos_modulator
+    audiotoolbox.Signal.add_cos_modulator
     """
     duration, fs, n_channels = _duration_is_signal(duration, fs)
 
@@ -346,7 +346,7 @@ def generate_noise(duration, fs=None, ntype="white", n_channels=1, seed=None):
 
     See Also
     --------
-    audiotools.Signal.add_noise
+    audiotoolbox.Signal.add_noise
 
     """
     np.random.seed(seed)
@@ -472,13 +472,13 @@ def generate_uncorr_noise(
         Must be convertible to 32 bit unsigned integers.
     bandpass : dict, optional
         Parameters for an bandpass filter, these are passed as arguments to the
-        audiotools.filter.bandpass function
+        audiotoolbox.filter.bandpass function
     lowpass : dict, optional
         Parameters for an lowpass filter, these are passed as arguments to the
-        audiotools.filter.lowpass function
+        audiotoolbox.filter.lowpass function
     highpass : dict, optional
         Parameters for an highpass filter, these are passed as arguments to the
-        audiotools.filter.highpass function
+        audiotoolbox.filter.highpass function
 
     Returns
     -------
@@ -593,7 +593,7 @@ def generate_tone(duration, frequency, fs=None, start_phase=0):
 
     See Also
     --------
-    audiotools.Signal.add_tone
+    audiotoolbox.Signal.add_tone
 
     """
 
@@ -762,7 +762,7 @@ def zeropad(signal, number):
 
     See Also
     --------
-    audiotools.Signal.zeropad
+    audiotoolbox.Signal.zeropad
 
     """
 
@@ -934,10 +934,10 @@ def calc_dbspl(signal):
 
     See Also
     --------
-    audiotools.set_dbspl
-    audiotools.Signal.calc_dbspl
-    audiotools.Signal.set_dbfs
-    audiotools.Signal.calc_dbfs
+    audiotoolbox.set_dbspl
+    audiotoolbox.Signal.calc_dbspl
+    audiotoolbox.Signal.set_dbfs
+    audiotoolbox.Signal.calc_dbfs
 
     """
     p0 = 20e-6
@@ -976,10 +976,10 @@ def set_dbspl(signal, dbspl_val):
 
     See Also
     --------
-    audiotools.calc_dbspl
-    audiotools.Signal.calc_dbspl
-    audiotools.Signal.set_dbfs
-    audiotools.Signal.calc_dbfs
+    audiotoolbox.calc_dbspl
+    audiotoolbox.Signal.calc_dbspl
+    audiotoolbox.Signal.set_dbfs
+    audiotoolbox.Signal.calc_dbfs
 
     """
 
@@ -1034,12 +1034,12 @@ def set_dbfs(signal, dbfs_val, norm="rms"):
 
     See Also
     --------
-    audiotools.set_dbspl
-    audiotools.set_dbfs
-    audiotools.calc_dbfs
-    audiotools.Signal.set_dbspl
-    audiotools.Signal.calc_dbspl
-    audiotools.Signal.calc_dbfs
+    audiotoolbox.set_dbspl
+    audiotoolbox.set_dbfs
+    audiotoolbox.calc_dbfs
+    audiotoolbox.Signal.set_dbspl
+    audiotoolbox.Signal.calc_dbspl
+    audiotoolbox.Signal.calc_dbfs
 
     """
 
@@ -1757,7 +1757,7 @@ def crest_factor(signal, axis=0):
 
     See Also
     --------
-    audiotools.Signal.calc_crest_factor
+    audiotoolbox.Signal.calc_crest_factor
 
     """
     a_effective = np.sqrt(np.mean(signal**2, axis=axis))

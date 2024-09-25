@@ -1,27 +1,27 @@
 import numpy as np
-import audiotools as audio
+import audiotoolbox as audio
 
 
 class BaseSignal(np.ndarray):
-    r""" Basic Signal class inherited by all Signal representations
+    r"""Basic Signal class inherited by all Signal representations"""
 
-    """
     def __new__(cls, n_channels, duration, fs, dtype=float):
 
         n_samples = audio.nsamples(duration, fs)
 
         if not np.ndim(n_channels):  # if channels is only an integer
             if n_channels == 1:
-                obj = super(BaseSignal, cls).__new__(cls, shape=(n_samples),
-                                                     dtype=dtype)
+                obj = super(BaseSignal, cls).__new__(
+                    cls, shape=(n_samples), dtype=dtype
+                )
             else:
-                obj = super(BaseSignal, cls).__new__(cls, shape=(n_samples,
-                                                                 n_channels),
-                                                     dtype=dtype)
+                obj = super(BaseSignal, cls).__new__(
+                    cls, shape=(n_samples, n_channels), dtype=dtype
+                )
         else:
-            obj = super(BaseSignal, cls).__new__(cls, shape=[n_samples] +
-                                                 list(n_channels),
-                                                 dtype=dtype)
+            obj = super(BaseSignal, cls).__new__(
+                cls, shape=[n_samples] + list(n_channels), dtype=dtype
+            )
         obj._fs = fs
         obj.fill(0)
 
@@ -34,7 +34,7 @@ class BaseSignal(np.ndarray):
 
         # If it was called after e.g slicing, copy
         # copy sample rate
-        self._fs = getattr(obj, '_fs', None)
+        self._fs = getattr(obj, "_fs", None)
 
     @property  # getter to handle the sample rates
     def fs(self):
@@ -74,7 +74,7 @@ class BaseSignal(np.ndarray):
 
         Examples
         --------
-        >>> sig = audiotools.Signal((2, 3), 1, 48000).add_noise()
+        >>> sig = audiotoolbox.Signal((2, 3), 1, 48000).add_noise()
         >>> print(np.all(sig.ch[1, 2] is sig[:, 1, 2]))
         True
 
@@ -82,7 +82,7 @@ class BaseSignal(np.ndarray):
         return _chIndexer(self)
 
     def concatenate(self, signal):
-        '''Concatenate another signal or array
+        """Concatenate another signal or array
 
         This method appends another signal to the end of the current
         signal.
@@ -96,9 +96,9 @@ class BaseSignal(np.ndarray):
         --------
         Returns itself
 
-        '''
+        """
         if not isinstance(self.base, type(None)):
-            raise RuntimeError('Can only concatenate to a full signal')
+            raise RuntimeError("Can only concatenate to a full signal")
         else:
             old_n = self.n_samples
             new_n = old_n + signal.n_samples
@@ -124,7 +124,7 @@ class BaseSignal(np.ndarray):
 
         Examples
         --------
-        >>> sig = audiotools.Signal(1, 1, 48000).add_tone(500).multiply(2)
+        >>> sig = audiotoolbox.Signal(1, 1, 48000).add_tone(500).multiply(2)
         >>> print(sig.max())
         2.0
 
@@ -148,7 +148,7 @@ class BaseSignal(np.ndarray):
 
         Examples
         --------
-        >>> sig = audiotools.Signal(1, 1, 48000).add_tone(500).add(2)
+        >>> sig = audiotoolbox.Signal(1, 1, 48000).add_tone(500).add(2)
         >>> print(sig.mean())
         2.0
 
@@ -158,7 +158,7 @@ class BaseSignal(np.ndarray):
         return self
 
     def abs(self):
-        """ Absolute value
+        """Absolute value
 
         Calculates the absolute value or modulus of all values of the signal
 
@@ -172,24 +172,30 @@ class BaseSignal(np.ndarray):
 
     def summary(self):
         if self.duration < 1:
-            duration = f'{self.duration * 1000:2}ms'
+            duration = f"{self.duration * 1000:2}ms"
         else:
-            duration = f'{self.duration:2}s'
+            duration = f"{self.duration:2}s"
 
         if self.fs < 1000:
             fs = f"{self.fs}Hz"
         else:
             fs = f"{self.fs / 1000:.1f}kHz"
 
-        samp = f'{self.n_samples} samples'
+        samp = f"{self.n_samples} samples"
 
-        chan = f'{self.n_channels} channel'
+        chan = f"{self.n_channels} channel"
 
-        repr = (duration
-                + ' @ ' + fs
-                + " = " + samp
-                + ' in ' + chan
-                + ' | dtype: ' + str(self.dtype))
+        repr = (
+            duration
+            + " @ "
+            + fs
+            + " = "
+            + samp
+            + " in "
+            + chan
+            + " | dtype: "
+            + str(self.dtype)
+        )
         return repr
 
 
@@ -204,12 +210,11 @@ class _chIndexer(object):
     def __init__(self, obj):
         self.idx_obj = obj
 
-
     def __getitem__(self, key):
 
         if not isinstance(key, tuple):
             # If only one index is handed over, convert key to tuple
-            key = (key, )
+            key = (key,)
 
         if np.ndim(self.idx_obj) == 1:
             # In case, it's only a 1D array, allways return the whole
@@ -217,7 +222,7 @@ class _chIndexer(object):
             idx = slice(None, None, None)
         else:
             # return only the slice
-            idx = (slice(None, None, None), ) + key
+            idx = (slice(None, None, None),) + key
 
         return self.idx_obj[idx]
 
@@ -225,7 +230,7 @@ class _chIndexer(object):
 
         if not isinstance(key, tuple):
             # If only one index is handed over, convert key to tuple
-            key = (key, )
+            key = (key,)
 
         if np.ndim(self.idx_obj) == 1:
             # In case, it's only a 1D array, allways return the whole
@@ -233,7 +238,7 @@ class _chIndexer(object):
             idx = slice(None, None, None)
         else:
             # return only the slice
-            idx = (slice(None, None, None), ) + key
+            idx = (slice(None, None, None),) + key
 
         self.idx_obj[idx] = value
         return self.idx_obj

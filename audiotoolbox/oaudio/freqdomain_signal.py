@@ -1,10 +1,11 @@
 from typing import Type, cast, Union
 
 import numpy as np
-import audiotools as audio
+import audiotoolbox as audio
 
 from . import base_signal
 from .stats import FreqDomainStats
+
 
 def _copy_to_dim(array, dim):
     if np.ndim(dim) == 0:
@@ -38,11 +39,13 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
 
     """
 
-    def __new__(cls: Type[base_signal.BaseSignal],
-                n_channels: Union[int, tuple, list],
-                duration: float,
-                fs: int,
-                dtype=complex):
+    def __new__(
+        cls: Type[base_signal.BaseSignal],
+        n_channels: Union[int, tuple, list],
+        duration: float,
+        fs: int,
+        dtype=complex,
+    ):
 
         obj = super().__new__(cls, n_channels, duration, fs, dtype)
         obj.stats = FreqDomainStats(obj)
@@ -57,7 +60,7 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
         The frequency axis in Hz : numpy.ndarray
 
         """
-        freq = np.fft.fftfreq(self.n_samples, 1. / self.fs)
+        freq = np.fft.fftfreq(self.n_samples, 1.0 / self.fs)
         return freq
 
     @property
@@ -81,13 +84,14 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
 
         """
         return np.angle(self)
+
     angle = phase
 
     @property
     def mag(self):
         r"""Returns the magnitudes of the frequency components
 
-        equivalent to :meth:`audiotools.FrequencyDomainSignal.abs()`
+        equivalent to :meth:`audiotoolbox.FrequencyDomainSignal.abs()`
 
         Returns
         -------
@@ -117,16 +121,16 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
 
         Also See
         --------
-        audiotools.Signal.delay
+        audiotoolbox.Signal.delay
 
         """
 
-        phases = - self.omega * time
+        phases = -self.omega * time
 
         # fix the last bin in case of odd samples in order to keep the
         # tranformed signal real
         if not self.n_samples % 2:
-            phases[self.n_samples//2] = 0
+            phases[self.n_samples // 2] = 0
 
         shift_factor = np.exp(1j * phases)
         shift_factor = _copy_to_dim(shift_factor, self.shape[1:])
@@ -157,19 +161,18 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
 
         Also See
         --------
-        audiotools.Signal.phase_shift
+        audiotoolbox.Signal.phase_shift
 
         """
 
-
-        shift_val = - 1.0j * phase * np.sign(self.freq)
+        shift_val = -1.0j * phase * np.sign(self.freq)
         shift_val = _copy_to_dim(shift_val, self.shape[1:])
 
         # if even number of samples, do not apply phase shift to the overhanging
         # negative frequency bin as this results in a non real-valued inverse
         # FFT
         if self.n_samples % 2 == 0:
-            shift_val[self.n_samples//2] = 0
+            shift_val[self.n_samples // 2] = 0
 
         self *= np.exp(shift_val)
         return self
@@ -185,7 +188,7 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
         Convert to timedomain by means of inverse DFT. If the complex
         part after DFT is small (< 222e-16), it is neglected. This
         method is not applied in-place but a new
-        :meth:'audiotools.Signal' object is returned
+        :meth:'audiotoolbox.Signal' object is returned
 
         Returns:
         --------
@@ -198,8 +201,7 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
         fsig *= fsig.n_samples
         wv = np.fft.ifft(fsig, axis=0)
         wv = np.real_if_close(wv)
-        signal = audio.Signal(fsig.n_channels, fsig.duration,
-                              fsig.fs, dtype=wv.dtype)
+        signal = audio.Signal(fsig.n_channels, fsig.duration, fsig.fs, dtype=wv.dtype)
         signal[:] = wv
         return signal
 
@@ -223,10 +225,10 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
             # Do not change the nyquist bin or the offset
             h[0] = h[nsamp // 2] = 1
             # double all other components
-            h[1:nsamp // 2] = 2
+            h[1 : nsamp // 2] = 2
         else:
             h[0] = 1
-            h[1:(nsamp + 1) // 2] = 2
+            h[1 : (nsamp + 1) // 2] = 2
 
         if self.ndim > 1:
             ind = [np.newaxis] * self.ndim

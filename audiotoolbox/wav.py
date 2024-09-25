@@ -1,6 +1,6 @@
 import numpy as np
 import soundfile
-import audiotools as audio
+import audiotoolbox as audio
 from typing import Optional
 
 
@@ -53,12 +53,12 @@ def writefile(filename, signal, fs, **kwargs):
 
     Per default, the major format to be stored is determined by the file
     extension. E.g. a .wav ending indicates a WAV (Microsoft) file. See
-    `audiotools.wav.available_formats` for a list of availible formats and
+    `audiotoolbox.wav.available_formats` for a list of availible formats and
     endings. The major format can be forced by passing a `format` argument.
 
     If not specifically designed, the subtype (such as Signed 32 bit PCM) is
     chosen as the default for a given format. Avilible subtypes can be checked
-    through the `audiotools.wav.available_subtypes` function and forced by
+    through the `audiotoolbox.wav.available_subtypes` function and forced by
     passing a `subtype` argument.
 
 

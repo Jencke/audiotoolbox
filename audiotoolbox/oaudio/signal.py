@@ -5,7 +5,7 @@ from typing import Type, cast, Union, Self, Literal
 import numpy as np
 
 from . import base_signal
-from .. import audiotools as audio, wav, filter as filt
+from .. import audiotoolbox as audio, wav, filter as filt
 from .freqdomain_signal import FrequencyDomainSignal
 from .stats import SignalStats
 from scipy.signal import fftconvolve
@@ -34,7 +34,7 @@ class Signal(base_signal.BaseSignal):
     Create a 1 second long signal with two channels at a sampling rate
     of 48 kHz
 
-    >>> sig = audiotools.Signal(2, 1, 48000)
+    >>> sig = audiotoolbox.Signal(2, 1, 48000)
     >>> print(sig.shape)
     (4800, 2)
 
@@ -104,7 +104,7 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.generate_tone
+        audiotoolbox.generate_tone
 
         """
         wv = audio.generate_tone(self.duration, frequency, self.fs, start_phase)
@@ -149,9 +149,9 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.generate_noise
-        audiotools.generate_uncorr_noise
-        audiotools.Signal.add_uncorr_noise
+        audiotoolbox.generate_noise
+        audiotoolbox.generate_uncorr_noise
+        audiotoolbox.Signal.add_uncorr_noise
         """
         noise = audio.generate_noise(
             self.duration, self.fs, ntype=ntype, n_channels=1, seed=seed
@@ -204,13 +204,13 @@ class Signal(base_signal.BaseSignal):
             Must be convertible to 32 bit unsigned integers.
         bandpass : dict, optional
             Parameters for an bandpass filter, these are passed as arguments to
-            the audiotools.filter.bandpass function
+            the audiotoolbox.filter.bandpass function
         lowpass : dict, optional
             Parameters for an lowpass filter, these are passed as arguments to
-            the audiotools.filter.lowpass function
+            the audiotoolbox.filter.lowpass function
         highpass : dict, optional
             Parameters for an highpass filter, these are passed as arguments to
-            the audiotools.filter.highpass function
+            the audiotoolbox.filter.highpass function
 
         Returns
         -------
@@ -218,9 +218,9 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.generate_noise
-        audiotools.generate_uncorr_noise
-        audiotools.Signal.add_noise
+        audiotoolbox.generate_noise
+        audiotoolbox.generate_uncorr_noise
+        audiotoolbox.Signal.add_noise
 
         References
         ----------
@@ -273,10 +273,10 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.set_dbspl
-        audiotools.Signal.calc_dbspl
-        audiotools.Signal.set_dbfs
-        audiotools.Signal.calc_dbfs
+        audiotoolbox.set_dbspl
+        audiotoolbox.Signal.calc_dbspl
+        audiotoolbox.Signal.set_dbfs
+        audiotoolbox.Signal.calc_dbfs
 
         """
         res = audio.set_dbspl(self, dbspl)
@@ -306,12 +306,12 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.set_dbspl
-        audiotools.set_dbfs
-        audiotools.calc_dbfs
-        audiotools.Signal.set_dbspl
-        audiotools.Signal.calc_dbspl
-        audiotools.Signal.calc_dbfs
+        audiotoolbox.set_dbspl
+        audiotoolbox.set_dbfs
+        audiotoolbox.calc_dbfs
+        audiotoolbox.Signal.set_dbspl
+        audiotoolbox.Signal.calc_dbspl
+        audiotoolbox.Signal.calc_dbfs
 
         """
         nwv = audio.set_dbfs(self, dbfs)
@@ -352,9 +352,9 @@ class Signal(base_signal.BaseSignal):
         For additional filter parameters and detailed description see
         the respective implementations:
 
-        - :meth:`audiotools.filter.brickwall`
-        - :meth:`audiotools.filter.gammatone`
-        - :meth:`audiotools.filter.butterworth`
+        - :meth:`audiotoolbox.filter.brickwall`
+        - :meth:`audiotoolbox.filter.gammatone`
+        - :meth:`audiotoolbox.filter.butterworth`
 
         Parameters
         ----------
@@ -374,9 +374,9 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.filter.brickwall
-        audiotools.filter.gammatone
-        audiotools.filter.butterworth
+        audiotoolbox.filter.brickwall
+        audiotoolbox.filter.gammatone
+        audiotoolbox.filter.butterworth
         """
         # Default gammatone to real valued implementation
         if filter_type == "gammatone":
@@ -399,7 +399,7 @@ class Signal(base_signal.BaseSignal):
         """Apply a lowpass filter to the Signal.
 
         This function provieds a unified interface to all lowpass
-        filters implemented in audiotools.
+        filters implemented in audiotoolbox.
 
         - brickwall: A 'optimal' brickwall filter
         - butter: A butterworth filter
@@ -407,8 +407,8 @@ class Signal(base_signal.BaseSignal):
         For additional filter parameters and detailed description see
         the respective implementations:
 
-        - :meth:`audiotools.filter.brickwall`
-        - :meth:`audiotools.filter.butterworth`
+        - :meth:`audiotoolbox.filter.brickwall`
+        - :meth:`audiotoolbox.filter.butterworth`
 
         Parameters
         ----------
@@ -431,8 +431,8 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.filter.brickwall
-        audiotools.filter.butterworth
+        audiotoolbox.filter.brickwall
+        audiotoolbox.filter.butterworth
 
         """
         filt_signal = filt.lowpass(self, f_cut, filter_type, **kwargs)
@@ -444,7 +444,7 @@ class Signal(base_signal.BaseSignal):
         """Apply a highpass filter to the Signal.
 
         This function provieds a unified interface to all highpass
-        filters implemented in audiotools.
+        filters implemented in audiotoolbox.
 
         - brickwall: A 'optimal' brickwall filter
         - butter: A butterworth filter
@@ -452,8 +452,8 @@ class Signal(base_signal.BaseSignal):
         For additional filter parameters and detailed description see
         the respective implementations:
 
-        - :meth:`audiotools.filter.brickwall`
-        - :meth:`audiotools.filter.butterworth`
+        - :meth:`audiotoolbox.filter.brickwall`
+        - :meth:`audiotoolbox.filter.butterworth`
 
         Parameters
         ----------
@@ -476,8 +476,8 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.filter.brickwall
-        audiotools.filter.butterworth
+        audiotoolbox.filter.brickwall
+        audiotoolbox.filter.butterworth
 
         """
         filt_signal = filt.highpass(self, f_cut, filter_type, **kwargs)
@@ -531,7 +531,7 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.zeropad
+        audiotoolbox.zeropad
 
         """
         # Only one number or duration must be stated
@@ -568,8 +568,8 @@ class Signal(base_signal.BaseSignal):
         onto the signal. for mor information about the indiviual
         window functions refer to the implementations:
 
-        - cos: A rasied cosine window :meth:`audiotools.cosine_fade_window`
-        - gauss: A gaussian window :meth:`audiotools.gaussian_fade_window`
+        - cos: A rasied cosine window :meth:`audiotoolbox.cosine_fade_window`
+        - gauss: A gaussian window :meth:`audiotoolbox.gaussian_fade_window`
 
 
         Parameters
@@ -585,8 +585,8 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.gaussian_fade_window
-        audiotools.cosine_fade_window
+        audiotoolbox.gaussian_fade_window
+        audiotoolbox.cosine_fade_window
 
         """
         if type == "gauss":
@@ -622,7 +622,7 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.cos_amp_modulator
+        audiotoolbox.cos_amp_modulator
 
         """
         mod = audio.cos_amp_modulator(
@@ -647,7 +647,7 @@ class Signal(base_signal.BaseSignal):
         signal is shifted by applyint a FFT transform, and phase
         shifting each frequency accoring to the delay and applying an
         inverse transform. This is identical to using the
-        :meth:'audiotools.FrequencyDomainSignal.time_shift'
+        :meth:'audiotoolbox.FrequencyDomainSignal.time_shift'
         method. When using the method 'sample', the signal is time
         delayed by circular shifting the signal by the number of
         samples that is closest to delay.
@@ -805,7 +805,7 @@ class Signal(base_signal.BaseSignal):
           The filename that should be used.
         **kwargs
           Extra arguments such as format and subtype to be passed to the
-          audiotools.wav.writefile function
+          audiotoolbox.wav.writefile function
         """
         wav.writefile(filename, self, self.fs, **kwargs)
 
@@ -816,7 +816,7 @@ class Signal(base_signal.BaseSignal):
         signal.
 
         As opposed to most methods, this conversion is not in-place
-        but a new :meth:`audiotools.FrequencyDomainSignal` object is
+        but a new :meth:`audiotoolbox.FrequencyDomainSignal` object is
         returned
 
         Returns
