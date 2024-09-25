@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="audiotoolbox",
-    version="0.68",
+    version="0.70",
     author="Jörg Encke",
     author_email="joerg.encke@posteo.de",
     description="Toolbox for generating and working with audio signals",
