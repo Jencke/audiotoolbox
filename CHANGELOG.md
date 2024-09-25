@@ -1,6 +1,5 @@
-
-develop
- - Renaming everything to audiotoolbox
+0.68 -> 0.70
+ - Renaming the library to audiotoolbox
  - Started refracturing structure for auditory scales
  - Implemented a crossfade function
  - Added a convolve method to the Signal class
