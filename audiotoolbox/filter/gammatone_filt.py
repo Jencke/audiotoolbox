@@ -3,8 +3,9 @@ import math
 import numpy as np
 from numpy import pi
 from scipy.signal import lfilter
+from math import factorial
 
-from .. import audiotools as audio
+from .. import audiotoolbox as audio
 
 
 def design_gammatone(fc, bw, fs, order=4, attenuation_db="erb"):
@@ -70,9 +71,9 @@ def design_gammatone(fc, bw, fs, order=4, attenuation_db="erb"):
 def erb_to_3db(equivalent_rect_bw: float, order: int) -> float:
     """ERB to -3db bw conversion for gammatone filter of given order."""
     c = 2 * np.sqrt(2 ** (1 / order) - 1)
-    alpha = (
-        np.pi * math.factorial(2 * order - 2) * 2.0 ** (2 - 2 * order)
-    ) / math.factorial(order - 1) ** 2
+    alpha = (np.pi * factorial(2 * order - 2) * 2.0 ** (2 - 2 * order)) / factorial(
+        order - 1
+    ) ** 2
     bw = c / alpha * equivalent_rect_bw
     return bw
 

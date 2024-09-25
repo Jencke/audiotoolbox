@@ -18,14 +18,14 @@ scale : str
   String indicating the scale that should be used possible values:
   'cbw' or 'erb'. (default='cbw')
 
-    ..[1] Zwicker, E., & Terhardt, E. (1980). Analytical expressions for
-          critical-band rate and critical bandwidth as a function of
-          frequency. The Journal of the Acoustical Society of America,
-          68(5), 1523-1525.
+    ..[Zwicker1980] Zwicker, E., & Terhardt, E. (1980). Analytical expressions
+          for critical-band rate and critical bandwidth as a function of
+          frequency. The Journal of the Acoustical Society of America, 68(5),
+          1523-1525.
 
-    ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of auditory
-          filter shapes from notched-noise data. Hearing Research, 47(1-2),
-          103-138.
+    ..[Glasberg1990] Glasberg, B. R., & Moore, B. C. (1990). Derivation of
+          auditory filter shapes from notched-noise data. Hearing Research,
+          47(1-2), 103-138.
 
     '''
 

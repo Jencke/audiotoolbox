@@ -1,5 +1,6 @@
-"""Function based interface to audiotools."""
+"""Function based interface to audiotoolbox."""
 
+from typing import Literal, Optional
 import numpy as np
 from numpy import pi
 from scipy.interpolate import interp1d
@@ -55,12 +56,12 @@ def _duration_is_signal(duration, fs=None, n_channels=None):
     return real_duration, real_fs, real_nch
 
 
-def from_file(filename):
+def from_file(filename: str, start: int = 0, stop: Optional[int] = None) -> Signal:
     """Read signal from wav file"""
     from .oaudio import Signal
     from .wav import readfile
 
-    wv, fs = readfile(filename)
+    wv, fs = readfile(filename, start=start, stop=stop)
 
     if wv.ndim > 1:
         n_channels = wv.shape[1]
@@ -171,7 +172,7 @@ def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1, start_phas
     See Also
     --------
 
-    audiotools.Signal.add_cos_modulator
+    audiotoolbox.Signal.add_cos_modulator
     """
     duration, fs, n_channels = _duration_is_signal(duration, fs)
 
@@ -345,7 +346,7 @@ def generate_noise(duration, fs=None, ntype="white", n_channels=1, seed=None):
 
     See Also
     --------
-    audiotools.Signal.add_noise
+    audiotoolbox.Signal.add_noise
 
     """
     np.random.seed(seed)
@@ -471,13 +472,13 @@ def generate_uncorr_noise(
         Must be convertible to 32 bit unsigned integers.
     bandpass : dict, optional
         Parameters for an bandpass filter, these are passed as arguments to the
-        audiotools.filter.bandpass function
+        audiotoolbox.filter.bandpass function
     lowpass : dict, optional
         Parameters for an lowpass filter, these are passed as arguments to the
-        audiotools.filter.lowpass function
+        audiotoolbox.filter.lowpass function
     highpass : dict, optional
         Parameters for an highpass filter, these are passed as arguments to the
-        audiotools.filter.highpass function
+        audiotoolbox.filter.highpass function
 
     Returns
     -------
@@ -592,7 +593,7 @@ def generate_tone(duration, frequency, fs=None, start_phase=0):
 
     See Also
     --------
-    audiotools.Signal.add_tone
+    audiotoolbox.Signal.add_tone
 
     """
 
@@ -761,7 +762,7 @@ def zeropad(signal, number):
 
     See Also
     --------
-    audiotools.Signal.zeropad
+    audiotoolbox.Signal.zeropad
 
     """
 
@@ -933,10 +934,10 @@ def calc_dbspl(signal):
 
     See Also
     --------
-    audiotools.set_dbspl
-    audiotools.Signal.calc_dbspl
-    audiotools.Signal.set_dbfs
-    audiotools.Signal.calc_dbfs
+    audiotoolbox.set_dbspl
+    audiotoolbox.Signal.calc_dbspl
+    audiotoolbox.Signal.set_dbfs
+    audiotoolbox.Signal.calc_dbfs
 
     """
     p0 = 20e-6
@@ -975,10 +976,10 @@ def set_dbspl(signal, dbspl_val):
 
     See Also
     --------
-    audiotools.calc_dbspl
-    audiotools.Signal.calc_dbspl
-    audiotools.Signal.set_dbfs
-    audiotools.Signal.calc_dbfs
+    audiotoolbox.calc_dbspl
+    audiotoolbox.Signal.calc_dbspl
+    audiotoolbox.Signal.set_dbfs
+    audiotoolbox.Signal.calc_dbfs
 
     """
 
@@ -1033,12 +1034,12 @@ def set_dbfs(signal, dbfs_val, norm="rms"):
 
     See Also
     --------
-    audiotools.set_dbspl
-    audiotools.set_dbfs
-    audiotools.calc_dbfs
-    audiotools.Signal.set_dbspl
-    audiotools.Signal.calc_dbspl
-    audiotools.Signal.calc_dbfs
+    audiotoolbox.set_dbspl
+    audiotoolbox.set_dbfs
+    audiotoolbox.calc_dbfs
+    audiotoolbox.Signal.set_dbspl
+    audiotoolbox.Signal.calc_dbspl
+    audiotoolbox.Signal.calc_dbfs
 
     """
 
@@ -1756,7 +1757,7 @@ def crest_factor(signal, axis=0):
 
     See Also
     --------
-    audiotools.Signal.calc_crest_factor
+    audiotoolbox.Signal.calc_crest_factor
 
     """
     a_effective = np.sqrt(np.mean(signal**2, axis=axis))
@@ -1869,3 +1870,100 @@ def cmplx_crosscorr(signal):
         coh.time_offset = -coh.n_samples // 2 * 1 / coh.fs
 
     return coh
+
+
+def crossfade(
+    sig1: Signal,
+    sig2: Signal,
+    fade_duration: float,
+    fade_type: Literal["linear", "cos"] = "linear",
+) -> Signal:
+    """Crossfade two Signals
+
+    Apply a crossfade between the end of the first and the beginning of the
+    second signal.
+
+    Parameters
+    ----------
+    sig1 : Signal
+        First signal
+    sig2 : Signal
+        Second signal
+    fade_duration : float
+        duration of the fade in seconds
+    fade_type : Literal["linear", "cos"]
+        Type of the crossfade
+
+    Returns
+    -------
+    Signal
+        The resulting signal.
+    """
+    if sig1.n_channels != sig2.n_channels:
+        raise (ValueError("The two signals need to match in number of channels."))
+    if sig1.fs != sig2.fs:
+        raise (ValueError("The sample rate of the two signals has to match."))
+    fs = sig1.fs
+    n_channels = sig1.n_channels
+
+    # sig1 = sig1.copy()
+    # sig2 = sig2.copy()
+
+    fade = Signal(1, fade_duration, fs)
+    if fade_type == "cos":
+        fade[:] = np.cos(np.pi / 2 * fade.time / fade_duration)
+    elif fade_type == "linear":
+        fade[:] = (fade_duration - fade.time) / fade_duration
+    else:
+        raise (ValueError("fade_type not implemented"))
+
+    n_out = sig1.n_samples + sig2.n_samples - fade.n_samples
+    out_duration = n_out / fs
+    out_sig = Signal((2,) + tuple(np.atleast_1d(n_channels)), out_duration, fs)
+
+    out_sig[: sig1.n_samples, 0] = sig1
+    out_sig[-sig2.n_samples :, 1] = sig2
+
+    fade_s = sig1.n_samples - fade.n_samples
+    fade_e = fade_s + fade.n_samples
+
+    out_sig[fade_s:fade_e, 0] *= _copy_to_dim(fade, n_channels)
+    out_sig[fade_s:fade_e, 1] *= _copy_to_dim(fade[::-1], n_channels)
+
+    out_sig = out_sig.sum(axis=1)
+    return out_sig  # sig1 + sig2
+
+
+def _get_dim_overlap(dim1, dim2):
+    """
+    Calculates the number of matching elements from the end of dim1 and
+    the beginning of dim2.
+
+    Parameters
+    ----------
+    dim1 : tuple or list
+        The first sequence of elements.
+    dim2 : tuple or list
+        The second sequence of elements.
+
+    Returns
+    -------
+    int
+        The maximum number of consecutive elements that match between the
+        end of `dim1` and the beginning of `dim2`. If there are no matching
+        elements, returns 0.
+
+    Examples
+    --------
+    >>> get_dim_overlap((1, 2, 3, 4), (3, 4, 5))
+    2
+    >>> get_dim_overlap((8, 9), (1, 2, 3))
+    0
+    """
+    dim1 = tuple(dim1)
+    dim2 = tuple(dim2)
+    max_overlap = min(len(dim1), len(dim2))
+    for overlap_length in range(max_overlap, 0, -1):
+        if dim1[-overlap_length:] == dim2[:overlap_length]:
+            return overlap_length
+    return 0

@@ -1,5 +1,5 @@
-from ... import audiotools as audio
-from . filterbank import create_filterbank
+from ... import audiotoolbox as audio
+from .filterbank import create_filterbank
 
 
 def auditory_gamma_bank(fs, flow=16, fhigh=16000, step=1, **kwargs):
@@ -33,7 +33,7 @@ def auditory_gamma_bank(fs, flow=16, fhigh=16000, step=1, **kwargs):
         GammaToneBank : The filterbank.
 
     """
-    fc = audio.freqarange(flow, fhigh, step=step, scale='erb')
-    bw = audio.calc_bandwidth(fc, 'erb')
-    fbank = create_filterbank(fc, bw, 'gammatone', fs=fs, **kwargs)
+    fc = audio.freqarange(flow, fhigh, step=step, scale="erb")
+    bw = audio.calc_bandwidth(fc, "erb")
+    fbank = create_filterbank(fc, bw, "gammatone", fs=fs, **kwargs)
     return fbank

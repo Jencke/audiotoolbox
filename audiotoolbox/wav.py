@@ -1,6 +1,7 @@
 import numpy as np
 import soundfile
-import audiotools as audio
+import audiotoolbox as audio
+from typing import Optional
 
 
 def readwav(filename):
@@ -14,7 +15,13 @@ def writewav(filename, signal, fs):
     writefile(filename, signal, fs)
 
 
-def readfile(filename):
+def info(filename: str) -> soundfile._SoundFileInfo:
+    """Returns an object with information about a `SoundFile`."""
+    info = soundfile.info(filename)
+    return info
+
+
+def readfile(filename: str, start: int = 0, stop: Optional[int] = None):
     """Read audiofile using libsndfile.
 
     Read an audiofile using libsndfile through the soundfile python library.
@@ -23,6 +30,10 @@ def readfile(filename):
     ----------
     filename : str
        The path to the file.
+    start : int (optional)
+      The first sample to read (default=0)
+    stop : int (optional)
+      The last sample to read, None reads the whole file (default=None)
 
     Returns
     -------
@@ -31,7 +42,7 @@ def readfile(filename):
     fs : int
       The sampling frequency
     """
-    sig_array, fs = soundfile.read(filename)
+    sig_array, fs = soundfile.read(filename, start=start, stop=stop)
     return sig_array, fs
 
 
@@ -42,12 +53,12 @@ def writefile(filename, signal, fs, **kwargs):
 
     Per default, the major format to be stored is determined by the file
     extension. E.g. a .wav ending indicates a WAV (Microsoft) file. See
-    `audiotools.wav.available_formats` for a list of availible formats and
+    `audiotoolbox.wav.available_formats` for a list of availible formats and
     endings. The major format can be forced by passing a `format` argument.
 
     If not specifically designed, the subtype (such as Signed 32 bit PCM) is
     chosen as the default for a given format. Avilible subtypes can be checked
-    through the `audiotools.wav.available_subtypes` function and forced by
+    through the `audiotoolbox.wav.available_subtypes` function and forced by
     passing a `subtype` argument.
 
 
@@ -63,6 +74,7 @@ def writefile(filename, signal, fs, **kwargs):
       Other parameters directly passed to the `soundfile.write` function
 
     """
+
     soundfile.write(file=filename, data=signal, samplerate=fs, **kwargs)
 
 

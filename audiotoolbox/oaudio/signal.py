@@ -1,13 +1,14 @@
 """Definition for the Signal class."""
 
-from typing import Type, cast, Union
+from typing import Type, cast, Union, Self, Literal
 
 import numpy as np
 
 from . import base_signal
-from .. import audiotools as audio, wav, filter as filt
+from .. import audiotoolbox as audio, wav, filter as filt
 from .freqdomain_signal import FrequencyDomainSignal
 from .stats import SignalStats
+from scipy.signal import fftconvolve
 
 
 class Signal(base_signal.BaseSignal):
@@ -33,17 +34,19 @@ class Signal(base_signal.BaseSignal):
     Create a 1 second long signal with two channels at a sampling rate
     of 48 kHz
 
-    >>> sig = audiotools.Signal(2, 1, 48000)
+    >>> sig = audiotoolbox.Signal(2, 1, 48000)
     >>> print(sig.shape)
     (4800, 2)
 
     """
 
-    def __new__(cls: Type[base_signal.BaseSignal],
-                n_channels: Union[int, tuple, list],
-                duration: float,
-                fs: int,
-                dtype=float):
+    def __new__(
+        cls: Type[base_signal.BaseSignal],
+        n_channels: Union[int, tuple, list],
+        duration: float,
+        fs: int,
+        dtype=float,
+    ):
         """Create new objects."""
         obj = super().__new__(cls, n_channels, duration, fs, dtype)
         obj.stats = SignalStats(obj)
@@ -63,7 +66,7 @@ class Signal(base_signal.BaseSignal):
             self.time_offset = 0
         else:
             # When copying or slicing
-            self.time_offset = getattr(obj, 'time_offset', None)
+            self.time_offset = getattr(obj, "time_offset", None)
             self.stats = SignalStats(self)
 
         return obj
@@ -101,13 +104,10 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.generate_tone
+        audiotoolbox.generate_tone
 
         """
-        wv = audio.generate_tone(self.duration,
-                                 frequency,
-                                 self.fs,
-                                 start_phase)
+        wv = audio.generate_tone(self.duration, frequency, self.fs, start_phase)
 
         # If multiple channels are defined, stack them.
         # if self.n_channels > 1:
@@ -116,7 +116,7 @@ class Signal(base_signal.BaseSignal):
 
         return self
 
-    def add_noise(self, ntype='white', variance=1, seed=None):
+    def add_noise(self, ntype="white", variance=1, seed=None):
         r"""Add uncorrelated noise to the signal.
 
         add gaussian noise with a defined variance and different
@@ -149,19 +149,27 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.generate_noise
-        audiotools.generate_uncorr_noise
-        audiotools.Signal.add_uncorr_noise
+        audiotoolbox.generate_noise
+        audiotoolbox.generate_uncorr_noise
+        audiotoolbox.Signal.add_uncorr_noise
         """
-        noise = audio.generate_noise(self.duration, self.fs,
-                                     ntype=ntype, n_channels=1,
-                                     seed=seed)
+        noise = audio.generate_noise(
+            self.duration, self.fs, ntype=ntype, n_channels=1, seed=seed
+        )
 
         self[:] = (self.T + noise.T * np.sqrt(variance)).T
         return self
 
-    def add_uncorr_noise(self, corr=0, variance=1, ntype='white', seed=None,
-                         bandpass=None, highpass=None, lowpass=None):
+    def add_uncorr_noise(
+        self,
+        corr=0,
+        variance=1,
+        ntype="white",
+        seed=None,
+        bandpass=None,
+        highpass=None,
+        lowpass=None,
+    ):
         r"""Add partly uncorrelated noise.
 
         This function adds partly uncorrelated noise using the N+1
@@ -196,13 +204,13 @@ class Signal(base_signal.BaseSignal):
             Must be convertible to 32 bit unsigned integers.
         bandpass : dict, optional
             Parameters for an bandpass filter, these are passed as arguments to
-            the audiotools.filter.bandpass function
+            the audiotoolbox.filter.bandpass function
         lowpass : dict, optional
             Parameters for an lowpass filter, these are passed as arguments to
-            the audiotools.filter.lowpass function
+            the audiotoolbox.filter.lowpass function
         highpass : dict, optional
             Parameters for an highpass filter, these are passed as arguments to
-            the audiotools.filter.highpass function
+            the audiotoolbox.filter.highpass function
 
         Returns
         -------
@@ -210,9 +218,9 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.generate_noise
-        audiotools.generate_uncorr_noise
-        audiotools.Signal.add_noise
+        audiotoolbox.generate_noise
+        audiotoolbox.generate_uncorr_noise
+        audiotoolbox.Signal.add_noise
 
         References
         ----------
@@ -222,15 +230,17 @@ class Signal(base_signal.BaseSignal):
           292–301. http://dx.doi.org/10.1121/1.3596475
 
         """
-        noise = audio.generate_uncorr_noise(duration=self.duration,
-                                            fs=self.fs,
-                                            n_channels=self.n_channels,
-                                            ntype=ntype,
-                                            corr=corr,
-                                            seed=seed,
-                                            bandpass=bandpass,
-                                            highpass=highpass,
-                                            lowpass=lowpass)
+        noise = audio.generate_uncorr_noise(
+            duration=self.duration,
+            fs=self.fs,
+            n_channels=self.n_channels,
+            ntype=ntype,
+            corr=corr,
+            seed=seed,
+            bandpass=bandpass,
+            highpass=highpass,
+            lowpass=lowpass,
+        )
 
         self += noise * np.sqrt(variance)
 
@@ -263,17 +273,16 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.set_dbspl
-        audiotools.Signal.calc_dbspl
-        audiotools.Signal.set_dbfs
-        audiotools.Signal.calc_dbfs
+        audiotoolbox.set_dbspl
+        audiotoolbox.Signal.calc_dbspl
+        audiotoolbox.Signal.set_dbfs
+        audiotoolbox.Signal.calc_dbfs
 
         """
         res = audio.set_dbspl(self, dbspl)
         self[:] = res[:]
 
         return self
-
 
     def set_dbfs(self, dbfs):
         r"""Normalize the signal to a given dBFS RMS value.
@@ -297,12 +306,12 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.set_dbspl
-        audiotools.set_dbfs
-        audiotools.calc_dbfs
-        audiotools.Signal.set_dbspl
-        audiotools.Signal.calc_dbspl
-        audiotools.Signal.calc_dbfs
+        audiotoolbox.set_dbspl
+        audiotoolbox.set_dbfs
+        audiotoolbox.calc_dbfs
+        audiotoolbox.Signal.set_dbspl
+        audiotoolbox.Signal.calc_dbspl
+        audiotoolbox.Signal.calc_dbfs
 
         """
         nwv = audio.set_dbfs(self, dbfs)
@@ -322,9 +331,11 @@ class Signal(base_signal.BaseSignal):
         float : The dBFS RMS value
 
         """
-        raise PendingDeprecationWarning('calc_dbfs method Will be removed'
-                                        + ' in the future. Use stats.dbfs'
-                                        + ' instead')
+        raise PendingDeprecationWarning(
+            "calc_dbfs method Will be removed"
+            + " in the future. Use stats.dbfs"
+            + " instead"
+        )
         dbfs = audio.calc_dbfs(self)
         return dbfs
 
@@ -341,9 +352,9 @@ class Signal(base_signal.BaseSignal):
         For additional filter parameters and detailed description see
         the respective implementations:
 
-        - :meth:`audiotools.filter.brickwall`
-        - :meth:`audiotools.filter.gammatone`
-        - :meth:`audiotools.filter.butterworth`
+        - :meth:`audiotoolbox.filter.brickwall`
+        - :meth:`audiotoolbox.filter.gammatone`
+        - :meth:`audiotoolbox.filter.butterworth`
 
         Parameters
         ----------
@@ -363,14 +374,14 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.filter.brickwall
-        audiotools.filter.gammatone
-        audiotools.filter.butterworth
+        audiotoolbox.filter.brickwall
+        audiotoolbox.filter.gammatone
+        audiotoolbox.filter.butterworth
         """
         # Default gammatone to real valued implementation
-        if filter_type == 'gammatone':
-            if 'return_complex' not in kwargs:
-                kwargs['return_complex'] = False
+        if filter_type == "gammatone":
+            if "return_complex" not in kwargs:
+                kwargs["return_complex"] = False
 
         filt_signal = filt.bandpass(self, fc, bw, filter_type, **kwargs)
 
@@ -388,7 +399,7 @@ class Signal(base_signal.BaseSignal):
         """Apply a lowpass filter to the Signal.
 
         This function provieds a unified interface to all lowpass
-        filters implemented in audiotools.
+        filters implemented in audiotoolbox.
 
         - brickwall: A 'optimal' brickwall filter
         - butter: A butterworth filter
@@ -396,8 +407,8 @@ class Signal(base_signal.BaseSignal):
         For additional filter parameters and detailed description see
         the respective implementations:
 
-        - :meth:`audiotools.filter.brickwall`
-        - :meth:`audiotools.filter.butterworth`
+        - :meth:`audiotoolbox.filter.brickwall`
+        - :meth:`audiotoolbox.filter.butterworth`
 
         Parameters
         ----------
@@ -420,8 +431,8 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.filter.brickwall
-        audiotools.filter.butterworth
+        audiotoolbox.filter.brickwall
+        audiotoolbox.filter.butterworth
 
         """
         filt_signal = filt.lowpass(self, f_cut, filter_type, **kwargs)
@@ -433,7 +444,7 @@ class Signal(base_signal.BaseSignal):
         """Apply a highpass filter to the Signal.
 
         This function provieds a unified interface to all highpass
-        filters implemented in audiotools.
+        filters implemented in audiotoolbox.
 
         - brickwall: A 'optimal' brickwall filter
         - butter: A butterworth filter
@@ -441,8 +452,8 @@ class Signal(base_signal.BaseSignal):
         For additional filter parameters and detailed description see
         the respective implementations:
 
-        - :meth:`audiotools.filter.brickwall`
-        - :meth:`audiotools.filter.butterworth`
+        - :meth:`audiotoolbox.filter.brickwall`
+        - :meth:`audiotoolbox.filter.butterworth`
 
         Parameters
         ----------
@@ -465,8 +476,8 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.filter.brickwall
-        audiotools.filter.butterworth
+        audiotoolbox.filter.brickwall
+        audiotoolbox.filter.butterworth
 
         """
         filt_signal = filt.highpass(self, f_cut, filter_type, **kwargs)
@@ -487,9 +498,11 @@ class Signal(base_signal.BaseSignal):
         float : The sound pressure level in dB
 
         """
-        raise PendingDeprecationWarning('calc_dbspl method Will be removed'
-                                        + ' in the future. Use stats.dbspl'
-                                        + ' instead')
+        raise PendingDeprecationWarning(
+            "calc_dbspl method Will be removed"
+            + " in the future. Use stats.dbspl"
+            + " instead"
+        )
         dbspl = audio.calc_dbspl(self)
         return dbspl
 
@@ -518,14 +531,14 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.zeropad
+        audiotoolbox.zeropad
 
         """
         # Only one number or duration must be stated
         if duration is None and number is None:
-            raise ValueError('Must state duration or number of zeros')
+            raise ValueError("Must state duration or number of zeros")
         elif duration is None and number is None:
-            raise ValueError('Must state only duration or number of zeros')
+            raise ValueError("Must state only duration or number of zeros")
             return
 
         # If duration instead of number is stated, calculate the
@@ -540,8 +553,7 @@ class Signal(base_signal.BaseSignal):
 
         # Can only be applied to the whole signal not to a slice
         if not isinstance(self.base, type(None)):
-            raise RuntimeError('Zeropad can only be applied to'
-                               ' the whole signal')
+            raise RuntimeError("Zeropad can only be applied to" " the whole signal")
         else:
             wv = audio.zeropad(self, number)
             self.resize(wv.shape, refcheck=False)
@@ -549,15 +561,15 @@ class Signal(base_signal.BaseSignal):
 
         return self
 
-    def add_fade_window(self, rise_time, type='cos', **kwargs):
+    def add_fade_window(self, rise_time, type="cos", **kwargs):
         r"""Add a fade in/out window to the signal.
 
         This function multiplies a fade window with a given rise time
         onto the signal. for mor information about the indiviual
         window functions refer to the implementations:
 
-        - cos: A rasied cosine window :meth:`audiotools.cosine_fade_window`
-        - gauss: A gaussian window :meth:`audiotools.gaussian_fade_window`
+        - cos: A rasied cosine window :meth:`audiotoolbox.cosine_fade_window`
+        - gauss: A gaussian window :meth:`audiotoolbox.gaussian_fade_window`
 
 
         Parameters
@@ -573,16 +585,14 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.gaussian_fade_window
-        audiotools.cosine_fade_window
+        audiotoolbox.gaussian_fade_window
+        audiotoolbox.cosine_fade_window
 
         """
-        if type == 'gauss':
-            win = audio.gaussian_fade_window(self, rise_time,
-                                             self.fs, **kwargs)
-        elif type == 'cos':
-            win = audio.cosine_fade_window(self, rise_time,
-                                           self.fs, **kwargs)
+        if type == "gauss":
+            win = audio.gaussian_fade_window(self, rise_time, self.fs, **kwargs)
+        elif type == "cos":
+            win = audio.cosine_fade_window(self, rise_time, self.fs, **kwargs)
         self *= win
         return self
 
@@ -612,18 +622,20 @@ class Signal(base_signal.BaseSignal):
 
         See Also
         --------
-        audiotools.cos_amp_modulator
+        audiotoolbox.cos_amp_modulator
 
         """
-        mod = audio.cos_amp_modulator(duration=self,
-                                      modulator_freq=frequency,
-                                      fs=self.fs,
-                                      mod_index=m,
-                                      start_phase=start_phase)
+        mod = audio.cos_amp_modulator(
+            duration=self,
+            modulator_freq=frequency,
+            fs=self.fs,
+            mod_index=m,
+            start_phase=start_phase,
+        )
         self *= mod
         return self
 
-    def delay(self, delay, method='fft'):
+    def delay(self, delay, method="fft"):
         r"""Delays the signal by circular shifting.
 
         Circular shift the functions foreward to create a certain time
@@ -635,7 +647,7 @@ class Signal(base_signal.BaseSignal):
         signal is shifted by applyint a FFT transform, and phase
         shifting each frequency accoring to the delay and applying an
         inverse transform. This is identical to using the
-        :meth:'audiotools.FrequencyDomainSignal.time_shift'
+        :meth:'audiotoolbox.FrequencyDomainSignal.time_shift'
         method. When using the method 'sample', the signal is time
         delayed by circular shifting the signal by the number of
         samples that is closest to delay.
@@ -658,10 +670,10 @@ class Signal(base_signal.BaseSignal):
         audio.FreqDomainSignal.time_shift
 
         """
-        if method == 'sample':
+        if method == "sample":
             nshift = audio.nsamples(delay, self.fs)
             shifted = audio.shift_signal(self, nshift)
-        elif method == 'fft':
+        elif method == "fft":
             shifted = self.to_freqdomain().time_shift(delay).to_timedomain()
 
         self[:] = shifted
@@ -693,7 +705,7 @@ class Signal(base_signal.BaseSignal):
     def clip(self, t_start, t_end=None):
         r"""Clip the signal between two points in time.
 
-        removes the number of semples according to t_start and
+        removes the number of saamples according to t_start and
         t_end. This method can not be applied to a single channel or
         slice.
 
@@ -711,7 +723,7 @@ class Signal(base_signal.BaseSignal):
             Returns itself
         """
         if not isinstance(self.base, type(None)):
-            raise RuntimeError('Clipping can not be applied to slices')
+            raise RuntimeError("Clipping can not be applied to slices")
 
         # calculate the indices at which the signal should be cliped
         i_start = audio.nsamples(t_start, self.fs)
@@ -723,7 +735,7 @@ class Signal(base_signal.BaseSignal):
             i_end = self.n_samples
 
         #  store the cliped part in the signal
-        self[0:i_end-i_start, :] = self[i_start:i_end, :]
+        self[0 : i_end - i_start, :] = self[i_start:i_end, :]
 
         newshape = list(self.shape)
         newshape[0] = i_end - i_start
@@ -749,6 +761,7 @@ class Signal(base_signal.BaseSignal):
 
         """
         import matplotlib.pyplot as plt
+
         if not ax:
             fig, ax = plt.subplots(1, 1)
         else:
@@ -792,7 +805,7 @@ class Signal(base_signal.BaseSignal):
           The filename that should be used.
         **kwargs
           Extra arguments such as format and subtype to be passed to the
-          audiotools.wav.writefile function
+          audiotoolbox.wav.writefile function
         """
         wav.writefile(filename, self, self.fs, **kwargs)
 
@@ -803,7 +816,7 @@ class Signal(base_signal.BaseSignal):
         signal.
 
         As opposed to most methods, this conversion is not in-place
-        but a new :meth:`audiotools.FrequencyDomainSignal` object is
+        but a new :meth:`audiotoolbox.FrequencyDomainSignal` object is
         returned
 
         Returns
@@ -812,9 +825,9 @@ class Signal(base_signal.BaseSignal):
           The frequency domain representation of the signal
 
         """
-        fd = FrequencyDomainSignal(self.n_channels,
-                                   self.duration, self.fs,
-                                   dtype=complex)
+        fd = FrequencyDomainSignal(
+            self.n_channels, self.duration, self.fs, dtype=complex
+        )
         fd.from_timedomain(self)
 
         return fd
@@ -836,7 +849,7 @@ class Signal(base_signal.BaseSignal):
         return a_signal
 
     def apply_gain(self, gain):
-        r""" Applys gain factor to the signal
+        r"""Applys gain factor to the signal
 
         Fixed gain by multiplying the signal with a fixed factor calculated as
 
@@ -854,10 +867,146 @@ class Signal(base_signal.BaseSignal):
         Returns itself : Signal
 
         """
-        mult_fac = 10**(gain / 20)
+        mult_fac = 10 ** (gain / 20)
         self *= mult_fac
 
         return self
+
+    def convolve(
+        self,
+        kernel,
+        mode: Literal[
+            "full",
+            "valid",
+            "same",
+        ] = "full",
+        overlap_dimensions: bool = True,
+    ) -> Self:
+        r"""Convolves the current signal with the given kernel.
+
+        This method performs a convolution operation between the current signal
+        and the provided kernel. The convolution is performed along the
+        overlapping dimensions of the two signals, if `overlap_dimensions` is
+        True. If `overlap_dimensions` is False, the convolution is performed
+        along all dimensions. Please see examples below.
+
+        this method uses scipy.Signal.fftconvolve for the convolution.
+
+        Parameters
+        ----------
+        kernel : Signal
+            The kernel to convolve with.
+        mode : str {'full', 'valid', 'same'}, optional
+            The convolution mode for fftconvolve (default=full)
+        overlap_dimensions : bool, optional
+            Whether to convolve only along overlapping dimensions. If True, the
+            convolution is performed only along the dimensions that overlap between
+            the two signals. If False, the convolution is performed along all
+            dimensions. Defaults to True.
+
+        Returns
+        -------
+        Self
+            The convolved signal.
+
+        Examples
+        --------
+        If the last dimension of signal and the first dimension of kernel match,
+        convolution takes place along this axis. This means that the first
+        channel of the signal is convolved with the first channel of the kernel,
+        the second with the second.
+
+        >>> signal = Signal(2, 1, 48000)
+        >>> kernel = Signal(2, 100e-3, 48000)
+        >>> signal.convolve(kernel)
+        >>> signal.n_channels
+        (2, 3)
+
+        This also works with multiple overlapping dimensions.
+        >>> signal = Signal((5, 2, 3), 1, 48000)
+        >>> kernel = Signal((2, 3), 100e-3, 48000)
+        >>> signal.convolve(kernel)
+        >>> signal.n_channels
+        (5, 2, 3)
+
+        The 'overlap_dimensions' keyword can be set to falls if all signal
+        channels should instead be convolved with all kernels.
+        >>> signal = Signal(2, 1, 48000)
+        >>> kernel = Signal(2, 100e-3, 48000)
+        >>> signal.convolve(kernel, overlap_dimensions=False)
+        >>> signal.n_channels
+        (2, 2)
+
+        """
+        fs = self.fs
+        dim_sig = np.atleast_1d(self.n_channels)
+        dim_kernel = np.atleast_1d(kernel.n_channels)
+
+        # Determine if some of the dimension overlap
+        if overlap_dimensions:
+            dim_overlap = audio._get_dim_overlap(dim_sig, dim_kernel)
+        else:
+            dim_overlap = 0
+
+        # Squeeze the last dimension if it is 1
+        squeeze_idx_k = ()
+        squeeze_idx_sig = ()
+        if dim_kernel[-1] == 1:
+            dim_kernel = dim_kernel[:-1]
+            squeeze_idx_k = (0,)
+        if dim_sig[-1] == 1:
+            dim_sig = dim_sig[:-1]
+            squeeze_idx_sig = (0,)
+
+        new_nch = (*dim_sig, *dim_kernel[dim_overlap:])
+        if mode == "same":
+            new_nsamp = self.n_samples
+        elif mode == "full":
+            new_nsamp = self.n_samples + kernel.n_samples - 1
+        elif mode == "valid":
+            new_nsamp = self.n_samples - kernel.n_samples + 1
+        else:
+            raise ValueError("mode not implemented")
+        new_signal = audio.Signal(new_nch, new_nsamp / fs, fs)
+
+        if dim_overlap != 0:
+            n_sig = np.prod(dim_sig[:-dim_overlap])
+        else:
+            n_sig = np.prod(dim_sig)
+        n_kernel = np.prod(dim_kernel[dim_overlap:])
+        for i_sig in range(n_sig):
+            for i_k in range(n_kernel):
+                # only indeces that do not overlap need to be looked at
+                if dim_overlap != 0:
+                    idx_sig = np.unravel_index(i_sig, dim_sig[:-dim_overlap])
+                else:
+                    idx_sig = np.unravel_index(i_sig, dim_sig)
+                idx_k = np.unravel_index(i_k, dim_kernel[dim_overlap:])
+
+                overlap_slice = (slice(None, None, None),) * dim_overlap
+                a = self.ch[*idx_sig, *overlap_slice, *squeeze_idx_sig]
+                b = kernel.ch[*overlap_slice, *idx_k, *squeeze_idx_k]
+                newsig_idx = (*idx_sig, *overlap_slice, *idx_k)
+
+                new_signal.ch[*newsig_idx] = fftconvolve(a, b, mode=mode, axes=0)
+        self.resize(new_signal.shape, refcheck=False)
+        self[:] = new_signal
+        return self
+
+    def from_file(self, filename: str, start: int = 0, channels="all") -> Self:
+        sig = audio.from_file(filename, start=start, stop=self.n_samples + start)
+        if channels == "all":
+            channels = slice(None)
+
+        sig = sig.ch[*channels]
+        print(sig.shape)
+        print(self.shape)
+        if sig.n_channels != self.n_channels:
+            raise ValueError("Number of channels must match.")
+
+        self[:] = sig
+        return self
+
 
 def as_signal(signal, fs):
     """Convert Numpy array to Signal class.
@@ -889,4 +1038,4 @@ def as_signal(signal, fs):
     return sig_out
 
 
-__all__ = ['Signal', 'as_signal']
+__all__ = ["Signal", "as_signal"]

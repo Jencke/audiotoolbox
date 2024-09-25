@@ -1,7 +1,7 @@
-import audiotools as audio
-import audiotools.filter as filter
-import audiotools.filter.freq_weighting as fw
-import audiotools.filter.gammatone_filt as gt
+import audiotoolbox as audio
+import audiotoolbox.filter as filter
+import audiotoolbox.filter.freq_weighting as fw
+import audiotoolbox.filter.gammatone_filt as gt
 import numpy as np
 import numpy.testing as testing
 
@@ -243,7 +243,7 @@ def test_a_weighting():
 
     def get_gain(f):
         sig = audio.Signal(1, 1, 48000).add_tone(f)
-        out = filter.a_weighting(sig, None)
+        out = filter.a_weighting(sig)
         return out.stats.dbfs - sig.stats.dbfs
 
     assert np.abs(get_gain(1000)) < 0.01
@@ -256,7 +256,7 @@ def test_a_weighting():
 def test_c_weighting():
     def get_gain(f):
         sig = audio.Signal(1, 1, 48000).add_tone(f)
-        out = filter.c_weighting(sig, None)
+        out = filter.c_weighting(sig)
         return out.stats.dbfs - sig.stats.dbfs
 
     assert np.abs(get_gain(1000)) < 0.02

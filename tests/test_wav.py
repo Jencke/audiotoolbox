@@ -1,5 +1,5 @@
-import audiotools.wav as wav
-import audiotools as audio
+import audiotoolbox.wav as wav
+import audiotoolbox as audio
 import numpy as np
 import numpy.testing as testing
 

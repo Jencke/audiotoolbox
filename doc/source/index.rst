@@ -4,6 +4,7 @@
    :caption: Contents:
 
    introduction
+   user_guide
    api
 
 
@@ -13,15 +14,15 @@
            :align: center
 
 ====================
-What is audiotools ?
+What is audiotoolbox ?
 ====================
-**audiotools** is a python package designed to generate and analyze acoustic stimuli for use in auditory research. It aims to provide an easy to use and intuitive interface.
+**audiotoolbox** is a python package designed to generate and analyze acoustic stimuli for use in auditory research. It aims to provide an easy to use and intuitive interface.
 
 **auditools** provides the powerfull `Signal` class which extends the standard `numpy` array class with a fluent interface that provides methods and attributes often used in auditory signal processing.
 
 The commands:
 
->>> import audiotools as audio
+>>> import audiotoolbox as audio
 >>> sig = audio.Signal(n_channels=1, duration=1, fs=48000)
 >>> sig.add_tone(500).set_dbspl(60).add_fade_window(10e-3, 'cos')
 
@@ -44,7 +45,7 @@ All Signal classes are extensions of the standard `numpy` array, they can be use
 >>> sig.var(axis=0)
 Signal([1., 1., 1.])
 
-More information and a detailed documentation of the methods and functions provided by audiotools can be found in the `api` and `introduction` sections.
+More information and a detailed documentation of the methods and functions provided by audiotoolbox can be found in the `api` and `introduction` sections.
 
 Installation
 ============
@@ -52,7 +53,7 @@ Installation
 Using pip
 ----------
 
-You can use pip to install audiotools
+You can use pip to install audiotoolbox
 
 .. code-block:: bash
 
@@ -63,7 +64,7 @@ From GitHub
 
 Or directly from GitHub
 
- 1. Clone the repository: `git clone https://github.com/Jencke/audiotools.git`
+ 1. Clone the repository: `git clone https://github.com/Jencke/audiotoolbox.git`
  2. Install the package: `pip install ./`
  3. Optionally run the tests: `pytest`
 

@@ -1,5 +1,5 @@
-from audiotools import Signal
-import audiotools as audio
+from audiotoolbox import Signal
+import audiotoolbox as audio
 import numpy as np
 import numpy.testing as testing
 
@@ -553,3 +553,123 @@ def test_writefile():
     sig.writefile("test.wav")
     sig.set_dbfs(-20)
     rsig = audio.from_file("test.wav")
+
+
+def test_convolve():
+    # test simple convolution shape
+    sig = audio.Signal(1, 1, 48000).add_noise()
+    kernel = audio.Signal(1, 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == 1
+
+    # test squeezing of single dimensions
+    sig = audio.Signal(2, 1, 48000).add_noise()
+    kernel = audio.Signal(1, 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == 2
+    sig = audio.Signal(1, 1, 48000).add_noise()
+    kernel = audio.Signal(2, 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == 2
+
+    # test squeezing with multiple dimensins
+    sig = audio.Signal((2, 1), 1, 48000).add_noise()
+    kernel = audio.Signal(3, 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == (2, 3)
+    sig = audio.Signal((3, 1), 1, 48000).add_noise()
+    kernel = audio.Signal((4), 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == (3, 4)
+
+    # test extension of non-matching dimension
+    sig = audio.Signal(2, 1, 48000).add_noise()
+    kernel = audio.Signal(3, 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == (2, 3)
+    sig = audio.Signal((2, 4), 1, 48000).add_noise()
+    kernel = audio.Signal(3, 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == (2, 4, 3)
+    sig = audio.Signal((2, 4), 1, 48000).add_noise()
+    kernel = audio.Signal((3, 4), 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == (2, 4, 3, 4)
+
+    # Test channel matching with one channel
+    sig = audio.Signal(2, 1, 48000).add_noise()
+    kernel = audio.Signal(2, 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == 2
+
+    # Test channel matching with multiple channels
+    sig = audio.Signal((2, 2), 1, 48000).add_noise()
+    kernel = audio.Signal((2, 2), 100e-3, 48000)
+    sig.convolve(kernel)
+    assert sig.n_channels == (2, 2)
+
+    # Test channel matching with multiple channels
+    sig = audio.Signal((2, 2), 1, 48000).add_noise()
+    kernel = audio.Signal((2, 2, 3), 100e-3, 48000)
+    sig.convolve(kernel, overlap_dimensions=True)
+    assert sig.n_channels == (2, 2, 3)
+    sig = audio.Signal((1, 3, 3), 1, 48000).add_noise()
+    kernel = audio.Signal((3, 3, 4), 100e-3, 48000)
+    sig.convolve(kernel, overlap_dimensions=True)
+    assert sig.n_channels == (1, 3, 3, 4)
+
+    # Test channel matching with multiple channels
+    sig = audio.Signal((2, 2), 1, 48000).add_noise()
+    kernel = audio.Signal((2, 2, 1), 100e-3, 48000)
+    sig.convolve(kernel, overlap_dimensions=True)
+
+    fs = 1
+    sig = audio.Signal(1, 10, fs)
+    sig[:] = 1
+    kernel = audio.Signal(1, 1, fs)
+    kernel[:] = 2
+    sig.convolve(kernel)
+    assert np.all(sig == 2)
+
+    fs = 1
+    sig = audio.Signal(2, 10, fs)
+    sig[:] = 1
+    kernel = audio.Signal(2, 1, fs)
+    kernel.ch[0] += 1
+    kernel.ch[1] += 2
+    sig.convolve(kernel)
+    assert np.all(sig.ch[0] == 1) & np.all(sig.ch[1] == 2)
+
+    fs = 1
+    sig = audio.Signal(2, 10, fs)
+    sig[:] = 1
+    kernel = audio.Signal(3, 1, fs)
+    kernel.ch[0] += 1
+    kernel.ch[1] += 2
+    sig.convolve(kernel)
+    assert np.all(sig.ch[:, 0] == 1) & np.all(sig.ch[:, 1] == 2)
+
+    # Test modes:
+    fs = 1
+    sig = audio.Signal(2, 10, fs)
+    kernel = audio.Signal(3, 5, fs)
+    sig.convolve(kernel)
+    assert sig.n_samples == 14
+
+    fs = 1
+    sig = audio.Signal(2, 10, fs)
+    kernel = audio.Signal(3, 5, fs)
+    sig.convolve(kernel, mode="same")
+    assert sig.n_samples == 10
+
+    fs = 1
+    sig = audio.Signal(2, 10, fs)
+    kernel = audio.Signal(3, 5, fs)
+    sig.convolve(kernel, mode="valid")
+    assert sig.n_samples == 6
+
+
+signal = audio.Signal((2, 3), 1, 48000)
+kernel = audio.Signal(3, 100e-3, 48000)
+signal.convolve(kernel)
+signal.n_channels

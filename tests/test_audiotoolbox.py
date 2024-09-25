@@ -1,4 +1,4 @@
-import audiotools as audio
+import audiotoolbox as audio
 import numpy as np
 import numpy.testing as testing
 import pytest
@@ -265,20 +265,20 @@ def test_bark():
     # Compare the tabled values to the ones resulting from the equation
 
     scale = np.array(audio.get_bark_limits()[:-1])
-    calc_vals = audio.freq_to_bark(scale)
+    calc_vals = audio.bark.from_freq(scale)
 
     assert np.abs(calc_vals - np.arange(len(scale))).max() <= 0.08
 
     scale = np.array(audio.get_bark_limits())
-    calc_vals = audio.freq_to_bark(scale[:-1], True)
+    calc_vals = audio.bark.from_freq(scale[:-1], True)
     assert np.array_equal(np.arange(0, 24), calc_vals)
 
 
 def test_bark_to_freq():
     # test inversion between freq_to_bark and bark_to_freq
     freqs = np.linspace(100, 15e3, 10)
-    barks = audio.freq_to_bark(freqs)
-    rev_freqs = audio.bark_to_freq(barks)
+    barks = audio.bark.from_freq(freqs)
+    rev_freqs = audio.bark.to_freq(barks)
 
     testing.assert_array_almost_equal(freqs, rev_freqs)
 
@@ -304,11 +304,11 @@ def test_freqspace():
 
 def test_freq_to_erb():
     # test that scale starts with 0
-    assert audio.freq_to_erb(0) == 0
+    assert audio.erb.from_freq(0) == 0
 
     # compare results with original equation
     freq = np.array([100.0, 1000, 10000])
-    nerb = audio.freq_to_erb(freq)
+    nerb = audio.erb.from_freq(freq)
     nerb2 = (1000 / (24.7 * 4.37)) * np.log(4.37 * (freq / 1000) + 1)
     assert np.array_equal(nerb, nerb2)
 
@@ -347,9 +347,9 @@ def test_freqarange():
 def test_erb_to_freq():
     # Test by inversion from freq_to_erb
     freq = np.array([100.0, 1000, 10000])
-    nerb = audio.freq_to_erb(freq)
+    nerb = audio.erb.from_freq(freq)
 
-    freq2 = audio.erb_to_freq(nerb)
+    freq2 = audio.erb.to_freq(nerb)
     np.array_equal(freq2, freq)
 
 
@@ -795,26 +795,26 @@ def test_cmplx_correlation():
 
 def test_duration_is_signal():
     # direct input
-    duration, fs, n_ch = audio.audiotools._duration_is_signal(1, 2, 3)
+    duration, fs, n_ch = audio.audiotoolbox._duration_is_signal(1, 2, 3)
     assert duration == 1
     assert fs == 2
     assert n_ch == 3
 
-    duration, fs, n_ch = audio.audiotools._duration_is_signal(1, 2)
+    duration, fs, n_ch = audio.audiotoolbox._duration_is_signal(1, 2)
     assert duration == 1
     assert fs == 2
     assert n_ch == None
 
     # signal as input
     sig = audio.Signal((2, 3), 1, 2)
-    duration, fs, n_ch = audio.audiotools._duration_is_signal(sig)
+    duration, fs, n_ch = audio.audiotoolbox._duration_is_signal(sig)
     assert duration == 1
     assert fs == 2
     assert n_ch == (2, 3)
 
     # Numpy array as input
     sig = np.zeros((11, 2, 3))
-    duration, fs, n_ch = audio.audiotools._duration_is_signal(sig, 3)
+    duration, fs, n_ch = audio.audiotoolbox._duration_is_signal(sig, 3)
     assert duration == 11 / 3
     assert fs == 3
     assert n_ch == (2, 3)
@@ -822,8 +822,22 @@ def test_duration_is_signal():
 
 def test_copy_to_ndim():
     a = np.random.random(1000)
-    b = audio.audiotools._copy_to_dim(a, (2, 3))
+    b = audio.audiotoolbox._copy_to_dim(a, (2, 3))
     assert b.shape == (1000, 2, 3)
 
-    b = audio.audiotools._copy_to_dim(a, 3)
+    b = audio.audiotoolbox._copy_to_dim(a, 3)
     assert b.shape == (1000, 3)
+
+
+def test_crossfade():
+    # cosine fade between uncorrelated noise should keep equal variance
+    sig1 = audio.Signal((2, 10), 1, 48000).add_noise()
+    sig2 = audio.Signal((2, 10), 1, 48000).add_noise()
+    out = audio.crossfade(sig1, sig2, 450e-3, fade_type="cos")
+    assert np.abs(1 - out.stats.var.mean()) < 0.01
+
+    # linear fade between uncorrelated noise should decrease variance
+    sig1 = audio.Signal((2, 10), 1, 48000).add_noise()
+    sig2 = audio.Signal((2, 10), 1, 48000).add_noise()
+    out = audio.crossfade(sig1, sig2, 1, fade_type="linear")
+    assert np.abs(1 - out.stats.var.mean()) > 0.1
