@@ -1913,7 +1913,7 @@ def crossfade(
     if fade_type == "cos":
         fade[:] = np.cos(np.pi / 2 * fade.time / fade_duration)
     elif fade_type == "linear":
-        fade[:] = (fade_duration - fade.time) / fade_duration
+        fade[:] = fade.time / fade.time[-1]
     else:
         raise (ValueError("fade_type not implemented"))
 
