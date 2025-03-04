@@ -8,7 +8,7 @@ directly availible through the :func:`Signal` class.
 
 .. automodule:: audiotoolbox
     :members: crest_factor, shift_signal,
-              calc_coherence, schroeder_phase, phon_to_dbspl,
+              calc_coherence, schroeder_phase, phon_to_dbspl, dbspl_to_phon,
               time2phase, phase2time, nsamples, lowpass, crossfade
 
 
@@ -18,9 +18,10 @@ audiotoolbox.filter
 Individual filter can either be applied by directly calling the respective filter functions such as :func:`filter.gammatone` or by using the unified interfaces for :func:`filter.bandpass`, :func:`filter.lowpass` and :func:`filter.highpass` filters. When using the unified interface, all additional arguments are passed to the respective filter functions.
 
 .. automodule:: audiotoolbox.filter
-    :members: bandpass, lowpass, highpass, gammatone, butterworth, brickwall
+    :members: bandpass, lowpass, highpass, gammatone, butterworth, brickwall, a_weighting, c_weighting
 
 Filterbanks are created using the :func:`create_filterbank` command
 
-.. automodule:: audiotoolbox.filter
-    :members: create_filterbank
+.. automodule:: audiotoolbox.filter.bank
+    :members: create_filterbank, auditory_gamma_bank, octave_bank
+
