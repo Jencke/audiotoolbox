@@ -1,6 +1,6 @@
 """Definition for the Signal class."""
 
-from typing import Type, cast, Union, Self, Literal
+from typing import Type, cast, Union, Literal
 
 import numpy as np
 
@@ -881,7 +881,7 @@ class Signal(base_signal.BaseSignal):
             "same",
         ] = "full",
         overlap_dimensions: bool = True,
-    ) -> Self:
+    ):
         r"""Convolves the current signal with the given kernel.
 
         This method performs a convolution operation between the current signal
@@ -976,7 +976,7 @@ class Signal(base_signal.BaseSignal):
         n_kernel = np.prod(dim_kernel[dim_overlap:])
         for i_sig in range(n_sig):
             for i_k in range(n_kernel):
-                # only indeces that do not overlap need to be looked at
+                # only indices that do not overlap need to be looked at
                 if dim_overlap != 0:
                     idx_sig = np.unravel_index(i_sig, dim_sig[:-dim_overlap])
                 else:
@@ -984,21 +984,28 @@ class Signal(base_signal.BaseSignal):
                 idx_k = np.unravel_index(i_k, dim_kernel[dim_overlap:])
 
                 overlap_slice = (slice(None, None, None),) * dim_overlap
-                a = self.ch[*idx_sig, *overlap_slice, *squeeze_idx_sig]
-                b = kernel.ch[*overlap_slice, *idx_k, *squeeze_idx_k]
-                newsig_idx = (*idx_sig, *overlap_slice, *idx_k)
+                idx_sig_combined = idx_sig + overlap_slice + squeeze_idx_sig
+                idx_k_combined = overlap_slice + idx_k + squeeze_idx_k
 
-                new_signal.ch[*newsig_idx] = fftconvolve(a, b, mode=mode, axes=0)
+                a = self.ch[idx_sig_combined]
+                b = kernel.ch[idx_k_combined]
+                newsig_idx = idx_sig + overlap_slice + idx_k
+
+                new_signal.ch[newsig_idx] = fftconvolve(a, b, mode=mode, axes=0)
         self.resize(new_signal.shape, refcheck=False)
         self[:] = new_signal
         return self
 
-    def from_file(self, filename: str, start: int = 0, channels="all") -> Self:
+    def from_file(self, filename: str, start: int = 0, channels="all"):
         sig = audio.from_file(filename, start=start, stop=self.n_samples + start)
         if channels == "all":
             channels = slice(None)
 
-        sig = sig.ch[*channels]
+        # Convert channels to a tuple if it's not already
+        if not isinstance(channels, tuple):
+            channels = (channels,)
+
+        sig = sig.ch[channels]
         print(sig.shape)
         print(self.shape)
         if sig.n_channels != self.n_channels:
