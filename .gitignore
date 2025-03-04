@@ -7,3 +7,5 @@
 /dist
 test.wav
 tests/data/
+build/
+references/
