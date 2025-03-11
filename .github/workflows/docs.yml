@@ -3,19 +3,11 @@ name: Build and Deploy Documentation
 on:
   push:
     branches:
-      ["develop"] # or your default branch
-    # paths:
-    #   - 'doc/**' # Trigger only on changes in the docs directory
-    #   - 'src/**' # Trigger also on changes in the src directory
-    #   - 'pyproject.toml' # Trigger also on changes to dependencies
+      ["master"] # or your default branch
 
   pull_request:
     branches:
-      ["develop"]
-    # paths:
-    #   - 'doc/**'
-    #   - 'src/**'
-    #   - 'pyproject.toml'
+      ["master"]
 
 jobs:
   build:
@@ -36,7 +28,7 @@ jobs:
           cd doc
           make html
       - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/develop'
+        if: github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

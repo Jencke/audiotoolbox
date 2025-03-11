@@ -2,12 +2,12 @@ name: CI
 
 on:
   push:
-    branches: [ "develop" ] # or whatever your main branch is
+    branches: [ "master", "develop" ] # or whatever your main branch is
     paths:      
       - 'src/**'
       - 'pyproject.toml'
   pull_request:
-    branches: [ "develop" ]
+    branches: [ "master", "develop" ]
     paths:      
       - 'src/**'
       - 'pyproject.toml'
