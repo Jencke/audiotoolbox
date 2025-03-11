@@ -23,6 +23,6 @@ jobs:
         python -m pip install .[dev] # Installs the project and development dependencies
     - name: Run pytest with coverage
       run: |
-        coverage run --include=audiotoolbox/* -m pytest -ra
+        coverage run --include=src/audiotoolbox/* -m pytest -ra
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
