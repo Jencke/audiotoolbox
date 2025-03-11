@@ -3,17 +3,17 @@ name: Build and Deploy Documentation
 on:
   push:
     branches:
-      - develop # or your default branch
+      ["develop"] # or your default branch
     paths:
-      - 'docs/**' # Trigger only on changes in the docs directory
+      - 'doc/**' # Trigger only on changes in the docs directory
       - 'src/**' # Trigger also on changes in the src directory
       - 'pyproject.toml' # Trigger also on changes to dependencies
 
   pull_request:
     branches:
-      - develop
+      ["develop"]
     paths:
-      - 'docs/**'
+      - 'doc/**'
       - 'src/**'
       - 'pyproject.toml'
 
