@@ -1,4 +1,4 @@
-import audiotoolbox.file_io as file_io
+import audiotoolbox.io as io
 import audiotoolbox as audio
 import numpy as np
 import numpy.testing as testing
@@ -14,8 +14,8 @@ def test_writewav_readwav():
     fs = 48000
     signal = audio.Signal(2, 1, fs)
     signal[:] = np.linspace(-1, 1, signal.n_samples)[:, None]
-    file_io.write_file("test.wav", signal, signal.fs)
-    out, fs = file_io.readfile("test.wav")
+    io.write_file("test.wav", signal, signal.fs)
+    out, fs = io.readfile("test.wav")
     testing.assert_allclose(
         out, signal, atol=10000
     )  # set atol to high value so to not lead to problems close to 0
