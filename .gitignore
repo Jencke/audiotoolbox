@@ -1,9 +1,13 @@
 *.pyc
 *.egg*
 /doc/build
-.*
 /htmlcov
 /tests/test.wav
 /dist
 test.wav
 tests/data/
+build/
+references/
+activate
+release.org
+settings.json

@@ -16,6 +16,29 @@ and analyzing signals. In a fluent interface, methods are applied
 in-place and the object itself is returend which allowes methods to be
 stacked.
 
+The commands:
+
+>>> import audiotools as audio
+>>> sig = audio.Signal(n_channels=1, duration=100e-3, fs=48000)
+>>> sig.add_tone(500).set_dbspl(60).add_fade_window(10e-3, 'cos')
+
+create a 100 ms long signal with 1 channel at a sampling rate of
+48kHz. A 500 Hz tone is then added to this signal, the level is set to
+60dB SPL and a 10ms raised cosine fade-in and fade-out is added.
+
+.. plot::
+
+   >>> import audiotools as audio
+   >>> import matplotlib.pyplot as plt
+   >>> sig = audio.Signal(n_channels=1, duration=100e-3, fs=48000)
+   >>> sig.add_tone(500).set_dbspl(60).add_fade_window(10e-3, 'cos')
+   >>> plt.title('100ms long 500Hz tone with raised cosine slopes')
+   >>> plt.plot(sig.time, sig)
+   >>> plt.xlabel('Time / s')
+   >>> plt.ylabel('Amplitude')
+   >>> plt.show()
+
+
 The Signal class
 ----------------
 
@@ -102,6 +125,5 @@ identical to creating a Signal object
 >>> sig = audio.FrequencyDomainSignal(n_channels=2, duration=1, fs=48000)
 >>> print(sig.shape)
 (48000, 2)
-
 
 .. _numpy.ndarray: https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html
