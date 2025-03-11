@@ -2,7 +2,7 @@
 A python package for creating acoustic stimuli primariliy aimed at auditory research.
 
 [![Documentation Status](https://readthedocs.org/projects/audiotoolbox/badge/?version=master)](https://audiotoolbox.readthedocs.io/en/latest/?badge=latest)
-[![Build Status](https://travis-ci.com/Jencke/audiotoolbox.svg?branch=master)](https://travis-ci.com/Jencke/audiotoolbox)
+[![CI](https://github.com/Jencke/audiotoolbox/actions/workflows/ci.yml/badge.svg)](https://github.com/Jencke/audiotoolbox/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/Jencke/audiotoolbox/branch/develop/graph/badge.svg?token=SI8BRM2ZYZ)](https://codecov.io/gh/Jencke/audiotoolbox)
 
 ## How to install audiotoolbox
