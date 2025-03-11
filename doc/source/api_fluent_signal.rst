@@ -12,8 +12,8 @@ auditools.Signal objects. For more informations check the numpy docs_.
 
 .. autoclass:: audiotoolbox.Signal
    :members: fs, n_channels, n_samples, duration, ch, concatenate, multiply,
-             add, abs, time, add_tone, add_noise, set_dbspl, set_dbfs, bandpass,
-             zeropad, add_fade_window, add_cos_modulator, delay, phase_shift,
-             clip, rms, rectify, to_freqdomain, add_uncorr_noise
+            add, abs, time, add_tone, add_noise, set_dbspl, set_dbfs, bandpass,
+            zeropad, add_fade_window, add_cos_modulator, delay, phase_shift,
+            clip, rms, rectify, to_freqdomain, add_uncorr_noise, from_file, write_file
 
 .. _docs: https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html
