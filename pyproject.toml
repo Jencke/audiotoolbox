@@ -20,6 +20,7 @@ dependencies = ["numpy", "scipy", "matplotlib", "soundfile"]
 
 [project.optional-dependencies]
 dev = ["pytest", "coverage"]
+docs = ["sphinx", "sphinx-rtd-theme", "matplotlib"]
 
 [project.urls]
 "Homepage" = "https://jencke.github.io/audiotoolbox/"
