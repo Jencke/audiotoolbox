@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "audiotoolbox"
-version = "0.70"
+version = "0.71"
 authors = [{ name = "Jörg Encke", email = "encke.joerg@gmail.com" }]
 description = "Toolbox for generating and working with audio signals"
 readme = "README.md"
@@ -23,4 +23,4 @@ dev = ["pytest", "coverage"]
 docs = ["sphinx", "sphinx-rtd-theme", "matplotlib"]
 
 [project.urls]
-"Homepage" = "https://jencke.github.io/audiotoolbox/"
+"Homepage" = "https://jencke.github.io/audiotoolbox/index.html"
