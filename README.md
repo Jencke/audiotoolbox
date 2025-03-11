@@ -1,7 +1,7 @@
 # audiotoolbox
 A python package for creating acoustic stimuli primariliy aimed at auditory research.
 
-[![Documentation Status](https://readthedocs.org/projects/audiotoolbox/badge/?version=master)](https://audiotoolbox.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://github.com/Jencke/audiotoolbox/actions/workflows/docs.yml/badge.svg)](https://github.com/Jencke/audiotoolbox/actions/workflows/docs.yml)
 [![CI](https://github.com/Jencke/audiotoolbox/actions/workflows/ci.yml/badge.svg)](https://github.com/Jencke/audiotoolbox/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/Jencke/audiotoolbox/branch/develop/graph/badge.svg?token=SI8BRM2ZYZ)](https://codecov.io/gh/Jencke/audiotoolbox)
 
@@ -20,7 +20,7 @@ A python package for creating acoustic stimuli primariliy aimed at auditory rese
   audiotoolbox depends on the libsndfile library. The libray should be installed automatically when using pip.
 
 ## Documentation
-The package documentation can be found at: https://audiotoolbox.readthedocs.io/en/master/
+The package documentation can be found at: https://jencke.github.io/audiotoolbox/index.html
 However, it is a bit outdated and does not document all the features. Help would be highly appreciated
 
 ## Contributions

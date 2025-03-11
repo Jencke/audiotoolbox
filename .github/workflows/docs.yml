@@ -3,19 +3,11 @@ name: Build and Deploy Documentation
 on:
   push:
     branches:
-      - develop # or your default branch
-    paths:
-      - 'docs/**' # Trigger only on changes in the docs directory
-      - 'src/**' # Trigger also on changes in the src directory
-      - 'pyproject.toml' # Trigger also on changes to dependencies
+      ["master"] # or your default branch
 
   pull_request:
     branches:
-      - develop
-    paths:
-      - 'docs/**'
-      - 'src/**'
-      - 'pyproject.toml'
+      ["master"]
 
 jobs:
   build:
@@ -33,11 +25,11 @@ jobs:
           python -m pip install .[docs]
       - name: Build Sphinx documentation
         run: |
-          cd docs
+          cd doc
           make html
       - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/develop'
+        if: github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/build/html
+          publish_dir: ./doc/build/html 
