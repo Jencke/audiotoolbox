@@ -4,18 +4,18 @@ on:
   push:
     branches:
       ["develop"] # or your default branch
-    paths:
-      - 'doc/**' # Trigger only on changes in the docs directory
-      - 'src/**' # Trigger also on changes in the src directory
-      - 'pyproject.toml' # Trigger also on changes to dependencies
+    # paths:
+    #   - 'doc/**' # Trigger only on changes in the docs directory
+    #   - 'src/**' # Trigger also on changes in the src directory
+    #   - 'pyproject.toml' # Trigger also on changes to dependencies
 
   pull_request:
     branches:
       ["develop"]
-    paths:
-      - 'doc/**'
-      - 'src/**'
-      - 'pyproject.toml'
+    # paths:
+    #   - 'doc/**'
+    #   - 'src/**'
+    #   - 'pyproject.toml'
 
 jobs:
   build:
