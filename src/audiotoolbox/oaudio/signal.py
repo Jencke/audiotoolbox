@@ -5,7 +5,7 @@ from typing import Type, cast, Union, Literal
 import numpy as np
 
 from . import base_signal
-from .. import audiotoolbox as audio, wav, filter as filt
+from .. import audiotoolbox as audio, filter as filt, io
 from .freqdomain_signal import FrequencyDomainSignal
 from .stats import SignalStats
 from scipy.signal import fftconvolve
@@ -773,16 +773,6 @@ class Signal(base_signal.BaseSignal):
             ax.plot(self.time, self)
         return fig, ax
 
-    def rms(self):
-        r"""Root mean square.
-
-        Returns
-        -------
-        float : The RMS value
-        """
-        rms = np.sqrt(np.mean(self**2))
-        return rms
-
     def rectify(self):
         r"""One-way rectification of the signal.
 
@@ -794,20 +784,48 @@ class Signal(base_signal.BaseSignal):
         self[self < 0] = 0
         return self
 
-    def writefile(self, filename, **kwargs):
-        """Save the signal as a wav file.
-
-        Experimental method to write the signal as a wav file.
-
-        Parameter:
-        ----------
-        filename : string
-          The filename that should be used.
-        **kwargs
-          Extra arguments such as format and subtype to be passed to the
-          audiotoolbox.wav.writefile function
+    def write_file(self, filename, **kwargs):
         """
-        wav.writefile(filename, self, self.fs, **kwargs)
+        Save the signal as an audio file.
+
+        This method saves the current signal as an audio file. Additional parameters
+        for the file format can be specified through keyword arguments. The file can
+        be saved in any format supported by libsndfile, such as WAV, FLAC, AIFF, etc.
+
+        Parameters
+        ----------
+        filename : str
+            The filename to save the audio file as.
+        **kwargs
+            Additional keyword arguments to be passed to the `audiotoolbox.wav.writefile`
+            function. These can include format and subtype.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        Save the signal to a file named "output.wav":
+
+        >>> sig = Signal(2, 1, 48000)
+        >>> sig.write_file("output.wav")
+
+        Save the signal to a file with a specific format and subtype:
+
+        >>> sig = Signal(2, 1, 48000)
+        >>> sig.write_file("output.wav", format="WAV", subtype="PCM_16")
+
+        Save the signal to a FLAC file:
+
+        >>> sig = Signal(2, 1, 48000)
+        >>> sig.write_file("output.flac", format="FLAC")
+
+        See Also
+        --------
+        audiotoolbox.wav.writefile : Function used to write the audio file.
+        """
+        io.write_file(filename, self, self.fs, **kwargs)
 
     def to_freqdomain(self):
         r"""Convert to frequency domain by applying a DFT.
@@ -997,6 +1015,47 @@ class Signal(base_signal.BaseSignal):
         return self
 
     def from_file(self, filename: str, start: int = 0, channels="all"):
+        """
+        Load a signal from an audio file.
+
+        This method loads a signal from an audio file and assigns it to the current
+        Signal object. The signal can be loaded from a specific start point and for
+        specific channels.
+
+        Parameters
+        ----------
+        filename : str
+            The path to the audio file to load.
+        start : int, optional
+            The starting sample index from which to load the signal. Default is 0.
+        channels : int, tuple, or str, optional
+            The channels to load from the audio file. Can be an integer specifying
+            a single channel, a tuple specifying multiple channels, or "all" to load
+            all channels. Default is "all".
+
+        Returns
+        -------
+        Signal
+            The Signal object with the loaded audio data.
+
+        Raises
+        ------
+        ValueError
+            If the number of channels in the loaded signal does not match the number
+            of channels in the current Signal object.
+
+        Examples
+        --------
+        Load a signal from a file starting at the beginning and using all channels:
+
+        >>> sig = Signal(2, 1, 48000)
+        >>> sig.from_file("example.wav")
+
+        Load a signal from a file starting at sample index 1000 and using the first channel:
+
+        >>> sig = Signal(1, 1, 48000)
+        >>> sig.from_file("example.wav", start=1000, channels=0)
+        """
         sig = audio.from_file(filename, start=start, stop=self.n_samples + start)
         if channels == "all":
             channels = slice(None)

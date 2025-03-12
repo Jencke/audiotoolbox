@@ -19,7 +19,7 @@ requires-python = ">=3.10"
 dependencies = ["numpy", "scipy", "matplotlib", "soundfile"]
 
 [project.optional-dependencies]
-dev = ["pytest", "coverage"]
+dev = ["pytest", "coverage", "pytest-cov"]
 docs = ["sphinx", "sphinx-rtd-theme", "matplotlib"]
 
 [project.urls]
