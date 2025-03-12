@@ -19,6 +19,17 @@ class BaseStats(object):
         """variance"""
         return np.var(self.sig, axis=0)
 
+    @property
+    def rms(self):
+        r"""Root mean square.
+
+        Returns
+        -------
+        float : The RMS value
+        """
+        rms = np.sqrt(np.mean(self.sig**2, axis=0))
+        return rms
+
 
 class SignalStats(BaseStats):
     def __init__(self, sig):
