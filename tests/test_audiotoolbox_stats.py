@@ -3,6 +3,13 @@ import numpy as np
 import numpy.testing as testing
 
 
+def test_rms():
+    sig = audio.Signal(2, 100e-3, 100e3)
+    sig.add_tone(100)
+    rms = sig.stats.rms
+    testing.assert_allclose(rms, 1.0 / np.sqrt(2))
+
+
 def test_mean():
     sig = audio.Signal((2, 2), 1, 48000)
     assert sig.stats.mean.shape == sig.n_channels
