@@ -57,9 +57,50 @@ def _duration_is_signal(duration, fs=None, n_channels=None):
 
 
 def from_file(filename: str, start: int = 0, stop: Optional[int] = None) -> Signal:
-    """Read signal from wav file"""
+    """
+    Read signal from an audio file.
+
+    This function reads a signal from an audio file and returns it as a Signal object.
+    The signal can be read from a specific start point and up to a specific stop point.
+    The function supports all audio file formats supported by libsndfile, such as WAV,
+    FLAC, AIFF, and more.
+
+    Parameters
+    ----------
+    filename : str
+        The path to the audio file to read.
+    start : int, optional
+        The starting sample index from which to read the signal. Default is 0.
+    stop : int, optional
+        The stopping sample index up to which to read the signal. If None, the signal
+        is read until the end of the file. Default is None.
+
+    Returns
+    -------
+    Signal
+        The Signal object containing the audio data read from the file.
+
+    Raises
+    ------
+    ValueError
+        If the audio file cannot be read or if the file format is not supported.
+
+    Examples
+    --------
+    Read a signal from a file starting at the beginning:
+
+    >>> sig = from_file("example.wav")
+
+    Read a signal from a file starting at sample index 1000 and stopping at sample index 5000:
+
+    >>> sig = from_file("example.wav", start=1000, stop=5000)
+
+    See Also
+    --------
+    audiotoolbox.Signal.from_file : Method to load a signal into an existing Signal object.
+    """
     from .oaudio import Signal
-    from .wav import readfile
+    from .io import readfile
 
     wv, fs = readfile(filename, start=start, stop=stop)
 
@@ -76,8 +117,7 @@ def from_file(filename: str, start: int = 0, stop: Optional[int] = None) -> Sign
 
 
 def pad_for_fft(signal):
-    r"""Zero buffer a signal with zeros so that it reaches the next
-     closest :math`$2^n$` length.
+    r"""Zero buffer a signal with zeros so that it reaches the next closest :math`$2^n$` length.
 
     This Function attaches zeros to a signal to adjust the length
     of the signal to a multiple of 2 for efficent FFT calculation.

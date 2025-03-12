@@ -12,7 +12,7 @@ def readwav(filename):
 
 def writewav(filename, signal, fs):
     raise (DeprecationWarning("writewav is depricated please use writefile"))
-    writefile(filename, signal, fs)
+    write_file(filename, signal, fs)
 
 
 def info(filename: str) -> soundfile._SoundFileInfo:
@@ -29,7 +29,7 @@ def readfile(filename: str, start: int = 0, stop: Optional[int] = None):
     Parameters
     ----------
     filename : str
-       The path to the file.
+      The path to the file.
     start : int (optional)
       The first sample to read (default=0)
     stop : int (optional)
@@ -46,7 +46,7 @@ def readfile(filename: str, start: int = 0, stop: Optional[int] = None):
     return sig_array, fs
 
 
-def writefile(filename, signal, fs, **kwargs):
+def write_file(filename, signal, fs, **kwargs):
     """Write audiofile using libsndfile.
 
     Write a soundfile using libsndfile through the soundile python library.
