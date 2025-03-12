@@ -3,11 +3,11 @@ name: Build and Deploy Documentation
 on:
   push:
     branches:
-      ["master"] # or your default branch
+      ["master", "release"] # or your default branch
 
   pull_request:
     branches:
-      ["master"]
+      ["master", "release"]
 
 jobs:
   build:
