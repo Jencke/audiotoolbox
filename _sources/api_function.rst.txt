@@ -8,8 +8,8 @@ directly availible through the :func:`Signal` class.
 
 .. automodule:: audiotoolbox
     :members: crest_factor, shift_signal,
-              calc_coherence, schroeder_phase, phon_to_dbspl, dbspl_to_phon,
-              time2phase, phase2time, nsamples, lowpass, crossfade
+            calc_coherence, schroeder_phase, phon_to_dbspl, dbspl_to_phon,
+            time2phase, phase2time, nsamples, lowpass, crossfade, from_file
 
 
 audiotoolbox.filter
