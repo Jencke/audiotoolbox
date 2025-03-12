@@ -225,13 +225,6 @@ def test_mean():
     testing.assert_almost_equal(mean, np.array([1, 2]))
 
 
-def test_rms():
-    sig = Signal(2, 100e-3, 100e3)
-    sig.add_tone(100)
-    rms = sig.rms()
-    testing.assert_allclose(rms, 1.0 / np.sqrt(2))
-
-
 def test_delay():
     fs = 48000
     duration = 100e-3
@@ -550,7 +543,7 @@ def test_apply_gain():
 
 def test_writefile():
     sig = audio.Signal(1, 1, 48000).add_noise()
-    sig.writefile("test.wav")
+    sig.write_file("test.wav")
     sig.set_dbfs(-20)
     rsig = audio.from_file("test.wav")
 

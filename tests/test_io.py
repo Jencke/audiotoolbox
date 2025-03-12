@@ -27,4 +27,4 @@ def test_signal_writefile():
     signal = audio.Signal(2, 1, fs)
     signal[:] = np.linspace(-1, 1, signal.n_samples)[:, None]
 
-    signal.writefile("test.wav")
+    signal.write_file("test.wav")
