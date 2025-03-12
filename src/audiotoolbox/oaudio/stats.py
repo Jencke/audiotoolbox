@@ -27,7 +27,7 @@ class BaseStats(object):
         -------
         float : The RMS value
         """
-        rms = np.sqrt(np.mean(self.sig**2), axis=0)
+        rms = np.sqrt(np.mean(self.sig**2, axis=0))
         return rms
 
 
