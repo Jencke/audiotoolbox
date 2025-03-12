@@ -1,9 +1,8 @@
-develop
+0.70 -> 0.72
  - Improved documentation
  - renamed writefile method to write_file
  - renamed wav submodule to file_io
  - moved rms into stats submodule
-
 
 0.68 -> 0.70
  - Renaming the library to audiotoolbox
