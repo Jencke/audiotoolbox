@@ -1,3 +1,7 @@
+0.72 -> develop
+  Bugfixes
+   - Fixed bug that lead to linear crossfade to be inverted
+
 0.70 -> 0.72
  - Improved documentation
  - renamed writefile method to write_file
