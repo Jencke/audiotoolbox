@@ -1332,7 +1332,7 @@ def freq_to_octband(frequency, oct_fraction: int = 3, base_system: int = 2):
         The fractional octave scale to use. e.g 3 for 1/3 octave bands.
         default = 3
     base_system: 2 or 10
-      The base system used for calcuation. default = 2
+        The base system used for calcuation. default = 2
     """
     b = oct_fraction
     if base_system == 10:
@@ -1953,7 +1953,7 @@ def crossfade(
     if fade_type == "cos":
         fade[:] = np.cos(np.pi / 2 * fade.time / fade_duration)
     elif fade_type == "linear":
-        fade[:] = fade.time / fade.time[-1]
+        fade[:] = 1 - fade.time / fade.time[-1]
     else:
         raise (ValueError("fade_type not implemented"))
 
