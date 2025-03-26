@@ -304,6 +304,15 @@ class Signal(base_signal.BaseSignal):
         -------
         Returns itself : Signal
 
+        Examples
+        --------
+        >>> sig = Signal(1, 1, 48000).add_tone(1000)
+        >>> sig.set_dbfs(-3)
+        >>> sig.stats.dbfs
+        -3.0
+
+
+
         See Also
         --------
         audiotoolbox.set_dbspl
