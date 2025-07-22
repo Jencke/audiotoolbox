@@ -18,13 +18,13 @@ class Signal(base_signal.BaseSignal):
     Parameters
     ----------
     n_channels : int or tuple
-      Number of channels to be used, can be N-dimensional
+        Number of channels to be used, can be N-dimensional
     duration : float
-      Stimulus duration in seconds
+        Stimulus duration in seconds
     fs : int
-      Sampling rate  in Hz
+        Sampling rate  in Hz
     dtype : type, optional
-      Datatype of the array (default is float)
+        Datatype of the array (default is float)
 
     Returns
     -------
