@@ -1,3 +1,7 @@
+0.73 -> develop
+  Changes
+  - Octave bands now use preferred frequencies as default.
+
 0.72 -> 0.73
   - Added a octave_band_levels method to the Signal.stats submodule
    
