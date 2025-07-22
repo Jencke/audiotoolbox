@@ -304,6 +304,15 @@ class Signal(base_signal.BaseSignal):
         -------
         Returns itself : Signal
 
+        Examples
+        --------
+        >>> sig = Signal(1, 1, 48000).add_tone(1000)
+        >>> sig.set_dbfs(-3)
+        >>> sig.stats.dbfs
+        -3.0
+
+
+
         See Also
         --------
         audiotoolbox.set_dbspl
@@ -318,26 +327,6 @@ class Signal(base_signal.BaseSignal):
         self[:] = nwv
 
         return self
-
-    def calc_dbfs(self):
-        r"""Calculate the dBFS RMS value for the signal.
-
-        .. math:: L = 20 \log_10\left(\sqrt{2}\sigma\right)
-
-        where :math:`\sigma` is the signals RMS.
-
-        Returns
-        -------
-        float : The dBFS RMS value
-
-        """
-        raise PendingDeprecationWarning(
-            "calc_dbfs method Will be removed"
-            + " in the future. Use stats.dbfs"
-            + " instead"
-        )
-        dbfs = audio.calc_dbfs(self)
-        return dbfs
 
     def bandpass(self, fc, bw, filter_type, **kwargs):
         r"""Apply a bandpass filter.

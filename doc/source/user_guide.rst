@@ -140,6 +140,15 @@ Signal([89.10458354, 89.10458354, 89.10458354])
 >>> noise.stats.dbc
 Signal([90.82348995, 90.82348995, 90.82348995])
 
+There is also the option to get the octave-band levels:
+
+>>> noise = audio.Signal(1, 1, 48000).add_noise('pink')
+>>> fc, dbfs = noise.stats.octave_band_levels(oct_fraction=1)
+>>> print(fc, dbfs)
+[   31.25    62.5    125.     250.     500.    1000.    2000.    4000.
+  8000.   16000.  ] [-7.83970827 -8.72549589 -7.98903414 -8.54981887 -8.04099195 -8.20219168
+ -8.35037059 -8.100833   -8.09939973 -8.25102255]
+
 .. include:: user_guide/input_output.rst
 
 .. include:: user_guide/set_level.rst

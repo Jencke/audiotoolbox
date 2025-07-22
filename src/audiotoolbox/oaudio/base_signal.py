@@ -5,7 +5,7 @@ import audiotoolbox as audio
 class BaseSignal(np.ndarray):
     r"""Basic Signal class inherited by all Signal representations"""
 
-    def __new__(cls, n_channels, duration, fs, dtype=float):
+    def __new__(cls, n_channels: int | tuple, duration: float, fs: int, dtype=float):
 
         n_samples = audio.nsamples(duration, fs)
 
@@ -37,7 +37,7 @@ class BaseSignal(np.ndarray):
         self._fs = getattr(obj, "_fs", None)
 
     @property  # getter to handle the sample rates
-    def fs(self):
+    def fs(self) -> int:
         """Sampling rate of the signal in Hz"""
 
         return self._fs
@@ -108,7 +108,7 @@ class BaseSignal(np.ndarray):
             self[old_n:] = signal
         return self
 
-    def multiply(self, x):
+    def multiply(self, x: float | np.ndarray):
         """In-place multiplication
 
         This function allowes for in-place multiplication
