@@ -1,4 +1,4 @@
-0.72 -> develop
+0.72 -> 0.73
   - Added a octave_band_levels method to the Signal.stats submodule
    
   Bugfixes

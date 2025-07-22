@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "audiotoolbox"
-version = "0.72"
+version = "0.73"
 authors = [{ name = "Jörg Encke", email = "encke.joerg@gmail.com" }]
 description = "Toolbox for generating and working with audio signals"
 readme = "README.md"
