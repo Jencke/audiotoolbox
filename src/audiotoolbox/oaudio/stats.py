@@ -103,6 +103,10 @@ class SignalStats(BaseStats):
         -------
         tuple : (frequencies, levels)
             Frequencies and corresponding levels in dB Full Scale (dBFS)
+
+        See Also
+        --------
+        audiotoolbox.filter.bank.octave_bank
         """
         bank = audio.filter.bank.octave_bank(self.sig.fs, oct_fraction=oct_fraction)
         bank_out = bank.filt(self.sig.ch[0])

@@ -1,6 +1,12 @@
 0.72 -> develop
+  - Added a octave_band_levels method to the Signal.stats submodule
+   
   Bugfixes
    - Fixed bug that lead to linear crossfade to be inverted
+  
+  Changes
+   - Removed depricated calc_dbfs method from signal
+    
 
 0.70 -> 0.72
  - Improved documentation
