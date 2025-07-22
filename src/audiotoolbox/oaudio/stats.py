@@ -97,7 +97,7 @@ class SignalStats(BaseStats):
         Parameters
         ----------
         oct_fraction : float, optional
-            Fraction of an octave to use, by default 1/3
+            Fraction of an octave to use, by default 3 for 1/3 octave bands.
 
         Returns
         -------
