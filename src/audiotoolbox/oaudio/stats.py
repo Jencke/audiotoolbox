@@ -46,7 +46,7 @@ class SignalStats(BaseStats):
         return audio.calc_dbspl(self.sig)
 
     @property
-    def dbfs(self):
+    def dbfs(self) -> np.ndarray:
         """Level in dB full scale
 
         See Also
@@ -88,6 +88,25 @@ class SignalStats(BaseStats):
         """
         c_weighted = audio.filter.c_weighting(self.sig)
         return c_weighted.stats.dbspl
+
+    def octave_band_levels(
+        self, oct_fraction: int = 3
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Calculate octave band levels of the signal.
+
+        Parameters
+        ----------
+        oct_fraction : float, optional
+            Fraction of an octave to use, by default 1/3
+
+        Returns
+        -------
+        tuple : (frequencies, levels)
+            Frequencies and corresponding levels in dB Full Scale (dBFS)
+        """
+        bank = audio.filter.bank.octave_bank(self.sig.fs, oct_fraction=oct_fraction)
+        bank_out = bank.filt(self.sig.ch[0])
+        return bank.fc, bank_out.stats.dbfs
 
 
 class FreqDomainStats(BaseStats):

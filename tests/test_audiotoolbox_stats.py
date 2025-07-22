@@ -75,3 +75,21 @@ def test_dbc():
     siga = audio.filter.a_weighting(sig)
     dba2 = siga.stats.dbspl
     assert dba == dba2
+
+
+def test_octave_band_levels():
+    sig = audio.Signal(1, 10, 48000).add_noise("pink").set_dbfs(-10)
+
+    fc2, dbfs2 = sig.stats.octave_band_levels(oct_fraction=1)
+    assert fc2.shape == dbfs2.shape
+    assert fc2.size == dbfs2.size
+    bank = audio.filter.bank.octave_bank(sig.fs, oct_fraction=1)
+    bank_out = bank.filt(sig.ch[0])
+    testing.assert_array_almost_equal(dbfs2, bank_out.stats.dbfs)
+
+    fc3, dbfs3 = sig.stats.octave_band_levels(oct_fraction=3)
+    assert fc3.shape == dbfs3.shape
+    assert fc3.size == dbfs3.size
+    bank = audio.filter.bank.octave_bank(sig.fs, oct_fraction=3)
+    bank_out = bank.filt(sig.ch[0])
+    testing.assert_array_almost_equal(dbfs3, bank_out.stats.dbfs)
