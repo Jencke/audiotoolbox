@@ -20,7 +20,7 @@ audiotoolbox supports an unlimited number of channels which can also be arranged
 
 >>> signal = audio.Signal(n_channels=(2, 3), duration=1, fs=48000)
 
-Per default, modifications are always applied to all channels at the same time. The following two lines thus add 1 to all samples in both channels:
+By default, modifications are always applied to all channels at the same time. The following two lines thus add 1 to all samples in both channels:
 
 >>> signal = audio.Signal(n_channels=2, duration=1, fs=48000)
 >>> signal += 1
@@ -70,9 +70,11 @@ Basic Signal Modifications
 
 Basic signal modifications such as adding a tone or noise are directly available as methods. Tones are easily added through the :meth:`audiotoolbox.Signal.add_tone` method. A signal with two antiphasic 500 Hz tones in the two channels is created by running:
 
+>>> import numpy as np
+>>>
 >>> sig = audio.Signal(2, 1, 48000)
 >>> sig.ch[0].add_tone(frequency=500, amplitude=1, start_phase=0)
->>> sig.ch[1].add_tone(frequency=500, amplitude=1, start_phase=3.141)
+>>> sig.ch[1].add_tone(frequency=500, amplitude=1, start_phase=np.pi)
 
 Fade-in and fade-out ramps with different shapes can be applied using the :meth:`audiotoolbox.Signal.add_fade_window` method:
 
@@ -104,50 +106,50 @@ array([[1.00002083, 0.20000417, 0.20000417],
 
 There is also an option to create band-limited, partly-correlated, or uncorrelated noise by defining low-, high-, or band-pass filters that are applied before using the Gram-Schmidt process. For more details, please refer to the documentation of :meth:`audiotoolbox.Signal.add_uncorr_noise`.
 
-Signal Statistics
-=================
+Signal Statistics and Levels
+============================
 
-Some basic signal statistics are accessible through the :attr:`audiotoolbox.Signal.stats` subclass. This includes the mean and variance of the channels. All stats are calculated per channel:
+Some basic signal statistics are accessible through the :attr:`audiotoolbox.Signal.stats` property. This includes the mean and variance of the channels, calculated per channel. The library also provides convenient methods for level calculations in various units.
 
->>> noise = audio.Signal(3, 1, 48000).add_noise()
->>> noise.stats.mean
-Signal([-2.40525192e-17, -2.40525192e-17, -2.40525192e-17])
+Let's create a pink noise signal and explore its properties:
 
->>> noise = audio.Signal(3, 1, 48000).add_noise('pink')
->>> noise.stats.var
-Signal([1., 1., 1.])
+>>> noise = audio.Signal(2, 1, 48000).add_noise('pink')
+>>>
+>>> # Get basic statistics
+>>> print(f"Mean: {noise.stats.mean}")
+Mean: Signal([-2.4e-17, -2.4e-17])
+>>> print(f"Variance: {noise.stats.var}")
+Variance: Signal([1., 1.])
+>>>
+>>> # Get level in dB Full Scale (dBFS)
+>>> print(f"Level in dBFS: {noise.stats.dbfs}")
+Level in dBFS: Signal([3.01, 3.01])
+>>>
+>>> # Get A-weighted and C-weighted levels
+>>> print(f"A-weighted SPL: {noise.stats.dba}")
+A-weighted SPL: Signal([89.10, 89.10])
+>>> print(f"C-weighted SPL: {noise.stats.dbc}")
+C-weighted SPL: Signal([90.82, 90.82])
 
-Stats also allow for easy access to the signal's full-scale level:
+You can also normalize a signal to a target Sound Pressure Level (SPL), assuming the signal values represent pressure in Pascals.
 
->>> noise = audio.Signal(3, 1, 48000).add_noise('pink')
->>> noise.stats.dbfs
-Signal([3.01029996, 3.01029996, 3.01029996])
-
-When assuming that the values within the signal represent the sound pressure in pascal, one can also calculate the sound pressure level:
-
->>> noise = audio.Signal(3, 1, 48000).add_noise('pink')
+>>> # Normalize the signal to 70 dB SPL
 >>> noise.set_dbspl(70)
+>>> # The stats.dbspl property will now reflect this level
 >>> noise.stats.dbspl
-Signal([93.97940009, 93.97940009, 93.97940009])
+Signal([70., 70.])
 
-Additionally, it is possible to calculate A-weighted and C-weighted sound pressure levels:
-
->>> noise = audio.Signal(3, 1, 48000).add_noise('pink')
->>> noise.stats.dba
-Signal([89.10458354, 89.10458354, 89.10458354])
-
->>> noise = audio.Signal(3, 1, 48000).add_noise('pink')
->>> noise.stats.dbc
-Signal([90.82348995, 90.82348995, 90.82348995])
+Additionally, it is possible to calculate A-weighted and C-weighted sound pressure levels, which are common in acoustic measurements:
 
 There is also the option to get the octave-band levels:
 
->>> noise = audio.Signal(1, 1, 48000).add_noise('pink')
 >>> fc, dbfs = noise.stats.octave_band_levels(oct_fraction=1)
->>> print(fc, dbfs)
+>>> print(fc)
 [   31.25    62.5    125.     250.     500.    1000.    2000.    4000.
-  8000.   16000.  ] [-7.83970827 -8.72549589 -7.98903414 -8.54981887 -8.04099195 -8.20219168
- -8.35037059 -8.100833   -8.09939973 -8.25102255]
+  8000.   16000.  ]
+>>> print(dbfs)
+[-32.5484477  -31.64357561 -32.14208818 -32.32627542 -32.59523029
+ -32.26243379 -32.38507482 -32.36273354 -32.4864307  -32.51044551]
 
 .. include:: user_guide/input_output.rst
 
