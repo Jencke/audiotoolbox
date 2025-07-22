@@ -263,6 +263,15 @@
 <span class="go">Signal([90.82348995, 90.82348995, 90.82348995])</span>
 </pre></div>
 </div>
+<p>There is also the option to get the octave-band levels:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">noise</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="s1">&#39;pink&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fc</span><span class="p">,</span> <span class="n">dbfs</span> <span class="o">=</span> <span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">octave_band_levels</span><span class="p">(</span><span class="n">oct_fraction</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">fc</span><span class="p">,</span> <span class="n">dbfs</span><span class="p">)</span>
+<span class="go">[   31.25    62.5    125.     250.     500.    1000.    2000.    4000.</span>
+<span class="go">  8000.   16000.  ] [-7.83970827 -8.72549589 -7.98903414 -8.54981887 -8.04099195 -8.20219168</span>
+<span class="go"> -8.35037059 -8.100833   -8.09939973 -8.25102255]</span>
+</pre></div>
+</div>
 </section>
 <section id="loading-and-saving-audio-files">
 <span id="signal-io"></span><h2>Loading and saving audio files<a class="headerlink" href="#loading-and-saving-audio-files" title="Link to this heading"></a></h2>
