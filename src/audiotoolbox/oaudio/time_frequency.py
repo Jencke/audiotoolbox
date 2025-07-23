@@ -32,7 +32,7 @@ class TimeFrequency(object):
         noverlap : int, optional
             The number of samples to overlap between segments (default is 512).
         win : str, optional
-            The window function to apply (default is 'hann').
+            The window function to apply (default is 'hann'). Can be any valid window function name recognized by `scipy.signal.get_window`.
         **kwargs : dict, optional
             Additional parameters to pass to the octave bank function.
 
@@ -74,7 +74,7 @@ class TimeFrequency(object):
         noverlap : int, optional
             The number of samples to overlap between segments (default is 512).
         win : str, optional
-            The window function to apply (default is 'hann').
+            The window function to apply (default is 'hann'). Can be any valid window function name recognized by `scipy.signal.get_window`.
         **kwargs : dict, optional
             Additional parameters to pass to the auditory gamma bank function.
 
@@ -123,7 +123,7 @@ class TimeFrequency(object):
         noverlap : int, optional
             The number of samples to overlap between segments (default is 512).
         win : str, optional
-            The window function to apply (default is 'hann').
+            The window function to apply (default is 'hann'). Can be any valid window function name recognized by `scipy.signal.get_window`.
 
         Returns
         -------
@@ -161,7 +161,7 @@ class TimeFrequency(object):
         noverlap : int, optional
             The number of samples to overlap between segments (default is 512).
         win : str, optional
-            The window function to apply (default is 'hann').
+            The window function to apply (default is 'hann'). Can be any valid window function name recognized by `scipy.signal.get_window`.
         **kwargs : dict, optional
             Additional parameters to pass to the `spectrogram` function.
 
