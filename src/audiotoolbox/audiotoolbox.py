@@ -1,6 +1,6 @@
 """Function based interface to audiotoolbox."""
 
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 import numpy as np
 from numpy import pi
 from scipy.interpolate import interp1d
@@ -1226,7 +1226,12 @@ def freqspace(min_frequency, max_frequency, n, scale="bark"):
     return freqs
 
 
-def freqarange(min_frequency, max_frequency, step=1, scale="bark"):
+def freqarange(
+    min_frequency: float,
+    max_frequency: float,
+    step: float = 1,
+    scale: Literal["bark", "erb", "octave"] = "bark",
+) -> np.ndarray:
     r"""Calculate a of frequencies with a predifined spacing on a given frequency
     scale.
 
@@ -1236,16 +1241,16 @@ def freqarange(min_frequency, max_frequency, step=1, scale="bark"):
     Parameters
     ----------
     min_frequency: float
-      minimal frequency in Hz
+        minimal frequency in Hz
 
     max_frequency: float
-      maximal frequency in Hz
+        maximal frequency in Hz
 
     step: float
-      stepsize on the scale
+        stepsize on the scale
 
     scale: str
-      scale to use 'bark' or 'erb' or 'octave'. (default='bark')
+        scale to use 'bark' or 'erb' or 'octave'. (default='bark')
 
     Returns
     -------
