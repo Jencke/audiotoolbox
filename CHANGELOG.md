@@ -1,4 +1,8 @@
 0.73 -> develop
+  - Improvements of the Documentation.
+  - Implemented several spectrograms in the time_frequency sub-module of the Signal class.
+  - Implemented Signal.as_blocked method that generates a blocked view on the original Signal.
+- 
   Changes
   - Octave bands now use preferred frequencies as default.
 
