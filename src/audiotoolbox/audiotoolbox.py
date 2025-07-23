@@ -1,6 +1,6 @@
 """Function based interface to audiotoolbox."""
 
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 import numpy as np
 from numpy import pi
 from scipy.interpolate import interp1d
@@ -1226,7 +1226,12 @@ def freqspace(min_frequency, max_frequency, n, scale="bark"):
     return freqs
 
 
-def freqarange(min_frequency, max_frequency, step=1, scale="bark"):
+def freqarange(
+    min_frequency: float,
+    max_frequency: float,
+    step: float = 1,
+    scale: Literal["bark", "erb", "octave"] = "bark",
+) -> np.ndarray:
     r"""Calculate a of frequencies with a predifined spacing on a given frequency
     scale.
 
@@ -1236,16 +1241,16 @@ def freqarange(min_frequency, max_frequency, step=1, scale="bark"):
     Parameters
     ----------
     min_frequency: float
-      minimal frequency in Hz
+        minimal frequency in Hz
 
     max_frequency: float
-      maximal frequency in Hz
+        maximal frequency in Hz
 
     step: float
-      stepsize on the scale
+        stepsize on the scale
 
     scale: str
-      scale to use 'bark' or 'erb' or 'octave'. (default='bark')
+        scale to use 'bark' or 'erb' or 'octave'. (default='bark')
 
     Returns
     -------
@@ -1301,8 +1306,41 @@ def bark_to_freq(bark):
     return f
 
 
-def octband_to_freq(band_nr, oct_fraction: int = 3, base_system: int = 2):
-    """Octave bandnumber to frequency conversion."""
+def octband_to_freq(
+    band_nr,
+    oct_fraction: Literal[1, 2, 3] = 3,
+    base_system: int = 10,
+    pref_band: bool = True,
+):
+    """Octave bandnumber to frequency conversion.
+
+    Converts a given octave band number into the center frequency of
+    the band using the equation by [1]_.
+
+    Parameters
+    ----------
+    band_nr: scalar or ndarray
+        The octave band number. The band number is normalized so that
+        band 30 is 1000 Hz.
+    oct_fraction: int
+        The fractional octave scale to use. e.g 3 for 1/3 octave bands.
+        default = 3
+    base_system: 2 or 10
+        The base system used for calcuation. default = 10,
+    pref_band: bool
+        If True, the frequency is rounded to the nearest preferred
+        frequency according to ISO 226:2003. (default = True)
+
+    Returns
+    -------
+    scalar or ndarray: The center frequency of the octave band in Hz.
+
+    References
+    ----------
+    ..[1] DIN ISO 266-1:1997-08, "Acoustics - Preferred frequencies",
+          Beuth Verlag, Berlin, 1997.
+    """
+
     b = oct_fraction
 
     if base_system == 10:
@@ -1316,10 +1354,16 @@ def octband_to_freq(band_nr, oct_fraction: int = 3, base_system: int = 2):
         freq = gbase ** ((band_nr - 30.0) / b) * 1e3
     else:  # if even:
         freq = gbase ** ((2 * band_nr - 59.0) / (2 * b)) * 1e3
+
+    if pref_band:
+        freq = din_iso_226.round_array_to_pref_freq(freq)
+
     return freq
 
 
-def freq_to_octband(frequency, oct_fraction: int = 3, base_system: int = 2):
+def freq_to_octband(
+    frequency, oct_fraction: int = 3, base_system: int = 10, round: bool = True
+):
     """Frequency to octave bandnumber conversion.
 
     Scales are normalized so that band 1000Hz is band 30
@@ -1333,6 +1377,9 @@ def freq_to_octband(frequency, oct_fraction: int = 3, base_system: int = 2):
         default = 3
     base_system: 2 or 10
         The base system used for calcuation. default = 2
+    round: bool
+        If True, the band number is rounded to the nearest integer.
+        (default = True)
     """
     b = oct_fraction
     if base_system == 10:
@@ -1345,6 +1392,9 @@ def freq_to_octband(frequency, oct_fraction: int = 3, base_system: int = 2):
         band_nr = np.log(frequency / 1000) / np.log(gbase) * b + 30
     else:
         band_nr = 0.5 * (np.log(frequency / 1000) / np.log(gbase) * 2 * b + 59)
+
+    if round:
+        band_nr = np.round(band_nr, 0)
     return band_nr
 
 

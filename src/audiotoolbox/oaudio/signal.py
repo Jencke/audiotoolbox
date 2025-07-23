@@ -8,7 +8,9 @@ from . import base_signal
 from .. import audiotoolbox as audio, filter as filt, io
 from .freqdomain_signal import FrequencyDomainSignal
 from .stats import SignalStats
+from .time_frequency import TimeFrequency
 from scipy.signal import fftconvolve
+import warnings
 
 
 class Signal(base_signal.BaseSignal):
@@ -17,13 +19,13 @@ class Signal(base_signal.BaseSignal):
     Parameters
     ----------
     n_channels : int or tuple
-      Number of channels to be used, can be N-dimensional
+        Number of channels to be used, can be N-dimensional
     duration : float
-      Stimulus duration in seconds
+        Stimulus duration in seconds
     fs : int
-      Sampling rate  in Hz
+        Sampling rate  in Hz
     dtype : type, optional
-      Datatype of the array (default is float)
+        Datatype of the array (default is float)
 
     Returns
     -------
@@ -50,6 +52,7 @@ class Signal(base_signal.BaseSignal):
         """Create new objects."""
         obj = super().__new__(cls, n_channels, duration, fs, dtype)
         obj.stats = SignalStats(obj)
+        obj.time_frequency = TimeFrequency(obj)
         return cast(Signal, obj)
 
     def __array_finalize__(self, obj):
@@ -68,6 +71,7 @@ class Signal(base_signal.BaseSignal):
             # When copying or slicing
             self.time_offset = getattr(obj, "time_offset", None)
             self.stats = SignalStats(self)
+            self.time_frequency = TimeFrequency(self)
 
         return obj
 
@@ -447,17 +451,17 @@ class Signal(base_signal.BaseSignal):
         Parameters
         ----------
         signal : ndarray or Signal
-          The input signal.
+            The input signal.
         f_cut : float
-          The cutoff frequency in Hz
+            The cutoff frequency in Hz
         filter_type : {'butter', 'brickwall'}
-          The filter type
+            The filter type
         fs : None or int
-          The sampling frequency, must be provided if not using the
-          Signal class.
+            The sampling frequency, must be provided if not using the
+            Signal class.
         **kwargs :
-          Further arguments such as 'order' that are passed to the
-          filter functions.
+            Further arguments such as 'order' that are passed to the
+            filter functions.
 
         Returns
         -------
@@ -599,11 +603,11 @@ class Signal(base_signal.BaseSignal):
         Parameters
         -----------
         frequency : float
-          The frequency of the cosine modulator.
+            The frequency of the cosine modulator.
         m : float, optional
-          The modulation index. (Default = 1)
+            The modulation index. (Default = 1)
         start_phase : float
-          The starting phase of the cosine in radiant.
+            The starting phase of the cosine in radiant.
 
         Returns
         --------
@@ -702,9 +706,9 @@ class Signal(base_signal.BaseSignal):
         -----------
         t_start: float
             Signal time at which the returned signal should start
-        t_end: flot or None (optional)
-           Signal time at which the signal should stop. The full remaining
-           signal is used if set to None. (default: None)
+        t_end: float or None (optional)
+            Signal time at which the signal should stop. The full remaining
+            signal is used if set to None. (default: None)
 
         Returns
         --------
@@ -1062,6 +1066,84 @@ class Signal(base_signal.BaseSignal):
         self[:] = sig
         return self
 
+    def as_blocked(self, block_size: int = 1024, overlap: int = 512):
+        """Creates a blocked view of the signal.
+
+        This method creates a blocked view of the signal, where each block
+        has a fixed size and overlaps with the previous block by a specified amount.
+
+        Parameters
+        ----------
+        block_size : int
+            The size of each block in samples.
+        overlap : int
+            The amount of overlap between consecutive blocks in samples.
+
+        Returns
+        -------
+        Signal
+            A blocked view of the signal.
+        """
+
+        step = block_size - overlap
+        current_length = self.n_samples
+
+        required_length = (
+            np.ceil((current_length - block_size) / step) * step + block_size
+        ).astype(int)
+
+        # If the original data is already long enough, no padding needed
+        if required_length < current_length:
+            required_length = current_length
+        n_pad = required_length - current_length
+
+        if n_pad > 0:
+            warnings.warn(
+                f"Zero padding {n_pad} samples to the end of the signal to create blocks.",
+                UserWarning,
+            )
+            self.zeropad(number=[0, n_pad])
+
+        padded_length = self.n_samples
+
+        # Calculate the number of windows that can be formed
+        # The formula is (total_length - window_size) // step + 1
+        num_windows = (padded_length - block_size) // step + 1
+
+        output_shape = (block_size, num_windows) + self.shape[1:]
+
+        original_strides = self.strides
+        itemsize = self.itemsize
+
+        # Calculate new strides
+        if self.ndim == 1:  # Mono signal (N_samples,)
+            # Stride to next sample within a block: itemsize
+            # Stride to next window: step * itemsize
+            strides = (itemsize, step * itemsize)
+        elif (
+            self.ndim >= 2
+        ):  # Multi-channel or higher dimensions (N_samples, N_channels, ...)
+            # Stride to next sample within a block (across channels): original_strides[0]
+            # Stride to next window: step * original_strides[0]
+            # Strides for remaining dimensions (e.g., channels): original_strides[1:]
+            strides = (
+                original_strides[0],
+                step * original_strides[0],
+            ) + original_strides[1:]
+
+        # strides = (step * itemsize, itemsize)
+
+        overlapping_windows = np.lib.stride_tricks.as_strided(
+            self, shape=output_shape, strides=strides
+        )
+
+        # overlapping_windows = as_strided(sig, shape=(num_windows, block_size), strides=strides)
+
+        blocks = overlapping_windows.view(audio.Signal)
+        blocks.__array_finalize__(self)
+
+        return blocks
+
 
 def as_signal(signal, fs):
     """Convert Numpy array to Signal class.
@@ -1069,9 +1151,9 @@ def as_signal(signal, fs):
     Parameters
     ----------
     signal : ndarray
-      The input array
+        The input array
     fs : int
-      The sampling rate in Hz
+        The sampling rate in Hz
 
     Returns
     -------

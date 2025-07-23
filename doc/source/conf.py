@@ -38,6 +38,11 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
 ]
 
+plot_html_show_source_link = True  # Show link to the source code
+# plot_html_show_formats = False     # Don't show links to different image formats
+plot_pre_code = "import numpy as np\nimport matplotlib.pyplot as plt\nimport audiotoolbox as audio"  # Code executed before each plot
+
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 

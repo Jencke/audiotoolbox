@@ -5,7 +5,7 @@ from ... import audiotoolbox as audio
 
 
 def get_edge_frequencies(
-    fc: float, oct_fraction: int = 3, base_system: int = 2
+    fc: float, oct_fraction: int = 3, base_system: int = 10
 ) -> tuple:
     """Calculate band edge frequencies following ANSI S1.11-2004.
 
@@ -19,11 +19,11 @@ def get_edge_frequencies(
     oct_fraction : int (optional)
       The octave fraction to use e.g. 3 for 1/3 octave filters. (default = 3)
     base_system : int (optional)
-      The base system to be used. (default = 2)
+      The base system to be used. (default = 10)
 
     Returns
     --------
-      flow, fhigh : The lower and uper band edge frequency in Hz.
+      flow, fhigh : The lower and upper band edge frequency in Hz.
     """
     b = oct_fraction
     if base_system == 10:
@@ -40,11 +40,11 @@ def get_edge_frequencies(
 
 def octave_bank(
     fs: int,
-    flow: float = 24.8,
-    fhigh: float = 20158.0,
+    flow: float = 16,
+    fhigh: float = 16000,
     oct_fraction: int = 3,
     round_to_band: bool = True,
-    **kwargs
+    **kwargs,
 ) -> ButterworthBank:
     """Fractional Octave spaced butterworth filterbank.
 
@@ -61,13 +61,13 @@ def octave_bank(
       Lowest center frequency in Hz. (default = 24.8 Hz)
     fhigh : float (optional)
       Highest center frequency in Hz. (default = 20158 Hz)
-    oct_frqction : int (optional)
+    oct_fraction : int (optional)
       The fraction of an octave used to space the filter. e.g. 3 for 1/3 octave
       spacing. (default = 3)
     round_to_band : bool (optional)
-      Indicates if the band numbers should be rounde to the next full
-      integer. If set to True, this will result in center frequencies following
-      ANSI S1.11-2004
+      Indicates if the bands should follow the preferred band frequencies
+      defined in DIN ISO 226. If True, the center frequencies will be adjusted
+      to the nearest preferred band frequency. (default = True)
     **kwargs
       Further paramters such as filter order to pass to the
       filter.ButterworthBank function. Values can either be an ndarray that
@@ -80,15 +80,13 @@ def octave_bank(
 
     """
     # Calculate the corresponding filter banks
-    band_low = audio.freq_to_octband(flow, oct_fraction)
-    band_high = audio.freq_to_octband(fhigh, oct_fraction)
-    if round_to_band:
-        band_low = round(band_low)
-        band_high = round(band_high)
+    band_low = audio.freq_to_octband(flow, oct_fraction, round=round_to_band)
+    band_high = audio.freq_to_octband(fhigh, oct_fraction, round=round_to_band)
+
     # Equaly space filters between the start end end band and convert to center
     # frequencies
     bands = np.arange(band_low, band_high + 1, 1)
-    fc = audio.octband_to_freq(bands, oct_fraction)
+    fc = audio.octband_to_freq(bands, oct_fraction, pref_band=round_to_band)
     # Calculate lower and upper cut-off frequencies as well as bandwidth
     f_l, f_h = get_edge_frequencies(fc, oct_fraction)
     bw = f_h - f_l

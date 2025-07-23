@@ -20,7 +20,7 @@ audiotoolbox supports an unlimited number of channels which can also be arranged
 
 >>> signal = audio.Signal(n_channels=(2, 3), duration=1, fs=48000)
 
-Per default, modifications are always applied to all channels at the same time. The following two lines thus add 1 to all samples in both channels:
+By default, modifications are always applied to all channels at the same time. The following two lines thus add 1 to all samples in both channels:
 
 >>> signal = audio.Signal(n_channels=2, duration=1, fs=48000)
 >>> signal += 1
@@ -70,31 +70,91 @@ Basic Signal Modifications
 
 Basic signal modifications such as adding a tone or noise are directly available as methods. Tones are easily added through the :meth:`audiotoolbox.Signal.add_tone` method. A signal with two antiphasic 500 Hz tones in the two channels is created by running:
 
->>> sig = audio.Signal(2, 1, 48000)
->>> sig.ch[0].add_tone(frequency=500, amplitude=1, start_phase=0)
->>> sig.ch[1].add_tone(frequency=500, amplitude=1, start_phase=3.141)
+.. plot::
+    :include-source:
+
+    sig = audio.Signal(2, 20e-3, 48000)
+    sig.ch[0].add_tone(frequency=500, amplitude=1, start_phase=0)
+    sig.ch[1].add_tone(frequency=500, amplitude=1, start_phase=np.pi)
+
+    plt.plot(sig.time * 1e3, sig)
+    plt.xlabel('Time / ms')
+    plt.ylabel('Amplitude')
+    plt.title('Antiphasic 500Hz tones')
+    plt.show()
+    
+
 
 Fade-in and fade-out ramps with different shapes can be applied using the :meth:`audiotoolbox.Signal.add_fade_window` method:
 
->>> sig = audio.Signal(1, 1, 48000)
->>> sig.add_tone(frequency=500, amplitude=1, start_phase=0)
->>> sig.add_fade_window(rise_time=30e-3, type='cos')
+.. plot::
+    :include-source:
+
+    sig = audio.Signal(1, 100e-3, 48000)
+    sig.add_tone(frequency=500, amplitude=1, start_phase=0)
+    sig.add_fade_window(rise_time=30e-3, type='cos')
+
+    plt.plot(sig.time * 1e3, sig)
+    plt.xlabel('Time / ms')
+    plt.ylabel('Amplitude')
+    plt.title('Tone with raised cos fade-in and -out')
+    plt.show()
+
 
 Similarly, a cosine modulator can be added through the :meth:`audiotoolbox.Signal.add_cos_modulator` method:
 
->>> sig = audio.Signal(1, 1, 48000)
->>> sig.add_cos_modulator(frequency=30, m=1)
+.. plot::
+    :include-source:
+
+    sig = audio.Signal(1, 500e-3, 48000)
+    sig.add_tone(1000)
+    sig.add_cos_modulator(frequency=30, m=1)
+    sig.add_fade_window(100e-3)
+
+    plt.plot(sig.time * 1e3, sig)
+    plt.xlabel('Time / ms')
+    plt.ylabel('Amplitude')
+    plt.title('1kHz tone with 30Hz modulator')
+    plt.show()    
 
 Generating Noise
 ================
 
 audiotoolbox provides multiple functions to generate noise:
 
->>> white_noise = audio.Signal(2, 1, 48000).add_noise()
->>> pink_noise = audio.Signal(2, 1, 48000).add_noise(ntype='pink')
->>> brown_noise = audio.Signal(2, 1, 48000).add_noise(ntype='brown')
+This example adds the same white, pink, or brown Gaussian the signal and plots them as spectrograms (See :meth:`audiotoolbox.oaudio.time_frequency.TimeFrequency`). The noise variance and a seed for the random number generator can be defined by passing the respective argument (see :meth:`audiotoolbox.Signal.add_noise`). 
 
-This adds the same white, pink, or brown Gaussian noise to all channels of the signal. The noise variance and a seed for the random number generator can be defined by passing the respective argument (see :meth:`audiotoolbox.Signal.add_noise`). Uncorrelated noise can be generated using the :meth:`audiotoolbox.Signal.add_uncorr_noise` method. This uses the Gram-Schmidt process to orthogonalize noise tokens to minimize variance in the created correlation:
+.. plot::
+    :include-source:
+
+    white_noise = audio.Signal(1, 1, 48000).add_noise()
+    pink_noise = audio.Signal(1, 1, 48000).add_noise(ntype='pink')
+    brown_noise = audio.Signal(1, 1, 48000).add_noise(ntype='brown')
+
+    wspec, fc = white_noise.time_frequency.octave_band_specgram(oct_fraction=3)
+    pspec, fc = pink_noise.time_frequency.octave_band_specgram(oct_fraction=3)
+    bspec, fc = brown_noise.time_frequency.octave_band_specgram(oct_fraction=3)
+
+    norm = plt.Normalize(min([wspec.min(), pspec.min(), bspec.min()]), max([wspec.max(), pspec.max(), bspec.max()]))
+    fig, ax = plt.subplots(2, 2, sharex='all', sharey='all')
+    ax[0, 0].set_title('White Noise')
+    ax[0, 0].pcolormesh(wspec.time, fc, wspec.T, norm=norm)    
+    ax[0, 1].set_title('Pink Noise')
+    ax[0, 1].pcolormesh(pspec.time, fc, pspec.T, norm=norm)
+    ax[1, 0].set_title('Brown Noise')
+    ax[1, 0].pcolormesh(bspec.time, fc, bspec.T, norm=norm)
+    
+  
+    ax[1, 0].set_xlabel("Time / s")
+    for a in ax[:, 0]:
+        a.set_ylabel('Frequency / Hz')
+
+    for a in ax.flatten():
+        a.set_yscale('log')
+    ax[1, 1].set_visible(False)
+
+
+Uncorrelated noise can be generated using the :meth:`audiotoolbox.Signal.add_uncorr_noise` method. This uses the Gram-Schmidt process to orthogonalize noise tokens to minimize variance in the created correlation:
 
 >>> noise = audio.Signal(3, 1, 48000).add_uncorr_noise(corr=0.2, ntype='white')
 >>> np.cov(noise.T)
@@ -104,53 +164,12 @@ array([[1.00002083, 0.20000417, 0.20000417],
 
 There is also an option to create band-limited, partly-correlated, or uncorrelated noise by defining low-, high-, or band-pass filters that are applied before using the Gram-Schmidt process. For more details, please refer to the documentation of :meth:`audiotoolbox.Signal.add_uncorr_noise`.
 
-Signal Statistics
-=================
-
-Some basic signal statistics are accessible through the :attr:`audiotoolbox.Signal.stats` subclass. This includes the mean and variance of the channels. All stats are calculated per channel:
-
->>> noise = audio.Signal(3, 1, 48000).add_noise()
->>> noise.stats.mean
-Signal([-2.40525192e-17, -2.40525192e-17, -2.40525192e-17])
-
->>> noise = audio.Signal(3, 1, 48000).add_noise('pink')
->>> noise.stats.var
-Signal([1., 1., 1.])
-
-Stats also allow for easy access to the signal's full-scale level:
-
->>> noise = audio.Signal(3, 1, 48000).add_noise('pink')
->>> noise.stats.dbfs
-Signal([3.01029996, 3.01029996, 3.01029996])
-
-When assuming that the values within the signal represent the sound pressure in pascal, one can also calculate the sound pressure level:
-
->>> noise = audio.Signal(3, 1, 48000).add_noise('pink')
->>> noise.set_dbspl(70)
->>> noise.stats.dbspl
-Signal([93.97940009, 93.97940009, 93.97940009])
-
-Additionally, it is possible to calculate A-weighted and C-weighted sound pressure levels:
-
->>> noise = audio.Signal(3, 1, 48000).add_noise('pink')
->>> noise.stats.dba
-Signal([89.10458354, 89.10458354, 89.10458354])
-
->>> noise = audio.Signal(3, 1, 48000).add_noise('pink')
->>> noise.stats.dbc
-Signal([90.82348995, 90.82348995, 90.82348995])
-
-There is also the option to get the octave-band levels:
-
->>> noise = audio.Signal(1, 1, 48000).add_noise('pink')
->>> fc, dbfs = noise.stats.octave_band_levels(oct_fraction=1)
->>> print(fc, dbfs)
-[   31.25    62.5    125.     250.     500.    1000.    2000.    4000.
-  8000.   16000.  ] [-7.83970827 -8.72549589 -7.98903414 -8.54981887 -8.04099195 -8.20219168
- -8.35037059 -8.100833   -8.09939973 -8.25102255]
+.. include:: user_guide/stats.rst
 
 .. include:: user_guide/input_output.rst
 
 .. include:: user_guide/set_level.rst
+
+.. include:: user_guide/time_frequency.rst
 
 .. include:: user_guide/filters.rst

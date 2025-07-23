@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Union
 from copy import deepcopy
 
 import numpy as np
@@ -176,7 +176,7 @@ def create_filterbank(
     filter_type: Literal["butter", "gammatone", "brickwall"],
     fs: int,
     **kwargs,
-) -> FilterBank:
+) -> Union[FilterBank, GammaToneBank, ButterworthBank, BrickBank]:
     """Creates a filterbank object
 
     Parameters

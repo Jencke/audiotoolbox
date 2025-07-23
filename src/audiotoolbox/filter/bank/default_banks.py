@@ -1,8 +1,14 @@
 from ... import audiotoolbox as audio
 from .filterbank import create_filterbank
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ...audiotoolbox.filter.bank.filterbank import GammaToneBank
 
 
-def auditory_gamma_bank(fs, flow=16, fhigh=16000, step=1, **kwargs):
+def auditory_gamma_bank(
+    fs: float, flow: float = 16, fhigh: float = 16000, step: float = 1, **kwargs
+) -> "GammaToneBank":
     """Equivalent Rectangular Bandwidth spaced gammatone filterbank.
 
     Creates a gammatone filterbank with center freequencies equally spaced on
@@ -36,4 +42,6 @@ def auditory_gamma_bank(fs, flow=16, fhigh=16000, step=1, **kwargs):
     fc = audio.freqarange(flow, fhigh, step=step, scale="erb")
     bw = audio.calc_bandwidth(fc, "erb")
     fbank = create_filterbank(fc, bw, "gammatone", fs=fs, **kwargs)
+    if not isinstance(fbank, audio.filter.bank.filterbank.GammaToneBank):
+        raise TypeError("Expected GammaToneBank, got {}".format(type(fbank).__name__))
     return fbank
