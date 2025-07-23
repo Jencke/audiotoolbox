@@ -1,4 +1,4 @@
-0.73 -> develop
+0.73 -> 0.74
   - Improvements of the Documentation.
   - Implemented several spectrograms in the time_frequency sub-module of the Signal class.
   - Implemented Signal.as_blocked method that generates a blocked view on the original Signal.
