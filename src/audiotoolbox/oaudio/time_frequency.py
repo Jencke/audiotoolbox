@@ -25,8 +25,6 @@ class TimeFrequency(object):
 
         Parameters
         ----------
-        sig : Signal
-            The input signal to analyze.
         nperseg : int, optional
             The number of samples per segment for the spectrogram (default is 1024).
         noverlap : int, optional
@@ -67,8 +65,6 @@ class TimeFrequency(object):
 
         Parameters
         ----------
-        sig : Signal
-            The input signal to analyze.
         nperseg : int, optional
             The number of samples per segment for the spectrogram (default is 1024).
         noverlap : int, optional
@@ -101,7 +97,7 @@ class TimeFrequency(object):
         fc = bank.fc
         return spec, fc
 
-    def filtbank_specgram(
+    def filterbank_specgram(
         self,
         bank: "FilterBank",
         nperseg: int = 1024,
@@ -116,8 +112,6 @@ class TimeFrequency(object):
         ----------
         bank : FilterBank
             The filter bank to apply to the signal.
-        sig : Signal
-            The input signal to analyze.
         nperseg : int, optional
             The number of samples per segment for the spectrogram (default is 1024).
         noverlap : int, optional
@@ -131,7 +125,7 @@ class TimeFrequency(object):
             A tuple containing the spectrogram as an audio Signal in dBFS and the center frequencies of the filter bank.
         """
 
-        filt_sig = bank.filt(sig).real.copy()  # type: ignore
+        filt_sig = bank.filt(self.sig).real.copy()  # type: ignore
         blocked_sig = filt_sig.as_blocked(block_size=nperseg, overlap=noverlap)
         win_func = get_window(win, blocked_sig.n_samples, fftbins=True)
 
@@ -140,7 +134,7 @@ class TimeFrequency(object):
         db_correction = -10 * np.log10(g_energy)
         blocked_sig = blocked_sig * win_func[:, np.newaxis, np.newaxis]
         spec = blocked_sig.stats.dbfs
-        spec._fs = (blocked_sig.shape[1] - 1) / sig.duration
+        spec._fs = (blocked_sig.shape[1] - 1) / self.sig.duration
         spec = spec + db_correction
         fc = bank.fc
         return spec, fc
@@ -154,8 +148,6 @@ class TimeFrequency(object):
 
         Parameters
         ----------
-        sig : Signal
-            The input signal to analyze.
         nperseg : int, optional
             The number of samples per segment for the STFT (default is 1024).
         noverlap : int, optional
