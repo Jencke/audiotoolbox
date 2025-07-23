@@ -38,4 +38,6 @@ def auditory_gamma_bank(
     fc = audio.freqarange(flow, fhigh, step=step, scale="erb")
     bw = audio.calc_bandwidth(fc, "erb")
     fbank = create_filterbank(fc, bw, "gammatone", fs=fs, **kwargs)
+    if not isinstance(fbank, audio.filter.bank.filterbank.GammaToneBank):
+        raise TypeError("Expected GammaToneBank, got {}".format(type(fbank).__name__))
     return fbank
