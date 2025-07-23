@@ -1,0 +1,9 @@
+sig = audio.Signal(1, 100e-3, 48000)
+sig.add_tone(frequency=500, amplitude=1, start_phase=0)
+sig.add_fade_window(rise_time=30e-3, type='cos')
+
+plt.plot(sig.time * 1e3, sig)
+plt.xlabel('Time / ms')
+plt.ylabel('Amplitude')
+plt.title('Tone with raised cos fade-in and -out')
+plt.show()

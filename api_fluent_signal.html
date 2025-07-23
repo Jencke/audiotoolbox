@@ -54,7 +54,8 @@
 <li class="toctree-l2 current"><a class="reference internal" href="api_fluent.html">Fluent Interface API</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Signals in the time domain (audiotoolbox.Signal)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.Signal"><code class="docutils literal notranslate"><span class="pre">Signal</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#the-signal-stats-attribute">The <cite>Signal.stats</cite> attribute</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-signal-stats-sub-module">The <cite>Signal.stats</cite> sub-module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#the-signal-time-frequency-sub-module">The <cite>Signal.time_frequency</cite> sub-module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="api_fluent_frequencydomainsignal.html">Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)</a></li>
@@ -423,7 +424,7 @@ slice.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>t_start</strong> (<em>float</em>) – Signal time at which the returned signal should start</p></li>
-<li><p><strong>t_end</strong> (<em>flot</em><em> or </em><em>None</em><em> (</em><em>optional</em><em>)</em>) – Signal time at which the signal should stop. The full remaining
+<li><p><strong>t_end</strong> (<em>float</em><em> or </em><em>None</em><em> (</em><em>optional</em><em>)</em>) – Signal time at which the signal should stop. The full remaining
 signal is used if set to None. (default: None)</p></li>
 </ul>
 </dd>
@@ -774,9 +775,9 @@ of zeros at the end.</p>
 
 </dd></dl>
 
-<section id="the-signal-stats-attribute">
-<h2>The <cite>Signal.stats</cite> attribute<a class="headerlink" href="#the-signal-stats-attribute" title="Link to this heading"></a></h2>
-<p>The <cite>Signal.stats</cite> attribute gives access to an instance of the <cite>audiotoolbox.oaudio.stats.SignalStats</cite> class.
+<section id="the-signal-stats-sub-module">
+<h2>The <cite>Signal.stats</cite> sub-module<a class="headerlink" href="#the-signal-stats-sub-module" title="Link to this heading"></a></h2>
+<p>The <cite>Signal.stats</cite> submodule gives access to an instance of the <cite>audiotoolbox.oaudio.stats.SignalStats</cite> class.
 e.g.:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rms</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">rms</span>
@@ -880,6 +881,108 @@ e.g.:</p>
 <dt class="sig sig-object py" id="audiotoolbox.oaudio.stats.SignalStats.var">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">var</span></span><a class="headerlink" href="#audiotoolbox.oaudio.stats.SignalStats.var" title="Link to this definition"></a></dt>
 <dd><p>variance</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="the-signal-time-frequency-sub-module">
+<h2>The <cite>Signal.time_frequency</cite> sub-module<a class="headerlink" href="#the-signal-time-frequency-sub-module" title="Link to this heading"></a></h2>
+<p>The <cite>Signal.time_frequency</cite> submodule gives access to an instance of the <cite>audiotoolbox.oaudio.time_frequency.TimeFrequency</cite> class that provides time-frequency analysis methods such as spectrograms.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="audiotoolbox.oaudio.time_frequency.TimeFrequency">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">audiotoolbox.oaudio.time_frequency.</span></span><span class="sig-name descname"><span class="pre">TimeFrequency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sig</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.oaudio.time_frequency.TimeFrequency" title="Link to this definition"></a></dt>
+<dd><p>Class containing time-frequency analysis methods.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.oaudio.time_frequency.TimeFrequency.filterbank_specgram">
+<span class="sig-name descname"><span class="pre">filterbank_specgram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bank</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FilterBank</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nperseg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noverlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">win</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hann'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#audiotoolbox.Signal" title="audiotoolbox.Signal"><span class="pre">Signal</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">np.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#audiotoolbox.oaudio.time_frequency.TimeFrequency.filterbank_specgram" title="Link to this definition"></a></dt>
+<dd><p>Calculate the spectrogram of a signal using a specified filter bank.</p>
+<p>This function applies a filter bank to the signal and computes the spectrogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bank</strong> (<em>FilterBank</em>) – The filter bank to apply to the signal.</p></li>
+<li><p><strong>nperseg</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of samples per segment for the spectrogram (default is 1024).</p></li>
+<li><p><strong>noverlap</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of samples to overlap between segments (default is 512).</p></li>
+<li><p><strong>win</strong> (<em>str</em><em>, </em><em>optional</em>) – The window function to apply (default is ‘hann’). Can be any valid window function name recognized by <cite>scipy.signal.get_window</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the spectrogram as an audio Signal in dBFS and the center frequencies of the filter bank.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[audio.Signal, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.oaudio.time_frequency.TimeFrequency.gammatone_specgram">
+<span class="sig-name descname"><span class="pre">gammatone_specgram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nperseg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noverlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">win</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hann'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#audiotoolbox.Signal" title="audiotoolbox.Signal"><span class="pre">Signal</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">np.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#audiotoolbox.oaudio.time_frequency.TimeFrequency.gammatone_specgram" title="Link to this definition"></a></dt>
+<dd><p>Calculate the gammatone spectrogram of a signal.</p>
+<p>This function applies a gammatone filter bank to the signal and computes the spectrogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nperseg</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of samples per segment for the spectrogram (default is 1024).</p></li>
+<li><p><strong>noverlap</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of samples to overlap between segments (default is 512).</p></li>
+<li><p><strong>win</strong> (<em>str</em><em>, </em><em>optional</em>) – The window function to apply (default is ‘hann’). Can be any valid window function name recognized by <cite>scipy.signal.get_window</cite>.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional parameters to pass to the auditory gamma bank function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the spectrogram as an audio Signal in dBFS and the center frequencies of the gammatone filters.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[audio.Signal, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.oaudio.time_frequency.TimeFrequency.octave_band_specgram">
+<span class="sig-name descname"><span class="pre">octave_band_specgram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nperseg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noverlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">win</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hann'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#audiotoolbox.Signal" title="audiotoolbox.Signal"><span class="pre">Signal</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">np.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#audiotoolbox.oaudio.time_frequency.TimeFrequency.octave_band_specgram" title="Link to this definition"></a></dt>
+<dd><p>Calculate the octave band spectrogram of a signal.</p>
+<p>This function applies an octave filter bank to the signal and computes the spectrogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nperseg</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of samples per segment for the spectrogram (default is 1024).</p></li>
+<li><p><strong>noverlap</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of samples to overlap between segments (default is 512).</p></li>
+<li><p><strong>win</strong> (<em>str</em><em>, </em><em>optional</em>) – The window function to apply (default is ‘hann’). Can be any valid window function name recognized by <cite>scipy.signal.get_window</cite>.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional parameters to pass to the octave bank function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the spectrogram as an audio Signal in dBFS and the center frequencies of the octave bands</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[audio.Signal, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.oaudio.time_frequency.TimeFrequency.stft_specgram">
+<span class="sig-name descname"><span class="pre">stft_specgram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nperseg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noverlap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">win</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'hann'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#audiotoolbox.Signal" title="audiotoolbox.Signal"><span class="pre">Signal</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">np.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#audiotoolbox.oaudio.time_frequency.TimeFrequency.stft_specgram" title="Link to this definition"></a></dt>
+<dd><p>Calculate the Short-Time Fourier Transform (STFT) spectrogram of a signal.</p>
+<p>This function computes the STFT of the signal and returns the spectrogram. It is a wrapper around the <cite>scipy.signal.spectrogram</cite> function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nperseg</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of samples per segment for the STFT (default is 1024).</p></li>
+<li><p><strong>noverlap</strong> (<em>int</em><em>, </em><em>optional</em>) – The number of samples to overlap between segments (default is 512).</p></li>
+<li><p><strong>win</strong> (<em>str</em><em>, </em><em>optional</em>) – The window function to apply (default is ‘hann’). Can be any valid window function name recognized by <cite>scipy.signal.get_window</cite>.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Additional parameters to pass to the <cite>spectrogram</cite> function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple containing the spectrogram as an audio Signal in dBFS and the center frequencies of the STFT.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[audio.Signal, np.ndarray]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
