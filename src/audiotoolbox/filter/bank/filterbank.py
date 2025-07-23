@@ -131,7 +131,7 @@ class GammaToneBank(FilterBank):
             self.coefficents[0, i_filt] = b[0]
             self.coefficents[2:, i_filt] = a
 
-    def filt(self, signal: audio.Signal) -> audio.Signal:
+    def filt(self, signal):
         n_ch_out = (*signal.shape[1:], self.n_filters)
         duration = len(signal) / self.fs
         out_sig = audio.Signal(n_ch_out, duration, self.fs, dtype=complex)
