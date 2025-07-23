@@ -8,6 +8,7 @@ from . import base_signal
 from .. import audiotoolbox as audio, filter as filt, io
 from .freqdomain_signal import FrequencyDomainSignal
 from .stats import SignalStats
+from .time_frequency import TimeFrequency
 from scipy.signal import fftconvolve
 import warnings
 
@@ -51,6 +52,7 @@ class Signal(base_signal.BaseSignal):
         """Create new objects."""
         obj = super().__new__(cls, n_channels, duration, fs, dtype)
         obj.stats = SignalStats(obj)
+        obj.time_frequency = TimeFrequency(obj)
         return cast(Signal, obj)
 
     def __array_finalize__(self, obj):
@@ -69,6 +71,7 @@ class Signal(base_signal.BaseSignal):
             # When copying or slicing
             self.time_offset = getattr(obj, "time_offset", None)
             self.stats = SignalStats(self)
+            self.time_frequency = TimeFrequency(self)
 
         return obj
 
