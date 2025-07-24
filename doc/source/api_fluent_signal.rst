@@ -14,7 +14,8 @@ auditools.Signal objects. For more informations check the numpy docs_.
    :members: fs, n_channels, n_samples, duration, ch, concatenate, multiply,
             add, abs, time, add_tone, add_noise, set_dbspl, set_dbfs, bandpass,
             zeropad, add_fade_window, add_cos_modulator, delay, phase_shift,
-            clip, rectify, to_freqdomain, add_uncorr_noise, from_file, write_file
+            clip, rectify, to_freqdomain, add_uncorr_noise, from_file, write_file,
+            convolve
 
 The `Signal.stats` sub-module
 =============================
