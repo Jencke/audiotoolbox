@@ -897,9 +897,14 @@ class Signal(base_signal.BaseSignal):
 
         This method performs a convolution operation between the current signal
         and the provided kernel. The convolution is performed along the
-        overlapping dimensions of the two signals, if `overlap_dimensions` is
-        True. If `overlap_dimensions` is False, the convolution is performed
-        along all dimensions. Please see examples below.
+        overlapping dimensions of the two signals. E.g., If the signal has two channels
+        and the kernel has two channels, the first channel of the signal is convolved
+        with the first channel of the kernel, and the second channel of the signal is
+        convolved with the second channel of the kernel. The resulting signal will again have
+        two channels. If `overlap_dimensions` is False, the convolution is performed
+        along all dimensions. A Signal with two channels convolved with a two-channel kernel
+        will result in an output of shape (2, 2) where each channel of the signal is convolved with
+        each channel of the kernel.
 
         this method uses scipy.Signal.fftconvolve for the convolution.
 
@@ -931,7 +936,7 @@ class Signal(base_signal.BaseSignal):
         >>> kernel = Signal(2, 100e-3, 48000)
         >>> signal.convolve(kernel)
         >>> signal.n_channels
-        (2, 3)
+        2
 
         This also works with multiple overlapping dimensions.
         >>> signal = Signal((5, 2, 3), 1, 48000)
@@ -940,8 +945,8 @@ class Signal(base_signal.BaseSignal):
         >>> signal.n_channels
         (5, 2, 3)
 
-        The 'overlap_dimensions' keyword can be set to falls if all signal
-        channels should instead be convolved with all kernels.
+        The 'overlap_dimensions' keyword can be set to False if all signal
+        channels are instead convolved with all kernels.
         >>> signal = Signal(2, 1, 48000)
         >>> kernel = Signal(2, 100e-3, 48000)
         >>> signal.convolve(kernel, overlap_dimensions=False)
