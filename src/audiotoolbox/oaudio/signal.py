@@ -939,6 +939,7 @@ class Signal(base_signal.BaseSignal):
         2
 
         This also works with multiple overlapping dimensions.
+
         >>> signal = Signal((5, 2, 3), 1, 48000)
         >>> kernel = Signal((2, 3), 100e-3, 48000)
         >>> signal.convolve(kernel)
@@ -947,6 +948,7 @@ class Signal(base_signal.BaseSignal):
 
         The 'overlap_dimensions' keyword can be set to False if all signal
         channels are instead convolved with all kernels.
+
         >>> signal = Signal(2, 1, 48000)
         >>> kernel = Signal(2, 100e-3, 48000)
         >>> signal.convolve(kernel, overlap_dimensions=False)
