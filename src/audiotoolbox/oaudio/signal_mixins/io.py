@@ -3,6 +3,7 @@
 from typing import TYPE_CHECKING
 
 import numpy as np
+import sounddevice as sd
 
 from ... import audiotoolbox as audio, io
 
@@ -114,3 +115,18 @@ class IOMixin:
         audiotoolbox.wav.writefile : Function used to write the audio file.
         """
         io.write_file(filename, self, self.fs, **kwargs)
+
+    def play(self, block: bool = True):
+        """Quick playback of the signal over the default audio output device.
+
+        Parameters
+        ----------
+        block : bool, optional
+            If True, the method will block until playback is finished. If False,
+            playback will be non-blocking and the method will return immediately.
+            Default is True.
+        """
+
+        sd.play(self, samplerate=self.fs)
+        if block:
+            sd.wait()
