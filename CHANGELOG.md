@@ -1,4 +1,4 @@
-0.74 -> develop
+0.74 -> 0.75
   - Major refracturing
   - Improvement of Documentation
   - New play method for quick signal playback
