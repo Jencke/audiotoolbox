@@ -76,46 +76,88 @@
              
   <section id="signal-statistics-and-levels">
 <h1>Signal Statistics and Levels<a class="headerlink" href="#signal-statistics-and-levels" title="Link to this heading"></a></h1>
-<p>Some basic signal statistics are accessible through the <code class="xref py py-attr docutils literal notranslate"><span class="pre">audiotoolbox.Signal.stats</span></code> property. This includes the mean and variance of the channels, calculated per channel. The library also provides convenient methods for level calculations in various units.</p>
+<p>Some basic signal statistics are accessible through the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">audiotoolbox.Signal.stats</span></code> property. This includes the mean and
+variance of the channels, calculated per channel. The library also provides
+convenient methods for level calculations in various units.</p>
 <p>Let’s create a pink noise signal and explore its properties:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">noise</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="s1">&#39;pink&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get basic statistics</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">noise</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="s1">&#39;pink&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="basic-statistics">
+<h2>Basic Statistics<a class="headerlink" href="#basic-statistics" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">mean</span></code> and <code class="docutils literal notranslate"><span class="pre">var</span></code> (variance) are returned as <code class="docutils literal notranslate"><span class="pre">Signal</span></code> objects,
+with one value per channel.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get basic statistics</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean: </span><span class="si">{</span><span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">mean</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="go">Mean: Signal([-2.4e-17, -2.4e-17])</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variance: </span><span class="si">{</span><span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">var</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="go">Variance: Signal([1., 1.])</span>
-<span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get level in dB Full Scale (dBFS)</span>
+</pre></div>
+</div>
+</section>
+<section id="level-in-db">
+<h2>Level in dB<a class="headerlink" href="#level-in-db" title="Link to this heading"></a></h2>
+<p>The library provides properties to get the level in dB Full Scale (dBFS)
+and Sound Pressure Level (SPL), assuming the signal values represent
+pressure in Pascals. Frequency-weighted levels (A- and C-weighting) are
+also available.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get level in dB Full Scale (dBFS)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Level in dBFS: </span><span class="si">{</span><span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbfs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="go">Level in dBFS: Signal([3.01, 3.01])</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get A-weighted and C-weighted levels</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A-weighted SPL: </span><span class="si">{</span><span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dba</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="go">A-weighted SPL: Signal([89.10, 89.10])</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;C-weighted SPL: </span><span class="si">{</span><span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="go">C-weighted SPL: Signal([90.82, 90.82])</span>
 </pre></div>
 </div>
-<p>You can also normalize a signal to a target Sound Pressure Level (SPL), assuming the signal values represent pressure in Pascals.</p>
+<p>You can also normalize a signal to a target Sound Pressure Level (SPL)
+using the <code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.set_dbspl()</span></code> method.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Normalize the signal to 70 dB SPL</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">noise</span><span class="o">.</span><span class="n">set_dbspl</span><span class="p">(</span><span class="mi">70</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># The stats.dbspl property will now reflect this level</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbspl</span>
 <span class="go">Signal([70., 70.])</span>
 </pre></div>
 </div>
-<p>Additionally, it is possible to calculate A-weighted and C-weighted sound pressure levels, which are common in acoustic measurements:</p>
-<p>There is also the option to get the octave-band levels:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fc</span><span class="p">,</span> <span class="n">dbfs</span> <span class="o">=</span> <span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">octave_band_levels</span><span class="p">(</span><span class="n">oct_fraction</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">fc</span><span class="p">)</span>
-<span class="go">[   31.25    62.5    125.     250.     500.    1000.    2000.    4000.</span>
-<span class="go">  8000.   16000.  ]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">dbfs</span><span class="p">)</span>
-<span class="go">[-32.5484477  -31.64357561 -32.14208818 -32.32627542 -32.59523029</span>
-<span class="go"> -32.26243379 -32.38507482 -32.36273354 -32.4864307  -32.51044551]</span>
+</section>
+<section id="octave-band-levels">
+<h2>Octave-Band Levels<a class="headerlink" href="#octave-band-levels" title="Link to this heading"></a></h2>
+<p>It is also possible to get the octave-band or fractional-octave-band
+levels of a signal.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># Create a pink noise signal</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+
+<span class="c1"># Calculate octave-band levels</span>
+<span class="n">fc</span><span class="p">,</span> <span class="n">levels</span> <span class="o">=</span> <span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">octave_band_levels</span><span class="p">(</span><span class="n">oct_fraction</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">base_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">50</span>
+<span class="c1"># Plot the results</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fc</span><span class="p">)),</span> <span class="n">levels</span> <span class="o">-</span><span class="n">base_value</span><span class="p">,</span> <span class="n">tick_label</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">fc</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">bottom</span><span class="o">=</span><span class="n">base_value</span><span class="p">)</span>
+<span class="c1"># plt.bar(np.arange(len(fc)), levels, tick_label=np.round(fc).astype(int))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;1/3-Octave Band Levels of White Noise&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Center Frequency / Hz&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Level / dBFS&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=-</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+<p>(<a class="reference download internal" download="" href="../_downloads/dd62eb63cad4662a1d3ec71707937b94/stats-1.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>)</p>
+</section>
 </section>
 
 

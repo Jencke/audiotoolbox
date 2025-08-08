@@ -3,160 +3,102 @@
 Determining and Setting Levels
 ==============================
 
-This section provides an overview and introduction on how to determine and set levels using the `Signal` class and the `SignalStats` class in the `audiotoolbox` library. The `Signal` class provides methods for calculating the root mean square (RMS) value, setting the sound pressure level (SPL), and normalizing the signal to a given dBFS RMS value. 
-The `SignalStats` sub_class provides additional methods for calculating various signal statistics.
+This section provides an overview of how to determine and set signal levels
+using the :class:`~audiotoolbox.Signal` class and its
+:attr:`~audiotoolbox.Signal.stats` property.
 
-Calculating RMS
----------------
+Getting Signal Statistics
+-------------------------
 
-The RMS value of a signal is a measure of its average power. The `rms` method of the `Signal` class calculates the RMS value of the signal.
+All level calculations and statistics are accessed through the ``.stats``
+property, which returns a :class:`~audiotoolbox.SignalStats` object.
+This provides convenient access to common metrics, calculated per channel.
 
-Example
-~~~~~~~
-
-Calculate the RMS value of a signal:
+Let's create a noise signal to demonstrate:
 
 .. code-block:: python
 
-    from audiotoolbox import Signal
+   import audiotoolbox as audio
 
-    # Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate
-    sig = Signal(2, 1, 48000)
+   # Create a two-channel noise signal
+   sig = audio.Signal(n_channels=2, duration=1, fs=48000).add_noise()
 
-    # Calculate the RMS value of the signal
-    rms_value = sig.rms()
-    print(f"RMS value: {rms_value}")
+The following properties are available:
+
+* **.stats.rms**: The Root-Mean-Square level of the signal.
+* **.stats.dbspl**: The level in dB Sound Pressure Level (SPL), assuming
+    the signal values are pressure in Pascals relative to 20 µPa.
+* **.stats.dbfs**: The level in dB Full Scale, where 0 dBFS is a sine
+    wave with an amplitude of 1.
+* **.stats.dba** and **.stats.dbc**: A- and C-weighted SPL.
+* **.stats.crest_factor**: The ratio of the peak amplitude to the RMS value.
+
+.. code-block:: python
+
+   # Get various level and statistical properties
+   rms_val = sig.stats.rms
+   spl_val = sig.stats.dbspl
+   dbfs_val = sig.stats.dbfs
+   crest_val = sig.stats.crest_factor
+
+   print(f"RMS: {rms_val}")
+   print(f"SPL: {spl_val:.2f} dB")
+   print(f"dBFS: {dbfs_val:.2f} dB")
+   print(f"Crest Factor: {crest_val:.2f} dB")
+
+
+Setting and Normalizing Levels
+------------------------------
+
+To change a signal's level, use the methods directly available on the
+``Signal`` object.
 
 Setting Sound Pressure Level (SPL)
-----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The SPL of a signal is a measure of its loudness. The `set_dbspl` method of the `Signal` class normalizes the signal to a given SPL in dB relative to 20e-6 Pa.
-
-Example
-~~~~~~~
-
-Set the SPL of a signal to 70 dB:
+The :meth:`~audiotoolbox.Signal.set_dbspl` method normalizes the signal
+to a target SPL.
 
 .. code-block:: python
 
-    from audiotoolbox import Signal
+   # Normalize the signal to 70 dB SPL
+   sig.set_dbspl(70)
 
-    # Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate
-    sig = Signal(2, 1, 48000)
+   # The .stats.dbspl property will now reflect this new level
+   print(f"New SPL: {sig.stats.dbspl:.2f} dB")
 
-    # Set the SPL of the signal to 70 dB
-    sig.set_dbspl(70)
+Setting dBFS
+~~~~~~~~~~~~
 
-Setting dBFS RMS Value
-----------------------
-
-The dBFS RMS value of a signal is a measure of its amplitude relative to the full scale. 
-The `set_dbfs` method of the `Signal` class normalizes the signal to a given dBFS RMS value.
-
-Example
-~~~~~~~
-
-Set the dBFS RMS value of a signal to -3 dB:
+Similarly, :meth:`~audiotoolbox.Signal.set_dbfs` normalizes the signal to
+a target dBFS value.
 
 .. code-block:: python
 
-    from audiotoolbox import Signal
+   # Normalize the signal to -6 dBFS
+   sig.set_dbfs(-6)
 
-    # Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate
-    sig = Signal(2, 1, 48000)
+   print(f"New dBFS: {sig.stats.dbfs:.2f} dB")
 
-    # Set the dBFS RMS value of the signal to -3 dB
-    sig.set_dbfs(-3)
+Relative Level Adjustments
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Example
-~~~~~~~
-
-Set the level of one signal 10db above another signal:
+These methods can be used to set levels relatively. For example, to set
+one signal to a 10 dB higher level than another:
 
 .. code-block:: python
 
-    from audiotoolbox import Signal
+   # Create two signals
+   sig1 = audio.Signal(n_channels=2, duration=1, fs=48000).add_noise()
+   sig2 = audio.Signal(n_channels=2, duration=1, fs=48000).add_noise()
 
-    # Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate
-    sig1 = Signal(2, 1, 48000)
-    sig2 = Signal(2, 1, 48000)
+   # Set the level of sig1 to be 10 dB higher than sig2
+   sig1.set_dbfs(sig2.stats.dbfs + 10)
 
-    # Set the level of sig1 10db above sig2
-    sig1.set_dbfs(sig2.stats.dbfs + 10)
-
-Set the level of channel one of a signal 5 db below channel two:
-
-.. code-block:: python
-
-    from audiotoolbox import Signal
-
-    # Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate
-    sig = Signal(2, 1, 48000)
-
-    # Set the level of channel one 5 db below channel two
-    sig.ch(1).set_dbfs(sig.ch(2).stats.dbfs - 5)
-
-
-Calculating Signal Statistics
------------------------------
-
-The `SignalStats` class provides methods for calculating various signal statistics, such as 
-SPL, dBFS, crest factor, and A-weighted and C-weighted SPL.
-
-Example
-~~~~~~~
-
-Calculate the SPL, dBFS, and crest factor of a signal:
+You can also apply this to individual channels. To set the first channel
+to a 5 dB lower level than the second channel:
 
 .. code-block:: python
 
-    from audiotoolbox import Signal
-
-    # Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate
-    sig = Signal(2, 1, 48000)
-
-    # Calculate the SPL of the signal
-    spl_value = sig.stats.dbspl
-    print(f"SPL value: {spl_value} dB")
-
-    # Calculate the dBFS of the signal
-    dbfs_value = sig.stats.dbfs
-    print(f"dBFS value: {dbfs_value} dB")
-
-    # Calculate the crest factor of the signal
-    crest_factor_value = sig.stats.crest_factor
-    print(f"Crest factor: {crest_factor_value} dB")
-
-    # Calculate the rms value of the signal
-    rms_value = sig.stats.rms
-    print(f"RMS value: {rms_value}")
-
-Calculate the A-weighted and C-weighted SPL of a signal:
-
-.. code-block:: python
-
-    from audiotoolbox import Signal
-
-    # Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate
-    sig = Signal(2, 1, 48000)
-
-    # Calculate the A-weighted SPL of the signal
-    dba_value = sig.stats.dba
-    print(f"A-weighted SPL: {dba_value} dB")
-
-    # Calculate the C-weighted SPL of the signal
-    dbc_value = sig.stats.dbc
-    print(f"C-weighted SPL: {dbc_value} dB")
-
-
-See Also
---------
-
-- :meth:`audiotoolbox.Signal.rms` : Method to calculate the RMS value of the signal.
-- :meth:`audiotoolbox.Signal.set_dbspl` : Method to set the SPL of the signal.
-- :meth:`audiotoolbox.Signal.set_dbfs` : Method to set the dBFS RMS value of the signal.
-- :meth:`audiotoolbox.SignalStats.dbspl` : Property to calculate the SPL of the signal.
-- :meth:`audiotoolbox.SignalStats.dbfs` : Property to calculate the dBFS of the signal.
-- :meth:`audiotoolbox.SignalStats.crest_factor` : Property to calculate the crest factor of the signal.
-- :meth:`audiotoolbox.SignalStats.dba` : Property to calculate the A-weighted SPL of the signal.
-- :meth:`audiotoolbox.SignalStats.dbc` : Property to calculate the C-weighted SPL of the signal.
+   # Set channel 0 to be 5 dB lower than channel 1
+   sig.ch[0].set_dbfs(sig.ch[1].stats.dbfs - 5)
