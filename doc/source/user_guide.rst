@@ -216,6 +216,13 @@ uncorrelated noise by defining low-, high-, or band-pass filters that are
 applied before the Gram-Schmidt process. For more details, please refer
 to the documentation of :meth:`audiotoolbox.Signal.add_uncorr_noise`.
 
+Playback
+========
+The :meth:`audiotoolbox.Signal.play` method can be used to quickly listen to the signal using the default device.
+
+>>> sig = audio.Signal(1, 1, 48000).add_tone(500).add_fade_window(30e-3)
+>>> sig.play()
+
 Convolution
 ===========
 

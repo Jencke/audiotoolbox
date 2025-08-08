@@ -1,7 +1,11 @@
 """Signal mixins for organizing Signal class functionality."""
 
 from typing import TYPE_CHECKING
+
 import numpy as np
+
+import resampy
+
 import warnings
 from ... import audiotoolbox as audio
 
@@ -365,3 +369,27 @@ class ModificationMixin:
         self *= mult_fac
 
         return self
+
+    def resample(self, new_fs: int):
+        """Resample the signal to a new sampling rate.
+
+        This method uses the `resampy` library to resample the signal to a new
+        sampling rate. It is based on the band-limited sinc interpolation method
+        for sampling rate conversion as described by Smith (2015). [1]_.
+
+        .. [1] Smith, Julius O. Digital Audio Resampling Home Page
+            Center for Computer Research in Music and Acoustics (CCRMA),
+            Stanford University, 2015-02-23.
+            Web published at `<http://ccrma.stanford.edu/~jos/resample/>`_.
+        """
+
+        if new_fs <= 0 and not isinstance(new_fs, int):
+            raise ValueError("new_fs must be a positive integer")
+        if not isinstance(self.base, type(None)):
+            raise RuntimeError("Zeropad can only be applied to" " the whole signal")
+        else:
+            out = resampy.resample(x=self, sr_orig=self.fs, sr_new=new_fs, axis=0)
+            self.resize(out.shape, refcheck=False)
+            self[:] = out
+            self._fs = new_fs
+            return self

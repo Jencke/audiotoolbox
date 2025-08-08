@@ -1,3 +1,9 @@
+0.74 -> develop
+  - Major refracturing
+  - Improvement of Documentation
+  - New play method for quick signal playback
+  - 
+
 0.73 -> 0.74
   - Improvements of the Documentation.
   - Implemented several spectrograms in the time_frequency sub-module of the Signal class.
