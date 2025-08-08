@@ -223,6 +223,31 @@ The :meth:`audiotoolbox.Signal.play` method can be used to quickly listen to the
 >>> sig = audio.Signal(1, 1, 48000).add_tone(500).add_fade_window(30e-3)
 >>> sig.play()
 
+Resampling
+==========
+Resampling is done using the :meth:`audiotoolbox.Signal.resample` method.
+
+.. plot::
+   :include-source:
+
+   fig, ax = plt.subplots(2, 2, sharex='all', sharey='all')
+   sig = audio.Signal(1, 100e-3, fs=2000).add_tone(100).add_fade_window(30e-3)
+   ax[0, 0].plot(sig.time, sig, 'x-')
+   ax[0, 0].set_title('Signal at $f_c$=2kHz')
+   sig.resample(4000)
+   ax[0, 1].plot(sig.time, sig, 'x-')
+   ax[0, 1].set_title('Signal upsampled to $f_c$=4kHz')
+   sig.resample(1000)
+   ax[1, 0].plot(sig.time, sig, 'x-')
+   ax[1, 0].set_title('Signal downsampled to $f_c$=1kHz')
+   ax[1, 1].set_visible(False)
+   ax[1, 0].set_xlabel("Time / s")
+   ax[0, 0].set_ylabel("Amplitude")
+   ax[1, 0].set_ylabel("Amplitude")
+   fig.tight_layout()
+   fig.show()
+
+
 Convolution
 ===========
 
