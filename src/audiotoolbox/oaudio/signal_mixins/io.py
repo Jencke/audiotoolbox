@@ -1,8 +1,9 @@
 """Signal mixins for organizing Signal class functionality."""
 
 from typing import TYPE_CHECKING
+
 import numpy as np
-import warnings
+
 from ... import audiotoolbox as audio, io
 
 if TYPE_CHECKING:
