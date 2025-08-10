@@ -4,86 +4,83 @@
 Introduction
 ============
 
-**audiotoolbox** is a python package designed to generate and anlyze
+**audiotoolbox** is a Python package designed to generate and analyze
 acoustic stimuli for use in auditory research. It aims to provide an
-easy to use and intuitive interface.
+easy-to-use and intuitive interface.
 
 Fluent Interface
 ----------------
 
-The main API of audiotoolbox provides a fluent interface for generating
+The main API of **audiotoolbox** provides a fluent interface for generating
 and analyzing signals. In a fluent interface, methods are applied
-in-place and the object itself is returend which allowes methods to be
-stacked.
+in-place and the object itself is returned, which allows methods to be
+chained together.
 
-The commands:
-
->>> import audiotools as audio
->>> sig = audio.Signal(n_channels=1, duration=100e-3, fs=48000)
->>> sig.add_tone(500).set_dbspl(60).add_fade_window(10e-3, 'cos')
-
-create a 100 ms long signal with 1 channel at a sampling rate of
-48kHz. A 500 Hz tone is then added to this signal, the level is set to
-60dB SPL and a 10ms raised cosine fade-in and fade-out is added.
+The following commands create a 100 ms long signal, add a 500 Hz tone,
+set its level to 60 dB SPL, and apply a 10 ms fade-in and fade-out.
 
 .. plot::
+   :include-source:
 
-   >>> import audiotools as audio
-   >>> import matplotlib.pyplot as plt
-   >>> sig = audio.Signal(n_channels=1, duration=100e-3, fs=48000)
-   >>> sig.add_tone(500).set_dbspl(60).add_fade_window(10e-3, 'cos')
-   >>> plt.title('100ms long 500Hz tone with raised cosine slopes')
-   >>> plt.plot(sig.time, sig)
-   >>> plt.xlabel('Time / s')
-   >>> plt.ylabel('Amplitude')
-   >>> plt.show()
+   import audiotoolbox as audio
+   import matplotlib.pyplot as plt
+
+   sig = audio.Signal(n_channels=1, duration=100e-3, fs=48000)
+   sig.add_tone(500).set_dbspl(60).add_fade_window(10e-3, 'cos')
+
+   plt.plot(sig.time, sig)
+   plt.title('100ms 500Hz Tone with Raised Cosine Fades')
+   plt.xlabel('Time / s')
+   plt.ylabel('Amplitude')
+   plt.grid(True)
+   plt.show()
 
 
 The Signal class
 ----------------
 
-The audiotoolbox.Signal class is used to work with signals in the time
-domain. Like all other classes that are used, the Signal class is
-inherited from the numpy.ndarray_ class and thus also inherits all its
-methods. It is also directly compatible with most of the packages in
-scientific stack such as scipy and matplotlib.
+The ``audiotoolbox.Signal`` class is used to work with signals in the time
+domain. It inherits from the `numpy.ndarray`_ class and thus also inherits
+all of its methods. This makes it directly compatible with most packages
+in the scientific Python stack, such as ``scipy`` and ``matplotlib``.
 
-To create a empty signal, the class is called providing the number of
-channels, the duration of the stimulus and the sampling rate.
+To create an empty signal, call the class with the number of channels,
+the duration of the stimulus, and the sampling rate.
 
 >>> sig = audio.Signal(n_channels=2, duration=1, fs=48000)
->>> print(sig.shape)
+>>> sig.shape
 (48000, 2)
 
-Basic properties of the signal such as the number of channels, samples
-or the duration are availible as properties:
+Basic properties of the signal, such as the number of channels, samples,
+or the duration, are available as properties:
 
->>> print(sig.n_channels, sig.duration, sig.n_samples, sig.fs)
-2 1.0 48000 48000
+>>> sig.n_channels, sig.duration, sig.n_samples, sig.fs
+(2, 1.0, 48000, 48000)
 
-Signals can have several dimensions:
+Signals can have multiple dimensions:
 
 >>> sig = audio.Signal(n_channels=(2, 3), duration=1, fs=48000)
->>> print(sig.shape)
+>>> sig.shape
 (48000, 2, 3)
 
-to directly index individual channels, the objects provides the `ch` property
-which also supports channel slicing
+To directly index individual channels, the object provides the ``ch`` property,
+which also supports channel slicing:
 
 >>> sig = audio.Signal(n_channels=(2, 3), duration=1, fs=48000)
->>> slice = sig.ch[0, :]
->>> print(sig.shape, slice.shape)
-(48000, 2, 3) (48000, 3)
+>>> channel_slice = sig.ch[0, :]
+>>> channel_slice.shape
+(48000, 3)
 
-Methods are allways applied to all channels.
+By default, methods are always applied to all channels. The following
+example adds the *same* noise signal to both channels:
 
 >>> sig = audio.Signal(n_channels=2, duration=1, fs=48000)
 >>> sig.add_noise()
 >>> np.all(sig.ch[0] == sig.ch[1])
 True
 
-thus adds the same noise to both channels of the signal. The ``ch``
-indexer if methods should be applied to one individual signal.
+Use the ``ch`` indexer to apply methods to individual channels. This
+example adds *different* noise signals to each channel:
 
 >>> sig = audio.Signal(n_channels=2, duration=1, fs=48000)
 >>> sig.ch[0].add_noise()
@@ -91,39 +88,30 @@ indexer if methods should be applied to one individual signal.
 >>> np.all(sig.ch[0] == sig.ch[1])
 False
 
-Using the ``ch`` indexer is equivalent to direclty indexing the signal
-
->>> sig = audio.Signal(n_channels=2, duration=1, fs=48000)
->>> sig.ch[0].add_tone(500)
->>> sig[:, 1].add_tone(500)
->>> np.all(sig.ch[0] == sig.ch[1])
-True
-
 The FrequencyDomainSignal class
 -------------------------------
 
-Audiotools provides a simple mechanism of switching between
-time-domain and frequency-domain representation of a signal.
+**audiotoolbox** provides a simple mechanism for switching between
+time-domain and frequency-domain representations of a signal.
 
->>> sig = audio.Signal(2, 1, 48000).add_noise()
->>> print(type(sig))
-<class 'audiotoolbox.oaudio.signal.Signal'>
+>>> sig = audio.Signal(n_channels=2, duration=1, fs=48000).add_noise()
+>>> type(sig)
+<class 'audiotoolbox.signal.Signal'>
+>>>
 >>> fdomain_sig = sig.to_freqdomain()
->>> print(type(fdomain_sig))
-<class 'audiotoolbox.oaudio.freqdomain_signal.FrequencyDomainSignal'>
+>>> type(fdomain_sig)
+<class 'audiotoolbox.freqdomain_signal.FrequencyDomainSignal'>
 
-calling the method ``audiotoolbox.Signal.to_freqdomain()`` returns a
-FrequencyDomainSignal object which contains the FFT transformed
-signal. It is important to note that the object does not directly
-contain the FFT transformed but that all frequency components where
-normalized by dividing them by the number of samples.
+Calling the ``to_freqdomain()`` method returns a ``FrequencyDomainSignal``
+object containing the FFT of the signal. It is important to note that
+the frequency components are normalized by dividing them by the number of
+samples.
 
-Like the Signal class, the FrequencyDomainSignal is inherits from
-``numpy.ndarray`` an empty object can be created using an syntax
-identical to creating a Signal object
+Like the ``Signal`` class, ``FrequencyDomainSignal`` inherits from
+`numpy.ndarray`_, and an empty object can be created using a similar syntax:
 
->>> sig = audio.FrequencyDomainSignal(n_channels=2, duration=1, fs=48000)
->>> print(sig.shape)
+>>> sig_freq = audio.FrequencyDomainSignal(n_channels=2, duration=1, fs=48000)
+>>> sig_freq.shape
 (48000, 2)
 
 .. _numpy.ndarray: https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html
