@@ -1,21 +1,19 @@
-import audiotoolbox as audio
-import numpy as np
-import matplotlib.pyplot as plt
+sig = audio.Signal(1, 1, 48000)
+sig.add_tone(500).set_dbfs(0)
+sig.add_noise("pink")
+sig.add_fade_window(10e-3)
 
-# Create a pink noise signal
-noise = audio.Signal(1, duration=5, fs=48000).add_noise('white')
 
-# Calculate octave-band levels
-fc, levels = noise.stats.octave_band_levels(oct_fraction=3)
-
-base_value = -50
-# Plot the results
-plt.figure(figsize=(8, 5))
-plt.bar(np.arange(len(fc)), levels -base_value, tick_label=np.round(fc).astype(int), bottom=base_value)
-# plt.bar(np.arange(len(fc)), levels, tick_label=np.round(fc).astype(int))
-plt.title('1/3-Octave Band Levels of White Noise')
-plt.xlabel('Center Frequency / Hz')
-plt.ylabel('Level / dBFS')
-plt.xticks(rotation=-45)
-plt.tight_layout()
+spec, fc = sig.time_frequency.octave_band_specgram(
+    nperseg=1024, noverlap=512, flow=16, fhigh=16000
+)
+fig, ax = plt.subplots(1, 1)
+cb = ax.pcolormesh(spec.time, fc, spec.T)
+ax.set_yscale("log")
+ax.set_ylim(16, 16000)
+ax.set_ylabel("Frequency / Hz")
+ax.set_xlabel("Time / s")
+ax.set_title("1/3 Octave-band spectrogram")
+cb = plt.colorbar(cb, ax=ax)
+cb.set_label("dB FS")
 plt.show()

@@ -18,6 +18,7 @@
       <script src="_static/documentation_options.js?v=5929fcd5"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -52,7 +53,10 @@
 <li class="toctree-l1 current"><a class="reference internal" href="api.html">API reference</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="api_fluent.html">Fluent Interface API</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="api_fluent_signal.html">Signals in the time domain (audiotoolbox.Signal)</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api_function.html">Function Based API</a></li>
@@ -90,6 +94,250 @@
 <h1>Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)<a class="headerlink" href="#signals-in-the-frequency-domain-audiotoolbox-frequencydomainsignal" title="Link to this heading"></a></h1>
 <p>The <cite>FrequencyDomainSignal</cite> class also inherits from <cite>numpy.ndarray</cite> via the
 <cite>audiotoolbox.BaseSignal</cite> class:</p>
+digraph inheritance9d180532fc {
+bgcolor=transparent;
+rankdir=LR;
+size=&quot;8.0, 12.0&quot;;
+  &quot;audiotoolbox.oaudio.base_signal.BaseSignal&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,tooltip=&quot;Basic Signal class inherited by all Signal representations&quot;];
+  &quot;numpy.ndarray&quot; -&gt; &quot;audiotoolbox.oaudio.base_signal.BaseSignal&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;audiotoolbox.oaudio.freqdomain_signal.FrequencyDomainSignal&quot; [URL=&quot;#audiotoolbox.FrequencyDomainSignal&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Base class for signals in the frequency domain.&quot;];
+  &quot;audiotoolbox.oaudio.base_signal.BaseSignal&quot; -&gt; &quot;audiotoolbox.oaudio.freqdomain_signal.FrequencyDomainSignal&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;numpy.ndarray&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,tooltip=&quot;ndarray(shape, dtype=float, buffer=None, offset=0,&quot;];
+}
+<dl class="py class">
+<dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">audiotoolbox.</span></span><span class="sig-name descname"><span class="pre">FrequencyDomainSignal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_channels:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">tuple</span> <span class="pre">|</span> <span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration:</span> <span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'complex'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal" title="Link to this definition"></a></dt>
+<dd><p>Base class for signals in the frequency domain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_channels</strong> (<em>int</em><em> or </em><em>tuple</em>) – Number of channels to be used, can be N-dimensional</p></li>
+<li><p><strong>duration</strong> (<em>float</em>) – Stimulus duration in seconds</p></li>
+<li><p><strong>fs</strong> (<em>int</em>) – Sampling rate  in Hz</p></li>
+<li><p><strong>dtype</strong> (<em>complex</em><em>, </em><em>optional</em>) – Datatype of the array (default is float)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Signal</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The new object.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.abs">
+<span class="sig-name descname"><span class="pre">abs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.abs" title="Link to this definition"></a></dt>
+<dd><p>Absolute value</p>
+<p>Calculates the absolute value or modulus of all values of the signal</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.add" title="Link to this definition"></a></dt>
+<dd><p>In-place summation</p>
+<p>This function allowes for in-place summation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>scalar</em><em> or </em><em>ndarray</em>) – The value or array to add to the signal</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns itself</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audiotoolbox</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+<span class="go">2.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.ch">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ch</span></span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.ch" title="Link to this definition"></a></dt>
+<dd><p>Direct channel indexer</p>
+<p>Returns an indexer class which enables direct indexing and
+slicing of the channels indipendent of samples.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audiotoolbox</span><span class="o">.</span><span class="n">Signal</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="ow">is</span> <span class="n">sig</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.concatenate">
+<span class="sig-name descname"><span class="pre">concatenate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.concatenate" title="Link to this definition"></a></dt>
+<dd><p>Concatenate another signal or array</p>
+<p>This method appends another signal to the end of the current
+signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>signal</strong> (<em>signal</em><em> or </em><em>ndarray</em>) – The signal to append</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns itself</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.duration">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">duration</span></span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.duration" title="Link to this definition"></a></dt>
+<dd><p>Duration of the signal in seconds</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.freq">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">freq</span></span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.freq" title="Link to this definition"></a></dt>
+<dd><p>Return the frequency axis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>The frequency axis in Hz</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.fs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.fs" title="Link to this definition"></a></dt>
+<dd><p>Sampling rate of the signal in Hz</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.mag">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mag</span></span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.mag" title="Link to this definition"></a></dt>
+<dd><p>Returns the magnitudes of the frequency components</p>
+<p>equivalent to <a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal.abs" title="audiotoolbox.FrequencyDomainSignal.abs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.FrequencyDomainSignal.abs()</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>The magnitudes</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.multiply">
+<span class="sig-name descname"><span class="pre">multiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.multiply" title="Link to this definition"></a></dt>
+<dd><p>In-place multiplication</p>
+<p>This function allowes for in-place multiplication</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>scalar</em><em> or </em><em>ndarray</em>) – The value or array to muliply with the signal</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns itself</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audiotoolbox</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+<span class="go">2.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.n_channels">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_channels</span></span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.n_channels" title="Link to this definition"></a></dt>
+<dd><p>Number of channels in the signal</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.n_samples">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_samples</span></span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.n_samples" title="Link to this definition"></a></dt>
+<dd><p>Number of samples in the signal</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.phase">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">phase</span></span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.phase" title="Link to this definition"></a></dt>
+<dd><p>The Argument of the frequency components</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>The arguments in radiants</strong></p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.phase_shift">
+<span class="sig-name descname"><span class="pre">phase_shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.phase_shift" title="Link to this definition"></a></dt>
+<dd><p>Apply a phase shift</p>
+<p>Phase shift the spectrum by multiplying all frequency
+components with:</p>
+<div class="math notranslate nohighlight">
+\[H(\omega) = e^{-j\psi}\]</div>
+<p>where <span class="math notranslate nohighlight">\(j\)</span> is the complex unit and <span class="math notranslate nohighlight">\(\psi\)</span> is the
+desired phaseshift.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>phase</strong> (<em>scalar</em>) – The phaseshift</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Returns itself</strong> (<em>FrequencyDomainSignal</em>)</p></li>
+<li><p><em>Also See</em></p></li>
+<li><p><em>——–</em></p></li>
+<li><p><em>audiotoolbox.Signal.phase_shift</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.time_shift">
+<span class="sig-name descname"><span class="pre">time_shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.time_shift" title="Link to this definition"></a></dt>
+<dd><p>Apply a time shift</p>
+<p>Time shift the signal by a linear phase shift by
+multiplying all frequency components with:</p>
+<div class="math notranslate nohighlight">
+\[H(\omega) = e^{-j\omega\Delta t}\]</div>
+<p>where <span class="math notranslate nohighlight">\(j\)</span> is the complex unit, <span class="math notranslate nohighlight">\(omega\)</span> the
+circular frequency and <span class="math notranslate nohighlight">\(\Delta t\)</span> the timeshift.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>scalar</em>) – The time by which the signal should be shifted</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Returns itself</strong> (<em>FrequencyDomainSignal</em>)</p></li>
+<li><p><em>Also See</em></p></li>
+<li><p><em>——–</em></p></li>
+<li><p><em>audiotoolbox.Signal.delay</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.to_timedomain">
+<span class="sig-name descname"><span class="pre">to_timedomain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.to_timedomain" title="Link to this definition"></a></dt>
+<dd><p>Convert to timedomain.</p>
+<p>Convert to timedomain by means of inverse DFT. If the complex
+part after DFT is small (&lt; 222e-16), it is neglected. This
+method is not applied in-place but a new
+:meth:’audiotoolbox.Signal’ object is returned</p>
+<section id="returns">
+<h2>Returns:<a class="headerlink" href="#returns" title="Link to this heading"></a></h2>
+<p>The timedomain representation: Signal</p>
+</section>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
