@@ -2,6 +2,7 @@
 
 from typing import TYPE_CHECKING, Literal
 import numpy as np
+from scipy.signal import fftconvolve
 import warnings
 from ... import audiotoolbox as audio, filter as filt, io
 
