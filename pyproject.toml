@@ -16,7 +16,14 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 requires-python = ">=3.10"
-dependencies = ["numpy", "scipy", "matplotlib", "soundfile", "sounddevice"]
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "soundfile",
+    "sounddevice",
+    "resampy",
+]
 
 [project.optional-dependencies]
 dev = ["pytest", "coverage", "pytest-cov"]
