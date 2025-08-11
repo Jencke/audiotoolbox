@@ -248,6 +248,45 @@ Resampling is done using the :meth:`audiotoolbox.Signal.resample` method.
    fig.show()
 
 
+Trimming Signals
+================
+
+The :meth:`audiotoolbox.Signal.trim` method can be used to shorten a signal
+by "trimming" it to a specified start and end time. This is useful for
+extracting a segment of interest from a longer signal. The method modifies
+the signal in-place.
+
+For example, to extract the segment between 0.2 and 0.8 seconds from a
+1-second signal:
+
+>>> import audiotoolbox as audio
+>>> # Create a 1-second noise signal
+>>> signal = audio.Signal(1, 1, 48000).add_noise()
+>>> print(f'Original duration: {signal.duration:.2f}s')
+Original duration: 1.00s
+>>>
+>>> # Trim the signal to the segment between 0.2s and 0.8s
+>>> signal.trim(0.2, 0.8)
+>>> print(f'New duration: {signal.duration:.2f}s')
+New duration: 0.60s
+
+You can also specify only a start time to trim the beginning of the
+signal, or use negative values to trim from the end.
+
+>>> # Create another 1-second signal
+>>> signal = audio.Signal(1, 1, 48000).add_noise()
+>>>
+>>> # Trim the first 200ms
+>>> signal.trim(0.2)
+>>> print(f'Duration after trimming start: {signal.duration:.2f}s')
+Duration after trimming start: 0.80s
+>>>
+>>> # Trim the last 100ms of the remaining signal
+>>> signal.trim(0, -0.1)
+>>> print(f'Duration after trimming end: {signal.duration:.2f}s')
+Duration after trimming end: 0.70s
+
+
 Convolution
 ===========
 
