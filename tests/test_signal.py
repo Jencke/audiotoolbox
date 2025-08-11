@@ -338,35 +338,36 @@ def test_add_uncorr_noise():
     assert sig.n_channels == (2, 2)
 
 
-def test_clip():
+def test_trim():
     sig = Signal(2, 1, 48000).add_noise()
     o_sig = sig.copy()
-    sig.clip(0, 1)
+    sig.trim(0, 1)
     assert sig.n_samples == o_sig.n_samples
 
-    # Test multi channel clipping (2 x 2 )
+    # Test multi channel trimping (2 x 2 )
     sig = Signal((2, 2), 1, 48000).add_noise()
     o_sig = sig.copy()
-    sig.clip(0, 1)
+    sig.trim(0, 1)
     assert sig.n_samples == o_sig.n_samples
 
     sig = Signal(2, 1, 48000).add_noise()
     o_sig = sig.copy()
-    sig.clip(0, 0.5)
+    sig.trim(0, 0.5)
+    assert sig.duration == 0.5
     assert sig.n_samples == (o_sig.n_samples // 2)
     assert np.all(sig == o_sig[: o_sig.n_samples // 2, :])
     assert sig.base == None
 
     sig = Signal(2, 1, 48000).add_noise()
     o_sig = sig.copy()
-    sig.clip(0.5)
+    sig.trim(0.5)
     assert sig.n_samples == (o_sig.n_samples // 2)
     assert np.all(sig == o_sig[o_sig.n_samples // 2 :, :])
     assert sig.base == None
 
     sig = Signal((2, 2), 1, 48000).add_noise()
     o_sig = sig.copy()
-    sig.clip(0.5)
+    sig.trim(0.5)
     assert sig.n_samples == (o_sig.n_samples // 2)
     assert np.all(sig == o_sig[o_sig.n_samples // 2 :, :])
     assert sig.base == None
@@ -375,7 +376,7 @@ def test_clip():
     sig = Signal(2, 1, 48000).add_noise()
     o_sig = sig.copy()
     n_samples = audio.nsamples(0.9, sig.fs)
-    sig.clip(0, -0.1)
+    sig.trim(0, -0.1)
     assert sig.n_samples == n_samples
     assert np.all(sig == o_sig[:n_samples, :])
     assert sig.base == None

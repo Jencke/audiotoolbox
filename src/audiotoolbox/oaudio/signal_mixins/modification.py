@@ -239,7 +239,7 @@ class ModificationMixin:
 
         return self
 
-    def clip(self, t_start, t_end=None):
+    def trim(self, t_start, t_end=None):
         r"""Clip the signal between two points in time.
 
         removes the number of saamples according to t_start and

@@ -3,6 +3,7 @@
   - Improvement of Documentation
   - New play method for quick signal playback
   - Added resample method to signal
+  - Renamed clip into trim to not conflict with numpy method
 
 0.73 -> 0.74
   - Improvements of the Documentation.
