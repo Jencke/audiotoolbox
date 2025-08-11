@@ -1,5 +1,5 @@
 0.74 -> 0.75
-  - Major refracturing
+  - Major restructuring of Signal class (fully backwards compatible)
   - Improvement of Documentation
   - New play method for quick signal playback
   - Added resample method to signal
