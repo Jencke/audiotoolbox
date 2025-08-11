@@ -1,3 +1,10 @@
+0.74 -> 0.75
+  - Major restructuring of Signal class (fully backwards compatible)
+  - Improvement of Documentation
+  - New play method for quick signal playback
+  - Added resample method to signal
+  - Renamed clip into trim to not conflict with numpy method
+
 0.73 -> 0.74
   - Improvements of the Documentation.
   - Implemented several spectrograms in the time_frequency sub-module of the Signal class.

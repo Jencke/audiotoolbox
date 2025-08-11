@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "audiotoolbox"
-version = "0.74"
+version = "0.75"
 authors = [{ name = "Jörg Encke", email = "encke.joerg@gmail.com" }]
 description = "Toolbox for generating and working with audio signals"
 readme = "README.md"
@@ -16,7 +16,14 @@ classifiers = [
     "Topic :: Scientific/Engineering",
 ]
 requires-python = ">=3.10"
-dependencies = ["numpy", "scipy", "matplotlib", "soundfile"]
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "soundfile",
+    "sounddevice",
+    "resampy",
+]
 
 [project.optional-dependencies]
 dev = ["pytest", "coverage", "pytest-cov"]

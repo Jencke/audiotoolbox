@@ -109,7 +109,7 @@ class SignalStats(BaseStats):
         audiotoolbox.filter.bank.octave_bank
         """
         bank = audio.filter.bank.octave_bank(self.sig.fs, oct_fraction=oct_fraction)
-        bank_out = bank.filt(self.sig.ch[0])
+        bank_out = bank.filt(self.sig)
         return bank.fc, bank_out.stats.dbfs
 
 
