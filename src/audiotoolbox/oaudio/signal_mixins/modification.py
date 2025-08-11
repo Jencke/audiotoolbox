@@ -240,9 +240,9 @@ class ModificationMixin:
         return self
 
     def trim(self, t_start, t_end=None):
-        r"""Clip the signal between two points in time.
+        r"""Trim the signal between two points in time.
 
-        removes the number of saamples according to t_start and
+        removes the number of samples according to t_start and
         t_end. This method can not be applied to a single channel or
         slice.
 
@@ -260,9 +260,9 @@ class ModificationMixin:
             Returns itself
         """
         if not isinstance(self.base, type(None)):
-            raise RuntimeError("Clipping can not be applied to slices")
+            raise RuntimeError("Trimming can not be applied to slices")
 
-        # calculate the indices at which the signal should be cliped
+        # calculate the indices at which the signal should be trimmed
         i_start = audio.nsamples(t_start, self.fs)
         if t_end:
             if t_end < 0:
@@ -272,7 +272,7 @@ class ModificationMixin:
             i_end = self.n_samples
 
         #  store the cliped part in the signal
-        self[0 : i_end - i_start, :] = self[i_start:i_end, :]
+        self[0 : i_end - i_start] = self[i_start:i_end]
 
         newshape = list(self.shape)
         newshape[0] = i_end - i_start

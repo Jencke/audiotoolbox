@@ -344,7 +344,12 @@ def test_trim():
     sig.trim(0, 1)
     assert sig.n_samples == o_sig.n_samples
 
-    # Test multi channel trimping (2 x 2 )
+    sig = Signal(1, 1, 48000).add_noise()
+    o_sig = sig.copy()
+    sig.trim(0, 0.5)
+    assert sig.n_samples == o_sig.n_samples // 2
+
+    # Test multi channel trimming (2 x 2 )
     sig = Signal((2, 2), 1, 48000).add_noise()
     o_sig = sig.copy()
     sig.trim(0, 1)
