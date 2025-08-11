@@ -10,43 +10,74 @@ if TYPE_CHECKING:
 class GenerationMixin:
     """Mixin for signal generation methods."""
 
-    def add_tone(self, frequency, amplitude=1, start_phase=0):
-        r"""Add a cosine to the signal.
+    def add_tone(
+        self: "Signal",
+        frequency: Union[float, np.ndarray, list],
+        amplitude: Union[float, np.ndarray, list] = 1,
+        start_phase: Union[float, np.ndarray, list] = 0,
+    ) -> "Signal":
+        r"""Add one or more cosine tones to the signal.
 
-        This function will add a pure tone to the current
-        waveform. following the equation:
+        This function will add pure tones to the current
+        waveform. If multiple frequencies are given (as arrays), their
+        waveforms are summed together before being added to the signal.
 
-        .. math:: x = x + cos(2\pi f t + \phi_0)
-
-        where :math:`x` is the waveform, :math:`f` is the frequency,
-        :math:`t` is the time and :math:`\phi_0` the starting phase.
-        The first evulated timepoint is 0.
+        .. math:: x_{new} = x_{old} + \sum_{i} A_i \cos(2\pi f_i t + \phi_{0,i})
 
         Parameters
         ----------
-        frequency : scalar
-            The tone frequency in Hz.
-        amplitude : scalar, optional
-            The amplitude of the cosine. (default = 1)
-        start_phase : scalar, optional
-            The starting phase of the cosine. (default = 0)
+        frequency : float or array-like
+            The tone frequency or frequencies in Hz.
+        amplitude : float or array-like, optional
+            The amplitude of the cosine(s). Must have the same
+            length as `frequency` if provided as an array. (default = 1)
+        start_phase : float or array-like, optional
+            The starting phase of the cosine(s) in radians. Must have
+            the same length as `frequency` if provided as an array. (default = 0)
 
         Returns
         -------
-        Returns itself : Signal
-
-        See Also
-        --------
-        audiotoolbox.generate_tone
-
+        Signal
+            Returns self for method chaining.
         """
-        wv = audio.generate_tone(self.duration, frequency, self.fs, start_phase)
+        # Ensure inputs are 1D arrays for consistent processing
+        frequency = np.atleast_1d(frequency)
+        amplitude = np.atleast_1d(amplitude)
+        start_phase = np.atleast_1d(start_phase)
 
-        # If multiple channels are defined, stack them.
-        # if self.n_channels > 1:
-        #     wv = np.tile(wv, [self.n_channels, 1]).T
-        self[:] = (self.T + amplitude * wv.T).T
+        # Validate that inputs are 1D
+        if not (frequency.ndim == 1 and amplitude.ndim == 1 and start_phase.ndim == 1):
+            raise ValueError(
+                "Inputs for frequency, amplitude, and start_phase must be scalars or 1D arrays."
+            )
 
+        # Check that if multiple arrays are given, they have the same length
+        arrs = [arr for arr in (frequency, amplitude, start_phase) if arr.size > 1]
+        if arrs:
+            it = iter(arrs)
+            the_len = len(next(it))
+            if not all(len(l) == the_len for l in it):
+                raise ValueError(
+                    "When providing arrays, frequency, amplitude, and start_phase must have the same length."
+                )
+
+        # Generate all tones and apply amplitude before summing.
+        # Broadcasting handles scalar vs. array inputs.
+        # `self.time[:, None]` -> shape (n_samples, 1)
+        # `frequency[None, :]` -> shape (1, n_freqs)
+        # Resulting `phases` shape: (n_samples, n_freqs)
+        phases = (
+            2 * np.pi * frequency[None, :] * self.time[:, None]
+            + start_phase[None, :]
+        )
+        summed_tones = np.sum(amplitude[None, :] * np.cos(phases), axis=1)
+
+        # Reshape the summed tones vector for broadcasting to all channels
+        # e.g., (n_samples,) -> (n_samples, 1, 1) for a 3D signal.
+        new_shape = (-1,) + (1,) * (self.ndim - 1)
+        tones_to_add = summed_tones.reshape(new_shape)
+
+        self += tones_to_add
         return self
 
     def add_noise(self, ntype="white", variance=1, seed=None):

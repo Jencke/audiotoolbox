@@ -68,6 +68,60 @@ def test_addtone():
     testing.assert_equal(sig.ch[0, 1], test)
     testing.assert_equal(sig.ch[1, 1], test)
 
+    freqs = np.random.random(10) * 1000 + 100
+    amplitudes = np.random.random(10) * 2
+    start_phases = np.random.random(10) * 2 * np.pi
+    sig = audio.Signal((2, 3), duration, fs)
+    for i_freq in range(len(freqs)):
+        sig.add_tone(
+            frequency=freqs[i_freq],
+            amplitude=amplitudes[i_freq],
+            start_phase=start_phases[i_freq],
+        )
+    sig2 = audio.Signal((2, 3), duration, fs)
+    sig2.add_tone(freqs, amplitudes, start_phases)
+
+    freqs = np.random.random(1) * 1000 + 100
+    amplitudes = np.random.random(10) * 2
+    start_phases = np.random.random(10) * 2 * np.pi
+    sig = audio.Signal((2, 3), duration, fs)
+    for i_freq in range(len(freqs)):
+        sig.add_tone(
+            frequency=freqs,
+            amplitude=amplitudes[i_freq],
+            start_phase=start_phases[i_freq],
+        )
+    sig2 = audio.Signal((2, 3), duration, fs)
+    sig2.add_tone(freqs, amplitudes, start_phases)
+
+    freqs = np.random.random(10) * 1000 + 100
+    amplitudes = np.random.random(1) * 2
+    start_phases = np.random.random(10) * 2 * np.pi
+    sig = audio.Signal((2, 3), duration, fs)
+    for i_freq in range(len(freqs)):
+        sig.add_tone(
+            frequency=freqs[i_freq],
+            amplitude=amplitudes,
+            start_phase=start_phases[i_freq],
+        )
+    sig2 = audio.Signal((2, 3), duration, fs)
+    sig2.add_tone(freqs, amplitudes, start_phases)
+    testing.assert_almost_equal(sig, sig2)
+
+    freqs = np.random.random(10) * 1000 + 100
+    amplitudes = np.random.random(10) * 2
+    start_phases = np.random.random(1) * 2 * np.pi
+    sig = audio.Signal((2, 3), duration, fs)
+    for i_freq in range(len(freqs)):
+        sig.add_tone(
+            frequency=freqs[i_freq],
+            amplitude=amplitudes[i_freq],
+            start_phase=start_phases,
+        )
+    sig2 = audio.Signal((2, 3), duration, fs)
+    sig2.add_tone(freqs, amplitudes, start_phases)
+    testing.assert_almost_equal(sig, sig2)
+
 
 def test_setdbspl():
     fs = 48000
