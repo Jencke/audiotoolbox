@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Loading and saving audio files &mdash; audiotoolbox  documentation</title>
+  <title>Loading and Saving Audio Files &mdash; audiotoolbox  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
@@ -64,7 +64,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Loading and saving audio files</li>
+      <li class="breadcrumb-item active">Loading and Saving Audio Files</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/user_guide/input_output.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -75,96 +75,85 @@
            <div itemprop="articleBody">
              
   <section id="loading-and-saving-audio-files">
-<span id="signal-io"></span><h1>Loading and saving audio files<a class="headerlink" href="#loading-and-saving-audio-files" title="Link to this heading"></a></h1>
-<p>This section explains how to load and save signals using the <cite>audiotoolbox</cite> library.
-The <cite>Signal</cite> class provides methods for reading signals from audio files and writing signals to audio files.
-The library supports all audio file formats supported by libsndfile, such as WAV, FLAC, AIFF, and more.</p>
-<section id="loading-signals">
-<h2>Loading Signals<a class="headerlink" href="#loading-signals" title="Link to this heading"></a></h2>
-<p>To load a signal from an audio file, you can use the <cite>from_file</cite> method of the <cite>Signal</cite> class. This method reads a signal from an audio file and returns it as a <cite>Signal</cite> object. You can specify the start point and the channels to load.</p>
-<section id="example">
-<h3>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h3>
-<p>A signal from a file can either be loaded into a new <cite>Signal</cite> object or an existing one.</p>
-<p>To load a signal into a new <cite>Signal</cite> object, you can use the following code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
+<span id="signal-io"></span><h1>Loading and Saving Audio Files<a class="headerlink" href="#loading-and-saving-audio-files" title="Link to this heading"></a></h1>
+<p>This section explains how to load and save signals using <strong>audiotoolbox</strong>.
+The <a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signal</span></code></a> class provides methods for reading from
+and writing to audio files. The library supports all audio file formats
+backed by <a class="reference external" href="http://www.mega-nerd.com/libsndfile/">libsndfile</a>, such as
+WAV, FLAC, and AIFF.</p>
+<section id="loading-audio-files">
+<h2>Loading Audio Files<a class="headerlink" href="#loading-audio-files" title="Link to this heading"></a></h2>
+<p>There are two primary ways to load an audio file: creating a new <code class="docutils literal notranslate"><span class="pre">Signal</span></code>
+object directly from a file, or loading audio data into an existing <code class="docutils literal notranslate"><span class="pre">Signal</span></code>.</p>
+<section id="creating-a-signal-from-a-file">
+<h3>Creating a Signal from a File<a class="headerlink" href="#creating-a-signal-from-a-file" title="Link to this heading"></a></h3>
+<p>The most direct way to load an audio file is to use the
+<a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal.from_file" title="audiotoolbox.Signal.from_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_file()</span></code></a> class method. This creates a new
+<code class="docutils literal notranslate"><span class="pre">Signal</span></code> object with the properties (channel count, sample rate)
+inferred from the file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
 
-<span class="c1"># Load the signal from the file &quot;example.wav&quot; into a new Signal object</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;example.wav&quot;</span><span class="p">)</span>
+<span class="c1"># Load the signal from &quot;example.wav&quot; into a new Signal object</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;example.wav&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This code creates a new <cite>Signal</cite> object and loads the signal from the file “example.wav” into it. The sample rate and number of channels are automatically determined from the file.</p>
-<p>If you want to load the signal into an existing <cite>Signal</cite> object, you can use the following code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
+</section>
+<section id="loading-data-into-an-existing-signal">
+<h3>Loading Data into an Existing Signal<a class="headerlink" href="#loading-data-into-an-existing-signal" title="Link to this heading"></a></h3>
+<p>You can also load audio data into a <code class="docutils literal notranslate"><span class="pre">Signal</span></code> object that you have already
+created. When doing this, the sample rate and number of channels of the
+file must match the existing <code class="docutils literal notranslate"><span class="pre">Signal</span></code> object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
 
-<span class="c1"># Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
+<span class="c1"># Create a Signal object</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 
-<span class="c1"># Load the signal from the file &quot;example.wav&quot;</span>
+<span class="c1"># Load the signal from &quot;example.wav&quot; into the existing object</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;example.wav&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>In this case, the signal is loaded into the existing <cite>Signal</cite> object <cite>sig</cite>. The sample rate and number of channels of the file must match the <cite>Signal</cite> object.
-If you want to load only a portion of the signal or a specific channel, you can specify additional parameters:</p>
-<ul class="simple">
-<li><p><cite>start</cite>: The starting sample index to load from the file.</p></li>
-<li><p><cite>channels</cite>: The channel index to load from the file.</p></li>
-</ul>
-<p>To read only a portion of the signal starting at sample index 1000, you can use the following code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
+</section>
+<section id="reading-a-portion-of-a-file">
+<h3>Reading a Portion of a File<a class="headerlink" href="#reading-a-portion-of-a-file" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">from_file</span></code> method allows you to load only a specific portion of the
+audio file by using the <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">channels</span></code> parameters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
 
-<span class="c1"># Create a Signal object with 1 channel, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
+<span class="c1"># Create a Signal object to hold the partial data</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 
-<span class="c1"># Load the signal from the file &quot;example.wav&quot; starting at sample index 1000</span>
+<span class="c1"># Load only the first channel from &quot;example.wav&quot;, starting at sample 1000</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;example.wav&quot;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 </section>
-<section id="saving-signals">
-<h2>Saving Signals<a class="headerlink" href="#saving-signals" title="Link to this heading"></a></h2>
-<p>To save a signal to an audio file, you can use the <cite>write_file</cite> method of the <cite>Signal</cite> class. This method saves the current signal as an audio file. You can specify additional parameters for the file format through keyword arguments.</p>
-<section id="id1">
-<h3>Example<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
-<p>Save the signal to a file named “output.wav”:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
+<section id="saving-audio-files">
+<h2>Saving Audio Files<a class="headerlink" href="#saving-audio-files" title="Link to this heading"></a></h2>
+<p>To save a signal, use the <a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal.write_file" title="audiotoolbox.Signal.write_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_file()</span></code></a> method.
+The file format is typically inferred from the file extension (e.g., <code class="docutils literal notranslate"><span class="pre">.wav</span></code>,
+<code class="docutils literal notranslate"><span class="pre">.flac</span></code>), but can be specified explicitly.</p>
+<p>Save a signal to a standard WAV file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
 
-<span class="c1"># Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
+<span class="c1"># Create a signal</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
 
-<span class="c1"># Save the signal to the file &quot;output.wav&quot;</span>
+<span class="c1"># Save the signal to &quot;output.wav&quot;</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="s2">&quot;output.wav&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Save the signal to a file with a specific format and subtype:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
-
-<span class="c1"># Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
-
-<span class="c1"># Save the signal to the file &quot;output.wav&quot; with format &quot;WAV&quot; and subtype &quot;PCM_16&quot;</span>
+<p>You can pass keyword arguments to control the output format and subtype.
+For example, to save as a 16-bit PCM WAV file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save the signal as a 16-bit PCM WAV file</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="s2">&quot;output.wav&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;WAV&quot;</span><span class="p">,</span> <span class="n">subtype</span><span class="o">=</span><span class="s2">&quot;PCM_16&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Save the signal to a FLAC file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
-
-<span class="c1"># Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
-
-<span class="c1"># Save the signal to the file &quot;output.flac&quot; with format &quot;FLAC&quot;</span>
-<span class="n">sig</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="s2">&quot;output.flac&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;FLAC&quot;</span><span class="p">)</span>
+<p>Saving to other formats like FLAC is just as easy:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save the signal to a FLAC file</span>
+<span class="n">sig</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="s2">&quot;output.flac&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-</section>
-<section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="../api_function.html#audiotoolbox.from_file" title="audiotoolbox.from_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">audiotoolbox.from_file()</span></code></a> : Function to read an audio file into a new Signal object.</p></li>
-<li><p><a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal.from_file" title="audiotoolbox.Signal.from_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.from_file()</span></code></a> : Method to load a signal into an existing Signal object.</p></li>
-<li><p><a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal.write_file" title="audiotoolbox.Signal.write_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.write_file()</span></code></a> : Method to save a signal to an audio file.</p></li>
-</ul>
 </section>
 </section>
 

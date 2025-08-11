@@ -55,38 +55,39 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#basic-signal-modifications">Basic Signal Modifications</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#generating-noise">Generating Noise</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#signal-statistics-and-levels">Signal Statistics and Levels</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#loading-and-saving-audio-files">Loading and saving audio files</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#loading-signals">Loading Signals</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#example">Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#playback">Playback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#resampling">Resampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#trimming-signals">Trimming Signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#convolution">Convolution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#channel-wise-convolution">Channel-Wise Convolution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#full-multi-channel-convolution">Full Multi-Channel Convolution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#convolution-mode">Convolution Mode</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#saving-signals">Saving Signals</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1">Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#signal-statistics-and-levels">Signal Statistics and Levels</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-statistics">Basic Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#level-in-db">Level in dB</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#octave-band-levels">Octave-Band Levels</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#see-also">See Also</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#loading-and-saving-audio-files">Loading and Saving Audio Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#loading-audio-files">Loading Audio Files</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#creating-a-signal-from-a-file">Creating a Signal from a File</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#loading-data-into-an-existing-signal">Loading Data into an Existing Signal</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reading-a-portion-of-a-file">Reading a Portion of a File</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#saving-audio-files">Saving Audio Files</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#determining-and-setting-levels">Determining and Setting Levels</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#calculating-rms">Calculating RMS</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id2">Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getting-signal-statistics">Getting Signal Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#setting-and-normalizing-levels">Setting and Normalizing Levels</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#setting-sound-pressure-level-spl">Setting Sound Pressure Level (SPL)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setting-dbfs">Setting dBFS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#relative-level-adjustments">Relative Level Adjustments</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#setting-sound-pressure-level-spl">Setting Sound Pressure Level (SPL)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id3">Example</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#setting-dbfs-rms-value">Setting dBFS RMS Value</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id4">Example</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id5">Example</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#calculating-signal-statistics">Calculating Signal Statistics</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id6">Example</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#id7">See Also</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#time-frequency-methods">Time-Frequency Methods</a><ul>
@@ -94,10 +95,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#filtering">Filtering</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#individual-filters">Individual Filters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#unified-interface-for-filters">Unified Interface for Filters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#filterbanks">Filterbanks</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#frequency-weighting">Frequency Weighting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#applying-filters-to-signals">Applying Filters to Signals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#filter-functions">Filter Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#filterbanks">Filterbanks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#standard-filterbanks">Standard Filterbanks</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#applying-a-filterbank">Applying a Filterbank</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#custom-filterbanks">Custom Filterbanks</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#frequency-weighting-filters">Frequency Weighting Filters</a></li>
 </ul>
 </li>
 </ul>
@@ -131,61 +137,84 @@
              
   <section id="user-guide">
 <h1>User Guide<a class="headerlink" href="#user-guide" title="Link to this heading"></a></h1>
-<p>This user guide is intended to give a quick overview of the main features of audiotoolbox as well as how to use them. For more details, please see the Reference Manual.</p>
+<p>This user guide is intended to give a quick overview of the main features of
+<strong>audiotoolbox</strong>, as well as how to use them. For more details, please see
+the Reference Manual.</p>
 <section id="working-with-stimuli-in-the-time-domain">
 <h2>Working with Stimuli in the Time Domain<a class="headerlink" href="#working-with-stimuli-in-the-time-domain" title="Link to this heading"></a></h2>
-<p>audiotoolbox uses the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">audiotoolbox.Signal</span></code></a> class to represent stimuli in the time domain. This class provides an easy-to-use method of modifying and analyzing signals.</p>
+<p><strong>audiotoolbox</strong> uses the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">audiotoolbox.Signal</span></code></a> class to represent
+stimuli in the time domain. This class provides an easy-to-use method for
+modifying and analyzing signals.</p>
 <section id="creating-signals">
 <h3>Creating Signals<a class="headerlink" href="#creating-signals" title="Link to this heading"></a></h3>
-<p>An empty, 1-second long signal with two channels at 48 kHz is initialized by calling:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
+<p>An empty, 1-second long signal with two channels at 48 kHz is initialized
+by calling:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>audiotoolbox supports an unlimited number of channels which can also be arranged across multiple dimensions. For example:</p>
+<p><strong>audiotoolbox</strong> supports an unlimited number of channels, which can also be
+arranged across multiple dimensions. For example:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>By default, modifications are always applied to all channels at the same time. The following two lines thus add 1 to all samples in both channels:</p>
+<p>By default, modifications are applied to all channels simultaneously.
+The following two lines add 1 to all samples in all channels:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">+=</span> <span class="mi">1</span>
 </pre></div>
 </div>
-<p>Individual channels can easily be addressed by using the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.ch" title="audiotoolbox.Signal.ch"><code class="xref py py-attr docutils literal notranslate"><span class="pre">audiotoolbox.Signal.ch</span></code></a> indexer:</p>
+<p>Individual channels can be addressed easily using the
+<a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.ch" title="audiotoolbox.Signal.ch"><code class="xref py py-attr docutils literal notranslate"><span class="pre">audiotoolbox.Signal.ch</span></code></a> indexer:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
 </pre></div>
 </div>
-<p>This will add 1 only to the first channel. The <cite>ch</cite> indexer also allows for slicing. For example:</p>
+<p>This will add 1 only to the first channel group. The <code class="docutils literal notranslate"><span class="pre">ch</span></code> indexer also
+allows for slicing:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+=</span> <span class="mi">1</span>
 </pre></div>
 </div>
-<p>This will add 1 to all but the first channel. Internally, the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">audiotoolbox.Signal</span></code></a> class is represented as a numpy array where the first dimension is the time axis represented by the number of samples. Channels are then defined by the following dimensions:</p>
+<p>This will add 1 to all but the first channel. Internally, the
+<a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">audiotoolbox.Signal</span></code></a> class is a <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> where the first
+dimension is the time axis (number of samples). The subsequent dimensions
+define the channels:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(48000, 2, 3)</span>
 </pre></div>
 </div>
-<p>Both the number of samples and the number of channels can be accessed through properties of the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">audiotoolbox.Signal</span></code></a> class:</p>
+<p>The number of samples and the number of channels can be accessed through
+properties of the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">audiotoolbox.Signal</span></code></a> class:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No. of samples: </span><span class="si">{</span><span class="n">signal</span><span class="o">.</span><span class="n">n_samples</span><span class="si">}</span><span class="s1">, No. of channels: </span><span class="si">{</span><span class="n">signal</span><span class="o">.</span><span class="n">n_channels</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 <span class="go">No. of samples: 48000, No. of channels: (2, 3)</span>
 </pre></div>
 </div>
-<p>The time axis can be directly accessed using the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.time" title="audiotoolbox.Signal.time"><code class="xref py py-attr docutils literal notranslate"><span class="pre">audiotoolbox.Signal.time</span></code></a> property:</p>
+<p>The time axis can be accessed directly using the
+<a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.time" title="audiotoolbox.Signal.time"><code class="xref py py-attr docutils literal notranslate"><span class="pre">audiotoolbox.Signal.time</span></code></a> property:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
-<span class="go">[0.00000000e+00 2.08333333e-05 4.16666667e-05 ... 9.99937500e-01 9.99958333e-01 9.99979167e-01]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">time</span>
+<span class="go">array([0.00000000e+00, 2.08333333e-05, 4.16666667e-05, ...,</span>
+<span class="go">       9.99937500e-01, 9.99958333e-01, 9.99979167e-01])</span>
 </pre></div>
 </div>
-<p>It’s important to understand that all modifications are in-place, meaning that calling a method does not return a changed copy of the signal but directly changes the values of the signal:</p>
+<p>It’s important to understand that all modifications are in-place, meaning
+that calling a method does not return a changed copy of the signal but
+directly changes the signal’s data:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">signal</span><span class="o">.</span><span class="n">var</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">var</span><span class="p">()</span>
 <span class="go">0.49999999999999994</span>
 </pre></div>
 </div>
-<p>Creating a copy of a Signal requires the explicit use of the <code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.copy()</span></code> method. The <code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.copy_empty()</span></code> method can be used to create an empty copy with the same shape as the original:</p>
+<p>Creating a copy of a Signal requires the explicit use of the
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.copy()</span></code> method. The
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.copy_empty()</span></code> method can be used to create an
+empty copy with the same shape as the original:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">signal2</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">copy_empty</span><span class="p">()</span>
 </pre></div>
@@ -194,15 +223,23 @@
 </section>
 <section id="basic-signal-modifications">
 <h2>Basic Signal Modifications<a class="headerlink" href="#basic-signal-modifications" title="Link to this heading"></a></h2>
-<p>Basic signal modifications such as adding a tone or noise are directly available as methods. Tones are easily added through the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.add_tone" title="audiotoolbox.Signal.add_tone"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.add_tone()</span></code></a> method. A signal with two antiphasic 500 Hz tones in the two channels is created by running:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">20e-3</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
+<p>Basic signal modifications, such as adding a tone or noise, are directly
+available as methods. Tones are easily added through the
+<a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.add_tone" title="audiotoolbox.Signal.add_tone"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.add_tone()</span></code></a> method. A signal with two antiphasic
+500 Hz tones in its two channels is created by running:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">20e-3</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_phase</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_phase</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">time</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time / ms&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Antiphasic 500Hz tones&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Antiphasic 500Hz Tones&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -210,15 +247,20 @@
 <figure class="align-default">
 <img alt="_images/user_guide-1.png" class="plot-directive" src="_images/user_guide-1.png" />
 </figure>
-<p>Fade-in and fade-out ramps with different shapes can be applied using the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.add_fade_window" title="audiotoolbox.Signal.add_fade_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.add_fade_window()</span></code></a> method:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">100e-3</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
+<p>Fade-in and fade-out ramps with different shapes can be applied using the
+<a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.add_fade_window" title="audiotoolbox.Signal.add_fade_window"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.add_fade_window()</span></code></a> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">100e-3</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_phase</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">add_fade_window</span><span class="p">(</span><span class="n">rise_time</span><span class="o">=</span><span class="mf">30e-3</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;cos&#39;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">time</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time / ms&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Tone with raised cos fade-in and -out&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Tone with Raised Cosine Fade-in and -out&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -226,8 +268,12 @@
 <figure class="align-default">
 <img alt="_images/user_guide-2.png" class="plot-directive" src="_images/user_guide-2.png" />
 </figure>
-<p>Similarly, a cosine modulator can be added through the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.add_cos_modulator" title="audiotoolbox.Signal.add_cos_modulator"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.add_cos_modulator()</span></code></a> method:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">500e-3</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
+<p>Similarly, a cosine modulator can be added through the
+<a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.add_cos_modulator" title="audiotoolbox.Signal.add_cos_modulator"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.add_cos_modulator()</span></code></a> method:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">500e-3</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">add_cos_modulator</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">add_fade_window</span><span class="p">(</span><span class="mf">100e-3</span><span class="p">)</span>
@@ -235,7 +281,8 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">time</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time / ms&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;1kHz tone with 30Hz modulator&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;1kHz Tone with 30Hz Modulator&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -246,9 +293,15 @@
 </section>
 <section id="generating-noise">
 <h2>Generating Noise<a class="headerlink" href="#generating-noise" title="Link to this heading"></a></h2>
-<p>audiotoolbox provides multiple functions to generate noise:</p>
-<p>This example adds the same white, pink, or brown Gaussian the signal and plots them as spectrograms (See <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.oaudio.time_frequency.TimeFrequency" title="audiotoolbox.oaudio.time_frequency.TimeFrequency"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.oaudio.time_frequency.TimeFrequency()</span></code></a>). The noise variance and a seed for the random number generator can be defined by passing the respective argument (see <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.add_noise" title="audiotoolbox.Signal.add_noise"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.add_noise()</span></code></a>).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">white_noise</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
+<p><strong>audiotoolbox</strong> provides multiple functions to generate noise. This example
+adds white, pink, and brown Gaussian noise to a signal and plots their
+spectrograms. The noise variance and a seed for the random number
+generator can be defined by passing the respective arguments (see
+<a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.add_noise" title="audiotoolbox.Signal.add_noise"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.add_noise()</span></code></a>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="n">white_noise</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
 <span class="n">pink_noise</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="n">ntype</span><span class="o">=</span><span class="s1">&#39;pink&#39;</span><span class="p">)</span>
 <span class="n">brown_noise</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="n">ntype</span><span class="o">=</span><span class="s1">&#39;brown&#39;</span><span class="p">)</span>
 
@@ -256,15 +309,17 @@
 <span class="n">pspec</span><span class="p">,</span> <span class="n">fc</span> <span class="o">=</span> <span class="n">pink_noise</span><span class="o">.</span><span class="n">time_frequency</span><span class="o">.</span><span class="n">octave_band_specgram</span><span class="p">(</span><span class="n">oct_fraction</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 <span class="n">bspec</span><span class="p">,</span> <span class="n">fc</span> <span class="o">=</span> <span class="n">brown_noise</span><span class="o">.</span><span class="n">time_frequency</span><span class="o">.</span><span class="n">octave_band_specgram</span><span class="p">(</span><span class="n">oct_fraction</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
-<span class="n">norm</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="nb">min</span><span class="p">([</span><span class="n">wspec</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">pspec</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">bspec</span><span class="o">.</span><span class="n">min</span><span class="p">()]),</span> <span class="nb">max</span><span class="p">([</span><span class="n">wspec</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">pspec</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">bspec</span><span class="o">.</span><span class="n">max</span><span class="p">()]))</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+<span class="n">norm</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span>
+    <span class="n">vmin</span><span class="o">=</span><span class="nb">min</span><span class="p">([</span><span class="n">wspec</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">pspec</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">bspec</span><span class="o">.</span><span class="n">min</span><span class="p">()]),</span>
+    <span class="n">vmax</span><span class="o">=</span><span class="nb">max</span><span class="p">([</span><span class="n">wspec</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">pspec</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">bspec</span><span class="o">.</span><span class="n">max</span><span class="p">()])</span>
+<span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;White Noise&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">wspec</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">fc</span><span class="p">,</span> <span class="n">wspec</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Pink Noise&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">pspec</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">fc</span><span class="p">,</span> <span class="n">pspec</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Brown Noise&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">bspec</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">fc</span><span class="p">,</span> <span class="n">bspec</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
-
 
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time / s&quot;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ax</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]:</span>
@@ -273,13 +328,18 @@
 <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ax</span><span class="o">.</span><span class="n">flatten</span><span class="p">():</span>
     <span class="n">a</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>(<a class="reference download internal" download="" href="_downloads/55d96617ef33f42f5ba2bde0bf08c83b/user_guide-4.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="_downloads/d9801cfac4ee9d9a837d4135bd960b2f/user_guide-4.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="_downloads/f37d66f8352f8b0b1dadc493b30a2599/user_guide-4.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="_downloads/c0eb89e176d52f6be45b427c5cfbf265/user_guide-4.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
 <figure class="align-default">
 <img alt="_images/user_guide-4.png" class="plot-directive" src="_images/user_guide-4.png" />
 </figure>
-<p>Uncorrelated noise can be generated using the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.add_uncorr_noise" title="audiotoolbox.Signal.add_uncorr_noise"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.add_uncorr_noise()</span></code></a> method. This uses the Gram-Schmidt process to orthogonalize noise tokens to minimize variance in the created correlation:</p>
+<p>Uncorrelated noise can be generated using the
+<a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.add_uncorr_noise" title="audiotoolbox.Signal.add_uncorr_noise"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.add_uncorr_noise()</span></code></a> method. This uses the
+Gram-Schmidt process to orthogonalize noise tokens to minimize variance
+in the created correlation:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">noise</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_uncorr_noise</span><span class="p">(</span><span class="n">corr</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">ntype</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">noise</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 <span class="go">array([[1.00002083, 0.20000417, 0.20000417],</span>
@@ -287,283 +347,402 @@
 <span class="go">       [0.20000417, 0.20000417, 1.00002083]])</span>
 </pre></div>
 </div>
-<p>There is also an option to create band-limited, partly-correlated, or uncorrelated noise by defining low-, high-, or band-pass filters that are applied before using the Gram-Schmidt process. For more details, please refer to the documentation of <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.add_uncorr_noise" title="audiotoolbox.Signal.add_uncorr_noise"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.add_uncorr_noise()</span></code></a>.</p>
+<p>There is also an option to create band-limited, partly-correlated, or
+uncorrelated noise by defining low-, high-, or band-pass filters that are
+applied before the Gram-Schmidt process. For more details, please refer
+to the documentation of <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.add_uncorr_noise" title="audiotoolbox.Signal.add_uncorr_noise"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.add_uncorr_noise()</span></code></a>.</p>
+</section>
+<section id="playback">
+<h2>Playback<a class="headerlink" href="#playback" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.play" title="audiotoolbox.Signal.play"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.play()</span></code></a> method can be used to quickly listen to the signal using the default device.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span><span class="o">.</span><span class="n">add_fade_window</span><span class="p">(</span><span class="mf">30e-3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="resampling">
+<h2>Resampling<a class="headerlink" href="#resampling" title="Link to this heading"></a></h2>
+<p>Resampling is done using the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.resample" title="audiotoolbox.Signal.resample"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.resample()</span></code></a> method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">)</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">100e-3</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">add_fade_window</span><span class="p">(</span><span class="mf">30e-3</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="s1">&#39;x-&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Signal at $f_c$=2kHz&#39;</span><span class="p">)</span>
+<span class="n">sig</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="mi">4000</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="s1">&#39;x-&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Signal upsampled to $f_c$=4kHz&#39;</span><span class="p">)</span>
+<span class="n">sig</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="s1">&#39;x-&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Signal downsampled to $f_c$=1kHz&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Time / s&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Amplitude&quot;</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference download internal" download="" href="_downloads/06bf64b50811320d1996301014e032ae/user_guide-5.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="_downloads/041b68b5104d67ba82955f310253b2cd/user_guide-5.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="_downloads/d25e4ce26fbb8914f3d5792653ca2739/user_guide-5.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="_downloads/3bc3e0cb5391dd4e7dbce283f3939466/user_guide-5.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<figure class="align-default">
+<img alt="_images/user_guide-5.png" class="plot-directive" src="_images/user_guide-5.png" />
+</figure>
+</section>
+<section id="trimming-signals">
+<h2>Trimming Signals<a class="headerlink" href="#trimming-signals" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.trim" title="audiotoolbox.Signal.trim"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.trim()</span></code></a> method can be used to shorten a signal
+by “trimming” it to a specified start and end time. This is useful for
+extracting a segment of interest from a longer signal. The method modifies
+the signal in-place.</p>
+<p>For example, to extract the segment between 0.2 and 0.8 seconds from a
+1-second signal:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create a 1-second noise signal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Original duration: </span><span class="si">{</span><span class="n">signal</span><span class="o">.</span><span class="n">duration</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+<span class="go">Original duration: 1.00s</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Trim the signal to the segment between 0.2s and 0.8s</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;New duration: </span><span class="si">{</span><span class="n">signal</span><span class="o">.</span><span class="n">duration</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+<span class="go">New duration: 0.60s</span>
+</pre></div>
+</div>
+<p>You can also specify only a start time to trim the beginning of the
+signal, or use negative values to trim from the end.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create another 1-second signal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Trim the first 200ms</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Duration after trimming start: </span><span class="si">{</span><span class="n">signal</span><span class="o">.</span><span class="n">duration</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+<span class="go">Duration after trimming start: 0.80s</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Trim the last 100ms of the remaining signal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">trim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Duration after trimming end: </span><span class="si">{</span><span class="n">signal</span><span class="o">.</span><span class="n">duration</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">s&#39;</span><span class="p">)</span>
+<span class="go">Duration after trimming end: 0.70s</span>
+</pre></div>
+</div>
+</section>
+<section id="convolution">
+<h2>Convolution<a class="headerlink" href="#convolution" title="Link to this heading"></a></h2>
+<p>Signals can be convolved with a kernel, which is itself another
+<a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">audiotoolbox.Signal</span></code></a>. This is commonly used for filtering or to
+apply an impulse response to a signal (e.g., a Room Impulse Response or
+a Head-Related Impulse Response). The toolbox uses the fast, FFT-based
+convolution from <code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code>.</p>
+<p>The <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.convolve" title="audiotoolbox.Signal.convolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.convolve()</span></code></a> method performs this operation.
+Its behavior with multi-dimensional signals can be controlled with the
+<code class="docutils literal notranslate"><span class="pre">overlap_dimensions</span></code> keyword.</p>
+<section id="channel-wise-convolution">
+<h3>Channel-Wise Convolution<a class="headerlink" href="#channel-wise-convolution" title="Link to this heading"></a></h3>
+<p>By default, convolution is performed only along overlapping dimensions
+between the signal and the kernel (<code class="docutils literal notranslate"><span class="pre">overlap_dimensions=True</span></code>). This means
+that if the channel shapes match, the first channel of the signal is
+convolved with the first channel of the kernel, the second with the
+second, and so on.</p>
+<p>This is useful for applying multi-channel impulse responses to a
+multi-channel signal. For example, to simulate a stereo audio signal
+being played in a room, you could convolve the 2-channel signal with a
+2-channel Room Impulse Response (RIR).</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Assume &#39;stereo_signal.wav&#39; is a 2-channel audio file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="s1">&#39;stereo_signal.wav&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Assume &#39;stereo_rir.wav&#39; is a 2-channel impulse response</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rir</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="s1">&#39;stereo_rir.wav&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Convolve the signal with the RIR</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">rir</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># The resulting signal is still 2 channels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">n_channels</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+</section>
+<section id="full-multi-channel-convolution">
+<h3>Full Multi-Channel Convolution<a class="headerlink" href="#full-multi-channel-convolution" title="Link to this heading"></a></h3>
+<p>If you need to convolve every channel of the signal with every channel
+of the kernel, you can set <code class="docutils literal notranslate"><span class="pre">overlap_dimensions=False</span></code>.</p>
+<p>In this case, convolving a two-channel signal with a two-channel kernel
+will result in a <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">2)</span></code>-shaped channel output, where each element
+represents one of the possible signal-kernel convolution pairs.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kernel</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">100e-3</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">overlap_dimensions</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">n_channels</span>
+<span class="go">(2, 2)</span>
+</pre></div>
+</div>
+</section>
+<section id="convolution-mode">
+<h3>Convolution Mode<a class="headerlink" href="#convolution-mode" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">mode</span></code> parameter (one of <code class="docutils literal notranslate"><span class="pre">{'full',</span> <span class="pre">'valid',</span> <span class="pre">'same'}</span></code>) controls
+the size of the output signal, corresponding directly to the <code class="docutils literal notranslate"><span class="pre">mode</span></code>
+argument in <code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">'full'</span></code>.</p>
+</section>
 </section>
 <section id="signal-statistics-and-levels">
 <h2>Signal Statistics and Levels<a class="headerlink" href="#signal-statistics-and-levels" title="Link to this heading"></a></h2>
-<p>Some basic signal statistics are accessible through the <code class="xref py py-attr docutils literal notranslate"><span class="pre">audiotoolbox.Signal.stats</span></code> property. This includes the mean and variance of the channels, calculated per channel. The library also provides convenient methods for level calculations in various units.</p>
+<p>Some basic signal statistics are accessible through the
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">audiotoolbox.Signal.stats</span></code> property. This includes the mean and
+variance of the channels, calculated per channel. The library also provides
+convenient methods for level calculations in various units.</p>
 <p>Let’s create a pink noise signal and explore its properties:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">noise</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="s1">&#39;pink&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get basic statistics</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">noise</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="s1">&#39;pink&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="basic-statistics">
+<h3>Basic Statistics<a class="headerlink" href="#basic-statistics" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">mean</span></code> and <code class="docutils literal notranslate"><span class="pre">var</span></code> (variance) are returned as <code class="docutils literal notranslate"><span class="pre">Signal</span></code> objects,
+with one value per channel.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get basic statistics</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean: </span><span class="si">{</span><span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">mean</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="go">Mean: Signal([-2.4e-17, -2.4e-17])</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variance: </span><span class="si">{</span><span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">var</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="go">Variance: Signal([1., 1.])</span>
-<span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get level in dB Full Scale (dBFS)</span>
+</pre></div>
+</div>
+</section>
+<section id="level-in-db">
+<h3>Level in dB<a class="headerlink" href="#level-in-db" title="Link to this heading"></a></h3>
+<p>The library provides properties to get the level in dB Full Scale (dBFS)
+and Sound Pressure Level (SPL), assuming the signal values represent
+pressure in Pascals. Frequency-weighted levels (A- and C-weighting) are
+also available.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get level in dB Full Scale (dBFS)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Level in dBFS: </span><span class="si">{</span><span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbfs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="go">Level in dBFS: Signal([3.01, 3.01])</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get A-weighted and C-weighted levels</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A-weighted SPL: </span><span class="si">{</span><span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dba</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="go">A-weighted SPL: Signal([89.10, 89.10])</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;C-weighted SPL: </span><span class="si">{</span><span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="go">C-weighted SPL: Signal([90.82, 90.82])</span>
 </pre></div>
 </div>
-<p>You can also normalize a signal to a target Sound Pressure Level (SPL), assuming the signal values represent pressure in Pascals.</p>
+<p>You can also normalize a signal to a target Sound Pressure Level (SPL)
+using the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.set_dbspl" title="audiotoolbox.Signal.set_dbspl"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.set_dbspl()</span></code></a> method.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Normalize the signal to 70 dB SPL</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">noise</span><span class="o">.</span><span class="n">set_dbspl</span><span class="p">(</span><span class="mi">70</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># The stats.dbspl property will now reflect this level</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbspl</span>
 <span class="go">Signal([70., 70.])</span>
 </pre></div>
 </div>
-<p>Additionally, it is possible to calculate A-weighted and C-weighted sound pressure levels, which are common in acoustic measurements:</p>
-<p>There is also the option to get the octave-band levels:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fc</span><span class="p">,</span> <span class="n">dbfs</span> <span class="o">=</span> <span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">octave_band_levels</span><span class="p">(</span><span class="n">oct_fraction</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">fc</span><span class="p">)</span>
-<span class="go">[   31.25    62.5    125.     250.     500.    1000.    2000.    4000.</span>
-<span class="go">  8000.   16000.  ]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">dbfs</span><span class="p">)</span>
-<span class="go">[-32.5484477  -31.64357561 -32.14208818 -32.32627542 -32.59523029</span>
-<span class="go"> -32.26243379 -32.38507482 -32.36273354 -32.4864307  -32.51044551]</span>
+</section>
+<section id="octave-band-levels">
+<h3>Octave-Band Levels<a class="headerlink" href="#octave-band-levels" title="Link to this heading"></a></h3>
+<p>It is also possible to get the octave-band or fractional-octave-band
+levels of a signal.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="c1"># Create a pink noise signal</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+
+<span class="c1"># Calculate octave-band levels</span>
+<span class="n">fc</span><span class="p">,</span> <span class="n">levels</span> <span class="o">=</span> <span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">octave_band_levels</span><span class="p">(</span><span class="n">oct_fraction</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="n">base_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">50</span>
+<span class="c1"># Plot the results</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fc</span><span class="p">)),</span> <span class="n">levels</span> <span class="o">-</span><span class="n">base_value</span><span class="p">,</span> <span class="n">tick_label</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">fc</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">bottom</span><span class="o">=</span><span class="n">base_value</span><span class="p">)</span>
+<span class="c1"># plt.bar(np.arange(len(fc)), levels, tick_label=np.round(fc).astype(int))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;1/3-Octave Band Levels of White Noise&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Center Frequency / Hz&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Level / dBFS&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=-</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference download internal" download="" href="_downloads/e21599dad74e1a446e597da53415224f/user_guide-6.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="_downloads/68f15a8647cf4f4e1c3429d8b0668f7b/user_guide-6.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="_downloads/aae1ffc4751815bcbe5705e68c94c76a/user_guide-6.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="_downloads/41ccbc5cfa40fb99493b777522265db6/user_guide-6.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<figure class="align-default">
+<img alt="_images/user_guide-6.png" class="plot-directive" src="_images/user_guide-6.png" />
+</figure>
+</section>
+</section>
+<section id="loading-and-saving-audio-files">
+<span id="signal-io"></span><h2>Loading and Saving Audio Files<a class="headerlink" href="#loading-and-saving-audio-files" title="Link to this heading"></a></h2>
+<p>This section explains how to load and save signals using <strong>audiotoolbox</strong>.
+The <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signal</span></code></a> class provides methods for reading from
+and writing to audio files. The library supports all audio file formats
+backed by <a class="reference external" href="http://www.mega-nerd.com/libsndfile/">libsndfile</a>, such as
+WAV, FLAC, and AIFF.</p>
+<section id="loading-audio-files">
+<h3>Loading Audio Files<a class="headerlink" href="#loading-audio-files" title="Link to this heading"></a></h3>
+<p>There are two primary ways to load an audio file: creating a new <code class="docutils literal notranslate"><span class="pre">Signal</span></code>
+object directly from a file, or loading audio data into an existing <code class="docutils literal notranslate"><span class="pre">Signal</span></code>.</p>
+<section id="creating-a-signal-from-a-file">
+<h4>Creating a Signal from a File<a class="headerlink" href="#creating-a-signal-from-a-file" title="Link to this heading"></a></h4>
+<p>The most direct way to load an audio file is to use the
+<a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.from_file" title="audiotoolbox.Signal.from_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_file()</span></code></a> class method. This creates a new
+<code class="docutils literal notranslate"><span class="pre">Signal</span></code> object with the properties (channel count, sample rate)
+inferred from the file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+
+<span class="c1"># Load the signal from &quot;example.wav&quot; into a new Signal object</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;example.wav&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="loading-and-saving-audio-files">
-<span id="signal-io"></span><h2>Loading and saving audio files<a class="headerlink" href="#loading-and-saving-audio-files" title="Link to this heading"></a></h2>
-<p>This section explains how to load and save signals using the <cite>audiotoolbox</cite> library.
-The <cite>Signal</cite> class provides methods for reading signals from audio files and writing signals to audio files.
-The library supports all audio file formats supported by libsndfile, such as WAV, FLAC, AIFF, and more.</p>
-<section id="loading-signals">
-<h3>Loading Signals<a class="headerlink" href="#loading-signals" title="Link to this heading"></a></h3>
-<p>To load a signal from an audio file, you can use the <cite>from_file</cite> method of the <cite>Signal</cite> class. This method reads a signal from an audio file and returns it as a <cite>Signal</cite> object. You can specify the start point and the channels to load.</p>
-<section id="example">
-<h4>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h4>
-<p>A signal from a file can either be loaded into a new <cite>Signal</cite> object or an existing one.</p>
-<p>To load a signal into a new <cite>Signal</cite> object, you can use the following code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
+<section id="loading-data-into-an-existing-signal">
+<h4>Loading Data into an Existing Signal<a class="headerlink" href="#loading-data-into-an-existing-signal" title="Link to this heading"></a></h4>
+<p>You can also load audio data into a <code class="docutils literal notranslate"><span class="pre">Signal</span></code> object that you have already
+created. When doing this, the sample rate and number of channels of the
+file must match the existing <code class="docutils literal notranslate"><span class="pre">Signal</span></code> object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
 
-<span class="c1"># Load the signal from the file &quot;example.wav&quot; into a new Signal object</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;example.wav&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This code creates a new <cite>Signal</cite> object and loads the signal from the file “example.wav” into it. The sample rate and number of channels are automatically determined from the file.</p>
-<p>If you want to load the signal into an existing <cite>Signal</cite> object, you can use the following code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
+<span class="c1"># Create a Signal object</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 
-<span class="c1"># Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
-
-<span class="c1"># Load the signal from the file &quot;example.wav&quot;</span>
+<span class="c1"># Load the signal from &quot;example.wav&quot; into the existing object</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;example.wav&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>In this case, the signal is loaded into the existing <cite>Signal</cite> object <cite>sig</cite>. The sample rate and number of channels of the file must match the <cite>Signal</cite> object.
-If you want to load only a portion of the signal or a specific channel, you can specify additional parameters:</p>
-<ul class="simple">
-<li><p><cite>start</cite>: The starting sample index to load from the file.</p></li>
-<li><p><cite>channels</cite>: The channel index to load from the file.</p></li>
-</ul>
-<p>To read only a portion of the signal starting at sample index 1000, you can use the following code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
+</section>
+<section id="reading-a-portion-of-a-file">
+<h4>Reading a Portion of a File<a class="headerlink" href="#reading-a-portion-of-a-file" title="Link to this heading"></a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">from_file</span></code> method allows you to load only a specific portion of the
+audio file by using the <code class="docutils literal notranslate"><span class="pre">start</span></code> and <code class="docutils literal notranslate"><span class="pre">channels</span></code> parameters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
 
-<span class="c1"># Create a Signal object with 1 channel, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
+<span class="c1"># Create a Signal object to hold the partial data</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 
-<span class="c1"># Load the signal from the file &quot;example.wav&quot; starting at sample index 1000</span>
+<span class="c1"># Load only the first channel from &quot;example.wav&quot;, starting at sample 1000</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;example.wav&quot;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">channels</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 </section>
-<section id="saving-signals">
-<h3>Saving Signals<a class="headerlink" href="#saving-signals" title="Link to this heading"></a></h3>
-<p>To save a signal to an audio file, you can use the <cite>write_file</cite> method of the <cite>Signal</cite> class. This method saves the current signal as an audio file. You can specify additional parameters for the file format through keyword arguments.</p>
-<section id="id1">
-<h4>Example<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
-<p>Save the signal to a file named “output.wav”:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
+<section id="saving-audio-files">
+<h3>Saving Audio Files<a class="headerlink" href="#saving-audio-files" title="Link to this heading"></a></h3>
+<p>To save a signal, use the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.write_file" title="audiotoolbox.Signal.write_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">write_file()</span></code></a> method.
+The file format is typically inferred from the file extension (e.g., <code class="docutils literal notranslate"><span class="pre">.wav</span></code>,
+<code class="docutils literal notranslate"><span class="pre">.flac</span></code>), but can be specified explicitly.</p>
+<p>Save a signal to a standard WAV file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
 
-<span class="c1"># Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
+<span class="c1"># Create a signal</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
 
-<span class="c1"># Save the signal to the file &quot;output.wav&quot;</span>
+<span class="c1"># Save the signal to &quot;output.wav&quot;</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="s2">&quot;output.wav&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Save the signal to a file with a specific format and subtype:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
-
-<span class="c1"># Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
-
-<span class="c1"># Save the signal to the file &quot;output.wav&quot; with format &quot;WAV&quot; and subtype &quot;PCM_16&quot;</span>
+<p>You can pass keyword arguments to control the output format and subtype.
+For example, to save as a 16-bit PCM WAV file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save the signal as a 16-bit PCM WAV file</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="s2">&quot;output.wav&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;WAV&quot;</span><span class="p">,</span> <span class="n">subtype</span><span class="o">=</span><span class="s2">&quot;PCM_16&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Save the signal to a FLAC file:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
-
-<span class="c1"># Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
-
-<span class="c1"># Save the signal to the file &quot;output.flac&quot; with format &quot;FLAC&quot;</span>
-<span class="n">sig</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="s2">&quot;output.flac&quot;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;FLAC&quot;</span><span class="p">)</span>
+<p>Saving to other formats like FLAC is just as easy:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Save the signal to a FLAC file</span>
+<span class="n">sig</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="s2">&quot;output.flac&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-</section>
-<section id="see-also">
-<h3>See Also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><a class="reference internal" href="api_function.html#audiotoolbox.from_file" title="audiotoolbox.from_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">audiotoolbox.from_file()</span></code></a> : Function to read an audio file into a new Signal object.</p></li>
-<li><p><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.from_file" title="audiotoolbox.Signal.from_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.from_file()</span></code></a> : Method to load a signal into an existing Signal object.</p></li>
-<li><p><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.write_file" title="audiotoolbox.Signal.write_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.write_file()</span></code></a> : Method to save a signal to an audio file.</p></li>
-</ul>
 </section>
 </section>
 <section id="determining-and-setting-levels">
 <span id="set-level"></span><h2>Determining and Setting Levels<a class="headerlink" href="#determining-and-setting-levels" title="Link to this heading"></a></h2>
-<p>This section provides an overview and introduction on how to determine and set levels using the <cite>Signal</cite> class and the <cite>SignalStats</cite> class in the <cite>audiotoolbox</cite> library. The <cite>Signal</cite> class provides methods for calculating the root mean square (RMS) value, setting the sound pressure level (SPL), and normalizing the signal to a given dBFS RMS value.
-The <cite>SignalStats</cite> sub_class provides additional methods for calculating various signal statistics.</p>
-<section id="calculating-rms">
-<h3>Calculating RMS<a class="headerlink" href="#calculating-rms" title="Link to this heading"></a></h3>
-<p>The RMS value of a signal is a measure of its average power. The <cite>rms</cite> method of the <cite>Signal</cite> class calculates the RMS value of the signal.</p>
-<section id="id2">
-<h4>Example<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
-<p>Calculate the RMS value of a signal:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
+<p>This section provides an overview of how to determine and set signal levels
+using the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signal</span></code></a> class and its
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">stats</span></code> property.</p>
+<section id="getting-signal-statistics">
+<h3>Getting Signal Statistics<a class="headerlink" href="#getting-signal-statistics" title="Link to this heading"></a></h3>
+<p>All level calculations and statistics are accessed through the <code class="docutils literal notranslate"><span class="pre">.stats</span></code>
+property, which returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">SignalStats</span></code> object.
+This provides convenient access to common metrics, calculated per channel.</p>
+<p>Let’s create a noise signal to demonstrate:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
 
-<span class="c1"># Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
+<span class="c1"># Create a two-channel noise signal</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The following properties are available:</p>
+<ul class="simple">
+<li><p><strong>.stats.rms</strong>: The Root-Mean-Square level of the signal.</p></li>
+<li><dl class="simple">
+<dt><strong>.stats.dbspl</strong>: The level in dB Sound Pressure Level (SPL), assuming</dt><dd><p>the signal values are pressure in Pascals relative to 20 µPa.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>.stats.dbfs</strong>: The level in dB Full Scale, where 0 dBFS is a sine</dt><dd><p>wave with an amplitude of 1.</p>
+</dd>
+</dl>
+</li>
+<li><p><strong>.stats.dba</strong> and <strong>.stats.dbc</strong>: A- and C-weighted SPL.</p></li>
+<li><p><strong>.stats.crest_factor</strong>: The ratio of the peak amplitude to the RMS value.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get various level and statistical properties</span>
+<span class="n">rms_val</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">rms</span>
+<span class="n">spl_val</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbspl</span>
+<span class="n">dbfs_val</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbfs</span>
+<span class="n">crest_val</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">crest_factor</span>
 
-<span class="c1"># Calculate the RMS value of the signal</span>
-<span class="n">rms_value</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">rms</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RMS value: </span><span class="si">{</span><span class="n">rms_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RMS: </span><span class="si">{</span><span class="n">rms_val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SPL: </span><span class="si">{</span><span class="n">spl_val</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> dB&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dBFS: </span><span class="si">{</span><span class="n">dbfs_val</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> dB&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Crest Factor: </span><span class="si">{</span><span class="n">crest_val</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> dB&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-</section>
+<section id="setting-and-normalizing-levels">
+<h3>Setting and Normalizing Levels<a class="headerlink" href="#setting-and-normalizing-levels" title="Link to this heading"></a></h3>
+<p>To change a signal’s level, use the methods directly available on the
+<code class="docutils literal notranslate"><span class="pre">Signal</span></code> object.</p>
 <section id="setting-sound-pressure-level-spl">
-<h3>Setting Sound Pressure Level (SPL)<a class="headerlink" href="#setting-sound-pressure-level-spl" title="Link to this heading"></a></h3>
-<p>The SPL of a signal is a measure of its loudness. The <cite>set_dbspl</cite> method of the <cite>Signal</cite> class normalizes the signal to a given SPL in dB relative to 20e-6 Pa.</p>
-<section id="id3">
-<h4>Example<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
-<p>Set the SPL of a signal to 70 dB:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
-
-<span class="c1"># Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
-
-<span class="c1"># Set the SPL of the signal to 70 dB</span>
+<h4>Setting Sound Pressure Level (SPL)<a class="headerlink" href="#setting-sound-pressure-level-spl" title="Link to this heading"></a></h4>
+<p>The <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.set_dbspl" title="audiotoolbox.Signal.set_dbspl"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_dbspl()</span></code></a> method normalizes the signal
+to a target SPL.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Normalize the signal to 70 dB SPL</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">set_dbspl</span><span class="p">(</span><span class="mi">70</span><span class="p">)</span>
+
+<span class="c1"># The .stats.dbspl property will now reflect this new level</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New SPL: </span><span class="si">{</span><span class="n">sig</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbspl</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> dB&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-</section>
-<section id="setting-dbfs-rms-value">
-<h3>Setting dBFS RMS Value<a class="headerlink" href="#setting-dbfs-rms-value" title="Link to this heading"></a></h3>
-<p>The dBFS RMS value of a signal is a measure of its amplitude relative to the full scale.
-The <cite>set_dbfs</cite> method of the <cite>Signal</cite> class normalizes the signal to a given dBFS RMS value.</p>
-<section id="id4">
-<h4>Example<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
-<p>Set the dBFS RMS value of a signal to -3 dB:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
+<section id="setting-dbfs">
+<h4>Setting dBFS<a class="headerlink" href="#setting-dbfs" title="Link to this heading"></a></h4>
+<p>Similarly, <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.set_dbfs" title="audiotoolbox.Signal.set_dbfs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_dbfs()</span></code></a> normalizes the signal to
+a target dBFS value.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Normalize the signal to -6 dBFS</span>
+<span class="n">sig</span><span class="o">.</span><span class="n">set_dbfs</span><span class="p">(</span><span class="o">-</span><span class="mi">6</span><span class="p">)</span>
 
-<span class="c1"># Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
-
-<span class="c1"># Set the dBFS RMS value of the signal to -3 dB</span>
-<span class="n">sig</span><span class="o">.</span><span class="n">set_dbfs</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New dBFS: </span><span class="si">{</span><span class="n">sig</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbfs</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> dB&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-<section id="id5">
-<h4>Example<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
-<p>Set the level of one signal 10db above another signal:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
+<section id="relative-level-adjustments">
+<h4>Relative Level Adjustments<a class="headerlink" href="#relative-level-adjustments" title="Link to this heading"></a></h4>
+<p>These methods can be used to set levels relatively. For example, to set
+one signal to a 10 dB higher level than another:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create two signals</span>
+<span class="n">sig1</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
+<span class="n">sig2</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
 
-<span class="c1"># Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig1</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
-<span class="n">sig2</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
-
-<span class="c1"># Set the level of sig1 10db above sig2</span>
+<span class="c1"># Set the level of sig1 to be 10 dB higher than sig2</span>
 <span class="n">sig1</span><span class="o">.</span><span class="n">set_dbfs</span><span class="p">(</span><span class="n">sig2</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbfs</span> <span class="o">+</span> <span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Set the level of channel one of a signal 5 db below channel two:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
-
-<span class="c1"># Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
-
-<span class="c1"># Set the level of channel one 5 db below channel two</span>
-<span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">set_dbfs</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbfs</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
+<p>You can also apply this to individual channels. To set the first channel
+to a 5 dB lower level than the second channel:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set channel 0 to be 5 dB lower than channel 1</span>
+<span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_dbfs</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbfs</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
-</section>
-<section id="calculating-signal-statistics">
-<h3>Calculating Signal Statistics<a class="headerlink" href="#calculating-signal-statistics" title="Link to this heading"></a></h3>
-<p>The <cite>SignalStats</cite> class provides methods for calculating various signal statistics, such as
-SPL, dBFS, crest factor, and A-weighted and C-weighted SPL.</p>
-<section id="id6">
-<h4>Example<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
-<p>Calculate the SPL, dBFS, and crest factor of a signal:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
-
-<span class="c1"># Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
-
-<span class="c1"># Calculate the SPL of the signal</span>
-<span class="n">spl_value</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbspl</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SPL value: </span><span class="si">{</span><span class="n">spl_value</span><span class="si">}</span><span class="s2"> dB&quot;</span><span class="p">)</span>
-
-<span class="c1"># Calculate the dBFS of the signal</span>
-<span class="n">dbfs_value</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbfs</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;dBFS value: </span><span class="si">{</span><span class="n">dbfs_value</span><span class="si">}</span><span class="s2"> dB&quot;</span><span class="p">)</span>
-
-<span class="c1"># Calculate the crest factor of the signal</span>
-<span class="n">crest_factor_value</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">crest_factor</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Crest factor: </span><span class="si">{</span><span class="n">crest_factor_value</span><span class="si">}</span><span class="s2"> dB&quot;</span><span class="p">)</span>
-
-<span class="c1"># Calculate the rms value of the signal</span>
-<span class="n">rms_value</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">rms</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;RMS value: </span><span class="si">{</span><span class="n">rms_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Calculate the A-weighted and C-weighted SPL of a signal:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="kn">import</span> <span class="n">Signal</span>
-
-<span class="c1"># Create a Signal object with 2 channels, 1 second duration, and 48 kHz sampling rate</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
-
-<span class="c1"># Calculate the A-weighted SPL of the signal</span>
-<span class="n">dba_value</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dba</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;A-weighted SPL: </span><span class="si">{</span><span class="n">dba_value</span><span class="si">}</span><span class="s2"> dB&quot;</span><span class="p">)</span>
-
-<span class="c1"># Calculate the C-weighted SPL of the signal</span>
-<span class="n">dbc_value</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbc</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;C-weighted SPL: </span><span class="si">{</span><span class="n">dbc_value</span><span class="si">}</span><span class="s2"> dB&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="id7">
-<h3>See Also<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.rms()</span></code> : Method to calculate the RMS value of the signal.</p></li>
-<li><p><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.set_dbspl" title="audiotoolbox.Signal.set_dbspl"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.set_dbspl()</span></code></a> : Method to set the SPL of the signal.</p></li>
-<li><p><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.set_dbfs" title="audiotoolbox.Signal.set_dbfs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.set_dbfs()</span></code></a> : Method to set the dBFS RMS value of the signal.</p></li>
-<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.SignalStats.dbspl()</span></code> : Property to calculate the SPL of the signal.</p></li>
-<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.SignalStats.dbfs()</span></code> : Property to calculate the dBFS of the signal.</p></li>
-<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.SignalStats.crest_factor()</span></code> : Property to calculate the crest factor of the signal.</p></li>
-<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.SignalStats.dba()</span></code> : Property to calculate the A-weighted SPL of the signal.</p></li>
-<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.SignalStats.dbc()</span></code> : Property to calculate the C-weighted SPL of the signal.</p></li>
-</ul>
 </section>
 </section>
 <section id="time-frequency-methods">
@@ -593,9 +772,9 @@ SPL, dBFS, crest factor, and A-weighted and C-weighted SPL.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>(<a class="reference download internal" download="" href="_downloads/06bf64b50811320d1996301014e032ae/user_guide-5.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="_downloads/041b68b5104d67ba82955f310253b2cd/user_guide-5.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="_downloads/d25e4ce26fbb8914f3d5792653ca2739/user_guide-5.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="_downloads/3bc3e0cb5391dd4e7dbce283f3939466/user_guide-5.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<p>(<a class="reference download internal" download="" href="_downloads/fcec1221ec1318266f390925d76a41ea/user_guide-7.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="_downloads/33dbec01c1068047967bb57924c6b456/user_guide-7.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="_downloads/129a7759e6c69673eb3f9ac1e4720137/user_guide-7.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="_downloads/7f2bc3414e6e4275f620171da19b0696/user_guide-7.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
 <figure class="align-default">
-<img alt="_images/user_guide-5.png" class="plot-directive" src="_images/user_guide-5.png" />
+<img alt="_images/user_guide-7.png" class="plot-directive" src="_images/user_guide-7.png" />
 </figure>
 <p>The same signal in an octave-band based spectrogram:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
@@ -619,9 +798,9 @@ SPL, dBFS, crest factor, and A-weighted and C-weighted SPL.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>(<a class="reference download internal" download="" href="_downloads/e21599dad74e1a446e597da53415224f/user_guide-6.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="_downloads/68f15a8647cf4f4e1c3429d8b0668f7b/user_guide-6.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="_downloads/aae1ffc4751815bcbe5705e68c94c76a/user_guide-6.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="_downloads/41ccbc5cfa40fb99493b777522265db6/user_guide-6.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<p>(<a class="reference download internal" download="" href="_downloads/530751fe0a374a62120d6c947372e096/user_guide-8.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="_downloads/3e165d345ba3554753a8d86620911ca7/user_guide-8.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="_downloads/3b7c69d5e174ee3fdd9b3f017ae49c58/user_guide-8.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="_downloads/402b6b251989e20dafe347ce0091477d/user_guide-8.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
 <figure class="align-default">
-<img alt="_images/user_guide-6.png" class="plot-directive" src="_images/user_guide-6.png" />
+<img alt="_images/user_guide-8.png" class="plot-directive" src="_images/user_guide-8.png" />
 </figure>
 <p>It’s also possible to create spectrograms based on custom filter-banks</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
@@ -647,115 +826,163 @@ SPL, dBFS, crest factor, and A-weighted and C-weighted SPL.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>(<a class="reference download internal" download="" href="_downloads/fcec1221ec1318266f390925d76a41ea/user_guide-7.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="_downloads/33dbec01c1068047967bb57924c6b456/user_guide-7.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="_downloads/129a7759e6c69673eb3f9ac1e4720137/user_guide-7.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="_downloads/7f2bc3414e6e4275f620171da19b0696/user_guide-7.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<p>(<a class="reference download internal" download="" href="_downloads/7c2ae098186a0446f9e26ec9af8da011/user_guide-9.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="_downloads/de652293be99054f6c1f9d0ed2cf50bb/user_guide-9.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="_downloads/f0e5dac4ad722e3924660ed61cdfa5a8/user_guide-9.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="_downloads/10f3cc2cba362aad431359c9ae17ad78/user_guide-9.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
 <figure class="align-default">
-<img alt="_images/user_guide-7.png" class="plot-directive" src="_images/user_guide-7.png" />
+<img alt="_images/user_guide-9.png" class="plot-directive" src="_images/user_guide-9.png" />
 </figure>
 </section>
 </section>
 <section id="filtering">
-<h2>Filtering<a class="headerlink" href="#filtering" title="Link to this heading"></a></h2>
-<p>The <cite>audiotoolbox</cite> library provides access to commonly used filters as well as the option to generate filterbanks. Filters can be accessed through the <a class="reference internal" href="api_function.html#module-audiotoolbox.filter" title="audiotoolbox.filter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">audiotoolbox.filter</span></code></a> submodule.</p>
-<section id="individual-filters">
-<h3>Individual Filters<a class="headerlink" href="#individual-filters" title="Link to this heading"></a></h3>
-<p>You can directly call individual filters. The following filters are currently implemented:</p>
+<span id="id1"></span><h2>Filtering<a class="headerlink" href="#filtering" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">audiotoolbox</span></code> library provides access to commonly used filters as
+well as the option to generate and apply filterbanks.</p>
+<section id="applying-filters-to-signals">
+<h3>Applying Filters to Signals<a class="headerlink" href="#applying-filters-to-signals" title="Link to this heading"></a></h3>
+<p>The easiest way to filter a signal is to use the methods directly
+available on the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signal</span></code></a> object. This provides a
+unified, fluent interface for low-pass, high-pass, and band-pass
+filtering.</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="api_function.html#audiotoolbox.filter.butterworth" title="audiotoolbox.filter.butterworth"><code class="xref py py-func docutils literal notranslate"><span class="pre">audiotoolbox.filter.butterworth()</span></code></a>: The Butterworth filter implemented by scipy (second order sections).</p></li>
-<li><p><a class="reference internal" href="api_function.html#audiotoolbox.filter.brickwall" title="audiotoolbox.filter.brickwall"><code class="xref py py-func docutils literal notranslate"><span class="pre">audiotoolbox.filter.brickwall()</span></code></a>: A brickwall filter implemented in the frequency domain.</p></li>
-<li><p><a class="reference internal" href="api_function.html#audiotoolbox.filter.gammatone" title="audiotoolbox.filter.gammatone"><code class="xref py py-func docutils literal notranslate"><span class="pre">audiotoolbox.filter.gammatone()</span></code></a>: A (complex valued) gammatone filter.</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">lowpass()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">highpass()</span></code></p></li>
+<li><p><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.bandpass" title="audiotoolbox.Signal.bandpass"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bandpass()</span></code></a></p></li>
 </ul>
-<p>When used with the <cite>Signal</cite> class, there is no need to provide a sampling frequency:</p>
+<p>The following example demonstrates applying a low-pass filter to a
+white noise signal.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
-<span class="n">filt_sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">gammatone</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">bw</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+<span class="c1"># Create a white noise signal</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">100e-3</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+
+<span class="c1"># Create a low-passed version of the signal</span>
+<span class="c1"># A copy is made so the original signal is not modified</span>
+<span class="n">lp_sig</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">lowpass</span><span class="p">(</span><span class="n">f_cut</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">filter_type</span><span class="o">=</span><span class="s1">&#39;butter&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># Plot the original and filtered signals</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Original&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Original White Noise&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lp_sig</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">lp_sig</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Filtered&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;C1&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;After 1kHz Low-Pass Filter&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Time / s&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ax</span><span class="p">:</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Amplitude&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
+<p>(<a class="reference download internal" download="" href="_downloads/a2c087b15f3e490675372f60c4b43092/user_guide-10.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="_downloads/bb285495becb85dc1084ed364b36957f/user_guide-10.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="_downloads/476b33a2b290f0b73b8aae98c6ed8d2b/user_guide-10.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="_downloads/e17d9424ef4764f2717d813612247a91/user_guide-10.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<figure class="align-default">
+<img alt="_images/user_guide-10.png" class="plot-directive" src="_images/user_guide-10.png" />
+</figure>
 </section>
-<section id="unified-interface-for-filters">
-<h3>Unified Interface for Filters<a class="headerlink" href="#unified-interface-for-filters" title="Link to this heading"></a></h3>
-<p>There is also a unified interface for low-pass, high-pass, and band-pass filters:</p>
+<section id="filter-functions">
+<h3>Filter Functions<a class="headerlink" href="#filter-functions" title="Link to this heading"></a></h3>
+<p>For more direct control, you can also use the filter functions available in
+the <a class="reference internal" href="api_function.html#module-audiotoolbox.filter" title="audiotoolbox.filter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">audiotoolbox.filter</span></code></a> submodule. These functions take a signal
+as their first argument.</p>
+<p>The following filters are available:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="api_function.html#audiotoolbox.filter.lowpass" title="audiotoolbox.filter.lowpass"><code class="xref py py-func docutils literal notranslate"><span class="pre">audiotoolbox.filter.lowpass()</span></code></a>: Low-pass filter, currently Butterworth or Brickwall.</p></li>
-<li><p><a class="reference internal" href="api_function.html#audiotoolbox.filter.highpass" title="audiotoolbox.filter.highpass"><code class="xref py py-func docutils literal notranslate"><span class="pre">audiotoolbox.filter.highpass()</span></code></a>: High-pass filter, currently Butterworth or Brickwall.</p></li>
-<li><p><a class="reference internal" href="api_function.html#audiotoolbox.filter.bandpass" title="audiotoolbox.filter.bandpass"><code class="xref py py-func docutils literal notranslate"><span class="pre">audiotoolbox.filter.bandpass()</span></code></a>: Band-pass filter, currently Butterworth, Brickwall, Gammatone.</p></li>
+<li><p><a class="reference internal" href="api_function.html#audiotoolbox.filter.butterworth" title="audiotoolbox.filter.butterworth"><code class="xref py py-func docutils literal notranslate"><span class="pre">butterworth()</span></code></a>: A Butterworth filter.</p></li>
+<li><p><a class="reference internal" href="api_function.html#audiotoolbox.filter.brickwall" title="audiotoolbox.filter.brickwall"><code class="xref py py-func docutils literal notranslate"><span class="pre">brickwall()</span></code></a>: A brickwall (ideal) filter
+implemented in the frequency domain.</p></li>
+<li><p><a class="reference internal" href="api_function.html#audiotoolbox.filter.gammatone" title="audiotoolbox.filter.gammatone"><code class="xref py py-func docutils literal notranslate"><span class="pre">gammatone()</span></code></a>: A (complex-valued) gammatone filter.</p></li>
 </ul>
-<p>A third-order Butterworth filter can be implemented as follows:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
 
-<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
-<span class="n">filt_sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">lowpass</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">f_cut</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">filter_type</span><span class="o">=</span><span class="s1">&#39;butter&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
+
+<span class="c1"># Apply a 3rd-order Butterworth low-pass filter</span>
+<span class="n">filt_sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">butterworth</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">high_f</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Or:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
-<span class="n">filt_sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">butterworth</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">low_f</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high_f</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The three unified interfaces are also implemented as methods of the <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">audiotoolbox.Signal</span></code></a> class:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
-<span class="n">lp_sig</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">lowpass</span><span class="p">(</span><span class="n">f_cut</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">filter_type</span><span class="o">=</span><span class="s1">&#39;butter&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">hp_sig</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">highpass</span><span class="p">(</span><span class="n">f_cut</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">filter_type</span><span class="o">=</span><span class="s1">&#39;butter&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">bp_sig</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">bandpass</span><span class="p">(</span><span class="n">fc</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">bw</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">filter_type</span><span class="o">=</span><span class="s1">&#39;butter&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.lowpass()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.highpass()</span></code>, and <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.bandpass" title="audiotoolbox.Signal.bandpass"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.bandpass()</span></code></a> for more information.</p>
 </section>
 <section id="filterbanks">
 <h3>Filterbanks<a class="headerlink" href="#filterbanks" title="Link to this heading"></a></h3>
-<p><cite>audiotoolbox</cite> provides two commonly used standard banks as well as the option to build custom banks.</p>
-<p>Currently, the following standard banks are available:</p>
+<p><strong>audiotoolbox</strong> provides two commonly used standard filterbanks and allows
+for the creation of custom banks.</p>
+<section id="standard-filterbanks">
+<h4>Standard Filterbanks<a class="headerlink" href="#standard-filterbanks" title="Link to this heading"></a></h4>
+<p>The following standard filterbanks are available:</p>
 <ol class="arabic simple">
-<li><p><a class="reference internal" href="api_function.html#audiotoolbox.filter.bank.octave_bank" title="audiotoolbox.filter.bank.octave_bank"><code class="xref py py-func docutils literal notranslate"><span class="pre">audiotoolbox.filter.bank.octave_bank()</span></code></a>: (fractional) Octave filterbank.</p></li>
-<li><p><a class="reference internal" href="api_function.html#audiotoolbox.filter.bank.auditory_gamma_bank" title="audiotoolbox.filter.bank.auditory_gamma_bank"><code class="xref py py-func docutils literal notranslate"><span class="pre">audiotoolbox.filter.bank.auditory_gamma_bank()</span></code></a>: An auditory gammatone-filterbank.</p></li>
+<li><p><a class="reference internal" href="api_function.html#audiotoolbox.filter.bank.octave_bank" title="audiotoolbox.filter.bank.octave_bank"><code class="xref py py-func docutils literal notranslate"><span class="pre">octave_bank()</span></code></a>: A (fractional) octave
+filterbank.</p></li>
+<li><p><a class="reference internal" href="api_function.html#audiotoolbox.filter.bank.auditory_gamma_bank" title="audiotoolbox.filter.bank.auditory_gamma_bank"><code class="xref py py-func docutils literal notranslate"><span class="pre">auditory_gamma_bank()</span></code></a>: An auditory
+gammatone filterbank.</p></li>
 </ol>
-<p>A 1/3 octave fractional filterbank can be generated as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bank</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">bank</span><span class="o">.</span><span class="n">octave_bank</span><span class="p">(</span><span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">,</span> <span class="n">flow</span><span class="o">=</span><span class="mf">24.8</span><span class="p">,</span> <span class="n">fhigh</span><span class="o">=</span><span class="mf">20158.0</span><span class="p">,</span> <span class="n">oct_fraction</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<p>A 1/3-octave filterbank can be generated as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+
+<span class="n">bank</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">bank</span><span class="o">.</span><span class="n">octave_bank</span><span class="p">(</span>
+    <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">,</span> <span class="n">flow</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">fhigh</span><span class="o">=</span><span class="mi">20000</span><span class="p">,</span> <span class="n">oct_fraction</span><span class="o">=</span><span class="mi">3</span>
+<span class="p">)</span>
+
+<span class="c1"># The .fc property contains the center frequencies</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">bank</span><span class="o">.</span><span class="n">fc</span><span class="p">)</span>
-<span class="c1"># Output: array([   24.80314144,    31.25      ,    39.37253281,    49.60628287,</span>
-<span class="c1">#                   62.5       ,    78.74506562,    99.21256575,   125.        ,</span>
-<span class="c1">#                  157.49013124,   198.4251315 ,   250.        ,   314.98026247,</span>
-<span class="c1">#                  396.85026299,   500.        ,   629.96052495,   793.70052598,</span>
-<span class="c1">#                 1000.        ,  1259.92104989,  1587.40105197,  2000.        ,</span>
-<span class="c1">#                 2519.84209979,  3174.80210394,  4000.        ,  5039.68419958,</span>
-<span class="c1">#                 6349.60420787,  8000.        , 10079.36839916, 12699.20841575,</span>
-<span class="c1">#                16000.        , 20158.73679832])</span>
-</pre></div>
-</div>
-<p>With all filter-banks, a <cite>Signal</cite> can either be filtered by applying the whole bank at the same time, returning a multi-channel signal:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
-<span class="n">filt_sig</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">filt</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">filt_sig</span><span class="o">.</span><span class="n">n_channels</span><span class="p">)</span>
-<span class="c1"># Output: (2, 30)</span>
-</pre></div>
-</div>
-<p>Or, alternatively, the filterbank can also be indexed to apply individual filters:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">filt_sig</span> <span class="o">=</span> <span class="n">bank</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">filt</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">filt_sig</span><span class="o">.</span><span class="n">n_channels</span><span class="p">)</span>
-<span class="c1"># Output: (2, 2)</span>
-</pre></div>
-</div>
-<p>The <a class="reference internal" href="api_function.html#audiotoolbox.filter.bank.create_filterbank" title="audiotoolbox.filter.bank.create_filterbank"><code class="xref py py-func docutils literal notranslate"><span class="pre">audiotoolbox.filter.bank.create_filterbank()</span></code></a> can be used to create custom filterbanks. For example, a brickwall filterbank with filters around 100Hz, 200Hz, and 300Hz with bandwidths of 10Hz, 20Hz, and 30Hz can be created as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">fc_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">])</span>
-<span class="n">bw_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
-<span class="n">bank</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">bank</span><span class="o">.</span><span class="n">create_filterbank</span><span class="p">(</span><span class="n">fc</span><span class="o">=</span><span class="n">fc_vec</span><span class="p">,</span> <span class="n">bw</span><span class="o">=</span><span class="n">bw_vec</span><span class="p">,</span> <span class="n">filter_type</span><span class="o">=</span><span class="s1">&#39;brickwall&#39;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
-<span class="n">filt_sig</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">filt</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">filt_sig</span><span class="o">.</span><span class="n">n_channels</span><span class="p">)</span>
-<span class="c1"># Output: (2, 3)</span>
 </pre></div>
 </div>
 </section>
-<section id="frequency-weighting">
-<h3>Frequency Weighting<a class="headerlink" href="#frequency-weighting" title="Link to this heading"></a></h3>
-<p><cite>audiotoolbox</cite> implements A and C weighting filters following IEC 61672-1. Both C and A weighted sound pressure levels can be accessed as properties through <code class="xref py py-attr docutils literal notranslate"><span class="pre">audiotoolbox.Signal.stats</span></code>. Additionally, the filters can be applied through <a class="reference internal" href="api_function.html#audiotoolbox.filter.a_weighting" title="audiotoolbox.filter.a_weighting"><code class="xref py py-func docutils literal notranslate"><span class="pre">audiotoolbox.filter.a_weighting()</span></code></a> and <a class="reference internal" href="api_function.html#audiotoolbox.filter.c_weighting" title="audiotoolbox.filter.c_weighting"><code class="xref py py-func docutils literal notranslate"><span class="pre">audiotoolbox.filter.c_weighting()</span></code></a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">noise</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="s1">&#39;pink&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dba</span><span class="p">)</span>
-<span class="c1"># Output: Signal([89.10458354, 89.10458354, 89.10458354])</span>
+<section id="applying-a-filterbank">
+<h4>Applying a Filterbank<a class="headerlink" href="#applying-a-filterbank" title="Link to this heading"></a></h4>
+<p>A filterbank can be applied to a signal using its <code class="docutils literal notranslate"><span class="pre">filt()</span></code> method. This
+returns a multi-channel signal where each channel corresponds to the
+output of one filter in the bank.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
 
-<span class="n">noise</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="s1">&#39;pink&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">noise</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">dbc</span><span class="p">)</span>
-<span class="c1"># Output: Signal([90.82348995, 90.82348995, 90.82348995])</span>
+<span class="c1"># Filter the signal with the entire bank</span>
+<span class="n">filt_sig</span> <span class="o">=</span> <span class="n">bank</span><span class="o">.</span><span class="n">filt</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+
+<span class="c1"># The output has shape (n_samples, n_original_channels, n_filters)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape of filtered signal: </span><span class="si">{</span><span class="n">filt_sig</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can also index the filterbank to apply only a subset of filters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Apply only the 10th through 15th filters of the bank</span>
+<span class="n">filt_sig_partial</span> <span class="o">=</span> <span class="n">bank</span><span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="mi">15</span><span class="p">]</span><span class="o">.</span><span class="n">filt</span><span class="p">(</span><span class="n">sig</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Shape of partially filtered signal: </span><span class="si">{</span><span class="n">filt_sig_partial</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="custom-filterbanks">
+<h4>Custom Filterbanks<a class="headerlink" href="#custom-filterbanks" title="Link to this heading"></a></h4>
+<p>The <a class="reference internal" href="api_function.html#audiotoolbox.filter.bank.create_filterbank" title="audiotoolbox.filter.bank.create_filterbank"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_filterbank()</span></code></a> function can be
+used to create custom filterbanks from any of the available filter types.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># Define center frequencies and bandwidths</span>
+<span class="n">fc_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">])</span>
+<span class="n">bw_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">])</span>
+
+<span class="c1"># Create a custom brickwall filterbank</span>
+<span class="n">custom_bank</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">bank</span><span class="o">.</span><span class="n">create_filterbank</span><span class="p">(</span>
+    <span class="n">fc</span><span class="o">=</span><span class="n">fc_vec</span><span class="p">,</span> <span class="n">bw</span><span class="o">=</span><span class="n">bw_vec</span><span class="p">,</span> <span class="n">filter_type</span><span class="o">=</span><span class="s1">&#39;brickwall&#39;</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="frequency-weighting-filters">
+<h3>Frequency Weighting Filters<a class="headerlink" href="#frequency-weighting-filters" title="Link to this heading"></a></h3>
+<p><strong>audiotoolbox</strong> implements A- and C-weighting filters following the
+IEC 61672-1 standard. While the weighted levels can be accessed directly
+via the <code class="xref py py-attr docutils literal notranslate"><span class="pre">stats</span></code> property (e.g., <code class="docutils literal notranslate"><span class="pre">sig.stats.dba</span></code>),
+the filters can also be applied directly.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="api_function.html#audiotoolbox.filter.a_weighting" title="audiotoolbox.filter.a_weighting"><code class="xref py py-func docutils literal notranslate"><span class="pre">a_weighting()</span></code></a></p></li>
+<li><p><a class="reference internal" href="api_function.html#audiotoolbox.filter.c_weighting" title="audiotoolbox.filter.c_weighting"><code class="xref py py-func docutils literal notranslate"><span class="pre">c_weighting()</span></code></a></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">noise</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="s1">&#39;pink&#39;</span><span class="p">)</span>
+
+<span class="c1"># Apply A-weighting filter</span>
+<span class="n">a_weighted_noise</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">a_weighting</span><span class="p">(</span><span class="n">noise</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

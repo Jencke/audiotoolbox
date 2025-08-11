@@ -104,6 +104,16 @@ size=&quot;8.0, 12.0&quot;;
   &quot;numpy.ndarray&quot; -&gt; &quot;audiotoolbox.oaudio.base_signal.BaseSignal&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
   &quot;audiotoolbox.oaudio.signal.Signal&quot; [URL=&quot;#audiotoolbox.Signal&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Base class for signals in the timedomain.&quot;];
   &quot;audiotoolbox.oaudio.base_signal.BaseSignal&quot; -&gt; &quot;audiotoolbox.oaudio.signal.Signal&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;audiotoolbox.oaudio.signal_mixins.analysis.AnalysisMixin&quot; -&gt; &quot;audiotoolbox.oaudio.signal.Signal&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;audiotoolbox.oaudio.signal_mixins.generation.GenerationMixin&quot; -&gt; &quot;audiotoolbox.oaudio.signal.Signal&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;audiotoolbox.oaudio.signal_mixins.modification.ModificationMixin&quot; -&gt; &quot;audiotoolbox.oaudio.signal.Signal&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;audiotoolbox.oaudio.signal_mixins.io.IOMixin&quot; -&gt; &quot;audiotoolbox.oaudio.signal.Signal&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;audiotoolbox.oaudio.signal_mixins.filtering.FilteringMixin&quot; -&gt; &quot;audiotoolbox.oaudio.signal.Signal&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;audiotoolbox.oaudio.signal_mixins.analysis.AnalysisMixin&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,tooltip=&quot;Mixin for signal analysis methods.&quot;];
+  &quot;audiotoolbox.oaudio.signal_mixins.filtering.FilteringMixin&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,tooltip=&quot;Mixin for signal filtering methods.&quot;];
+  &quot;audiotoolbox.oaudio.signal_mixins.generation.GenerationMixin&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,tooltip=&quot;Mixin for signal generation methods.&quot;];
+  &quot;audiotoolbox.oaudio.signal_mixins.io.IOMixin&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,tooltip=&quot;Mixin for signal io methods.&quot;];
+  &quot;audiotoolbox.oaudio.signal_mixins.modification.ModificationMixin&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,tooltip=&quot;Mixin for signal modification methods.&quot;];
   &quot;numpy.ndarray&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,tooltip=&quot;ndarray(shape, dtype=float, buffer=None, offset=0,&quot;];
 }
 <p>As a consequence, <cite>numpy.ndarray</cite> methods such as <cite>x.min()</cite>,
@@ -239,13 +249,11 @@ using the psudorandom generator. Each frequency bin is then
 weighted dependent on the spectral shape. The resulting spektrum
 is then transformed into the time domain using <code class="docutils literal notranslate"><span class="pre">numpy.fft.ifft</span></code></p>
 <p>Weighting functions:</p>
-<blockquote>
-<div><ul class="simple">
+<ul class="simple">
 <li><p>white: <span class="math notranslate nohighlight">\(w(f) = 1\)</span></p></li>
 <li><p>pink: <span class="math notranslate nohighlight">\(w(f) = \frac{1}{\sqrt{f}}\)</span></p></li>
 <li><p>brown: <span class="math notranslate nohighlight">\(w(f) = \frac{1}{f}\)</span></p></li>
 </ul>
-</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -312,13 +320,12 @@ noise tokens which are then orthogonalized using the Gram-Schmidt
 process (as implementd in numpy.linalg.qr). The N+1 th noise token
 is then mixed with the remaining noise tokens using the equation</p>
 <div class="math notranslate nohighlight">
-\[X_{\rho,n} = X_{N+1}  \sqrt{\rho} + X_n
-\beta \sqrt{1 - \rho}\]</div>
+\[X_{\rho,n} = X_{N+1}  \sqrt{\rho} + X_n \beta \sqrt{1 - \rho}\]</div>
 <p>where <span class="math notranslate nohighlight">\(X_{\rho,n}\)</span> is the nth output and noise,
 <span class="math notranslate nohighlight">\(X_{n}\)</span> the nth indipendent noise and <span class="math notranslate nohighlight">\(X_{N=1}\)</span> is the
 common noise.</p>
 <p>for two noise tokens, this is identical to the assymetric
-three-generator method described in <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
+three-generator method described in <a href="#id5"><span class="problematic" id="id1">[1]_</span></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -349,13 +356,13 @@ the audiotoolbox.filter.highpass function</p></li>
 <p class="rubric">References</p>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="id2" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
-<p>Hartmann, W. M., &amp; Cho, Y. J. (2011). Generating partially
-correlated noise—a comparison of methods. The Journal of the
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Hartmann, W. M., &amp; Cho, Y. J. (2011). Generating partially</p>
+</aside>
+</aside>
+<p>correlated noise—a comparison of methods. The Journal of the
 Acoustical Society of America, 130(1),
 292–301. <a class="reference external" href="http://dx.doi.org/10.1121/1.3596475">http://dx.doi.org/10.1121/1.3596475</a></p>
-</aside>
-</aside>
 </dd></dl>
 
 <dl class="py method">
@@ -414,30 +421,6 @@ slicing of the channels indipendent of samples.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="audiotoolbox.Signal.clip">
-<span class="sig-name descname"><span class="pre">clip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.clip" title="Link to this definition"></a></dt>
-<dd><p>Clip the signal between two points in time.</p>
-<p>removes the number of saamples according to t_start and
-t_end. This method can not be applied to a single channel or
-slice.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>t_start</strong> (<em>float</em>) – Signal time at which the returned signal should start</p></li>
-<li><p><strong>t_end</strong> (<em>float</em><em> or </em><em>None</em><em> (</em><em>optional</em><em>)</em>) – Signal time at which the signal should stop. The full remaining
-signal is used if set to None. (default: None)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Returns itself</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#audiotoolbox.Signal" title="audiotoolbox.Signal">Signal</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="audiotoolbox.Signal.concatenate">
 <span class="sig-name descname"><span class="pre">concatenate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.concatenate" title="Link to this definition"></a></dt>
 <dd><p>Concatenate another signal or array</p>
@@ -451,6 +434,70 @@ signal.</p>
 <dd class="field-even"><p>Returns itself</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.Signal.convolve">
+<span class="sig-name descname"><span class="pre">convolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kernel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'full'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'valid'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'same'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'full'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap_dimensions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.convolve" title="Link to this definition"></a></dt>
+<dd><p>Convolves the current signal with the given kernel.</p>
+<p>This method performs a convolution operation between the current signal
+and the provided kernel. The convolution is performed along the
+overlapping dimensions of the two signals. E.g., If the signal has two channels
+and the kernel has two channels, the first channel of the signal is convolved
+with the first channel of the kernel, and the second channel of the signal is
+convolved with the second channel of the kernel. The resulting signal will again have
+two channels. If <cite>overlap_dimensions</cite> is False, the convolution is performed
+along all dimensions. A Signal with two channels convolved with a two-channel kernel
+will result in an output of shape (2, 2) where each channel of the signal is convolved with
+each channel of the kernel.</p>
+<p>this method uses scipy.Signal.fftconvolve for the convolution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kernel</strong> (<a class="reference internal" href="#audiotoolbox.Signal" title="audiotoolbox.Signal"><em>Signal</em></a>) – The kernel to convolve with.</p></li>
+<li><p><strong>mode</strong> (<em>str {'full'</em><em>, </em><em>'valid'</em><em>, </em><em>'same'}</em><em>, </em><em>optional</em>) – The convolution mode for fftconvolve (default=full)</p></li>
+<li><p><strong>overlap_dimensions</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to convolve only along overlapping dimensions. If True, the
+convolution is performed only along the dimensions that overlap between
+the two signals. If False, the convolution is performed along all
+dimensions. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The convolved signal.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Self</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>If the last dimension of signal and the first dimension of kernel match,
+convolution takes place along this axis. This means that the first
+channel of the signal is convolved with the first channel of the kernel,
+the second with the second.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kernel</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">100e-3</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">kernel</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">n_channels</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+<p>This also works with multiple overlapping dimensions.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kernel</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mf">100e-3</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">kernel</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">n_channels</span>
+<span class="go">(5, 2, 3)</span>
+</pre></div>
+</div>
+<p>The ‘overlap_dimensions’ keyword can be set to False if all signal
+channels are instead convolved with all kernels.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kernel</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">100e-3</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">overlap_dimensions</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">n_channels</span>
+<span class="go">(2, 2)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -596,6 +643,19 @@ the FrequencyDomainSignal class.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.Signal.play">
+<span class="sig-name descname"><span class="pre">play</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.play" title="Link to this definition"></a></dt>
+<dd><p>Quick playback of the signal over the default audio output device.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>block</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the method will block until playback is finished. If False,
+playback will be non-blocking and the method will return immediately.
+Default is True.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="audiotoolbox.Signal.rectify">
 <span class="sig-name descname"><span class="pre">rectify</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.rectify" title="Link to this definition"></a></dt>
 <dd><p>One-way rectification of the signal.</p>
@@ -607,6 +667,24 @@ the FrequencyDomainSignal class.</p>
 <dd class="field-even"><p><a class="reference internal" href="#audiotoolbox.Signal" title="audiotoolbox.Signal">Signal</a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.Signal.resample">
+<span class="sig-name descname"><span class="pre">resample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_fs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.resample" title="Link to this definition"></a></dt>
+<dd><p>Resample the signal to a new sampling rate.</p>
+<p>This method uses the <cite>resampy</cite> library to resample the signal to a new
+sampling rate. It is based on the band-limited sinc interpolation method
+for sampling rate conversion as described by Smith (2015). <a href="#id6"><span class="problematic" id="id3">[1]_</span></a>.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id4" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Smith, Julius O. Digital Audio Resampling Home Page
+Center for Computer Research in Music and Acoustics (CCRMA),
+Stanford University, 2015-02-23.
+Web published at <a class="reference external" href="http://ccrma.stanford.edu/~jos/resample/">http://ccrma.stanford.edu/~jos/resample/</a>.</p>
+</aside>
+</aside>
 </dd></dl>
 
 <dl class="py method">
@@ -694,6 +772,30 @@ returned</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="api_fluent_frequencydomainsignal.html#audiotoolbox.FrequencyDomainSignal" title="audiotoolbox.FrequencyDomainSignal">FrequencyDomainSignal</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.Signal.trim">
+<span class="sig-name descname"><span class="pre">trim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.trim" title="Link to this definition"></a></dt>
+<dd><p>Trim the signal between two points in time.</p>
+<p>removes the number of samples according to t_start and
+t_end. This method can not be applied to a single channel or
+slice.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t_start</strong> (<em>float</em>) – Signal time at which the returned signal should start</p></li>
+<li><p><strong>t_end</strong> (<em>float</em><em> or </em><em>None</em><em> (</em><em>optional</em><em>)</em>) – Signal time at which the signal should stop. The full remaining
+signal is used if set to None. (default: None)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Returns itself</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotoolbox.Signal" title="audiotoolbox.Signal">Signal</a></p>
 </dd>
 </dl>
 </dd></dl>
