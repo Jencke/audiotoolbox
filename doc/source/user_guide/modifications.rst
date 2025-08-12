@@ -152,8 +152,8 @@ or ``'cos'`` for a constant amplitude crossfade.
    import numpy as np
 
    # Create two distinct signals
-   sig1 = audio.Signal(2, 0.5, 48000).add_tone(400).set_dbfs(-30)
-   sig2 = audio.Signal(2, 0.5, 48000).add_tone(400).set_dbfs(-20)
+   sig1 = audio.Signal(1, 0.5, 48000).add_tone(400).set_dbfs(-30)
+   sig2 = audio.Signal(1, 0.5, 48000).add_tone(400).set_dbfs(-20)
 
    # Crossfade them with a 100ms linear fade
    fade_duration = 100e-3
@@ -201,8 +201,8 @@ or ``'cos'`` for a constant amplitude crossfade.
    import numpy as np
 
    # Create two distinct signals
-   sig1 = audio.Signal(2, 0.5, 48000).add_noise().set_dbfs(-30)
-   sig2 = audio.Signal(2, 0.5, 48000).add_noise().set_dbfs(-20)
+   sig1 = audio.Signal(1, 0.5, 48000).add_noise().set_dbfs(-30)
+   sig2 = audio.Signal(1, 0.5, 48000).add_noise().set_dbfs(-20)
 
    # Crossfade them with a 100ms cosine fade
    fade_duration = 100e-3
