@@ -32,5 +32,11 @@ jobs:
     - name: Run pytest with coverage
       run: |
         coverage run --include=src/audiotoolbox/* -m pytest -ra
+
+    - name: Upload test results to Codecov
+      if: ${{ !cancelled() }}
+      uses: codecov/test-results-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
