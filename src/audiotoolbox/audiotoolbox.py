@@ -1996,9 +1996,6 @@ def crossfade(
     fs = sig1.fs
     n_channels = sig1.n_channels
 
-    # sig1 = sig1.copy()
-    # sig2 = sig2.copy()
-
     fade = Signal(1, fade_duration, fs)
     if fade_type == "cos":
         fade[:] = np.cos(np.pi / 2 * fade.time / fade_duration)
@@ -2011,17 +2008,31 @@ def crossfade(
     out_duration = n_out / fs
     out_sig = Signal((2,) + tuple(np.atleast_1d(n_channels)), out_duration, fs)
 
-    out_sig[: sig1.n_samples, 0] = sig1
-    out_sig[-sig2.n_samples :, 1] = sig2
+    # Reshape signals to ensure they can be broadcast into the temporary out_sig.
+    # This is necessary because a 1D signal (N,) cannot be assigned to a
+    # 2D slice (N, 1) without an explicit reshape.
+    s1 = sig1.reshape(sig1.n_samples, *np.atleast_1d(sig1.n_channels))
+    s2 = sig2.reshape(sig2.n_samples, *np.atleast_1d(sig2.n_channels))
+
+    out_sig[: sig1.n_samples, 0] = s1
+    out_sig[-sig2.n_samples :, 1] = s2
 
     fade_s = sig1.n_samples - fade.n_samples
     fade_e = fade_s + fade.n_samples
 
-    out_sig[fade_s:fade_e, 0] *= _copy_to_dim(fade, n_channels)
-    out_sig[fade_s:fade_e, 1] *= _copy_to_dim(fade[::-1], n_channels)
+    # Reshape fade ramps to allow broadcasting across all channel dimensions.
+    # A ramp of shape (N,) becomes (N, 1) or (N, 1, 1) etc., to match the
+    # shape of the signal slice it's being multiplied with.
+    n_channel_dims = len(np.atleast_1d(n_channels))
+    fade_shape = (-1,) + (1,) * n_channel_dims
+    fade_out_ramp = fade.reshape(fade_shape)
+    fade_in_ramp = fade[::-1].reshape(fade_shape)
+
+    out_sig[fade_s:fade_e, 0] *= fade_out_ramp
+    out_sig[fade_s:fade_e, 1] *= fade_in_ramp
 
     out_sig = out_sig.sum(axis=1)
-    return out_sig  # sig1 + sig2
+    return out_sig
 
 
 def _get_dim_overlap(dim1, dim2):
