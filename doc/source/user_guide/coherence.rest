@@ -1,0 +1,6 @@
+
+Coherence and Correlation
+=========================
+
+`audiotoolbox` Implements methods to calculate the complex valued correlation coefficent as well as the complex valued cross corelation between two signals.
+To 
