@@ -22,3 +22,4 @@ For a detailed description of all functions and classes, please see the
    user_guide/convolution
    user_guide/input_output
    user_guide/playback
+   user_guide/visualization

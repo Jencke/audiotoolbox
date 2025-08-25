@@ -9,6 +9,7 @@ from .. import audiotoolbox as audio
 from .freqdomain_signal import FrequencyDomainSignal
 from .stats import SignalStats
 from .time_frequency import TimeFrequency
+from .viz import Visualization
 from scipy.signal import fftconvolve
 import warnings
 
@@ -69,6 +70,7 @@ class Signal(
         obj = super().__new__(cls, n_channels, duration, fs, dtype)
         obj.stats = SignalStats(obj)
         obj.time_frequency = TimeFrequency(obj)
+        obj.viz = Visualization(obj)
         return cast(Signal, obj)
 
     def __array_finalize__(self, obj):
@@ -88,6 +90,7 @@ class Signal(
             self.time_offset = getattr(obj, "time_offset", None)
             self.stats = SignalStats(self)
             self.time_frequency = TimeFrequency(self)
+            self.viz = Visualization(self)
 
         return obj
 
@@ -98,33 +101,8 @@ class Signal(
         return time
 
     def plot(self, ax=None):
-        """Plot the Signal using matplotlib.
-
-        This function quickly plots the signal over time. If the
-        signal only contains two channels, they are plotted in blue
-        and red.
-
-        Currently only works for signals with 1 dimensional channel
-        shape.
-
-        Parameters
-        ----------
-        ax : None, matplotlib.axis (optional)
-            The axis that should be used for plotting. If None, a new
-            figure is created. (default is None)
-
-        """
-        import matplotlib.pyplot as plt
-
-        if not ax:
-            fig, ax = plt.subplots(1, 1)
-        else:
-            fig = ax.figure
-        if self.n_channels == 2:
-            ax.plot(self.time, self[:, 0], color=audio.COLOR_L)
-            ax.plot(self.time, self[:, 1], color=audio.COLOR_R)
-        else:
-            ax.plot(self.time, self)
+        raise (DeprecationWarning("Use sig.viz.plot() instead of sig.plot()"))
+        fig, ax = self.viz.plot(ax=ax)
         return fig, ax
 
     def to_freqdomain(self):
