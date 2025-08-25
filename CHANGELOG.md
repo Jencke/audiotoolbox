@@ -1,3 +1,7 @@
+0.57 -> 0.6
+  - Improved Documentation
+  - swap return values in octave_band_levels for consistency
+
 0.74 -> 0.75
   - Major restructuring of Signal class (fully backwards compatible)
   - Improvement of Documentation
