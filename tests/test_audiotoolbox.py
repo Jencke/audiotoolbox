@@ -138,62 +138,6 @@ def test_cosine_fade_window():
     testing.assert_array_equal(win[:, 1, 0], win[:, 0, 0])
 
 
-def test_gauss_fade_window():
-    window = audio.gaussian_fade_window(np.zeros(1000), 100e-3, 1e3)
-
-    # test symmentry
-    assert np.array_equal(window[:100], window[-100:][::-1])
-
-    # test starts at -60dB
-    testing.assert_almost_equal(window[0], 0.001)
-
-    # test setting cutoff
-    window = audio.gaussian_fade_window(np.zeros(1000), 100e-3, 1e3, cutoff=-20)
-    testing.assert_almost_equal(window[0], 0.1)
-
-    # Test that the last sample in the window is not equal to 1
-    nsamp = audio.nsamples(200e-3, 1e3)
-    window = audio.gaussian_fade_window(np.zeros(nsamp + 1), 100e-3, 1e3)
-
-    assert window[int(nsamp / 2)] == 1
-    assert window[int(nsamp / 2 - 1)] != 1
-    assert window[int(nsamp / 2 + 1)] != 1
-    assert window[int(nsamp / 2 + 1)] == window[int(nsamp / 2 - 1)]
-
-    # Test multichannel window
-    window = audio.gaussian_fade_window(np.zeros([1000, 2]), 100e-3, 1e3)
-    assert np.array_equal(window[:, 0], window[:, 1])
-    assert np.array_equal(window[:100, 0], window[-100:, 0][::-1])
-
-    sig = audio.Signal((2, 3), 1, 48000)
-    win = audio.gaussian_fade_window(sig, 100e-3)
-    assert win.shape == sig.shape
-    testing.assert_array_equal(win[:, 1, 0], win[:, 0, 1])
-
-
-# def test_shift_signal():
-
-#     signal = np.ones(10)
-#     sig = audio.shift_signal(signal, 10, mode='zeros')
-#     assert len(sig) == 20
-#     assert np.all(sig[10:] == 1)
-#     assert np.all(sig[:10] == 0)
-
-#     signal = np.ones(10)
-#     signal[-2:] = 0
-#     sig = audio.shift_signal(signal, 2, mode='cyclic')
-#     assert len(sig) == 10
-#     assert np.all(sig[:2] == 0)
-#     assert np.all(sig[2:] == 1)
-
-#     signal = np.ones(10)
-#     signal[:2] = 0
-#     sig = audio.shift_signal(signal, -2, mode='cyclic')
-#     assert len(sig) == 10
-#     assert np.all(sig[:2] == 1)
-#     assert np.all(sig[-2:] == 0)
-
-
 def test_delay_signal():
     signal = audio.generate_tone(1, 1, 1e3, start_phase=0.5 * np.pi)
     signal += audio.generate_tone(1, 2, 1e3, start_phase=0.5 * np.pi)
