@@ -446,27 +446,26 @@ def test_extract_binaural_differences():
 
     # Check phase_difference
     fs = 48000
-    signal1 = audio.generate_tone(1, 500, fs)
-    signal2 = audio.generate_tone(1, 500, fs, start_phase=0.5 * np.pi)
-    signal = np.column_stack([signal1, signal2])
+    signal = audio.Signal(2, 1, fs)
+    signal.ch[0].add_tone(500)
+    signal.ch[1].add_tone(500, start_phase=0.5 * np.pi)
     ipd, ild = audio.extract_binaural_differences(signal)
 
-    assert len(ipd) == len(signal1)
+    assert len(ipd) == len(signal)
     assert np.all(np.isclose(ild, 0))
     assert np.all(np.isclose(ipd, -np.pi * 0.5))
 
     # check log level difference
-    signal1 = audio.set_dbspl(audio.generate_tone(1, 500, fs), 50)
-    signal2 = audio.set_dbspl(audio.generate_tone(1, 500, fs), 60)
-    signal = np.column_stack([signal1, signal2])
+    signal = audio.Signal(2, 1, fs)
+    signal.ch[0].add_tone(500)
+    signal.ch[1].add_tone(500, start_phase=0.5 * np.pi)
+    signal.ch[1].apply_gain(10)
     ipd, ild = audio.extract_binaural_differences(signal)
     assert np.all(np.isclose(ild, -10))
 
-    # check amplitude difference
-    fs = 48000
-    signal1 = audio.generate_tone(1, 500, fs)
-    signal2 = audio.generate_tone(1, 500, fs) * 0.5
-    signal = np.column_stack([signal1, signal2])
+    signal = audio.Signal(2, 1, fs)
+    signal.ch[0].add_tone(500)
+    signal.ch[1].add_tone(500, amplitude=0.5)
     ipd, ild = audio.extract_binaural_differences(signal, log_ilds=False)
     assert np.all(np.isclose(ild, 2))
     assert np.all(np.isclose(ipd, 0))

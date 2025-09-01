@@ -139,21 +139,3 @@ def test_set_dbspl_invertable():
 
     signal.set_dbspl(0)
     testing.assert_almost_equal(signal.stats.rms, 20e-6)
-
-
-# signal = Signal(1, 1, 48000).add_tone(1000)
-#     # signal = audio.generate_tone(1000, 1, 48000)
-#     signal.set_dbfs(-5)
-#     testing.assert_almost_equal(signal.stats.dbfs, -5)
-# # RMS value of a -5 db sine
-# m = (10 ** (-5 / 20)) / np.sqrt(2)
-
-# signal = np.concatenate([-np.ones(10), np.ones(10)])
-# signal = np.tile(signal, 100)
-# signal = audio.set_dbfs(signal, -5)
-# assert signal.max() == m
-
-# assert audio.set_dbfs(2, 0, norm="peak") == 1
-# signal = audio.generate_tone(1000, 8, 48000)
-# assert audio.set_dbfs(signal, 0, "peak").max() == 1
-# assert audio.set_dbfs(signal, -3, "peak").max() == 10 ** (-3 / 20)
