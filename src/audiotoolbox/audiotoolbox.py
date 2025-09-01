@@ -893,51 +893,6 @@ def calc_dbspl(signal):
     return dbspl_val
 
 
-def set_dbspl(signal, dbspl_val):
-    r"""Adjust signal amplitudes to a given dbspl value.
-
-    Normalizes the signal to a given sound pressure level in dB
-    relative 20e-6 Pa.
-    for this, the Signal is multiplied with the factor :math:`A`
-
-    .. math:: A = \frac{p_0}{\sigma} 10^{L / 20}
-
-    where :math:`L` is the goal SPL, :math:`p_0=20\mu Pa` and
-    :math:`\sigma` is the RMS of the signal.
-
-    Parameters
-    ----------
-    signal : ndarray
-        The input signal
-    dbspl_val : float
-        The dbspl value to reach
-
-    Returns
-    -------
-    ndarray :
-        The amplitude adjusted signal
-
-    See Also
-    --------
-    audiotoolbox.calc_dbspl
-    audiotoolbox.Signal.calc_dbspl
-    audiotoolbox.Signal.set_dbfs
-    audiotoolbox.Signal.calc_dbfs
-
-    """
-
-    if np.ndim(signal) != 0:
-        rms_val = np.sqrt(np.mean(signal**2, axis=0))
-    else:
-        rms_val = signal
-
-    p0 = 20e-6  # ref_value
-
-    factor = (p0 * 10 ** (float(dbspl_val) / 20)) / rms_val
-
-    return signal * factor
-
-
 def calc_dbfs(signal):
     r"""Calculate the dBFS RMS value of a given signal.
 

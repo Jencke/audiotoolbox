@@ -43,16 +43,12 @@ class ModificationMixin:
         -------
         Returns itself : Signal
 
-        See Also
-        --------
-        audiotoolbox.set_dbspl
-        audiotoolbox.Signal.calc_dbspl
-        audiotoolbox.Signal.set_dbfs
-        audiotoolbox.Signal.calc_dbfs
-
         """
-        res = audio.set_dbspl(self, dbspl)
-        self[:] = res[:]
+        p0 = 20e-6  # ref_value
+
+        factor = (p0 * 10 ** (float(dbspl) / 20)) / self.stats.rms
+
+        self *= factor
 
         return self
 
@@ -95,9 +91,7 @@ class ModificationMixin:
 
         rms0 = 1 / np.sqrt(2)
 
-        rms_val = np.sqrt(np.mean(self**2, axis=0))
-
-        factor = (rms0 * 10 ** (float(dbfs) / 20)) / rms_val
+        factor = (rms0 * 10 ** (float(dbfs) / 20)) / self.stats.rms
         # elif norm == "peak":
         #     peak_val = np.max(self, axis=0)
         #     factor = (10 ** (float(dbfs) / 20)) / peak_val

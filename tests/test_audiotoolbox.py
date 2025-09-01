@@ -294,14 +294,6 @@ def test_calc_dbspl():
     assert audio.calc_dbspl(sig) == l_tone
 
 
-def test_set_dbsl():
-    fs = 100e3
-    signal = audio.generate_tone(100, 1, fs)
-    signal = audio.set_dbspl(signal, 15)
-    testing.assert_almost_equal(audio.calc_dbspl(signal), 15)
-    assert audio.set_dbspl(1, 0) == 20e-6
-
-
 def test_calc_dbfs():
     signal = audio.generate_tone(1000, 1, 48000)
     testing.assert_almost_equal(audio.calc_dbfs(signal), 0)
