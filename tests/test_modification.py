@@ -131,7 +131,7 @@ def test_set_dbfs_peak():
     assert signal.abs().max() == 10 ** (-6 / 20)
 
 
-def test_set_dbsl_invertable():
+def test_set_dbspl_invertable():
     fs = 100e3
     signal = Signal(1, 1, fs).add_tone(100)
     signal.set_dbspl(15)
