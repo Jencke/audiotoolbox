@@ -251,7 +251,7 @@ class ModificationMixin:
         """
         if method == "sample":
             nshift = audio.nsamples(delay, self.fs)
-            shifted = audio.shift_signal(self, nshift)
+            shifted = np.roll(self, nshift, axis=0)
         elif method == "fft":
             shifted = self.to_freqdomain().time_shift(delay).to_timedomain()
 
