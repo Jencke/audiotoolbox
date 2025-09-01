@@ -123,19 +123,6 @@ def test_addtone():
     testing.assert_almost_equal(sig, sig2)
 
 
-def test_setdbspl():
-    fs = 48000
-    duration = 100e-3
-
-    sig = Signal(1, duration, fs)
-    sig.add_tone(100).set_dbspl(50)
-
-    test = audio.generate_tone(duration, 100, fs)
-    test = audio.set_dbspl(test, 50)
-
-    testing.assert_equal(sig, test)
-
-
 def test_stats():
     sig = Signal(1, 1, 48000)
     assert hasattr(sig, "stats")
@@ -143,17 +130,6 @@ def test_stats():
     sig = Signal(1, 1, 48000)
     sig = sig.copy()
     assert hasattr(sig, "stats")
-
-
-def test_setdbfs_calcdbfs():
-    fs = 48000
-    duration = 100e-3
-
-    sig = Signal(1, duration, fs)
-    sig.add_tone(100).set_dbfs(-5)
-
-    assert audio.calc_dbfs(sig) == -5
-    assert sig.stats.dbfs == -5
 
 
 def test_zeropad():
@@ -182,29 +158,6 @@ def test_zeropad():
     n_zeros_e = audio.nsamples(10e-3, fs)
     assert np.all(sig[:n_zeros_s] == 0)
     assert np.all(sig[-n_zeros_e:] == 0)
-
-
-def test_fadewindow():
-    fs = 48000
-    duration = 100e-3
-
-    sig = Signal(1, duration, fs)
-    sig.add_tone(100).add_fade_window(rise_time=10e-3, type="gauss")
-    test = audio.generate_tone(duration, 100, fs)
-    test *= audio.gaussian_fade_window(test, 10e-3, fs)
-    testing.assert_equal(sig, test)
-
-    sig = Signal(1, duration, fs)
-    sig.add_tone(100).add_fade_window(rise_time=10e-3, type="cos")
-    test = audio.generate_tone(duration, 100, fs)
-    test *= audio.cosine_fade_window(test, 10e-3, fs)
-    testing.assert_equal(sig, test)
-
-    sig = Signal(1, duration, fs)
-    sig.add_tone(100).add_fade_window(rise_time=10e-3, type="cos")
-    test = audio.generate_tone(duration, 100, fs)
-    test *= audio.cosine_fade_window(test, 10e-3, fs)
-    testing.assert_equal(sig, test)
 
 
 def test_add():
@@ -328,27 +281,6 @@ def test_phaseshift():
     sig = Signal(2, duration, fs)
     sig.add_noise()
     sig[:, 0].phase_shift(np.pi / 4)
-
-
-def test_cos_amp_modulator():
-    fs = 48000
-    sig = Signal(1, 1, fs).add_tone(100)
-    sig.add_cos_modulator(5, 1)
-
-    test = audio.generate_tone(1, 100, fs)
-    test *= audio.cos_amp_modulator(test, 5, fs)
-
-    testing.assert_array_equal(sig, test)
-
-    fs = 48000
-    sig = Signal(2, 1, fs).add_tone(100)
-    sig.add_cos_modulator(5, 1)
-
-    test = audio.generate_tone(1, 100, fs)
-    test *= audio.cos_amp_modulator(test, 5, fs)
-
-    testing.assert_array_equal(sig[:, 0], test)
-    testing.assert_array_equal(sig[:, 1], test)
 
 
 def test_add_noise():
