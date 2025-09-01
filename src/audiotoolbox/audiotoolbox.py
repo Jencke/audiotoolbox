@@ -678,104 +678,104 @@ def get_time(duration, fs=None):
     return time
 
 
-def cosine_fade_window(duration, rise_time, fs=None):
-    r"""Raised cosine fade-in and fade-out window.
+# def cosine_fade_window(duration, rise_time, fs=None):
+#     r"""Raised cosine fade-in and fade-out window.
 
-    This function generates a raised cosine / hann fade-in and fade
-    out. The Window ramps are calculated as
+#     This function generates a raised cosine / hann fade-in and fade
+#     out. The Window ramps are calculated as
 
-    .. math:: \frac{1}{2} \left(1 + \cos{\left(\frac{\pi t}{t_r}\right)} \right)
+#     .. math:: \frac{1}{2} \left(1 + \cos{\left(\frac{\pi t}{t_r}\right)} \right)
 
-    where :math:`t_r` is the rise_time
+#     where :math:`t_r` is the rise_time
 
-    Parameters
-    -----------
-    duration: ndarray or Signal
-        The duration of the stimulus or Signal class
-    rise_time : scalar
-        Duration of the cosine fade in and fade out in seconds. The
-        number of samples is determined via rounding to the nearest
-        integer value.
-    fs : scalar, optional
-        The sampling rate in Hz, is ignored when Signal is passed
+#     Parameters
+#     -----------
+#     duration: ndarray or Signal
+#         The duration of the stimulus or Signal class
+#     rise_time : scalar
+#         Duration of the cosine fade in and fade out in seconds. The
+#         number of samples is determined via rounding to the nearest
+#         integer value.
+#     fs : scalar, optional
+#         The sampling rate in Hz, is ignored when Signal is passed
 
-    Returns
-    -------
-    ndarray : The fading window
+#     Returns
+#     -------
+#     ndarray : The fading window
 
-    """
+#     """
 
-    duration, fs, ndim = _duration_is_signal(duration, fs, None)
+#     duration, fs, ndim = _duration_is_signal(duration, fs, None)
 
-    n_samples = nsamples(duration, fs)
-    r = nsamples(rise_time, fs)
-    window = np.ones(n_samples)
-    flank = 0.5 * (1 + np.cos(pi / r * (np.arange(r) - r)))
-    window[:r] = flank
-    window[-r:] = flank[::-1]
+#     n_samples = nsamples(duration, fs)
+#     r = nsamples(rise_time, fs)
+#     window = np.ones(n_samples)
+#     flank = 0.5 * (1 + np.cos(pi / r * (np.arange(r) - r)))
+#     window[:r] = flank
+#     window[-r:] = flank[::-1]
 
-    # If the signal has multiple channels, extend the window to match
-    # the shape
-    window = _copy_to_dim(window, ndim)
+#     # If the signal has multiple channels, extend the window to match
+#     # the shape
+#     window = _copy_to_dim(window, ndim)
 
-    return window
+#     return window
 
 
-def gaussian_fade_window(duration, rise_time, fs=None, cutoff=-60):
-    r"""Gausiapn fade-in and fade-out window.
+# def gaussian_fade_window(duration, rise_time, fs=None, cutoff=-60):
+#     r"""Gausiapn fade-in and fade-out window.
 
-    This function generates a window function with a gausian fade in
-    and fade out. The gausian slope is cut at the level defined by the
-    cutoff parameter
+#     This function generates a window function with a gausian fade in
+#     and fade out. The gausian slope is cut at the level defined by the
+#     cutoff parameter
 
-    The window is given by:
+#     The window is given by:
 
-    .. math:: w(t) = e^{\frac{-(t-t_r)^2}{2 * \sigma^2}}
+#     .. math:: w(t) = e^{\frac{-(t-t_r)^2}{2 * \sigma^2}}
 
-    where :math:`t` is the time, :math:`t_r` is the the rise time and
-    :math:`\sigma` is calculated as
+#     where :math:`t` is the time, :math:`t_r` is the the rise time and
+#     :math:`\sigma` is calculated as
 
-    .. math:: \sigma = \sqrt{\frac{r_t^2}{2 \log{(10^{ p / 20})}}}
+#     .. math:: \sigma = \sqrt{\frac{r_t^2}{2 \log{(10^{ p / 20})}}}
 
-    where :math:`p` is the cutoff in dB
+#     where :math:`p` is the cutoff in dB
 
-    Parameters
-    -----------
-    signal: ndarray, or Signal
-        The length of the array will be used to determin the window length.
-    rise_time : scalar
-        Duration of the gaussian fade in and fade out in seconds. The
-        value is measured from the cutof level until reaching a value
-        of 1. The number of samples is determined via rounding to the
-        nearest integer value.
-    fs : scalar
-        The sampling rate in Hz
-    cutoff : scalar, optional
-        The level at which the gausian slope is cut (default = -60dB),
-        is ignored when signal is passed
+#     Parameters
+#     -----------
+#     signal: ndarray, or Signal
+#         The length of the array will be used to determin the window length.
+#     rise_time : scalar
+#         Duration of the gaussian fade in and fade out in seconds. The
+#         value is measured from the cutof level until reaching a value
+#         of 1. The number of samples is determined via rounding to the
+#         nearest integer value.
+#     fs : scalar
+#         The sampling rate in Hz
+#     cutoff : scalar, optional
+#         The level at which the gausian slope is cut (default = -60dB),
+#         is ignored when signal is passed
 
-    Returns
-    -------
-    ndarray : The fading window
+#     Returns
+#     -------
+#     ndarray : The fading window
 
-    """
+#     """
 
-    duration, fs, ndim = _duration_is_signal(duration, fs, None)
-    n_samples = nsamples(duration, fs)
-    window = np.ones(n_samples)
+#     duration, fs, ndim = _duration_is_signal(duration, fs, None)
+#     n_samples = nsamples(duration, fs)
+#     window = np.ones(n_samples)
 
-    cutoff_val = 10 ** (cutoff / 20)  # value at which to cut gaussian
-    r = int(np.round(rise_time * fs)) + 1  # number of values in window
-    win_time = np.linspace(0, rise_time, r)
-    sigma = np.sqrt((-((rise_time) ** 2) / np.log(cutoff_val)) / 2)
-    flank = np.exp(-((win_time - rise_time) ** 2) / (2 * sigma**2))
+#     cutoff_val = 10 ** (cutoff / 20)  # value at which to cut gaussian
+#     r = int(np.round(rise_time * fs)) + 1  # number of values in window
+#     win_time = np.linspace(0, rise_time, r)
+#     sigma = np.sqrt((-((rise_time) ** 2) / np.log(cutoff_val)) / 2)
+#     flank = np.exp(-((win_time - rise_time) ** 2) / (2 * sigma**2))
 
-    # Set the beginning and and to the window to equal the flank
-    window[: r - 1] = flank[:-1]
-    window[-r:] = flank[::-1]
+#     # Set the beginning and and to the window to equal the flank
+#     window[: r - 1] = flank[:-1]
+#     window[-r:] = flank[::-1]
 
-    window = _copy_to_dim(window, ndim)
-    return window
+#     window = _copy_to_dim(window, ndim)
+#     return window
 
 
 def zeropad(signal, number):
