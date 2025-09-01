@@ -79,3 +79,30 @@ def test_fade_window_invalid_type():
     sig[:] = 1.0
     with pytest.raises(ValueError):
         sig.add_fade_window(rise_time, win_type="not_a_window")
+
+
+def test_cos_amp_modulator_is_cos():
+    mod = Signal(1, 1, 100e3)
+    mod[:] = 1
+    mod.add_cos_modulator(5, 1)
+    test = mod.copy_empty().add_tone(5)
+
+    testing.assert_array_almost_equal(mod, test + 1)
+    assert max(mod) == 2.0
+
+
+def test_cos_amp_modulator_is_mod_depth():
+    mod = Signal(1, 1, 100e3)
+    mod[:] = 1
+    mod.add_cos_modulator(5, 0.5)
+    assert mod[0] == 1.5
+
+
+def test_cos_amp_modulator_start_phase():
+    mod = Signal(1, 1, 100e3)
+    mod[:] = 1
+    mod.add_cos_modulator(5, 1, start_phase=np.pi / 4)
+    test = mod.copy_empty().add_tone(5, start_phase=np.pi / 4)
+
+    testing.assert_array_almost_equal(mod, test + 1)
+    assert max(mod) == 2.0

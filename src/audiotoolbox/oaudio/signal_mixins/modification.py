@@ -177,7 +177,7 @@ class ModificationMixin:
         self *= fade_win
         return self
 
-    def add_cos_modulator(self, frequency, m, start_phase=0):
+    def add_cos_modulator(self, frequency: float, m: float, start_phase: float = 0):
         r"""Multiply a cosinus amplitude modulator to the signal.
 
         Multiplies a cosinus amplitude modulator following the equation:
