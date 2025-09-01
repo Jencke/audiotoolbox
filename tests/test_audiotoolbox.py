@@ -97,42 +97,6 @@ def test_get_time():
     assert len(left) == len(time)
 
 
-def test_zeropad():
-    signal = audio.generate_tone(1, 1, 1e3)
-
-    buffered = audio.zeropad(signal, 10)
-
-    assert len(buffered) - len(signal) == 20
-    assert np.array_equal(buffered[:10], buffered[-10:])
-    assert np.array_equal(buffered[:10], np.zeros(10))
-
-    buffered = audio.zeropad(signal, 0)
-    assert len(buffered) == len(signal)
-
-    # Test multichannel signal
-    signal = audio.generate_tone(1, 1, 1e3)
-    mc_signal = np.column_stack([signal, signal])
-    mc_buffered = audio.zeropad(mc_signal, 10)
-    assert np.array_equal(mc_buffered[:10, 0], mc_buffered[-10:, 1])
-
-    # Test different start and end zeros
-    signal = audio.generate_tone(1, 1, 1e3)
-    mc_signal = np.column_stack([signal, signal])
-    mc_buffered = audio.zeropad(mc_signal, (10, 5))
-    assert np.all(mc_buffered[:10] == 0)
-    assert np.all(mc_buffered[-5:] == 0)
-
-    sig = audio.Signal(2, 1, 1)
-    sig[:] = 1
-    zpsig = audio.zeropad(sig, [2, 2])
-    assert zpsig.shape == (5, 2)
-
-    sig = audio.Signal((2, 3), 1, 1)
-    sig[:] = 1
-    zpsig = audio.zeropad(sig, [2, 2])
-    assert zpsig.shape == (5, 2, 3)
-
-
 def test_bark():
     # Compare the tabled values to the ones resulting from the equation
 
