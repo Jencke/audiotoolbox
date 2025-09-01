@@ -3,6 +3,7 @@
 from typing import TYPE_CHECKING
 
 import numpy as np
+from scipy.signal import get_window
 
 import resampy
 
@@ -98,39 +99,82 @@ class ModificationMixin:
 
         return self
 
-    def add_fade_window(self, rise_time, type="cos", **kwargs):
+    def add_fade_window(self, rise_time: float, win_type: str = "hann", **kwargs):
         r"""Add a fade in/out window to the signal.
 
         This function multiplies a fade window with a given rise time
-        onto the signal. for mor information about the indiviual
-        window functions refer to the implementations:
-
-        - cos: A rasied cosine window :meth:`audiotoolbox.cosine_fade_window`
-        - gauss: A gaussian window :meth:`audiotoolbox.gaussian_fade_window`
+        onto the signal.
 
 
         Parameters
         ----------
         rise_time : float
             The rise time in seconds.
-        type : 'cos', 'gauss', 'cos2'
-            The type of the window. (default = 'cos')
+        win_type : str
+            Any window function supported by scipy.signal.get_window. Default is 'hann'.
+        **kwargs
+            Additional keyword arguments passed to the window function (see scipy implementation).
+
+        Notes
+        -----
+        Window types:
+
+        - boxcar
+        - triang
+        - blackman
+        - hamming
+        - hann
+        - bartlett
+        - flattop
+        - parzen
+        - bohman
+        - blackmanharris
+        - nuttall
+        - barthann
+        - cosine
+        - exponential
+        - tukey
+        - taylor
+        - lanczos
+        - kaiser (needs beta)
+        - kaiser_bessel_derived` (needs beta)
+        - gaussian` (needs standard deviation)
+        - general_cosine` (needs weighting coefficients)
+        - general_gaussian` (needs power, width)
+        - general_hamming` (needs window coefficient)
+        - dpss` (needs normalized half-bandwidth)
+        - chebwin` (needs attenuation)
 
         Returns
         -------
         Return itself : Signal
 
-        See Also
-        --------
-        audiotoolbox.gaussian_fade_window
-        audiotoolbox.cosine_fade_window
-
         """
-        if type == "gauss":
-            win = audio.gaussian_fade_window(self, rise_time, self.fs, **kwargs)
-        elif type == "cos":
-            win = audio.cosine_fade_window(self, rise_time, self.fs, **kwargs)
-        self *= win
+
+        # for compatibility, cos equals a raised cosine
+        if win_type == "cos":
+            win_type = "hann"
+
+        n_samples = audio.nsamples(
+            rise_time, fs=self.fs
+        )  # calculate number of samples for fade window
+
+        # The full window needs to be twice the size
+        win = get_window(win_type, 2 * n_samples, **kwargs)[:n_samples]
+
+        # Empty signal for storing the fade window
+        fade_win = audio.Signal(1, self.duration, self.fs)
+        fade_win[:] = 1
+
+        # Multiply the first half of the window with the beginning and end of the window
+        fade_win[:n_samples] = win
+        fade_win[-n_samples:] = win[::-1]
+
+        # Reshape the fade window to match the signal
+        new_shape = (self.n_samples,) + (1,) * (self.ndim - 1)
+        fade_win = fade_win.reshape(new_shape)
+
+        self *= fade_win
         return self
 
     def add_cos_modulator(self, frequency, m, start_phase=0):
