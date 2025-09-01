@@ -784,7 +784,7 @@ def shift_signal(signal, nr_samples):
     r"""Shift `signal` by `nr_samples` samples.
 
     Shift a signal by a given number of samples. The shift happens
-     cyclically so that the length of the signal does not change.
+    cyclically so that the length of the signal does not change.
 
     Parameters
     ----------
@@ -813,48 +813,6 @@ def shift_signal(signal, nr_samples):
     sig = np.roll(signal, nr_samples, axis=0)
 
     return sig
-
-
-def delay_signal(signal, delay, fs, method="fft", mode="zeros"):
-    if delay < 0:
-        neg_delay = True
-        delay = np.abs(delay)
-    else:
-        neg_delay = False
-
-    # save the original length of the signal
-    len_sig = len(signal)
-
-    # due to the cyclic nature of the shift, pad the signal with
-    # enough zeros
-    n_pad = int(np.ceil(np.abs(delay * fs)))
-    pad = np.zeros(n_pad)
-    signal = np.concatenate([pad, signal, pad])
-
-    # Apply FFT
-    signal = pad_for_fft(signal)
-    ft_signal = np.fft.fft(signal)
-
-    # Calculate the phases need for shifting and apply them to the
-    # spectrum
-    freqs = np.fft.fftfreq(len(ft_signal), 1.0 / fs)
-    ft_signal *= np.exp(-1j * 2 * pi * delay * freqs)
-
-    # Inverse transform the spectrum and leave away the imag. part if
-    # it is really small
-    shifted_signal = np.fft.ifft(ft_signal)
-    shifted_signal = np.real_if_close(shifted_signal, 1000)
-
-    both = np.column_stack([signal, shifted_signal])
-
-    # cut away the buffering
-    both = both[n_pad : len_sig + 2 * n_pad, :]
-
-    # If negative delay then just invert the two signals
-    if neg_delay:
-        both = both[:, ::-1]
-
-    return both
 
 
 def calc_dbspl(signal):

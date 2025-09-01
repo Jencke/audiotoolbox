@@ -97,37 +97,6 @@ def test_get_time():
     assert len(left) == len(time)
 
 
-def test_delay_signal():
-    signal = audio.generate_tone(1, 1, 1e3, start_phase=0.5 * np.pi)
-    signal += audio.generate_tone(1, 2, 1e3, start_phase=0.5 * np.pi)
-
-    delayed = audio.delay_signal(signal, 1.5e-3, 1e3)
-
-    phase1 = 1.5e-3 * 1 * 2 * np.pi - 0.5 * np.pi
-    phase2 = 1.5e-3 * 2 * 2 * np.pi - 0.5 * np.pi
-
-    shifted = audio.generate_tone(1, 1, 1e3, start_phase=-phase1)
-    shifted += audio.generate_tone(1, 2, 1e3, start_phase=-phase2)
-
-    error = np.abs(shifted[:] - delayed[:-2, 1])
-    assert np.max(error[10:-10]) <= 1e-3
-
-    # Check if a negative delay results in inverted channels
-    delayed_negative = audio.delay_signal(signal, -1.5e-3, 1e3)
-
-    assert np.array_equal(delayed[:, 0], delayed_negative[:, 1])
-    assert np.array_equal(delayed[:, 1], delayed_negative[:, 0])
-
-    # Test with noise and full sample shift
-    duration = 100e-3
-    fs = 48e3
-    noise = audio.generate_noise(duration, fs=fs)
-    noise *= audio.cosine_fade_window(noise, 20e-3, fs)
-    dt = 1.0 / fs
-    delayed = audio.delay_signal(noise, dt * 5, fs)
-    testing.assert_almost_equal(delayed[5:, 1], delayed[:-5, 0])
-
-
 def test_zeropad():
     signal = audio.generate_tone(1, 1, 1e3)
 
