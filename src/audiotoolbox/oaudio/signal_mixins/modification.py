@@ -1,7 +1,7 @@
 """Signal mixins for organizing Signal class functionality."""
 
 import signal
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal, Union
 
 import numpy as np
 from scipy.signal import get_window
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 class ModificationMixin:
     """Mixin for signal modification methods."""
 
-    def set_dbspl(self, dbspl):
+    def set_dbspl(self, dbspl: float):
         r"""Set sound pressure level in dB.
 
         Normalizes the signal to a given sound pressure level in dB
@@ -214,7 +214,7 @@ class ModificationMixin:
         self *= modulator
         return self
 
-    def delay(self, delay, method="fft"):
+    def delay(self, delay: float, method: Literal["fft", "sample"] = "fft"):
         r"""Delays the signal by circular shifting.
 
         Circular shift the functions foreward to create a certain time
@@ -258,7 +258,7 @@ class ModificationMixin:
         self[:] = shifted
         return self
 
-    def phase_shift(self, phase):
+    def phase_shift(self, phase: float):
         r"""Shifts all frequency components of a signal by a constant phase.
 
         Shift all frequency components of a given signal by a constant
@@ -281,7 +281,7 @@ class ModificationMixin:
 
         return self
 
-    def trim(self, t_start, t_end=None):
+    def trim(self, t_start: float, t_end: Union[float, None] = None):
         r"""Trim the signal between two points in time.
 
         removes the number of samples according to t_start and
@@ -322,7 +322,11 @@ class ModificationMixin:
 
         return self
 
-    def zeropad(self, number=None, duration=None):
+    def zeropad(
+        self,
+        number: Union[None, tuple[int, int]] = None,
+        duration: Union[None, tuple[float, float]] = None,
+    ):
         r"""Add zeros to start and end of signal.
 
         This function adds zeros of a given number or duration to the start or
@@ -388,7 +392,7 @@ class ModificationMixin:
         self[self < 0] = 0
         return self
 
-    def apply_gain(self, gain):
+    def apply_gain(self, gain: float):
         r"""Applys gain factor to the signal
 
         Fixed gain by multiplying the signal with a fixed factor calculated as
