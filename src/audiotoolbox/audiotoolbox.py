@@ -183,48 +183,6 @@ def rms2band(rmslevel, bw):
     return bandlevel
 
 
-def cos_amp_modulator(duration, modulator_freq, fs=None, mod_index=1, start_phase=0):
-    r"""Cosinus amplitude modulator.
-
-    Returns a cosinus amplitude modulator following the equation:
-
-    ..  math:: 1 + m \cos{2 \pi f_m t \phi_{0}}
-
-    where :math:`m` is the modulation depth, :math:`f_m` is the
-    modualtion frequency and :math:`t` is the time.  :math;`\phi_0` is
-    the start phase
-
-    Parameters
-    ----------
-    duration : ndarray An input array that is used to determine the
-    length of the modulator.
-
-    modulator_freq : float The frequency of the cosine modulator.
-
-    fs : float The sample frequency of the input signal.
-
-    mod_index: float, optional The modulation index.  (Default = 1)
-
-    Returns
-    -------
-    ndarray : The modulator
-
-    See Also
-    --------
-
-    audiotoolbox.Signal.add_cos_modulator
-    """
-    duration, fs, n_channels = _duration_is_signal(duration, fs)
-
-    time = get_time(duration, fs)
-
-    modulator = 1 + mod_index * np.cos(2 * pi * modulator_freq * time + start_phase)
-
-    modulator = _copy_to_dim(modulator, n_channels)
-
-    return modulator
-
-
 def time2phase(time, frequency):
     r"""Time to phase for a given frequency.
 
@@ -855,61 +813,6 @@ def shift_signal(signal, nr_samples):
     sig = np.roll(signal, nr_samples, axis=0)
 
     return sig
-
-
-# def fftshift_signal(signal, delay, fs):
-#     r"""Delay the `signal` by time `delay` in the frequncy domain.
-
-#     Delays a signal by introducing a linear phaseshift in the
-#     frequency domain. Depending on the `mode` this is done cyclically
-#     or by zero zeros buffering the start of the signal.
-
-#     Parameters
-#     ----------
-#     signal : array_like
-#         Input signal
-#     delay : scalar
-#         The delay in seconds. Must be positive if `mode` is 'zeros'.
-#     fs : scalar
-#         The sampling rate in Hz.
-
-#     Returns
-#     --------
-#     res : ndarray
-#         The shifted signal
-
-#     See Also:
-#     ---------
-#     delay_signal : A high level delaying / shifting function.
-#     shift_signal : Shift a signal by whole samples.
-
-#     """
-
-#     warn("fftshift is depricated",
-#          DeprecationWarning)
-
-
-#     if delay == 0:
-#         return signal
-
-#     n_pad = 0
-#     len_sig = len(signal)
-
-#     #Apply FFT
-#     ft_signal = np.fft.fft(signal, axis=0)
-
-#     #Calculate the phases need for shifting and apply them to the
-#     #spectrum
-#     freqs = np.fft.fftfreq(len_sig, 1. / fs)
-#     phase = time2phase(delay, freqs)
-#     ft_signal *= np.exp(-1j * phase)
-
-#     #Inverse transform the spectrum and leave away the imag. part if
-#     #it is really small
-#     shifted_signal = np.fft.ifft(ft_signal)
-#     shifted_signal = np.real_if_close(shifted_signal, 1000)
-
-#     return shifted_signal
 
 
 def delay_signal(signal, delay, fs, method="fft", mode="zeros"):
@@ -1804,9 +1707,9 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.0):
     References
     ----------
     .. [1] Schroeder, M. (1970). Synthesis of low-peak-factor signals
-          and binary sequences with low autocorrelation
-          (corresp.). IEEE Transactions on Information Theory, 16(1),
-          85-89
+        and binary sequences with low autocorrelation
+        (corresp.). IEEE Transactions on Information Theory, 16(1),
+        85-89
 
     """
     harmonics = np.array(harmonics)

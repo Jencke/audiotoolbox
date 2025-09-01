@@ -206,14 +206,10 @@ class ModificationMixin:
         audiotoolbox.cos_amp_modulator
 
         """
-        mod = audio.cos_amp_modulator(
-            duration=self,
-            modulator_freq=frequency,
-            fs=self.fs,
-            mod_index=m,
-            start_phase=start_phase,
-        )
-        self *= mod
+
+        modulator = 1 + m * np.cos(2 * np.pi * frequency * self.time + start_phase)
+
+        self *= modulator
         return self
 
     def delay(self, delay, method="fft"):
