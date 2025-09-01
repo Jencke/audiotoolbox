@@ -1,5 +1,6 @@
 """Signal mixins for organizing Signal class functionality."""
 
+import signal
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -55,48 +56,55 @@ class ModificationMixin:
 
         return self
 
-    def set_dbfs(self, dbfs):
-        r"""Normalize the signal to a given dBFS RMS value.
+    def set_dbpeak(self, dbpeak: float):
+        """Peak normalization of the signal.
 
-        Normalizes the signal to dB Fullscale
-        for this, the Signal is multiplied with the factor :math:`A`
+        Normalizes the signal in relation to it's peak amplitude. 0dB peak corresponds to a maximum amplitude of 1.
 
-        .. math:: A = \frac{1}{\sqrt{2}\sigma} 10^\frac{L}{20}
-
-        where :math:`L` is the goal Level, and :math:`\sigma` is the
-        RMS of the signal.
-
-        Parameters
-        ----------
-        dbfs : float
-            The dBFS RMS value in dB
+        Parameters:
+        -----------
+        dbpeak : float
+            The peak dB value to reach
 
         Returns
         -------
         Returns itself : Signal
-
-        Examples
-        --------
-        >>> sig = Signal(1, 1, 48000).add_tone(1000)
-        >>> sig.set_dbfs(-3)
-        >>> sig.stats.dbfs
-        -3.0
-
-
-
-        See Also
-        --------
-        audiotoolbox.set_dbspl
-        audiotoolbox.set_dbfs
-        audiotoolbox.calc_dbfs
-        audiotoolbox.Signal.set_dbspl
-        audiotoolbox.Signal.calc_dbspl
-        audiotoolbox.Signal.calc_dbfs
-
         """
-        nwv = audio.set_dbfs(self, dbfs)
-        self[:] = nwv
+        peak_val = np.max(np.abs(self), axis=0)
+        factor = (10 ** (float(dbpeak) / 20)) / peak_val
+        self *= factor
 
+        return self
+
+    def set_dbfs(self, dbfs: float):
+        r"""Full scale normalization of the signal.
+
+        Normalizes the signal Level to dB Fullscale. 0dB FS corresponds to
+        a signal with an rms of :math:`\frac{1}{\sqrt{2}}` so that a tone at 0dBS will
+        have an amplitude of 1.
+
+        Parameters
+        ----------
+        dbfs : float
+            The db full scale value to reach
+
+        Returns
+        -------
+        self: Signal
+        """
+
+        rms0 = 1 / np.sqrt(2)
+
+        rms_val = np.sqrt(np.mean(self**2, axis=0))
+
+        factor = (rms0 * 10 ** (float(dbfs) / 20)) / rms_val
+        # elif norm == "peak":
+        #     peak_val = np.max(self, axis=0)
+        #     factor = (10 ** (float(dbfs) / 20)) / peak_val
+
+        # else:
+        #     raise (ValueError('norm must be "rms" or "peak"'))
+        self *= factor
         return self
 
     def add_fade_window(self, rise_time: float, win_type: str = "hann", **kwargs):

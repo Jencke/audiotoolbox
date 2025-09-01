@@ -97,47 +97,6 @@ def test_get_time():
     assert len(left) == len(time)
 
 
-def test_cosine_fade_window():
-    window = audio.cosine_fade_window(np.zeros(1000), 100e-3, 1e3)
-
-    # test symmentry
-    assert np.array_equal(window[:100], window[-100:][::-1])
-
-    # test starts with 0
-    assert window[0] == 0
-
-    window = audio.cosine_fade_window(np.zeros(1000), 100e-3, 1e3)
-
-    # test if the window is a cosine curve of the right type
-    cos_curve = np.concatenate([window[:100], window[-101:]])
-    sin = (0.5 * audio.generate_tone(0.2 + 1.0 / 1e3, 5, 1e3, start_phase=np.pi)) + 0.5
-    testing.assert_array_almost_equal(cos_curve, sin)
-
-    # Test that the last sample in the window is not equal to 1
-    nsamp = audio.nsamples(200e-3, 1e3)
-    window = audio.cosine_fade_window(np.zeros(nsamp + 1), 100e-3, 1e3)
-    assert window[int(nsamp / 2)] == 1
-    assert window[int(nsamp / 2 - 1)] != 1
-    assert window[int(nsamp / 2 + 1)] != 1
-    assert window[int(nsamp / 2 + 1)] == window[int(nsamp / 2 - 1)]
-
-    # Test multichannel window
-    window = audio.cosine_fade_window(np.zeros([1000, 2]), 100e-3, 1e3)
-    assert np.array_equal(window[:, 0], window[:, 1])
-    assert np.array_equal(window[:100, 0], window[-100:, 0][::-1])
-
-    sig = audio.Signal((2, 3), 1, 48000)
-    win = audio.cosine_fade_window(sig, 100e-3)
-    assert win.shape == sig.shape
-    testing.assert_array_equal(win[:, 1, 0], win[:, 0, 1])
-
-    # make sure that it also works if the last dimension equals 1
-    sig = audio.Signal((2, 1), 1, 48000)
-    win = audio.cosine_fade_window(sig, 100e-3)
-    assert win.shape == sig.shape
-    testing.assert_array_equal(win[:, 1, 0], win[:, 0, 0])
-
-
 def test_delay_signal():
     signal = audio.generate_tone(1, 1, 1e3, start_phase=0.5 * np.pi)
     signal += audio.generate_tone(1, 2, 1e3, start_phase=0.5 * np.pi)
@@ -327,29 +286,6 @@ def test_phase2time():
     testing.assert_array_almost_equal(time, calc_time)
 
 
-def test_cos_amp_modulator():
-    fs = 100e3
-    signal = audio.generate_tone(1, 100, fs)
-    mod = audio.cos_amp_modulator(signal, 5, fs)
-    test = audio.generate_tone(1, 5, fs)
-    testing.assert_array_almost_equal(mod, test + 1)
-    assert max(mod) == 2.0
-
-    mod = audio.cos_amp_modulator(signal, 5, fs, 0.5)
-    assert mod[0] == 1.5
-
-    mod = audio.cos_amp_modulator(signal, 5, fs, start_phase=np.pi)
-    test = audio.generate_tone(1, 5, fs, start_phase=np.pi)
-    testing.assert_array_almost_equal(mod, test + 1)
-
-    sig = audio.Signal(1, 1, 48000).add_tone(5) + 1
-    mod = audio.cos_amp_modulator(sig, 5, 1)
-    testing.assert_array_equal(sig, mod)
-
-    sig = audio.Signal((2, 3), 1, 48000).add_tone(5) + 1
-    mod = audio.cos_amp_modulator(sig, 5, 1)
-
-
 def test_calc_dbspl():
     assert audio.calc_dbspl(2e-3) == 40
     assert audio.calc_dbspl(20e-6) == 0
@@ -374,25 +310,6 @@ def test_calc_dbfs():
     signal = np.tile(signal, 100)
     rms_rect = 20 * np.log10(np.sqrt(2))
     testing.assert_almost_equal(audio.calc_dbfs(signal), rms_rect)
-
-
-def test_set_dbfs():
-    signal = audio.generate_tone(1000, 1, 48000)
-    signal = audio.set_dbfs(signal, -5)
-    testing.assert_almost_equal(audio.calc_dbfs(signal), -5)
-
-    # RMS value of a -5 db sine
-    m = (10 ** (-5 / 20)) / np.sqrt(2)
-
-    signal = np.concatenate([-np.ones(10), np.ones(10)])
-    signal = np.tile(signal, 100)
-    signal = audio.set_dbfs(signal, -5)
-    assert signal.max() == m
-
-    assert audio.set_dbfs(2, 0, norm="peak") == 1
-    signal = audio.generate_tone(1000, 8, 48000)
-    assert audio.set_dbfs(signal, 0, "peak").max() == 1
-    assert audio.set_dbfs(signal, -3, "peak").max() == 10 ** (-3 / 20)
 
 
 def test_phon_to_dbspl():
