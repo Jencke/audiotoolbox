@@ -349,10 +349,6 @@ class ModificationMixin:
         --------
         Returns itself : Signal
 
-        See Also
-        --------
-        audiotoolbox.zeropad
-
         """
         # Only one number or duration must be stated
         if duration is None and number is None:
@@ -365,20 +361,27 @@ class ModificationMixin:
         # number of samples to buffer with
         elif duration is not None and number is None:
             if not np.isscalar(duration):
-                number_s = audio.nsamples(duration[0], self.fs)
-                number_e = audio.nsamples(duration[1], self.fs)
-                number = (number_s, number_e)
+                n_s = audio.nsamples(duration[0], self.fs)
+                n_e = audio.nsamples(duration[1], self.fs)
             else:
-                number = audio.nsamples(duration, self.fs)
+                n_s = n_e = audio.nsamples(duration, self.fs)
+        else:
+            if not np.isscalar(number):
+                n_s = number[0]
+                n_e = number[1]
+            else:
+                n_s = n_e = number
 
         # Can only be applied to the whole signal not to a slice
         if not isinstance(self.base, type(None)):
             raise RuntimeError("Zeropad can only be applied to" " the whole signal")
         else:
-            wv = audio.zeropad(self, number)
-            self.resize(wv.shape, refcheck=False)
-            self[:] = wv
-
+            orig_nsamp = self.n_samples
+            new_shape = (orig_nsamp + n_s + n_e,) + self.shape[1:]
+            self.resize(new_shape, refcheck=False)
+            self[n_s : n_s + orig_nsamp] = self[:orig_nsamp]
+            self[:n_s] = 0
+            self[-n_e:] = 0
         return self
 
     def rectify(self):
