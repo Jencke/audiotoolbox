@@ -275,10 +275,10 @@ def generate_low_noise_noise(
     ----------
 
     .. [1] Kohlrausch, A., Fassel, R., van der Heijden, M., Kortekaas,
-           R., van de Par, S., Oxenham, A.J. and Püschel, D.,
-           1997. Detection of tones in low-noise noise: Further
-           evidence for the role of envelope fluctuations. Acta
-           Acustica united with Acustica, 83(4), pp.659-669.
+        R., van de Par, S., Oxenham, A.J. and Püschel, D.,
+        1997. Detection of tones in low-noise noise: Further
+        evidence for the role of envelope fluctuations. Acta
+        Acustica united with Acustica, 83(4), pp.659-669.
 
     """
 
@@ -315,9 +315,9 @@ def generate_noise(duration, fs=None, ntype="white", n_channels=1, seed=None):
 
     Weighting functions
 
-     - white: :math:`w(f) = 1`
-     - pink: :math:`w(f) = \frac{1}{\sqrt{f}}`
-     - brown: :math:`w(f) = \frac{1}{f}`
+    - white: :math:`w(f) = 1`
+    - pink: :math:`w(f) = \frac{1}{\sqrt{f}}`
+    - brown: :math:`w(f) = \frac{1}{f}`
 
     Parameters
     ----------
@@ -488,9 +488,9 @@ def generate_uncorr_noise(
     ----------
 
     .. [1] Hartmann, W. M., & Cho, Y. J. (2011). Generating partially
-      correlated noise—a comparison of methods. The Journal of the
-      Acoustical Society of America, 130(1),
-      292–301. http://dx.doi.org/10.1121/1.3596475
+    correlated noise—a comparison of methods. The Journal of the
+    Acoustical Society of America, 130(1),
+    292–301. http://dx.doi.org/10.1121/1.3596475
 
     """
     # np.random.seed(seed)
@@ -816,9 +816,9 @@ def get_bark_limits():
     References
     ----------
     .. [1] Zwicker, E. (1961). Subdivision of the audible frequency range into
-           critical bands (frequenzgruppen). The Journal of the Acoustical
-           Society of America, 33(2),
-           248-248. http://dx.doi.org/10.1121/1.1908630
+        critical bands (frequenzgruppen). The Journal of the Acoustical
+        Society of America, 33(2),
+        248-248. http://dx.doi.org/10.1121/1.1908630
 
     """
     bark_table = [
@@ -861,16 +861,16 @@ def freqspace(min_frequency, max_frequency, n, scale="bark"):
     Parameters
     ----------
     min_frequency: float
-      minimal frequency in Hz
+        minimal frequency in Hz
 
     max_frequency: float
-      maximal frequency in Hz
+        maximal frequency in Hz
 
     n: int
-      Number of equally spaced frequencies
+        Number of equally spaced frequencies
 
     scale: str
-      scale to use 'bark' or 'erb'. (default='bark')
+        scale to use 'bark' or 'erb'. (default='bark')
 
     Returns
     -------
@@ -950,7 +950,7 @@ def bark_to_freq(bark):
     Parameters
     ----------
     bark: scalar or ndarray
-      The bark values
+        The bark values
 
     Returns
     -------
@@ -959,9 +959,9 @@ def bark_to_freq(bark):
     References
     ----------
     ..[1] Traunmueller, H. (1990). Analytical expressions for the
-           tonotopic sensory scale. The Journal of the Acoustical
-           Society of America, 88(1),
-           97-100. http://dx.doi.org/10.1121/1.399849
+        tonotopic sensory scale. The Journal of the Acoustical
+        Society of America, 88(1),
+        97-100. http://dx.doi.org/10.1121/1.399849
 
     """
 
@@ -1004,7 +1004,7 @@ def octband_to_freq(
     References
     ----------
     ..[1] DIN ISO 266-1:1997-08, "Acoustics - Preferred frequencies",
-          Beuth Verlag, Berlin, 1997.
+        Beuth Verlag, Berlin, 1997.
     """
 
     b = oct_fraction
@@ -1086,14 +1086,14 @@ def freq_to_bark(frequency, use_table=False):
     References
     ----------
     ..[1] Zwicker, E. (1961). Subdivision of the audible frequency
-           range into critical bands (frequenzgruppen). The Journal of
-           the Acoustical Society of America, 33(2),
-           248-248. http://dx.doi.org/10.1121/1.19086f30
+        range into critical bands (frequenzgruppen). The Journal of
+        the Acoustical Society of America, 33(2),
+        248-248. http://dx.doi.org/10.1121/1.19086f30
 
     ..[2] Traunmueller, H. (1990). Analytical expressions for the
-           tonotopic sensory scale. The Journal of the Acoustical
-           Society of America, 88(1),
-           97-100. http://dx.doi.org/10.1121/1.399849
+        tonotopic sensory scale. The Journal of the Acoustical
+        Society of America, 88(1),
+        97-100. http://dx.doi.org/10.1121/1.399849
 
     """
     assert np.all(frequency >= 20)
@@ -1138,8 +1138,8 @@ def freq_to_erb(frequency):
     References
     ----------
     ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of
-          auditory filter shapes from notched-noise data. Hearing
-          Research, 47(1-2), 103-138.
+        auditory filter shapes from notched-noise data. Hearing
+        Research, 47(1-2), 103-138.
 
     """
 
@@ -1165,8 +1165,8 @@ def erb_to_freq(n_erb):
     References
     ----------
     ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of
-          auditory filter shapes from notched-noise data. Hearing
-          Research, 47(1-2), 103-138.
+        auditory filter shapes from notched-noise data. Hearing
+        Research, 47(1-2), 103-138.
 
     """
     fkhz = (np.exp(n_erb * (24.7 * 4.37) / 1000) - 1) / 4.37
@@ -1183,13 +1183,13 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
     The normed values are tabulated for the following frequencies and
     sound pressure levels:
 
-     1. 20phon to 90phon
+    1. 20phon to 90phon
        * 20 Hz, 25 Hz, 31.5 Hz, 40 Hz, 50 Hz, 63 Hz, 80 Hz, 100 Hz,
-         125 Hz, 160 Hz, 200 Hz, 250 Hz, 315 Hz, 400 Hz, 500 Hz, 630
-         Hz, 800 Hz, 1000 Hz, 1250 Hz, 1600 Hz, 2000 Hz, 2500 Hz, 3150
-         Hz, 4000 Hz
+        125 Hz, 160 Hz, 200 Hz, 250 Hz, 315 Hz, 400 Hz, 500 Hz, 630
+        Hz, 800 Hz, 1000 Hz, 1250 Hz, 1600 Hz, 2000 Hz, 2500 Hz, 3150
+        Hz, 4000 Hz
 
-     2. 20phon to 80phon
+    2. 20phon to 80phon
        * 5000 Hz, 6300 Hz, 8000 Hz, 10000 Hz, 12500 Hz
 
     Values for other frequencies can be interpolated (cubic spline) by
@@ -1268,16 +1268,17 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
 
     The normed values are tabulated for the following frequencies and
     sound pressure levels:
-     1. 20phon to 90phon
+
+    1. 20phon to 90phon
        * 20, 25, 31.5, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315,
        * 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000
-     2. 20phon to 80phon
-       *5000, 6300, 8000, 10000, 12500
+    2. 20phon to 80phon
+       * 5000, 6300, 8000, 10000, 12500
 
     Values for other frequencies can be interpolated (cubic spline) by
     setting the parameter interpolate to True. The check for correct
     sound pressure levels can be switched off by setting
-    limit=False. In poth cases, the results are not covered by the DIN
+    limit=False. In both cases, the results are not covered by the DIN
     ISO norm
 
     Parameters
@@ -1348,9 +1349,8 @@ def calc_bandwidth(fc, scale="cbw"):
     This Function calculates aproximations for the auditory filter
     bandwidth using differnt concepts:
 
-     - cbw: Use the critical bandwidth concept following [1]_
-     - erb: Use the equivalent rectangular bandwith concept following
-       [2]_
+    - cbw: Use the critical bandwidth concept following [1]_
+    - erb: Use the equivalent rectangular bandwith concept following [2]_
 
     Equation used for critical bandwidth:
     .. math:: B = 25 + 75 (1 + 1.4 \frac{f_c}{1000}^2)^0.69
@@ -1361,20 +1361,20 @@ def calc_bandwidth(fc, scale="cbw"):
     Parameters
     -----------
     fc : float or ndarray
-      center frequency in Hz
+        center frequency in Hz
 
     scale : str
-      String indicating the scale that should be used possible values:
-      'cbw' or 'erb'. (default='cbw')
+        String indicating the scale that should be used possible values:
+        'cbw' or 'erb'. (default='cbw')
 
         ..[1] Zwicker, E., & Terhardt, E. (1980). Analytical
-              expressions for critical-band rate and critical
-              bandwidth as a function of frequency. The Journal of the
-              Acoustical Society of America, 68(5), 1523-1525.
+            expressions for critical-band rate and critical
+            bandwidth as a function of frequency. The Journal of the
+            Acoustical Society of America, 68(5), 1523-1525.
 
         ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of
-              auditory filter shapes from notched-noise data. Hearing
-              Research, 47(1-2), 103-138.
+            auditory filter shapes from notched-noise data. Hearing
+            Research, 47(1-2), 103-138.
 
     """
 
