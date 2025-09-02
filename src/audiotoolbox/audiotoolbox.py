@@ -250,7 +250,13 @@ def nsamples(duration, fs=None):
 
 
 def generate_low_noise_noise(
-    duration, fc, bw, fs=None, n_channels=1, n_rep=10, seed=None
+    duration: float,
+    fc: float,
+    bw: float,
+    fs: int,
+    n_channels: int | tuple = 1,
+    n_rep=10,
+    seed=None,
 ):
     r"""Low-noise Noise
 
@@ -282,21 +288,19 @@ def generate_low_noise_noise(
 
     """
 
-    # Todo - need to fix duration
-    duration, fs, n_ch = _duration_is_signal(duration, fs, n_channels)
-
     # Generate initial noise
-    noise = generate_noise(duration, fs, ntype="white", n_channels=n_ch)
-    noise = filter.brickwall(noise, fc - bw / 2, fc + bw / 2, fs)
+    noise = Signal(n_channels, duration, fs).add_noise(ntype="white", seed=seed)
+    # noise = generate_noise(duration, fs, ntype="white", n_channels=n_ch)
+
     std = noise.std(axis=0)
 
     for i in range(n_rep):
-        hilb = hilbert(noise, axis=0)
+        hilb = noise.to_analytical()
         env = abs(hilb)
 
-        # diveide through envelope and restrict
+        # divide through envelope and restrict
         noise /= env
-        noise = filter.brickwall(noise, fc - bw / 2, fc + bw / 2, fs)
+        noise.bandpass(fc - bw / 2, fc + bw / 2, "brickwall")
         noise /= noise.std(axis=0) * std
 
     return noise

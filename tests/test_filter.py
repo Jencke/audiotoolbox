@@ -10,7 +10,8 @@ def test_brickwall():
     # Test Bandpass
     duration = 500e-3
     fs = 100e3
-    noise = audio.generate_noise(duration, fs)
+    noise = audio.Signal(1, duration, fs).add_noise()
+    # noise = audio.generate_noise(duration, fs)
 
     fc = 300
     bw = 200
@@ -36,11 +37,12 @@ def test_brickwall():
 
     assert np.array_equal(non_zero, passband)
 
-    # Brickwall Lowpass
 
+def test_brickwall_lowpass():
+    # Brickwall Lowpass
     duration = 500e-3
     fs = 100e3
-    noise = audio.generate_noise(duration, fs)
+    noise = audio.Signal(1, duration, fs).add_noise()
 
     fc = 300
     out = filter.brickwall(noise, None, fc, fs)
@@ -53,10 +55,12 @@ def test_brickwall():
 
     assert np.array_equal(non_zero, passband)
 
+
+def test_brickwall_highpass():
     # brickwall_highpass
     duration = 500e-3
     fs = 100e3
-    noise = audio.generate_noise(duration, fs)
+    noise = audio.Signal(1, duration, fs).add_noise()
 
     fc = 300
     out = filter.brickwall(noise, fc, None, fs)
