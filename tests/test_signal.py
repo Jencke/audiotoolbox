@@ -41,32 +41,31 @@ def test_addtone():
     sig.add_tone(100)
     sig.add_tone(200, start_phase=np.pi)
 
-    test = audio.generate_tone(duration, 100, fs)
-    test += audio.generate_tone(duration, 200, fs, np.pi)
+    test = np.cos(2 * np.pi * sig.time * 100)
+    test += np.cos(2 * np.pi * sig.time * 200 + np.pi)
 
-    testing.assert_equal(sig, test)
+    testing.assert_almost_equal(sig, test)
 
     sig = Signal(1, duration, fs)
     sig.add_tone(100, amplitude=2)
 
-    test = 2 * audio.generate_tone(duration, 100, fs)
-    testing.assert_equal(sig, test)
+    test = 2 * np.cos(2 * np.pi * sig.time * 100)
+    testing.assert_almost_equal(sig, test)
 
     sig = Signal(2, duration, fs)
     sig.add_tone(100, amplitude=2)
-
-    test = 2 * audio.generate_tone(duration, 100, fs)
-    testing.assert_equal(sig.ch[0], test)
-    testing.assert_equal(sig.ch[1], test)
+    test = 2 * np.cos(2 * np.pi * sig.time * 100)
+    testing.assert_almost_equal(sig.ch[0], test)
+    testing.assert_almost_equal(sig.ch[1], test)
 
     sig = Signal((2, 2), duration, fs)
     sig.add_tone(100, amplitude=2)
 
-    test = 2 * audio.generate_tone(duration, 100, fs)
-    testing.assert_equal(sig.ch[0, 0], test)
-    testing.assert_equal(sig.ch[1, 0], test)
-    testing.assert_equal(sig.ch[0, 1], test)
-    testing.assert_equal(sig.ch[1, 1], test)
+    test = 2 * np.cos(2 * np.pi * sig.time * 100)
+    testing.assert_almost_equal(sig.ch[0, 0], test)
+    testing.assert_almost_equal(sig.ch[1, 0], test)
+    testing.assert_almost_equal(sig.ch[0, 1], test)
+    testing.assert_almost_equal(sig.ch[1, 1], test)
 
     freqs = np.random.random(10) * 1000 + 100
     amplitudes = np.random.random(10) * 2
@@ -272,15 +271,11 @@ def test_phaseshift():
     sig.add_tone(100)
     sig[:, 0].phase_shift(np.pi)
 
-    test1 = audio.generate_tone(duration, 100, fs, np.pi)
-    test2 = audio.generate_tone(duration, 100, fs)
-    test = np.column_stack([test1, test2])
+    test = audio.Signal(2, duration, fs)
+    test.ch[0].add_tone(100, start_phase=np.pi)
+    test.ch[1].add_tone(100)
 
     testing.assert_almost_equal(sig, test)
-
-    sig = Signal(2, duration, fs)
-    sig.add_noise()
-    sig[:, 0].phase_shift(np.pi / 4)
 
 
 def test_trim():
@@ -420,8 +415,8 @@ def test_channel_indexing():
     assert np.all(sig[:, 0] == 1)
 
     sig.ch[1].add_tone(500)
-    tone_2 = audio.generate_tone(sig.duration, 500, sig.fs)
-    testing.assert_equal(sig.ch[1], tone_2)
+    tone_2 = np.cos(2 * np.pi * sig.time * 500)
+    testing.assert_almost_equal(sig.ch[1], tone_2)
 
     # Indexing only one channel should still work
     sig = Signal(1, 1, 40000).add_noise()

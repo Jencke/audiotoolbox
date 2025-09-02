@@ -306,77 +306,77 @@ def generate_low_noise_noise(
     return noise
 
 
-def generate_tone(duration, frequency, fs=None, start_phase=0):
-    r"""create a cosine
+# def generate_tone(duration, frequency, fs=None, start_phase=0):
+#     r"""create a cosine
 
-    This function will generate a pure tone following the equation:
+#     This function will generate a pure tone following the equation:
 
-    .. math:: x = x + cos(2\pi f t + \phi_0)
+#     .. math:: x = x + cos(2\pi f t + \phi_0)
 
-    where :math:`x` is the waveform, :math:`f` is the frequency,
-    :math`t` is the time and :math:`\phi_0` the starting phase.
-    The first evulated timepoint is 0.
+#     where :math:`x` is the waveform, :math:`f` is the frequency,
+#     :math`t` is the time and :math:`\phi_0` the starting phase.
+#     The first evulated timepoint is 0.
 
-    Parameters
-    ----------
-    duration : scalar
-        The tone duration in seconds.
-    frequency : scalar
-        The tone frequency in Hz.
-    fs : scalar
-        The sampling rate for the tone.
-    start_phase : scalar, optional
-        The starting phase of the sine tone.
+#     Parameters
+#     ----------
+#     duration : scalar
+#         The tone duration in seconds.
+#     frequency : scalar
+#         The tone frequency in Hz.
+#     fs : scalar
+#         The sampling rate for the tone.
+#     start_phase : scalar, optional
+#         The starting phase of the sine tone.
 
-    Returns
-    -------
-    ndarray : The sine tone
+#     Returns
+#     -------
+#     ndarray : The sine tone
 
-    See Also
-    --------
-    audiotoolbox.Signal.add_tone
+#     See Also
+#     --------
+#     audiotoolbox.Signal.add_tone
 
-    """
+#     """
 
-    duration, fs, ndim = _duration_is_signal(duration, fs, None)
+#     duration, fs, ndim = _duration_is_signal(duration, fs, None)
 
-    time = get_time(duration, fs)
-    tone = np.cos(2 * pi * frequency * time + start_phase)
+#     time = get_time(duration, fs)
+#     tone = np.cos(2 * pi * frequency * time + start_phase)
 
-    if ndim is not None:
-        tone = _copy_to_dim(tone, ndim)
+#     if ndim is not None:
+#         tone = _copy_to_dim(tone, ndim)
 
-    return tone
+#     return tone
 
 
-def get_time(duration, fs=None):
-    r"""Time axis of a given signal.
+# def get_time(duration, fs=None):
+#     r"""Time axis of a given signal.
 
-    This function generates a time axis for a given signal at a given
-    sample rate.
+#     This function generates a time axis for a given signal at a given
+#     sample rate.
 
-    Parameters
-    -----------
-    duration : ndarray or int
-        The duration of the stimulus
+#     Parameters
+#     -----------
+#     duration : ndarray or int
+#         The duration of the stimulus
 
-    fs : scalar
-        The sampling rate in Hz
+#     fs : scalar
+#         The sampling rate in Hz
 
-    Returns
-    --------
-    ndarray : The time axis in seconds
+#     Returns
+#     --------
+#     ndarray : The time axis in seconds
 
-    """
+#     """
 
-    duration, fs, _ = _duration_is_signal(duration, fs=fs)
+#     duration, fs, _ = _duration_is_signal(duration, fs=fs)
 
-    dt = 1.0 / fs
-    nsamp = nsamples(duration, fs)
+#     dt = 1.0 / fs
+#     nsamp = nsamples(duration, fs)
 
-    time = np.arange(nsamp) * dt
+#     time = np.arange(nsamp) * dt
 
-    return time
+#     return time
 
 
 def calc_dbspl(signal):

@@ -97,7 +97,11 @@ class Signal(
     @property
     def time(self):
         r"""Time vector for the signal."""
-        time = audio.get_time(self, self.fs) + self.time_offset
+        dt = 1.0 / self.fs
+        nsamp = self.n_samples
+        time = np.arange(nsamp) * dt
+
+        time += self.time_offset
         return time
 
     def plot(self, ax=None):

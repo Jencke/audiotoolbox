@@ -50,53 +50,36 @@ def test_low_noise_noise():
     testing.assert_array_equal(noise[:, :, 0], noise[:, :, 1])
 
 
-def test_generate_tone():
-    # test frequency, sampling rate and duration
-    tone1 = audio.generate_tone(1, 1, 1e3)
-    tone2 = audio.generate_tone(0.5, 2, 2e3)
-    assert np.array_equal(tone1, tone2)
+# def test_get_time():
+#     tone = audio.generate_tone(1, 1, 1e3)
+#     time = audio.get_time(tone, 1e3)
 
-    # test phaseshift
-    tone = audio.generate_tone(1, 1, 1e3, start_phase=np.pi / 2)
-    testing.assert_almost_equal(tone[0], 0)
-    tone = audio.generate_tone(1, 1, 1e3, start_phase=1 * np.pi)
-    testing.assert_almost_equal(tone[0], -1)
+#     # Test sampling rate
+#     assert time[2] - time[1] == 1.0 / 1e3
 
-    sig = audio.Signal((2, 3), 1, 48000).add_tone(50)
-    tone = audio.generate_tone(sig, 50)
-    testing.assert_array_equal(sig, tone)
+#     # Test duration
+#     assert time[-1] == 1 - 1.0 / 1e3
 
+#     tone1 = audio.generate_tone(1, 1, 1e3)
+#     tone2 = audio.generate_tone(1, 1, 1e3)
 
-def test_get_time():
-    tone = audio.generate_tone(1, 1, 1e3)
-    time = audio.get_time(tone, 1e3)
+#     tone_two_channel = np.column_stack([tone1, tone2])
 
-    # Test sampling rate
-    assert time[2] - time[1] == 1.0 / 1e3
+#     time = audio.get_time(tone, 1e3)
 
-    # Test duration
-    assert time[-1] == 1 - 1.0 / 1e3
+#     assert len(time) == len(tone_two_channel)
 
-    tone1 = audio.generate_tone(1, 1, 1e3)
-    tone2 = audio.generate_tone(1, 1, 1e3)
+#     # Test sampling rate
+#     assert time[2] - time[1] == 1.0 / 1e3
 
-    tone_two_channel = np.column_stack([tone1, tone2])
+#     # Test duration
+#     assert time[-1] == 1 - 1.0 / 1e3
 
-    time = audio.get_time(tone, 1e3)
-
-    assert len(time) == len(tone_two_channel)
-
-    # Test sampling rate
-    assert time[2] - time[1] == 1.0 / 1e3
-
-    # Test duration
-    assert time[-1] == 1 - 1.0 / 1e3
-
-    # Test appearence of extra sample due to numerics
-    fs = 48e3
-    left = np.linspace(0, 1, 50976)
-    time = audio.get_time(left, fs)
-    assert len(left) == len(time)
+#     # Test appearence of extra sample due to numerics
+#     fs = 48e3
+#     left = np.linspace(0, 1, 50976)
+#     time = audio.get_time(left, fs)
+#     assert len(left) == len(time)
 
 
 def test_bark():
