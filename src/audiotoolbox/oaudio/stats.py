@@ -37,23 +37,29 @@ class SignalStats(BaseStats):
 
     @property
     def dbspl(self):
-        """Soundpressure level relative to 20uPa in dB
+        r"""Calculate the dB (SPL) values for all channels of the signal.
 
-        See Also
-        --------
-        audiotoolbox.calc_dbspl
+        .. math:: L = 20  \log_{10}\left(\frac{\sigma}{p_o}\right)
+
+        where :math:`L` is the SPL, :math:`p_0=20\mu Pa` and
+        :math:`\sigma` is the RMS of the signal.
         """
-        return audio.calc_dbspl(self.sig)
+        p0 = 20e-6
+        dbspl_val = 20 * np.log10(self.rms / p0)
+        return dbspl_val
 
     @property
     def dbfs(self) -> np.ndarray:
-        """Level in dB full scale
+        r"""Calculate the dBFS RMS value of a given signal.
 
-        See Also
-        --------
-        audiotoolbox.calc_dbfs
+        .. math:: L = 20 \log_{10}\left(\sqrt{2}\sigma\right)
+
+        where :math:`\sigma` is the signals RMS.
         """
-        return audio.calc_dbfs(self.sig)
+        rms0 = 1 / np.sqrt(2)
+
+        dbfs = 20 * np.log10(self.rms / rms0)
+        return dbfs
 
     @property
     def crest_factor(self):

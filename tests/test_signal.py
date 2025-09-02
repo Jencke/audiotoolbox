@@ -41,32 +41,31 @@ def test_addtone():
     sig.add_tone(100)
     sig.add_tone(200, start_phase=np.pi)
 
-    test = audio.generate_tone(duration, 100, fs)
-    test += audio.generate_tone(duration, 200, fs, np.pi)
+    test = np.cos(2 * np.pi * sig.time * 100)
+    test += np.cos(2 * np.pi * sig.time * 200 + np.pi)
 
-    testing.assert_equal(sig, test)
+    testing.assert_almost_equal(sig, test)
 
     sig = Signal(1, duration, fs)
     sig.add_tone(100, amplitude=2)
 
-    test = 2 * audio.generate_tone(duration, 100, fs)
-    testing.assert_equal(sig, test)
+    test = 2 * np.cos(2 * np.pi * sig.time * 100)
+    testing.assert_almost_equal(sig, test)
 
     sig = Signal(2, duration, fs)
     sig.add_tone(100, amplitude=2)
-
-    test = 2 * audio.generate_tone(duration, 100, fs)
-    testing.assert_equal(sig.ch[0], test)
-    testing.assert_equal(sig.ch[1], test)
+    test = 2 * np.cos(2 * np.pi * sig.time * 100)
+    testing.assert_almost_equal(sig.ch[0], test)
+    testing.assert_almost_equal(sig.ch[1], test)
 
     sig = Signal((2, 2), duration, fs)
     sig.add_tone(100, amplitude=2)
 
-    test = 2 * audio.generate_tone(duration, 100, fs)
-    testing.assert_equal(sig.ch[0, 0], test)
-    testing.assert_equal(sig.ch[1, 0], test)
-    testing.assert_equal(sig.ch[0, 1], test)
-    testing.assert_equal(sig.ch[1, 1], test)
+    test = 2 * np.cos(2 * np.pi * sig.time * 100)
+    testing.assert_almost_equal(sig.ch[0, 0], test)
+    testing.assert_almost_equal(sig.ch[1, 0], test)
+    testing.assert_almost_equal(sig.ch[0, 1], test)
+    testing.assert_almost_equal(sig.ch[1, 1], test)
 
     freqs = np.random.random(10) * 1000 + 100
     amplitudes = np.random.random(10) * 2
@@ -123,19 +122,6 @@ def test_addtone():
     testing.assert_almost_equal(sig, sig2)
 
 
-def test_setdbspl():
-    fs = 48000
-    duration = 100e-3
-
-    sig = Signal(1, duration, fs)
-    sig.add_tone(100).set_dbspl(50)
-
-    test = audio.generate_tone(duration, 100, fs)
-    test = audio.set_dbspl(test, 50)
-
-    testing.assert_equal(sig, test)
-
-
 def test_stats():
     sig = Signal(1, 1, 48000)
     assert hasattr(sig, "stats")
@@ -143,17 +129,6 @@ def test_stats():
     sig = Signal(1, 1, 48000)
     sig = sig.copy()
     assert hasattr(sig, "stats")
-
-
-def test_setdbfs_calcdbfs():
-    fs = 48000
-    duration = 100e-3
-
-    sig = Signal(1, duration, fs)
-    sig.add_tone(100).set_dbfs(-5)
-
-    assert audio.calc_dbfs(sig) == -5
-    assert sig.stats.dbfs == -5
 
 
 def test_zeropad():
@@ -182,29 +157,6 @@ def test_zeropad():
     n_zeros_e = audio.nsamples(10e-3, fs)
     assert np.all(sig[:n_zeros_s] == 0)
     assert np.all(sig[-n_zeros_e:] == 0)
-
-
-def test_fadewindow():
-    fs = 48000
-    duration = 100e-3
-
-    sig = Signal(1, duration, fs)
-    sig.add_tone(100).add_fade_window(rise_time=10e-3, type="gauss")
-    test = audio.generate_tone(duration, 100, fs)
-    test *= audio.gaussian_fade_window(test, 10e-3, fs)
-    testing.assert_equal(sig, test)
-
-    sig = Signal(1, duration, fs)
-    sig.add_tone(100).add_fade_window(rise_time=10e-3, type="cos")
-    test = audio.generate_tone(duration, 100, fs)
-    test *= audio.cosine_fade_window(test, 10e-3, fs)
-    testing.assert_equal(sig, test)
-
-    sig = Signal(1, duration, fs)
-    sig.add_tone(100).add_fade_window(rise_time=10e-3, type="cos")
-    test = audio.generate_tone(duration, 100, fs)
-    test *= audio.cosine_fade_window(test, 10e-3, fs)
-    testing.assert_equal(sig, test)
 
 
 def test_add():
@@ -319,77 +271,11 @@ def test_phaseshift():
     sig.add_tone(100)
     sig[:, 0].phase_shift(np.pi)
 
-    test1 = audio.generate_tone(duration, 100, fs, np.pi)
-    test2 = audio.generate_tone(duration, 100, fs)
-    test = np.column_stack([test1, test2])
+    test = audio.Signal(2, duration, fs)
+    test.ch[0].add_tone(100, start_phase=np.pi)
+    test.ch[1].add_tone(100)
 
     testing.assert_almost_equal(sig, test)
-
-    sig = Signal(2, duration, fs)
-    sig.add_noise()
-    sig[:, 0].phase_shift(np.pi / 4)
-
-
-def test_cos_amp_modulator():
-    fs = 48000
-    sig = Signal(1, 1, fs).add_tone(100)
-    sig.add_cos_modulator(5, 1)
-
-    test = audio.generate_tone(1, 100, fs)
-    test *= audio.cos_amp_modulator(test, 5, fs)
-
-    testing.assert_array_equal(sig, test)
-
-    fs = 48000
-    sig = Signal(2, 1, fs).add_tone(100)
-    sig.add_cos_modulator(5, 1)
-
-    test = audio.generate_tone(1, 100, fs)
-    test *= audio.cos_amp_modulator(test, 5, fs)
-
-    testing.assert_array_equal(sig[:, 0], test)
-    testing.assert_array_equal(sig[:, 1], test)
-
-
-def test_add_noise():
-    fs = 48000
-    sig = Signal(1, 1, 48000).add_noise()
-    assert sig.max() != 0
-    sig = Signal(2, 1, 48000).add_noise()
-    assert np.all(sig.max(axis=0) != 0)
-
-    sig = Signal((2, 2), 1, 48000).add_noise()
-    assert np.all(sig.max(axis=0) != 0)
-
-    sig = Signal((2, 2), 1, 48000).add_noise(variance=2)
-    assert np.var(sig.ch[0]) == np.var(sig.ch[1])
-    testing.assert_almost_equal(np.var(sig), 2)
-
-
-def test_add_noise():
-    fs = 48000
-    sig = Signal(1, 1, 48000).add_noise()
-    assert sig.max() != 0
-    sig = Signal(2, 1, 48000).add_noise()
-    assert np.all(sig.max(axis=0) != 0)
-
-    sig = Signal((2, 2), 1, 48000).add_noise()
-    assert np.all(sig.max(axis=0) != 0)
-
-    sig = Signal((2, 2), 1, 48000).add_noise(variance=2)
-    assert np.var(sig.ch[0]) == np.var(sig.ch[1])
-    testing.assert_almost_equal(np.var(sig), 2)
-
-
-def test_add_uncorr_noise():
-    fs = 48000
-    sig = Signal(5, 1, fs).add_uncorr_noise()
-    # lower trianglular matrix should be  0
-    testing.assert_almost_equal(np.tril(np.cov(sig.T), -1), 0)
-
-    # Multidimensional case
-    sig = Signal((2, 2), 1, fs).add_uncorr_noise()
-    assert sig.n_channels == (2, 2)
 
 
 def test_trim():
@@ -529,8 +415,8 @@ def test_channel_indexing():
     assert np.all(sig[:, 0] == 1)
 
     sig.ch[1].add_tone(500)
-    tone_2 = audio.generate_tone(sig.duration, 500, sig.fs)
-    testing.assert_equal(sig.ch[1], tone_2)
+    tone_2 = np.cos(2 * np.pi * sig.time * 500)
+    testing.assert_almost_equal(sig.ch[1], tone_2)
 
     # Indexing only one channel should still work
     sig = Signal(1, 1, 40000).add_noise()
@@ -720,9 +606,3 @@ def test_convolve():
     kernel = audio.Signal(3, 5, fs)
     sig.convolve(kernel, mode="valid")
     assert sig.n_samples == 6
-
-
-signal = audio.Signal((2, 3), 1, 48000)
-kernel = audio.Signal(3, 100e-3, 48000)
-signal.convolve(kernel)
-signal.n_channels

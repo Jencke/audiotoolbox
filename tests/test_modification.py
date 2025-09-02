@@ -79,3 +79,63 @@ def test_fade_window_invalid_type():
     sig[:] = 1.0
     with pytest.raises(ValueError):
         sig.add_fade_window(rise_time, win_type="not_a_window")
+
+
+def test_cos_amp_modulator_is_cos():
+    mod = Signal(1, 1, 100e3)
+    mod[:] = 1
+    mod.add_cos_modulator(5, 1)
+    test = mod.copy_empty().add_tone(5)
+
+    testing.assert_array_almost_equal(mod, test + 1)
+    assert max(mod) == 2.0
+
+
+def test_cos_amp_modulator_is_mod_depth():
+    mod = Signal(1, 1, 100e3)
+    mod[:] = 1
+    mod.add_cos_modulator(5, 0.5)
+    assert mod[0] == 1.5
+
+
+def test_cos_amp_modulator_start_phase():
+    mod = Signal(1, 1, 100e3)
+    mod[:] = 1
+    mod.add_cos_modulator(5, 1, start_phase=np.pi / 4)
+    test = mod.copy_empty().add_tone(5, start_phase=np.pi / 4)
+
+    testing.assert_array_almost_equal(mod, test + 1)
+    assert max(mod) == 2.0
+
+
+def test_set_dbfs_reversible():
+    signal = Signal(1, 1, 48000).add_tone(1000)
+    # signal = audio.generate_tone(1000, 1, 48000)
+    signal.set_dbfs(-5)
+    testing.assert_almost_equal(signal.stats.dbfs, -5)
+
+
+def test_set_dbfs_multichannel():
+    signal = Signal((2, 3), 1, 48000).add_tone(1000)
+    signal.ch[:, 2] *= 4
+    signal.set_dbfs(-5)
+    testing.assert_almost_equal(signal.stats.dbfs, -5)
+
+
+def test_set_dbfs_peak():
+    signal = Signal(1, 1, 48000).add_noise()
+    signal.set_dbpeak(0)
+    assert signal.abs().max() == 1.0
+
+    signal.set_dbpeak(-6)
+    assert signal.abs().max() == 10 ** (-6 / 20)
+
+
+def test_set_dbspl_invertable():
+    fs = 100e3
+    signal = Signal(1, 1, fs).add_tone(100)
+    signal.set_dbspl(15)
+    testing.assert_almost_equal(signal.stats.dbspl, 15)
+
+    signal.set_dbspl(0)
+    testing.assert_almost_equal(signal.stats.rms, 20e-6)

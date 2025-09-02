@@ -10,7 +10,8 @@ def test_brickwall():
     # Test Bandpass
     duration = 500e-3
     fs = 100e3
-    noise = audio.generate_noise(duration, fs)
+    noise = audio.Signal(1, duration, fs).add_noise()
+    # noise = audio.generate_noise(duration, fs)
 
     fc = 300
     bw = 200
@@ -36,11 +37,12 @@ def test_brickwall():
 
     assert np.array_equal(non_zero, passband)
 
-    # Brickwall Lowpass
 
+def test_brickwall_lowpass():
+    # Brickwall Lowpass
     duration = 500e-3
     fs = 100e3
-    noise = audio.generate_noise(duration, fs)
+    noise = audio.Signal(1, duration, fs).add_noise()
 
     fc = 300
     out = filter.brickwall(noise, None, fc, fs)
@@ -53,10 +55,12 @@ def test_brickwall():
 
     assert np.array_equal(non_zero, passband)
 
+
+def test_brickwall_highpass():
     # brickwall_highpass
     duration = 500e-3
     fs = 100e3
-    noise = audio.generate_noise(duration, fs)
+    noise = audio.Signal(1, duration, fs).add_noise()
 
     fc = 300
     out = filter.brickwall(noise, fc, None, fs)
@@ -147,21 +151,22 @@ def test_gammatone_coefficients():
 def test_gammatonefos_apply():
     # Check amplitude with on frequency tone
     b, a = gt.design_gammatone(500, 75, 48000, attenuation_db=-3)
-    tone = audio.generate_tone(100e-3, 500, 48000)
+    tone = audio.Signal(1, 100e-3, 48000).add_tone(500)
+    # tone = audio.generate_tone(100e-3, 500, 48000)
     out, states = gt.gammatonefos_apply(tone, b, a, 4)
     assert (out.real[3000:].max() - 1) <= 5e-5
     assert (out.real[3000:].min() + 1) <= 5e-5
 
     # Check magnitude with tone at corner frequency
     b, a = gt.design_gammatone(500, 75, 48000, attenuation_db=-3)
-    tone = audio.generate_tone(100e-3, 500 - 75 / 2, 48000)
+    tone = audio.Signal(1, 100e-3, 48000).add_tone(500 - 75 / 2)
     out, states = gt.gammatonefos_apply(tone, b, a, 4)
     # max should be - 3dB
     assert (20 * np.log10(out.real[3000:].max()) + 3) < 0.5e-3
 
     # Check magnitude with tone at corner frequency
     b, a = gt.design_gammatone(500, 200, 48000, attenuation_db=-3)
-    tone = audio.generate_tone(100e-3, 500 - 200 / 2, 48000)
+    tone = audio.Signal(1, 100e-3, 48000).add_tone(500 - 200 / 2)
     out, states = gt.gammatonefos_apply(tone, b, a, 4)
     # max should be - 3dB
     assert (20 * np.log10(out.real[3000:].max()) + 3) < 0.05

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Literal, Optional, Union
 import numpy as np
 from ... import audiotoolbox as audio
 
@@ -67,8 +67,7 @@ class GenerationMixin:
         # `frequency[None, :]` -> shape (1, n_freqs)
         # Resulting `phases` shape: (n_samples, n_freqs)
         phases = (
-            2 * np.pi * frequency[None, :] * self.time[:, None]
-            + start_phase[None, :]
+            2 * np.pi * frequency[None, :] * self.time[:, None] + start_phase[None, :]
         )
         summed_tones = np.sum(amplitude[None, :] * np.cos(phases), axis=1)
 
@@ -80,7 +79,12 @@ class GenerationMixin:
         self += tones_to_add
         return self
 
-    def add_noise(self, ntype="white", variance=1, seed=None):
+    def add_noise(
+        self,
+        ntype: Literal["white", "pink", "brown"] = "white",
+        variance: float = 1.0,
+        seed=None,
+    ):
         r"""Add uncorrelated noise to the signal.
 
         add gaussian noise with a defined variance and different
@@ -113,26 +117,78 @@ class GenerationMixin:
 
         See Also
         --------
-        audiotoolbox.generate_noise
-        audiotoolbox.generate_uncorr_noise
         audiotoolbox.Signal.add_uncorr_noise
         """
-        noise = audio.generate_noise(
-            self.duration, self.fs, ntype=ntype, n_channels=1, seed=seed
-        )
+        np.random.seed(seed)
 
-        self[:] = (self.T + noise.T * np.sqrt(variance)).T
+        # If noise type is white just use the random number generator
+        if ntype == "white":
+            noise = np.random.randn(self.n_samples)
+            noise -= noise.mean(axis=0)
+            # normalize variance
+            noise /= noise.std(axis=0)
+            noise *= np.sqrt(variance)
+
+            new_shape = (self.n_samples,) + (1,) * (self.ndim - 1)
+            self[:] = noise.reshape(new_shape)
+            return self
+
+        # Otherwise create spectrum
+        # Calculate length and number of fft samples
+        nfft = audio.nextpower2(self.n_samples)
+
+        df = self.fs / nfft  # Frequency resolution
+        nybin = nfft // 2 + 1  # nyquist bin
+
+        lowbin = 1  # no offset start at one
+        highbin = nybin
+
+        freqs = np.arange(0, nybin) * df
+
+        # amplitude weighting factor
+        f_weights = np.zeros(nfft)
+        if ntype == "pink":
+            # Power proportinal to 1 / f
+            f_weights[lowbin:highbin] = 1.0 / np.sqrt(freqs[lowbin:])
+        elif ntype == "brown":
+            # Power proportional to 1 / f**2
+            f_weights[lowbin:highbin] = 1.0 / freqs[lowbin:]
+        else:
+            raise (ValueError("ntype not implemented"))
+
+        # generate noise
+        a = np.zeros([nfft])
+        b = np.zeros([nfft])
+        a[lowbin:highbin] = np.random.randn(highbin - lowbin)
+        b[lowbin:highbin] = np.random.randn(highbin - lowbin)
+        fspec = a + 1j * b
+
+        # Frequency weighting
+        fspec *= f_weights
+
+        noise = np.fft.ifft(fspec, axis=0)
+        noise = np.real(noise)
+
+        noise = noise[: self.n_samples]
+        noise -= noise.mean()
+
+        # Normalize the signal by its rms
+        noise /= np.std(noise)
+        noise *= np.sqrt(variance)
+
+        new_shape = (self.n_samples,) + (1,) * (self.ndim - 1)
+        self += noise.reshape(new_shape)
         return self
 
     def add_uncorr_noise(
         self,
-        corr=0,
-        variance=1,
-        ntype="white",
-        seed=None,
-        bandpass=None,
-        highpass=None,
-        lowpass=None,
+        corr: float = 0,
+        variance: float = 1,
+        ntype: Literal["white", "pink", "brown"] = "white",
+        seed: Optional[float | None] = None,
+        bandpass: Optional[dict] = None,
+        highpass: Optional[dict] = None,
+        lowpass: Optional[dict] = None,
     ):
         r"""Add partly uncorrelated noise.
 
@@ -181,8 +237,6 @@ class GenerationMixin:
 
         See Also
         --------
-        audiotoolbox.generate_noise
-        audiotoolbox.generate_uncorr_noise
         audiotoolbox.Signal.add_noise
 
         References
@@ -190,21 +244,71 @@ class GenerationMixin:
         .. [1] Hartmann, W. M., & Cho, Y. J. (2011). Generating partially
         correlated noise—a comparison of methods. The Journal of the
         Acoustical Society of America, 130(1),
-        292–301. http://dx.doi.org/10.1121/1.3596475
+        292-301. http://dx.doi.org/10.1121/1.3596475
 
         """
-        noise = audio.generate_uncorr_noise(
-            duration=self.duration,
-            fs=self.fs,
-            n_channels=self.n_channels,
-            ntype=ntype,
-            corr=corr,
-            seed=seed,
-            bandpass=bandpass,
-            highpass=highpass,
-            lowpass=lowpass,
-        )
+        if corr < 0:
+            Warning(
+                ValueError(
+                    "Resulting correlations will be positive"
+                    + " to gain negative correlations, multiply"
+                    + " channel with -1"
+                )
+            )
+        corr = np.abs(corr)
+        # if more then one dimension in n_channels
+        if np.ndim(self.n_channels) > 0:
+            shape = self.n_channels
+            n_channels = np.prod(self.n_channels)
+        else:
+            shape = self.n_channels
+            n_channels = self.n_channels
 
-        self += noise * np.sqrt(variance)
+        # correlated noise in multiple channels is generated by using the
+        # N+1 generator method
+
+        noise = audio.Signal(n_channels + 1, self.duration, self.fs)
+        for ch in range(noise.n_channels):
+            noise.ch[ch].add_noise(ntype=ntype, seed=seed)
+        noise -= noise.mean(axis=0)
+
+        if bandpass is not None:
+            noise = noise.bandpass(**bandpass)
+        if lowpass is not None:
+            noise = noise.lowpass(**lowpass)
+        if highpass is not None:
+            noise = noise.highpass(**highpass)
+
+        # normalize variance
+        noise /= noise.std(axis=0)
+
+        # Orthogonalize the noise tokens
+        Q, R = np.linalg.qr(noise, "reduced")
+
+        # normalizing the individual noise energies somewhat reduces
+        # the trial-by-trial variance of correlation values
+        Q /= Q.std(axis=0)
+
+        # The common noise component is mixed with each of the independent
+        # noise components to reach the desired correlation
+        common_noise = Q.ch[-1]
+        independent_noise = Q.ch[:-1]
+        #
+        alpha = np.sqrt(corr)
+        beta = np.sqrt(1 - alpha**2)
+        res_noise = (common_noise.T * alpha + independent_noise.T * beta).T
+
+        # Again make sure that the output variance is 1
+        res_noise /= res_noise.std(axis=0)
+
+        # bring into correct shape
+        if np.ndim(shape) > 0:
+            full_shape = [len(res_noise), *shape]
+            res_noise = res_noise.reshape(full_shape)
+        # if really only 1 dimensional, return vector
+        elif res_noise.shape[1] == 1:
+            res_noise = np.squeeze(res_noise)
+
+        self += res_noise * np.sqrt(variance)
 
         return self

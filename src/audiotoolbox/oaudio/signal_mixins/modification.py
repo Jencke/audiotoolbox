@@ -1,6 +1,7 @@
 """Signal mixins for organizing Signal class functionality."""
 
-from typing import TYPE_CHECKING
+import signal
+from typing import TYPE_CHECKING, Literal, Union
 
 import numpy as np
 from scipy.signal import get_window
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
 class ModificationMixin:
     """Mixin for signal modification methods."""
 
-    def set_dbspl(self, dbspl):
+    def set_dbspl(self, dbspl: float):
         r"""Set sound pressure level in dB.
 
         Normalizes the signal to a given sound pressure level in dB
@@ -42,61 +43,62 @@ class ModificationMixin:
         -------
         Returns itself : Signal
 
-        See Also
-        --------
-        audiotoolbox.set_dbspl
-        audiotoolbox.Signal.calc_dbspl
-        audiotoolbox.Signal.set_dbfs
-        audiotoolbox.Signal.calc_dbfs
-
         """
-        res = audio.set_dbspl(self, dbspl)
-        self[:] = res[:]
+        p0 = 20e-6  # ref_value
+
+        factor = (p0 * 10 ** (float(dbspl) / 20)) / self.stats.rms
+
+        self *= factor
 
         return self
 
-    def set_dbfs(self, dbfs):
-        r"""Normalize the signal to a given dBFS RMS value.
+    def set_dbpeak(self, dbpeak: float):
+        """Peak normalization of the signal.
 
-        Normalizes the signal to dB Fullscale
-        for this, the Signal is multiplied with the factor :math:`A`
+        Normalizes the signal in relation to it's peak amplitude. 0dB peak corresponds to a maximum amplitude of 1.
 
-        .. math:: A = \frac{1}{\sqrt{2}\sigma} 10^\frac{L}{20}
-
-        where :math:`L` is the goal Level, and :math:`\sigma` is the
-        RMS of the signal.
-
-        Parameters
-        ----------
-        dbfs : float
-            The dBFS RMS value in dB
+        Parameters:
+        -----------
+        dbpeak : float
+            The peak dB value to reach
 
         Returns
         -------
         Returns itself : Signal
-
-        Examples
-        --------
-        >>> sig = Signal(1, 1, 48000).add_tone(1000)
-        >>> sig.set_dbfs(-3)
-        >>> sig.stats.dbfs
-        -3.0
-
-
-
-        See Also
-        --------
-        audiotoolbox.set_dbspl
-        audiotoolbox.set_dbfs
-        audiotoolbox.calc_dbfs
-        audiotoolbox.Signal.set_dbspl
-        audiotoolbox.Signal.calc_dbspl
-        audiotoolbox.Signal.calc_dbfs
-
         """
-        nwv = audio.set_dbfs(self, dbfs)
-        self[:] = nwv
+        peak_val = np.max(np.abs(self), axis=0)
+        factor = (10 ** (float(dbpeak) / 20)) / peak_val
+        self *= factor
 
+        return self
+
+    def set_dbfs(self, dbfs: float):
+        r"""Full scale normalization of the signal.
+
+        Normalizes the signal Level to dB Fullscale. 0dB FS corresponds to
+        a signal with an rms of :math:`\frac{1}{\sqrt{2}}` so that a tone at 0dBS will
+        have an amplitude of 1.
+
+        Parameters
+        ----------
+        dbfs : float
+            The db full scale value to reach
+
+        Returns
+        -------
+        self: Signal
+        """
+
+        rms0 = 1 / np.sqrt(2)
+
+        factor = (rms0 * 10 ** (float(dbfs) / 20)) / self.stats.rms
+        # elif norm == "peak":
+        #     peak_val = np.max(self, axis=0)
+        #     factor = (10 ** (float(dbfs) / 20)) / peak_val
+
+        # else:
+        #     raise (ValueError('norm must be "rms" or "peak"'))
+        self *= factor
         return self
 
     def add_fade_window(self, rise_time: float, win_type: str = "hann", **kwargs):
@@ -177,7 +179,7 @@ class ModificationMixin:
         self *= fade_win
         return self
 
-    def add_cos_modulator(self, frequency, m, start_phase=0):
+    def add_cos_modulator(self, frequency: float, m: float, start_phase: float = 0):
         r"""Multiply a cosinus amplitude modulator to the signal.
 
         Multiplies a cosinus amplitude modulator following the equation:
@@ -206,17 +208,13 @@ class ModificationMixin:
         audiotoolbox.cos_amp_modulator
 
         """
-        mod = audio.cos_amp_modulator(
-            duration=self,
-            modulator_freq=frequency,
-            fs=self.fs,
-            mod_index=m,
-            start_phase=start_phase,
-        )
-        self *= mod
+
+        modulator = 1 + m * np.cos(2 * np.pi * frequency * self.time + start_phase)
+
+        self *= modulator
         return self
 
-    def delay(self, delay, method="fft"):
+    def delay(self, delay: float, method: Literal["fft", "sample"] = "fft"):
         r"""Delays the signal by circular shifting.
 
         Circular shift the functions foreward to create a certain time
@@ -253,14 +251,14 @@ class ModificationMixin:
         """
         if method == "sample":
             nshift = audio.nsamples(delay, self.fs)
-            shifted = audio.shift_signal(self, nshift)
+            shifted = np.roll(self, nshift, axis=0)
         elif method == "fft":
             shifted = self.to_freqdomain().time_shift(delay).to_timedomain()
 
         self[:] = shifted
         return self
 
-    def phase_shift(self, phase):
+    def phase_shift(self, phase: float):
         r"""Shifts all frequency components of a signal by a constant phase.
 
         Shift all frequency components of a given signal by a constant
@@ -283,7 +281,7 @@ class ModificationMixin:
 
         return self
 
-    def trim(self, t_start, t_end=None):
+    def trim(self, t_start: float, t_end: Union[float, None] = None):
         r"""Trim the signal between two points in time.
 
         removes the number of samples according to t_start and
@@ -324,7 +322,11 @@ class ModificationMixin:
 
         return self
 
-    def zeropad(self, number=None, duration=None):
+    def zeropad(
+        self,
+        number: Union[None, tuple[int, int]] = None,
+        duration: Union[None, tuple[float, float]] = None,
+    ):
         r"""Add zeros to start and end of signal.
 
         This function adds zeros of a given number or duration to the start or
@@ -347,10 +349,6 @@ class ModificationMixin:
         --------
         Returns itself : Signal
 
-        See Also
-        --------
-        audiotoolbox.zeropad
-
         """
         # Only one number or duration must be stated
         if duration is None and number is None:
@@ -363,20 +361,27 @@ class ModificationMixin:
         # number of samples to buffer with
         elif duration is not None and number is None:
             if not np.isscalar(duration):
-                number_s = audio.nsamples(duration[0], self.fs)
-                number_e = audio.nsamples(duration[1], self.fs)
-                number = (number_s, number_e)
+                n_s = audio.nsamples(duration[0], self.fs)
+                n_e = audio.nsamples(duration[1], self.fs)
             else:
-                number = audio.nsamples(duration, self.fs)
+                n_s = n_e = audio.nsamples(duration, self.fs)
+        else:
+            if not np.isscalar(number):
+                n_s = number[0]
+                n_e = number[1]
+            else:
+                n_s = n_e = number
 
         # Can only be applied to the whole signal not to a slice
         if not isinstance(self.base, type(None)):
             raise RuntimeError("Zeropad can only be applied to" " the whole signal")
         else:
-            wv = audio.zeropad(self, number)
-            self.resize(wv.shape, refcheck=False)
-            self[:] = wv
-
+            orig_nsamp = self.n_samples
+            new_shape = (orig_nsamp + n_s + n_e,) + self.shape[1:]
+            self.resize(new_shape, refcheck=False)
+            self[n_s : n_s + orig_nsamp] = self[:orig_nsamp]
+            self[:n_s] = 0
+            self[-n_e:] = 0
         return self
 
     def rectify(self):
@@ -390,7 +395,7 @@ class ModificationMixin:
         self[self < 0] = 0
         return self
 
-    def apply_gain(self, gain):
+    def apply_gain(self, gain: float):
         r"""Applys gain factor to the signal
 
         Fixed gain by multiplying the signal with a fixed factor calculated as
