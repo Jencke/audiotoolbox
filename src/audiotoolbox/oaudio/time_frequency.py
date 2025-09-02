@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from .. import audiotoolbox as audio
+from .. import core as audio
 import numpy as np
 from scipy.signal.windows import get_window
 from scipy.signal import spectrogram

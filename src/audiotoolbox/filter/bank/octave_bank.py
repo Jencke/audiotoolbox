@@ -1,7 +1,7 @@
 import numpy as np
 
 from .filterbank import ButterworthBank
-from ... import audiotoolbox as audio
+from ... import core as audio
 
 
 def get_edge_frequencies(

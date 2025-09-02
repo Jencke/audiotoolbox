@@ -6,7 +6,7 @@ from numpy.typing import ArrayLike
 
 from .. import gammatone_filt as gamma, butterworth_filt as butter
 from .. import brickwall_filt as brick
-from ... import audiotoolbox as audio
+from ... import core as audio
 
 
 class FilterBank(object):

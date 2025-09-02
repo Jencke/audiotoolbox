@@ -3,7 +3,7 @@
 from typing import TYPE_CHECKING
 import numpy as np
 import warnings
-from ... import audiotoolbox as audio
+from ... import core as audio
 
 if TYPE_CHECKING:
     from ..signal import Signal

@@ -1,4 +1,4 @@
-from ... import audiotoolbox as audio
+from ... import core as audio
 from .filterbank import create_filterbank
 from typing import TYPE_CHECKING
 

@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import pi, sqrt, log10
 from scipy.signal import zpk2sos, zpk2tf, bilinear_zpk, freqs_zpk
-from .. import audiotoolbox as audio
+from .. import core as audio
 from .butterworth_filt import apply_sos
 
 

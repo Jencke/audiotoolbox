@@ -3,7 +3,7 @@ import numpy as np
 from .gammatone_filt import gammatone
 from .butterworth_filt import butterworth
 from .brickwall_filt import brickwall
-from .. import audiotoolbox as audio
+from .. import core as audio
 
 
 def bandpass(signal, fc, bw, filter_type, fs=None, **kwargs):

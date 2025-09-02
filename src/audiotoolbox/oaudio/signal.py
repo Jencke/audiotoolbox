@@ -5,7 +5,7 @@ from typing import Type, cast, Union, Literal
 import numpy as np
 
 from . import base_signal
-from .. import audiotoolbox as audio
+from .. import core as audio
 from .freqdomain_signal import FrequencyDomainSignal
 from .stats import SignalStats
 from .time_frequency import TimeFrequency

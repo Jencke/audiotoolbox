@@ -407,26 +407,26 @@ def test_cmplx_correlation():
 
 def test_duration_is_signal():
     # direct input
-    duration, fs, n_ch = audio.audiotoolbox._duration_is_signal(1, 2, 3)
+    duration, fs, n_ch = audio.core._duration_is_signal(1, 2, 3)
     assert duration == 1
     assert fs == 2
     assert n_ch == 3
 
-    duration, fs, n_ch = audio.audiotoolbox._duration_is_signal(1, 2)
+    duration, fs, n_ch = audio.core._duration_is_signal(1, 2)
     assert duration == 1
     assert fs == 2
     assert n_ch == None
 
     # signal as input
     sig = audio.Signal((2, 3), 1, 2)
-    duration, fs, n_ch = audio.audiotoolbox._duration_is_signal(sig)
+    duration, fs, n_ch = audio.core._duration_is_signal(sig)
     assert duration == 1
     assert fs == 2
     assert n_ch == (2, 3)
 
     # Numpy array as input
     sig = np.zeros((11, 2, 3))
-    duration, fs, n_ch = audio.audiotoolbox._duration_is_signal(sig, 3)
+    duration, fs, n_ch = audio.core._duration_is_signal(sig, 3)
     assert duration == 11 / 3
     assert fs == 3
     assert n_ch == (2, 3)
@@ -434,10 +434,10 @@ def test_duration_is_signal():
 
 def test_copy_to_ndim():
     a = np.random.random(1000)
-    b = audio.audiotoolbox._copy_to_dim(a, (2, 3))
+    b = audio.core._copy_to_dim(a, (2, 3))
     assert b.shape == (1000, 2, 3)
 
-    b = audio.audiotoolbox._copy_to_dim(a, 3)
+    b = audio.core._copy_to_dim(a, 3)
     assert b.shape == (1000, 3)
 
 

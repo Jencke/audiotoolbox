@@ -1,4 +1,4 @@
-from .. import audiotoolbox as audio
+from .. import core as audio
 import numpy as np
 
 

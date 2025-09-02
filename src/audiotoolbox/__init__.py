@@ -9,7 +9,7 @@ if not (version_info.major == 3 and version_info.minor >= 0):  # pragma: no cove
     )
     exit(1)
 
-from .audiotoolbox import *
+from .core import *
 from .scales import erb, bark, octave
 from .oaudio import Signal, as_signal
 from .oaudio import FrequencyDomainSignal

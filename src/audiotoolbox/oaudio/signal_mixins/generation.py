@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Literal, Optional, Union
 import numpy as np
-from ... import audiotoolbox as audio
+from ... import core as audio
 
 if TYPE_CHECKING:
     from ..signal import Signal

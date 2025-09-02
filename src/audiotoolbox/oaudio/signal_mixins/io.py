@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 import sounddevice as sd
 
-from ... import audiotoolbox as audio, io
+from ... import core as audio, io
 
 if TYPE_CHECKING:
     from ..signal import Signal
