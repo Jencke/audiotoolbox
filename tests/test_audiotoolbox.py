@@ -324,7 +324,7 @@ def test_band2rms():
 
 
 def test_crest_factor():
-    signal = audio.generate_tone(100, 1, 100e3)
+    signal = audio.Signal(1, 1, 48000).add_tone(1000)
     cfac = audio.crest_factor(signal)
     testing.assert_almost_equal(cfac, np.sqrt(2))
 
