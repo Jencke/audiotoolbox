@@ -379,40 +379,40 @@ def generate_low_noise_noise(
 #     return time
 
 
-def calc_dbspl(signal):
-    r"""Calculate the dB (SPL) value for a given signal.
+# def calc_dbspl(signal):
+#     r"""Calculate the dB (SPL) value for a given signal.
 
-    .. math:: L = 20  \log_{10}\left(\frac{\sigma}{p_o}\right)
+#     .. math:: L = 20  \log_{10}\left(\frac{\sigma}{p_o}\right)
 
-    where :math:`L` is the SPL, :math:`p_0=20\mu Pa` and
-    :math:`\sigma` is the RMS of the signal.
+#     where :math:`L` is the SPL, :math:`p_0=20\mu Pa` and
+#     :math:`\sigma` is the RMS of the signal.
 
-    Parameters
-    ----------
-    signal : ndarray
-        The input signal
+#     Parameters
+#     ----------
+#     signal : ndarray
+#         The input signal
 
-    Returns
-    -------
-    float :
-        The dB (SPL) value
+#     Returns
+#     -------
+#     float :
+#         The dB (SPL) value
 
-    See Also
-    --------
-    audiotoolbox.set_dbspl
-    audiotoolbox.Signal.calc_dbspl
-    audiotoolbox.Signal.set_dbfs
-    audiotoolbox.Signal.calc_dbfs
+#     See Also
+#     --------
+#     audiotoolbox.set_dbspl
+#     audiotoolbox.Signal.calc_dbspl
+#     audiotoolbox.Signal.set_dbfs
+#     audiotoolbox.Signal.calc_dbfs
 
-    """
-    p0 = 20e-6
-    if np.ndim(signal) != 0:
-        rms_val = np.sqrt(np.mean(signal**2, axis=0))
-    else:
-        rms_val = signal
-    dbspl_val = 20 * np.log10(rms_val / p0)
+#     """
+#     p0 = 20e-6
+#     if np.ndim(signal) != 0:
+#         rms_val = np.sqrt(np.mean(signal**2, axis=0))
+#     else:
+#         rms_val = signal
+#     dbspl_val = 20 * np.log10(rms_val / p0)
 
-    return dbspl_val
+#     return dbspl_val
 
 
 def calc_dbfs(signal):

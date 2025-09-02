@@ -43,7 +43,9 @@ class SignalStats(BaseStats):
         --------
         audiotoolbox.calc_dbspl
         """
-        return audio.calc_dbspl(self.sig)
+        p0 = 20e-6
+        dbspl_val = 20 * np.log10(self.rms / p0)
+        return dbspl_val
 
     @property
     def dbfs(self) -> np.ndarray:
