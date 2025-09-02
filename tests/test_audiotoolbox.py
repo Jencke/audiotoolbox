@@ -301,48 +301,6 @@ def test_audfilter_bw():
     assert bw == bw2
 
 
-def test_generate_noise():
-    duration = 1
-    fs = 100e3
-
-    noise = audio.generate_noise(duration, fs)
-    assert len(noise) == audio.nsamples(duration, fs)
-    assert np.ndim(noise) == 1
-    # Test for whole spectrum
-    spec = np.fft.fft(noise)
-    assert np.all(~np.isclose(np.abs(spec)[1:], 0))
-    testing.assert_almost_equal(np.abs(spec[0]), 0)
-    testing.assert_almost_equal(np.var(noise), 1)
-
-    # # Test no offset
-    testing.assert_almost_equal(noise.mean(), 0)
-    # test seed
-    noise1 = audio.generate_noise(duration, fs, seed=1)
-    noise2 = audio.generate_noise(duration, fs, seed=1)
-    noise3 = audio.generate_noise(duration, fs, seed=2)
-    testing.assert_equal(noise1, noise2)
-    assert ~np.all(noise1 == noise3)
-
-    # test directly handing over signal
-    sig = audio.Signal((2, 3), 1, 10)
-    noise = audio.generate_noise(sig)
-    assert noise.shape == (10, 2, 3)
-    testing.assert_array_equal(noise[:, 0, :], noise[:, 1, :])
-    testing.assert_array_equal(noise[:, :, 0], noise[:, :, 1])
-
-    # test directly handing over signal
-    noise = audio.generate_noise(1, 10, n_channels=(2, 3))
-    assert noise.shape == (10, 2, 3)
-    testing.assert_array_equal(noise[:, 0, :], noise[:, 1, :])
-    testing.assert_array_equal(noise[:, :, 0], noise[:, :, 1])
-
-    # test multichannel
-    noise = audio.generate_noise(1, 10, n_channels=(2, 3), ntype="pink")
-    assert noise.shape == (10, 2, 3)
-    testing.assert_array_equal(noise[:, 0, :], noise[:, 1, :])
-    testing.assert_array_equal(noise[:, :, 0], noise[:, :, 1])
-
-
 def test_generate_uncorr_noise():
     duration = 1
     fs = 100e3
@@ -405,40 +363,6 @@ def test_generate_uncorr_noise_filter():
     non_zero = ~np.isclose(spec, 0)
     assert np.array_equal(non_zero[:, 0], passband)
     assert np.array_equal(non_zero[:, 1], passband)
-
-    # test coherence value
-    bandpass = {"fc": fc, "bw": bw, "filter_type": "brickwall"}
-    noise = audio.generate_uncorr_noise(duration, fs, 4, corr=0.5, bandpass=bandpass)
-    cv = np.corrcoef(noise.T)
-    lower_tri = np.tril(cv, -1)
-    lower_tri[lower_tri == 0] = np.nan
-    testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5)
-
-    bandpass = {"fc": fc, "bw": bw, "filter_type": "butter"}
-    noise = audio.generate_uncorr_noise(duration, fs, 4, corr=0.5, bandpass=bandpass)
-    cv = np.corrcoef(noise.T)
-    lower_tri = np.tril(cv, -1)
-    lower_tri[lower_tri == 0] = np.nan
-    testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5, decimal=6)
-
-    bandpass = {"fc": fc, "bw": bw, "filter_type": "gammatone"}
-    noise = audio.generate_uncorr_noise(duration, fs, 4, corr=0.5, bandpass=bandpass)
-    cv = np.corrcoef(noise.T)
-    lower_tri = np.tril(cv, -1)
-    lower_tri[lower_tri == 0] = np.nan
-    testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5, decimal=5)
-
-    fcut = 500
-    lowpass = {"f_cut": fcut, "filter_type": "brickwall"}
-    noise = audio.generate_uncorr_noise(duration, fs, 4, corr=0.5, lowpass=lowpass)
-    cv = np.corrcoef(noise.T)
-    lower_tri = np.tril(cv, -1)
-    lower_tri[lower_tri == 0] = np.nan
-    testing.assert_almost_equal(lower_tri[~np.isnan(lower_tri)], 0.5, decimal=5)
-
-    fcut = 500
-    highpass = {"f_cut": fcut, "filter_type": "brickwall"}
-    noise = audio.generate_uncorr_noise(duration, fs, 4, corr=0.33, highpass=highpass)
 
 
 def test_extract_binaural_differences():

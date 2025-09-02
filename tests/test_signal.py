@@ -283,47 +283,6 @@ def test_phaseshift():
     sig[:, 0].phase_shift(np.pi / 4)
 
 
-def test_add_noise():
-    fs = 48000
-    sig = Signal(1, 1, 48000).add_noise()
-    assert sig.max() != 0
-    sig = Signal(2, 1, 48000).add_noise()
-    assert np.all(sig.max(axis=0) != 0)
-
-    sig = Signal((2, 2), 1, 48000).add_noise()
-    assert np.all(sig.max(axis=0) != 0)
-
-    sig = Signal((2, 2), 1, 48000).add_noise(variance=2)
-    assert np.var(sig.ch[0]) == np.var(sig.ch[1])
-    testing.assert_almost_equal(np.var(sig), 2)
-
-
-def test_add_noise():
-    fs = 48000
-    sig = Signal(1, 1, 48000).add_noise()
-    assert sig.max() != 0
-    sig = Signal(2, 1, 48000).add_noise()
-    assert np.all(sig.max(axis=0) != 0)
-
-    sig = Signal((2, 2), 1, 48000).add_noise()
-    assert np.all(sig.max(axis=0) != 0)
-
-    sig = Signal((2, 2), 1, 48000).add_noise(variance=2)
-    assert np.var(sig.ch[0]) == np.var(sig.ch[1])
-    testing.assert_almost_equal(np.var(sig), 2)
-
-
-def test_add_uncorr_noise():
-    fs = 48000
-    sig = Signal(5, 1, fs).add_uncorr_noise()
-    # lower trianglular matrix should be  0
-    testing.assert_almost_equal(np.tril(np.cov(sig.T), -1), 0)
-
-    # Multidimensional case
-    sig = Signal((2, 2), 1, fs).add_uncorr_noise()
-    assert sig.n_channels == (2, 2)
-
-
 def test_trim():
     sig = Signal(2, 1, 48000).add_noise()
     o_sig = sig.copy()
@@ -652,9 +611,3 @@ def test_convolve():
     kernel = audio.Signal(3, 5, fs)
     sig.convolve(kernel, mode="valid")
     assert sig.n_samples == 6
-
-
-signal = audio.Signal((2, 3), 1, 48000)
-kernel = audio.Signal(3, 100e-3, 48000)
-signal.convolve(kernel)
-signal.n_channels

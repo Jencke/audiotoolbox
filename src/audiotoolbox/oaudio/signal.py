@@ -145,7 +145,7 @@ class Signal(
         return a_signal
 
 
-def as_signal(signal, fs):
+def as_signal(signal, fs) -> Signal:
     """Convert Numpy array to Signal class.
 
     Parameters
