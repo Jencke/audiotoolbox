@@ -37,11 +37,12 @@ class SignalStats(BaseStats):
 
     @property
     def dbspl(self):
-        """Soundpressure level relative to 20uPa in dB
+        r"""Calculate the dB (SPL) values for all channels of the signal.
 
-        See Also
-        --------
-        audiotoolbox.calc_dbspl
+        .. math:: L = 20  \log_{10}\left(\frac{\sigma}{p_o}\right)
+
+        where :math:`L` is the SPL, :math:`p_0=20\mu Pa` and
+        :math:`\sigma` is the RMS of the signal.
         """
         p0 = 20e-6
         dbspl_val = 20 * np.log10(self.rms / p0)
