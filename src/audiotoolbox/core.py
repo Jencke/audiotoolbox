@@ -6,7 +6,7 @@ from numpy import pi
 from scipy.interpolate import interp1d
 from scipy.signal import hilbert
 
-from .oaudio import Signal, as_signal
+from .signal import Signal, as_signal
 from . import filter
 from . import din_iso_226
 
@@ -99,7 +99,7 @@ def from_file(filename: str, start: int = 0, stop: Optional[int] = None) -> Sign
     --------
     audiotoolbox.Signal.from_file : Method to load a signal into an existing Signal object.
     """
-    from .oaudio import Signal
+    from . import Signal
     from .io import readfile
 
     wv, fs = readfile(filename, start=start, stop=stop)

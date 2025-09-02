@@ -11,5 +11,5 @@ if not (version_info.major == 3 and version_info.minor >= 0):  # pragma: no cove
 
 from .core import *
 from .scales import erb, bark, octave
-from .oaudio import Signal, as_signal
-from .oaudio import FrequencyDomainSignal
+from .signal import Signal, as_signal
+from .freqdomain_signal import FrequencyDomainSignal

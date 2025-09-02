@@ -1,4 +1,4 @@
-from audiotoolbox.oaudio import FrequencyDomainSignal, Signal
+from audiotoolbox import FrequencyDomainSignal, Signal
 import audiotoolbox as audio
 import numpy as np
 import numpy.testing as testing

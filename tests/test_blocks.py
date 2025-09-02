@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from audiotoolbox.oaudio.signal import Signal
+from audiotoolbox.signal import Signal
 
 
 # Fixture for a simple mono signal

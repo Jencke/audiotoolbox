@@ -9,7 +9,7 @@ from scipy.signal import get_window
 import resampy
 
 import warnings
-from ... import core as audio
+from .. import core as audio
 
 if TYPE_CHECKING:
     from ..signal import Signal
