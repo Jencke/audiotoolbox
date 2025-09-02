@@ -34,9 +34,16 @@ def test_var():
 def test_dbfs():
     sig = audio.Signal((2, 2), 1, 48000).add_noise()
     sig *= np.sqrt(2)
-    dbspl = audio.calc_dbfs(sig)
-    testing.assert_array_almost_equal(sig.stats.dbfs, dbspl)
     assert sig.stats.dbfs.shape == (2, 2)
+
+    sig = audio.Signal(1, 1, 48000).add_tone(1000)
+    testing.assert_almost_equal(sig.stats.dbfs, 0)
+
+    sig = audio.Signal(1, 1, 20)
+    sig[:10] = -1
+    sig[10:] = 1
+    rms_rect = 20 * np.log10(np.sqrt(2))
+    testing.assert_almost_equal(sig.stats.dbfs, rms_rect)
 
 
 def test_crest_factor():

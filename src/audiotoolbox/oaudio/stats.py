@@ -50,13 +50,16 @@ class SignalStats(BaseStats):
 
     @property
     def dbfs(self) -> np.ndarray:
-        """Level in dB full scale
+        r"""Calculate the dBFS RMS value of a given signal.
 
-        See Also
-        --------
-        audiotoolbox.calc_dbfs
+        .. math:: L = 20 \log_{10}\left(\sqrt{2}\sigma\right)
+
+        where :math:`\sigma` is the signals RMS.
         """
-        return audio.calc_dbfs(self.sig)
+        rms0 = 1 / np.sqrt(2)
+
+        dbfs = 20 * np.log10(self.rms / rms0)
+        return dbfs
 
     @property
     def crest_factor(self):

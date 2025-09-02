@@ -306,37 +306,6 @@ def generate_low_noise_noise(
     return noise
 
 
-def calc_dbfs(signal):
-    r"""Calculate the dBFS RMS value of a given signal.
-
-    .. math:: L = 20 \log_{10}\left(\sqrt{2}\sigma\right)
-
-    where :math:`\sigma` is the signals RMS.
-
-    Parameters
-    ----------
-    signal : ndarray
-        The input signal
-
-    Returns
-    -------
-    float :
-        The dBFS RMS value
-
-    """
-
-    rms0 = 1 / np.sqrt(2)
-
-    if np.ndim(signal) != 0:
-        rms_val = np.sqrt(np.mean(signal**2, axis=0))
-    else:
-        rms_val = signal
-
-    dbfs = 20 * np.log10(rms_val / rms0)
-
-    return dbfs
-
-
 def get_bark_limits():
     r"""Limits of the Bark scale
 
