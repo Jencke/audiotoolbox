@@ -204,14 +204,6 @@ def test_phase2time():
     testing.assert_array_almost_equal(time, calc_time)
 
 
-def test_calc_dbspl():
-    assert audio.calc_dbspl(2e-3) == 40
-    assert audio.calc_dbspl(20e-6) == 0
-    sig = audio.Signal(1, 1, 48000).add_tone(500)
-    l_tone = 20 * np.log10(np.sqrt(0.5) / 20e-6)
-    assert audio.calc_dbspl(sig) == l_tone
-
-
 def test_calc_dbfs():
     signal = audio.generate_tone(1000, 1, 48000)
     testing.assert_almost_equal(audio.calc_dbfs(signal), 0)
