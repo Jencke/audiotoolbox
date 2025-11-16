@@ -4,7 +4,7 @@ from typing import Literal, Optional, Union
 import numpy as np
 from numpy import pi
 from scipy.interpolate import interp1d
-from scipy.signal import hilbert
+from scipy.signal import hilbert, get_window
 
 from .signal import Signal, as_signal
 from . import filter
@@ -1025,6 +1025,39 @@ def crest_factor(signal, axis=0):
     # crest_factor = 20*np.log10(a_max / a_effective)
 
     return a_max / a_effective
+
+
+def inst_cmplx_corr(signal, window_duration, window="hann"):
+    r"""Calculate instantaneous complex correlation
+
+    This function calculates the instantaneous complex correlation of a
+    signal using a sliding window approach.
+
+    Parameters
+    ----------
+    signal : Signal or ndarray
+        The input signal
+    window_duration : float
+        The duration of the sliding window in seconds
+    window : str
+        The type of window to use (default = 'hann')
+
+    Returns
+    -------
+    corr : ndarray
+        The instantaneous complex correlation
+
+    """
+
+    asig = signal.to_analytical()
+    iccp = asig.ch[0] * asig.ch[1].conjugate()
+    icpow = np.abs(asig.ch[0]) * np.abs(asig.ch[1])
+    win_samps = int(window_duration * signal.fs)
+    win = as_signal(get_window(window, win_samps), signal.fs)
+    filt_iccp = iccp.convolve(win, "same")
+    filt_icpow = icpow.convolve(win, "same")
+    coh = filt_iccp / filt_icpow
+    return coh
 
 
 def cmplx_corr(signal, fs=None):
