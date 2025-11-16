@@ -259,7 +259,7 @@ class FilteringMixin:
             new_nsamp = self.n_samples - kernel.n_samples + 1
         else:
             raise ValueError("mode not implemented")
-        new_signal = audio.Signal(new_nch, new_nsamp / fs, fs)
+        new_signal = audio.Signal(new_nch, new_nsamp / fs, fs, dtype=self.dtype)
 
         if dim_overlap != 0:
             n_sig = np.prod(dim_sig[:-dim_overlap])
