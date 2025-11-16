@@ -3,6 +3,8 @@
   - Major refactoring of codebase for better maintainability
   - Moved plotting functionallity in Signal.viz subclass
   - Added specgram_overview function which plots a 1/3 octave spectrogram, the time signal as well as the overall 1/3 octave band levels.
+  - Removed a bug that would result in wrong dtypes when convolving.
+  - 
 
 0.57 -> 0.6
   - Improved Documentation
