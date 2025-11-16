@@ -1,3 +1,9 @@
+0.6 -> develop
+  - Deprecated the old unused function interface
+  - Major refactoring of codebase for better maintainability
+  - Moved plotting functionallity in Signal.viz subclass
+  - Added specgram_overview function which plots a 1/3 octave spectrogram, the time signal as well as the overall 1/3 octave band levels.
+
 0.57 -> 0.6
   - Improved Documentation
   - swap return values in octave_band_levels for consistency
