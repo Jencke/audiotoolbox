@@ -1,9 +1,9 @@
-0.6 -> develop
+0.6 -> 1.0
   - Deprecated the old unused function interface
   - Major refactoring of codebase for better maintainability
-  - Moved plotting functionallity in Signal.viz subclass
+  - Moved plotting functionality in Signal.viz subclass
   - Added specgram_overview function which plots a 1/3 octave spectrogram, the time signal as well as the overall 1/3 octave band levels.
-  - Removed a bug that would result in wrong dtypes when convolving.
+  - Removed a bug that would result in wrong dtypes when convolveing.
   - Add instantaneous complex correlation function with sliding window
   - moved Signal.plot to Signal.viz.plot
 
