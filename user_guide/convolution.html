@@ -1,0 +1,190 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Convolution &mdash; audiotoolbox  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Loading and Saving Audio Files" href="input_output.html" />
+    <link rel="prev" title="Time-Frequency Methods" href="time_frequency.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo_white.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../user_guide.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="basics.html">Signal Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modifications.html">Basic Signal Modifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modifications.html#resampling">Resampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modifications.html#trimming-signals">Trimming Signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modifications.html#crossfading-signals">Crossfading Signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="noise.html">Generating Noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="levels_and_stats.html">Levels and Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filtering.html">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_frequency.html">Time-Frequency Methods</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Convolution</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#channel-wise-convolution">Channel-Wise Convolution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#full-multi-channel-convolution">Full Multi-Channel Convolution</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#convolution-mode">Convolution Mode</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="input_output.html">Loading and Saving Audio Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="playback.html">Playback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">Stimulus visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">audiotoolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../user_guide.html">User Guide</a></li>
+      <li class="breadcrumb-item active">Convolution</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user_guide/convolution.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="convolution">
+<span id="guide-convolution"></span><h1>Convolution<a class="headerlink" href="#convolution" title="Link to this heading"></a></h1>
+<p>Signals can be convolved with a kernel, which is itself another
+<a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">audiotoolbox.Signal</span></code></a>. This is commonly used for filtering or to
+apply an impulse response to a signal (e.g., a Room Impulse Response or
+a Head-Related Impulse Response). The toolbox uses the fast, FFT-based
+convolution from <code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code>.</p>
+<p>The <a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal.convolve" title="audiotoolbox.Signal.convolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.convolve()</span></code></a> method performs this operation.
+Its behavior with multi-dimensional signals can be controlled with the
+<code class="docutils literal notranslate"><span class="pre">overlap_dimensions</span></code> keyword.</p>
+<section id="channel-wise-convolution">
+<h2>Channel-Wise Convolution<a class="headerlink" href="#channel-wise-convolution" title="Link to this heading"></a></h2>
+<p>By default, convolution is performed only along overlapping dimensions
+between the signal and the kernel (<code class="docutils literal notranslate"><span class="pre">overlap_dimensions=True</span></code>). This means
+that if the channel shapes match, the first channel of the signal is
+convolved with the first channel of the kernel, the second with the
+second, and so on.</p>
+<p>This is useful for applying multi-channel impulse responses to a
+multi-channel signal. For example, to simulate a stereo audio signal
+being played in a room, you could convolve the 2-channel signal with a
+2-channel Room Impulse Response (RIR).</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Assume &#39;stereo_signal.wav&#39; is a 2-channel audio file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="s1">&#39;stereo_signal.wav&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Assume &#39;stereo_rir.wav&#39; is a 2-channel impulse response</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rir</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="s1">&#39;stereo_rir.wav&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Convolve the signal with the RIR</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">rir</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># The resulting signal is still 2 channels</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">n_channels</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+</section>
+<section id="full-multi-channel-convolution">
+<h2>Full Multi-Channel Convolution<a class="headerlink" href="#full-multi-channel-convolution" title="Link to this heading"></a></h2>
+<p>If you need to convolve every channel of the signal with every channel
+of the kernel, you can set <code class="docutils literal notranslate"><span class="pre">overlap_dimensions=False</span></code>.</p>
+<p>In this case, convolving a two-channel signal with a two-channel kernel
+will result in a <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">2)</span></code>-shaped channel output, where each element
+represents one of the possible signal-kernel convolution pairs.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kernel</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">100e-3</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">kernel</span><span class="p">,</span> <span class="n">overlap_dimensions</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span><span class="o">.</span><span class="n">n_channels</span>
+<span class="go">(2, 2)</span>
+</pre></div>
+</div>
+</section>
+<section id="convolution-mode">
+<h2>Convolution Mode<a class="headerlink" href="#convolution-mode" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">mode</span></code> parameter (one of <code class="docutils literal notranslate"><span class="pre">{'full',</span> <span class="pre">'valid',</span> <span class="pre">'same'}</span></code>) controls
+the size of the output signal, corresponding directly to the <code class="docutils literal notranslate"><span class="pre">mode</span></code>
+argument in <code class="docutils literal notranslate"><span class="pre">scipy.signal.fftconvolve</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">'full'</span></code>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="time_frequency.html" class="btn btn-neutral float-left" title="Time-Frequency Methods" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="input_output.html" class="btn btn-neutral float-right" title="Loading and Saving Audio Files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Jörg Encke.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

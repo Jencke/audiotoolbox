@@ -1,0 +1,689 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Core functions &mdash; audiotoolbox  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)" href="api_fluent_frequencydomainsignal.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/logo_white.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api_fluent_signal.html">Signals in the time domain (audiotoolbox.Signal)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_fluent_frequencydomainsignal.html">Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Core functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#audiotoolbox.crossfade"><code class="docutils literal notranslate"><span class="pre">crossfade()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#audiotoolbox.dbspl_to_phon"><code class="docutils literal notranslate"><span class="pre">dbspl_to_phon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#audiotoolbox.from_file"><code class="docutils literal notranslate"><span class="pre">from_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#audiotoolbox.phase2time"><code class="docutils literal notranslate"><span class="pre">phase2time()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#audiotoolbox.phon_to_dbspl"><code class="docutils literal notranslate"><span class="pre">phon_to_dbspl()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#audiotoolbox.schroeder_phase"><code class="docutils literal notranslate"><span class="pre">schroeder_phase()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#audiotoolbox.time2phase"><code class="docutils literal notranslate"><span class="pre">time2phase()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#audiotoolbox-filter">audiotoolbox.filter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.a_weighting"><code class="docutils literal notranslate"><span class="pre">a_weighting()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.bandpass"><code class="docutils literal notranslate"><span class="pre">bandpass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.brickwall"><code class="docutils literal notranslate"><span class="pre">brickwall()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.butterworth"><code class="docutils literal notranslate"><span class="pre">butterworth()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.c_weighting"><code class="docutils literal notranslate"><span class="pre">c_weighting()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.gammatone"><code class="docutils literal notranslate"><span class="pre">gammatone()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.highpass"><code class="docutils literal notranslate"><span class="pre">highpass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.lowpass"><code class="docutils literal notranslate"><span class="pre">lowpass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.bank.auditory_gamma_bank"><code class="docutils literal notranslate"><span class="pre">auditory_gamma_bank()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.bank.create_filterbank"><code class="docutils literal notranslate"><span class="pre">create_filterbank()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.bank.octave_bank"><code class="docutils literal notranslate"><span class="pre">octave_bank()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">audiotoolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="api.html">API reference</a></li>
+      <li class="breadcrumb-item active">Core functions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api_core.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-audiotoolbox">
+<span id="core-functions"></span><h1>Core functions<a class="headerlink" href="#module-audiotoolbox" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.crossfade">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.</span></span><span class="sig-name descname"><span class="pre">crossfade</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sig1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.signal.Signal"><span class="pre">Signal</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">sig2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.signal.Signal"><span class="pre">Signal</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fade_duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fade_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'linear'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'cos'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'linear'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.signal.Signal"><span class="pre">Signal</span></a></span></span><a class="headerlink" href="#audiotoolbox.crossfade" title="Link to this definition"></a></dt>
+<dd><p>Crossfade two Signals</p>
+<p>Apply a crossfade between the end of the first and the beginning of the
+second signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sig1</strong> (<a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><em>Signal</em></a>) – First signal</p></li>
+<li><p><strong>sig2</strong> (<a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><em>Signal</em></a>) – Second signal</p></li>
+<li><p><strong>fade_duration</strong> (<em>float</em>) – duration of the fade in seconds</p></li>
+<li><p><strong>fade_type</strong> (<em>Literal</em><em>[</em><em>&quot;linear&quot;</em><em>, </em><em>&quot;cos&quot;</em><em>]</em>) – Type of the crossfade</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The resulting signal.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal">Signal</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.dbspl_to_phon">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.</span></span><span class="sig-name descname"><span class="pre">dbspl_to_phon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_dbspl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.dbspl_to_phon" title="Link to this definition"></a></dt>
+<dd><p>loudness levels from sound pressure level (following DIN ISO 226:2006-04)</p>
+<p>Calulates the loudness level at a given frequency from the sound
+pressure level following DIN ISO 226:2006-04</p>
+<p>The normed values are tabulated for the following frequencies and
+sound pressure levels:</p>
+<ol class="arabic simple">
+<li><p>20phon to 90phon
+* 20, 25, 31.5, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315,
+* 400, 500, 630, 800, 1000, 1250, 1600, 2000, 2500, 3150, 4000</p></li>
+<li><p>20phon to 80phon
+* 5000, 6300, 8000, 10000, 12500</p></li>
+</ol>
+<p>Values for other frequencies can be interpolated (cubic spline) by
+setting the parameter interpolate to True. The check for correct
+sound pressure levels can be switched off by setting
+limit=False. In both cases, the results are not covered by the DIN
+ISO norm</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<em>scalar</em>) – The frequency in Hz. must be one of the tabulated values above
+if interpolate = False</p></li>
+<li><p><strong>l_dbspl</strong> (<em>scalar</em>) – sound pressure level that should be converted</p></li>
+<li><p><strong>interpolate</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines whether the tabulated values from the norm should be
+interpolated.  If set to True, the tabulated values will be
+interpolated using a cubic spline (default = False)</p></li>
+<li><p><strong>limit</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines whether the limits of the norm should be checked
+(default = True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>scalar</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The loudnes level level in dB SPL</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.from_file">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.</span></span><span class="sig-name descname"><span class="pre">from_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.signal.Signal"><span class="pre">Signal</span></a></span></span><a class="headerlink" href="#audiotoolbox.from_file" title="Link to this definition"></a></dt>
+<dd><p>Read signal from an audio file.</p>
+<p>This function reads a signal from an audio file and returns it as a Signal object.
+The signal can be read from a specific start point and up to a specific stop point.
+The function supports all audio file formats supported by libsndfile, such as WAV,
+FLAC, AIFF, and more.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – The path to the audio file to read.</p></li>
+<li><p><strong>start</strong> (<em>int</em><em>, </em><em>optional</em>) – The starting sample index from which to read the signal. Default is 0.</p></li>
+<li><p><strong>stop</strong> (<em>int</em><em>, </em><em>optional</em>) – The stopping sample index up to which to read the signal. If None, the signal
+is read until the end of the file. Default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Signal object containing the audio data read from the file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal">Signal</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the audio file cannot be read or if the file format is not supported.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Read a signal from a file starting at the beginning:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;example.wav&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read a signal from a file starting at sample index 1000 and stopping at sample index 5000:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;example.wav&quot;</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.from_file" title="audiotoolbox.Signal.from_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotoolbox.Signal.from_file</span></code></a></dt><dd><p>Method to load a signal into an existing Signal object.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.phase2time">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.</span></span><span class="sig-name descname"><span class="pre">phase2time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.phase2time" title="Link to this definition"></a></dt>
+<dd><p>Pase to Time for a given frequency</p>
+<div class="math notranslate nohighlight">
+\[t = \frac{\phi}{2 \pi f}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>phase</strong> (<em>ndarray</em>) – The phase values to convert</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>converted time values</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.phon_to_dbspl">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.</span></span><span class="sig-name descname"><span class="pre">phon_to_dbspl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_phon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.phon_to_dbspl" title="Link to this definition"></a></dt>
+<dd><p>Sound pressure levels from loudness level (following DIN ISO 226:2006-04)</p>
+<p>Calulates the sound pressure level at a given frequency that is
+necessary to reach a specific loudness level following DIN ISO
+226:2006-04</p>
+<p>The normed values are tabulated for the following frequencies and
+sound pressure levels:</p>
+<ol class="arabic">
+<li><p>20phon to 90phon
+* 20 Hz, 25 Hz, 31.5 Hz, 40 Hz, 50 Hz, 63 Hz, 80 Hz, 100 Hz,</p>
+<blockquote>
+<div><p>125 Hz, 160 Hz, 200 Hz, 250 Hz, 315 Hz, 400 Hz, 500 Hz, 630
+Hz, 800 Hz, 1000 Hz, 1250 Hz, 1600 Hz, 2000 Hz, 2500 Hz, 3150
+Hz, 4000 Hz</p>
+</div></blockquote>
+</li>
+<li><p>20phon to 80phon
+* 5000 Hz, 6300 Hz, 8000 Hz, 10000 Hz, 12500 Hz</p></li>
+</ol>
+<p>Values for other frequencies can be interpolated (cubic spline) by
+setting the parameter <cite>interpolate=True</cite>. The check for correct
+sound pressure levels can be switched off by setting
+<cite>limit=False</cite>. In both cases, the results are not covered by the
+DIN ISO norm</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frequency</strong> (<em>scalar</em>) – The frequency in Hz. must be one of the tabulated values above
+if interpolate = False</p></li>
+<li><p><strong>l_phon</strong> (<em>scalar</em>) – loudness level that should be converted</p></li>
+<li><p><strong>interpolate</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines whether the tabulated values from the norm should be
+interpolated.  If set to True, the tabulated values will be
+interpolated using a cubic spline (default = False)</p></li>
+<li><p><strong>limit</strong> (<em>bool</em><em>, </em><em>optional</em>) – Defines whether the limits of the norm should be checked
+(default = True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>The soundpressure level in dB SPL</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>scalar</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.schroeder_phase">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.</span></span><span class="sig-name descname"><span class="pre">schroeder_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">harmonics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitudes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.schroeder_phase" title="Link to this definition"></a></dt>
+<dd><p>Phases for a schroeder phase harmonic complex</p>
+<p>This function calculates the phases for a schroeder phase harmonic
+comlex following eq. 11 of <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>:</p>
+<div class="math notranslate nohighlight">
+\[\phi_n = \phi_l - 2\pi \sum\limits^{n-1}_{l=1}(n - l)p_l\]</div>
+<p><span class="math notranslate nohighlight">\(n\)</span> is the order of the harmonic and p_l is the relative
+power of the spectral component p_l.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>harmonics</strong> (<em>ndarray</em>) – A vector of harmonics for which the schroeder phases should be
+calculated</p></li>
+<li><p><strong>amplitudes</strong> (<em>ndarray</em>) – A vector of amplitudes for the given harmonics</p></li>
+<li><p><strong>phi0</strong> (<em>scalar</em>) – The starting phase of the first harmonic (default = 0)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>The phase values for the harmonic compontents</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
+<p>Schroeder, M. (1970). Synthesis of low-peak-factor signals
+and binary sequences with low autocorrelation
+(corresp.). IEEE Transactions on Information Theory, 16(1),
+85-89</p>
+</aside>
+</aside>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.time2phase">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.</span></span><span class="sig-name descname"><span class="pre">time2phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.time2phase" title="Link to this definition"></a></dt>
+<dd><p>Time to phase for a given frequency.</p>
+<div class="math notranslate nohighlight">
+\[\phi = 2 \pi t f\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>ndarray</em>) – The time values to convert</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>converted phase values</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="audiotoolbox-filter">
+<h2>audiotoolbox.filter<a class="headerlink" href="#audiotoolbox-filter" title="Link to this heading"></a></h2>
+<p>Individual filter can either be applied by directly calling the respective filter functions such as <a class="reference internal" href="#audiotoolbox.filter.gammatone" title="audiotoolbox.filter.gammatone"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter.gammatone()</span></code></a> or by using the unified interfaces for <a class="reference internal" href="#audiotoolbox.filter.bandpass" title="audiotoolbox.filter.bandpass"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter.bandpass()</span></code></a>, <a class="reference internal" href="#audiotoolbox.filter.lowpass" title="audiotoolbox.filter.lowpass"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter.lowpass()</span></code></a> and <a class="reference internal" href="#audiotoolbox.filter.highpass" title="audiotoolbox.filter.highpass"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter.highpass()</span></code></a> filters. When using the unified interface, all additional arguments are passed to the respective filter functions.</p>
+<dl class="py function" id="module-audiotoolbox.filter">
+<dt class="sig sig-object py" id="audiotoolbox.filter.a_weighting">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">a_weighting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.filter.a_weighting" title="Link to this definition"></a></dt>
+<dd><p>Apply A weighting filter to a signal.</p>
+<p>Apply an digital A-weighting filter following IEC 61672-1.
+Take care that the sampling frequency is high enough to prevent steep
+high frequency drop-off. A sampling frequency of about 48 kHz should be
+sufficent to result in a Class 1 filter following IEC 61672-1.</p>
+<section id="parameters">
+<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>signal<span class="classifier">Signal or np.ndarray</span></dt><dd><p>The input signal</p>
+</dd>
+<dt>fs<span class="classifier">scalar or None</span></dt><dd><p>The signals sampling rate in Hz.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">rtype<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The filtered signal.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.filter.bandpass">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">bandpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.filter.bandpass" title="Link to this definition"></a></dt>
+<dd><p>Apply a bandpass filter to the Signal.</p>
+<p>This function provieds a unified interface to all bandpass filters
+implemented in audiotoolbox.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ndarray</em><em> or </em><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><em>Signal</em></a>) – The input signal.</p></li>
+<li><p><strong>fc</strong> (<em>float</em>) – The center frequency in Hz.</p></li>
+<li><p><strong>bw</strong> (<em>float</em>) – The bandwidth in Hz</p></li>
+<li><p><strong>filter_type</strong> (<em>string</em>) – The filter type, ‘gammatone’, ‘butter’, ‘brickwall’</p></li>
+<li><p><strong>fs</strong> (<em>None</em><em> or </em><em>int</em>) – The sampling frequency, must be provided if not using the Signal
+class.</p></li>
+<li><p><strong>**kwargs</strong> – Further arguments such as ‘order’ that are passed to the filter
+functions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Signal</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The filtered Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.filter.brickwall">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">brickwall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low_f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.filter.brickwall" title="Link to this definition"></a></dt>
+<dd><p>Brickwall filter.</p>
+<p>Bandpass filters an input signal by setting all frequency
+outside of the passband [low_f, high_f] to zero.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ndarray</em>) – The input signal</p></li>
+<li><p><strong>low_f</strong> (<em>scalar</em>) – low cutoff in Hz</p></li>
+<li><p><strong>high_f</strong> (<em>scalar</em><em> or </em><em>None</em>) – high cutoff in Hz, if None, high_f will be set to fs/2</p></li>
+<li><p><strong>fs</strong> (<em>scalar</em>) – The signals sampling rate in Hz</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filtered signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.filter.butterworth">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">butterworth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low_f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.filter.butterworth" title="Link to this definition"></a></dt>
+<dd><p>Apply a butterwoth filter</p>
+<p>Applies the cascated second-order sections representation of a
+butterwoth IIR filter.</p>
+<p>To construct a lowpass filter, set <cite>low_f</cite> to <cite>None</cite>. For a
+highpass, set <cite>high_f</cite> to <cite>None</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>low_f</strong> (<em>scalar</em><em> or </em><em>None</em>) – lower cutoff in Hz</p></li>
+<li><p><strong>high_f</strong> (<em>scalar</em><em> or </em><em>None</em>) – high cutoff in Hz</p></li>
+<li><p><strong>fs</strong> (<em>scalar</em>) – sampling frequency in Hz</p></li>
+<li><p><strong>order</strong> (<em>integer</em><em>, </em><em>optional</em>) – filter order (default = 2)</p></li>
+<li><p><strong>return_states</strong> (<em>bool</em><em>, </em><em>optional</em>) – Wheather the filter states should be returned. (default=False)</p></li>
+<li><p><strong>states</strong> (<em>True</em><em>, </em><em>None</em><em> or </em><em>array_like</em><em>, </em><em>optional</em>) – Inital conditions for the filter. if True, the conditions for
+a step response are constructed. if set to None, the inital rest is
+assumed (all 0). Otherwise, expects the inital filter delay
+values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ndarray</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The filtered signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.filter.c_weighting">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">c_weighting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.filter.c_weighting" title="Link to this definition"></a></dt>
+<dd><p>Apply C weighting filter to a signal.</p>
+<p>Apply an digital C-weighting filter following IEC 61672-1.
+Take care that the sampling frequency is high enough to prevent steep
+high frequency drop-off. A sampling frequency of about 48 kHz should be
+sufficent to result in a Class 1 filter following IEC 61672-1.</p>
+<section id="id3">
+<h3>Parameters:<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>signal<span class="classifier">Signal or np.ndarray</span></dt><dd><p>The input signal</p>
+</dd>
+<dt>fs<span class="classifier">scalar or None</span></dt><dd><p>The signals sampling rate in Hz.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">rtype<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The filtered signal.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.filter.gammatone">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">gammatone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attenuation_db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'erb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_complex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.filter.gammatone" title="Link to this definition"></a></dt>
+<dd><p>Apply a gammatone filter to the signal.</p>
+<p>Applys a gammatone filter following <a class="reference internal" href="#hohmann2002" id="id4"><span>[Hohmann2002]</span></a> to the input
+signal and returns the filtered signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ndarray</em>) – The input signal</p></li>
+<li><p><strong>fs</strong> (<em>int</em>) – The sample frequency in Hz</p></li>
+<li><p><strong>fc</strong> (<em>scalar</em>) – The center frequency of the filter in Hz</p></li>
+<li><p><strong>bw</strong> (<em>scalar</em>) – The bandwidth of the filter in Hz</p></li>
+<li><p><strong>order</strong> (<em>int</em>) – The filter order (default = 4)</p></li>
+<li><p><strong>attenuation_db</strong> (<em>scalar</em><em> or </em><em>'erb'</em>) – The attenuation at half bandwidth in dB (default = ‘erb’).
+If set to ‘erb’, the bandwidth is interpreted as the rectangular
+equivalent bw.</p></li>
+<li><p><strong>return_complex</strong> (<em>bool</em>) – Whether the complex filter output or only it’s real
+part is returned (default = True)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>The filtered signal.</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="hohmann2002" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">Hohmann2002</a><span class="fn-bracket">]</span></span>
+<p>Hohmann, V., Frequency analysis and synthesis
+using a Gammatone filterbank, Acta Acustica, Vol 88 (2002),
+43 -3442</p>
+</div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.filter.highpass">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">highpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_cut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.filter.highpass" title="Link to this definition"></a></dt>
+<dd><p>Apply a highpass filter to the Signal.</p>
+<p>This function provieds a unified interface to all highpass filters
+implemented in audiotoolbox.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ndarray</em><em> or </em><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><em>Signal</em></a>) – The input signal.</p></li>
+<li><p><strong>f_cut</strong> (<em>float</em>) – The cutoff frequency in Hz</p></li>
+<li><p><strong>filter_type</strong> (<em>string</em>) – The filter type, ‘butter’, ‘brickwall’</p></li>
+<li><p><strong>**kwargs</strong> – Further arguments such as ‘order’ that are passed to the filter
+functions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Signal</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The filtered Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.filter.lowpass">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">lowpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_cut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.filter.lowpass" title="Link to this definition"></a></dt>
+<dd><p>Apply a lowpass filter to the Signal.</p>
+<p>This function provieds a unified interface to all lowpass filters
+implemented in audiotoolbox.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ndarray</em><em> or </em><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><em>Signal</em></a>) – The input signal.</p></li>
+<li><p><strong>f_cut</strong> (<em>float</em>) – The cutoff frequency in Hz</p></li>
+<li><p><strong>filter_type</strong> (<em>string</em>) – The filter type, ‘butter’, ‘brickwall’</p></li>
+<li><p><strong>fs</strong> (<em>None</em><em> or </em><em>int</em>) – The sampling frequency, must be provided if not using the Signal
+class.</p></li>
+<li><p><strong>**kwargs</strong> – Further arguments such as ‘order’ that are passed to the filter
+functions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Signal</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The filtered Signal</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Filterbanks are created using the <code class="xref py py-func docutils literal notranslate"><span class="pre">create_filterbank()</span></code> command</p>
+<dl class="py function" id="module-audiotoolbox.filter.bank">
+<dt class="sig sig-object py" id="audiotoolbox.filter.bank.auditory_gamma_bank">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.bank.</span></span><span class="sig-name descname"><span class="pre">auditory_gamma_bank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fhigh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">16000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GammaToneBank</span></span></span><a class="headerlink" href="#audiotoolbox.filter.bank.auditory_gamma_bank" title="Link to this definition"></a></dt>
+<dd><p>Equivalent Rectangular Bandwidth spaced gammatone filterbank.</p>
+<p>Creates a gammatone filterbank with center freequencies equally spaced on
+the auditory ERB scale as proposed by <a class="footnote-reference brackets" href="#id2" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
+<dl class="simple">
+<dt>..[1] Glasberg, B. R., &amp; Moore, B. C. (1990). Derivation of</dt><dd><p>auditory filter shapes from notched-noise data. Hearing
+Research, 47(1-2), 103-138.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fs</strong> (<em>int</em>) – sampling frequency</p></li>
+<li><p><strong>flow</strong> (<em>scalar</em><em> (</em><em>optional</em><em>)</em>) – Lowest center frequency in Hz. (default = 16 Hz)</p></li>
+<li><p><strong>fhigh</strong> (<em>scalar</em><em> (</em><em>optional</em><em>)</em>) – Highest center frequency in Hz. (default = 16 kHz)</p></li>
+<li><p><strong>step</strong> (<em>scalar</em><em> (</em><em>optional</em><em>)</em>) – Stepsize between filters on the ERB scale. Defauls to 1 filter per ERB</p></li>
+<li><p><strong>**kwargs</strong> – Further paramters such as filter order to pass to the
+filter.GammaToneBank function. Values can either be an ndarray that
+matches the length of <cite>fc</cite> or a single value in which case this value is
+used for all filters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>GammaToneBank</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The filterbank.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.filter.bank.create_filterbank">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.bank.</span></span><span class="sig-name descname"><span class="pre">create_filterbank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_Buffer</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_NestedSequence</span><span class="p"><span class="pre">[</span></span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_NestedSequence</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_Buffer</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_NestedSequence</span><span class="p"><span class="pre">[</span></span><span class="pre">_SupportsArray</span><span class="p"><span class="pre">[</span></span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">_NestedSequence</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bytes</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'butter'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'gammatone'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'brickwall'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FilterBank</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">GammaToneBank</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ButterworthBank</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">BrickBank</span></span></span><a class="headerlink" href="#audiotoolbox.filter.bank.create_filterbank" title="Link to this definition"></a></dt>
+<dd><p>Creates a filterbank object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fc</strong> (<em>ndarray</em>) – Center frequencies in Hz</p></li>
+<li><p><strong>bw</strong> (<em>ndarray</em>) – Filter Bandwidths in Hz</p></li>
+<li><p><strong>filter_type</strong> (<em>'butter'</em><em>, </em><em>'gammatone'</em>) – Type of Bandpass filter</p></li>
+<li><p><strong>fs</strong> (<em>int</em>) – Sampling frequency</p></li>
+<li><p><strong>**kwargs</strong> – Further paramters such as filter order to pass to the Filter
+function, see filter documenation for details. Value can either be
+an ndarray that matches the length of <cite>fc</cite> or a single value in
+which case this value is used for all filters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>FilterBank Object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.filter.bank.octave_bank">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.bank.</span></span><span class="sig-name descname"><span class="pre">octave_bank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fhigh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">16000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oct_fraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round_to_band</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ButterworthBank</span></span></span><a class="headerlink" href="#audiotoolbox.filter.bank.octave_bank" title="Link to this definition"></a></dt>
+<dd><p>Fractional Octave spaced butterworth filterbank.</p>
+<p>Creates a fractional octave filterbank based on butterworth filters. By
+default, This function will create a 1/3 octave bank. If round_to_band is
+set to True (default), center frequencies will be adjusted to fit ANSI
+S1.11-2004.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fs</strong> (<em>int</em>) – sampling frequency</p></li>
+<li><p><strong>flow</strong> (<em>float</em><em> (</em><em>optional</em><em>)</em>) – Lowest center frequency in Hz. (default = 24.8 Hz)</p></li>
+<li><p><strong>fhigh</strong> (<em>float</em><em> (</em><em>optional</em><em>)</em>) – Highest center frequency in Hz. (default = 20158 Hz)</p></li>
+<li><p><strong>oct_fraction</strong> (<em>int</em><em> (</em><em>optional</em><em>)</em>) – The fraction of an octave used to space the filter. e.g. 3 for 1/3 octave
+spacing. (default = 3)</p></li>
+<li><p><strong>round_to_band</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – Indicates if the bands should follow the preferred band frequencies
+defined in DIN ISO 226. If True, the center frequencies will be adjusted
+to the nearest preferred band frequency. (default = True)</p></li>
+<li><p><strong>**kwargs</strong> – Further paramters such as filter order to pass to the
+filter.ButterworthBank function. Values can either be an ndarray that
+matches the length of <cite>fc</cite> or a single value in which case this value is
+used for all filters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ButterworthBank</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The filterbank</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_fluent_frequencydomainsignal.html" class="btn btn-neutral float-left" title="Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Jörg Encke.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

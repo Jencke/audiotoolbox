@@ -8,9 +8,6 @@ Introduction
 acoustic stimuli for use in auditory research. It aims to provide an
 easy-to-use and intuitive interface.
 
-Fluent Interface
-----------------
-
 The main API of **audiotoolbox** provides a fluent interface for generating
 and analyzing signals. In a fluent interface, methods are applied
 in-place and the object itself is returned, which allows methods to be

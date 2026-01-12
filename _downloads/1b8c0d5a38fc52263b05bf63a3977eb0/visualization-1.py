@@ -1,0 +1,6 @@
+sig = audio.Signal(2, 100e-3, 48000)
+sig.ch[0].add_tone(100)
+sig.ch[1].add_tone(100, start_phase=np.pi)
+sig.add_fade_window(20e-3)
+fig, ax = sig.viz.plot()
+fig.show()

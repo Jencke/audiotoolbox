@@ -22,7 +22,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Function Based API" href="api_function.html" />
+    <link rel="next" title="Core functions" href="api_core.html" />
     <link rel="prev" title="Signals in the time domain (audiotoolbox.Signal)" href="api_fluent_signal.html" /> 
 </head>
 
@@ -51,15 +51,29 @@
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="api.html">API reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="api_fluent.html">Fluent Interface API</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="api_fluent_signal.html">Signals in the time domain (audiotoolbox.Signal)</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_fluent_signal.html">Signals in the time domain (audiotoolbox.Signal)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal.abs"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal.abs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal.add"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal.add()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal.ch"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal.ch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal.concatenate"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal.concatenate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal.duration"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal.duration</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal.freq"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal.freq</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal.fs"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal.fs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal.mag"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal.mag</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal.multiply"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal.multiply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal.n_channels"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal.n_channels</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal.n_samples"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal.n_samples</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal.phase"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal.phase</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal.phase_shift"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal.phase_shift()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal.time_shift"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal.time_shift()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.FrequencyDomainSignal.to_timedomain"><code class="docutils literal notranslate"><span class="pre">FrequencyDomainSignal.to_timedomain()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="api_function.html">Function Based API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_core.html">Core functions</a></li>
 </ul>
 </li>
 </ul>
@@ -79,7 +93,6 @@
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="api.html">API reference</a></li>
-          <li class="breadcrumb-item"><a href="api_fluent.html">Fluent Interface API</a></li>
       <li class="breadcrumb-item active">Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/api_fluent_frequencydomainsignal.rst.txt" rel="nofollow"> View page source</a>
@@ -98,10 +111,10 @@ digraph inheritance9d180532fc {
 bgcolor=transparent;
 rankdir=LR;
 size=&quot;8.0, 12.0&quot;;
-  &quot;audiotoolbox.oaudio.base_signal.BaseSignal&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,tooltip=&quot;Basic Signal class inherited by all Signal representations&quot;];
-  &quot;numpy.ndarray&quot; -&gt; &quot;audiotoolbox.oaudio.base_signal.BaseSignal&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
-  &quot;audiotoolbox.oaudio.freqdomain_signal.FrequencyDomainSignal&quot; [URL=&quot;#audiotoolbox.FrequencyDomainSignal&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Base class for signals in the frequency domain.&quot;];
-  &quot;audiotoolbox.oaudio.base_signal.BaseSignal&quot; -&gt; &quot;audiotoolbox.oaudio.freqdomain_signal.FrequencyDomainSignal&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;audiotoolbox.base_signal.BaseSignal&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,tooltip=&quot;Basic Signal class inherited by all Signal representations&quot;];
+  &quot;numpy.ndarray&quot; -&gt; &quot;audiotoolbox.base_signal.BaseSignal&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
+  &quot;audiotoolbox.freqdomain_signal.FrequencyDomainSignal&quot; [URL=&quot;#audiotoolbox.FrequencyDomainSignal&quot;,fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,target=&quot;_top&quot;,tooltip=&quot;Base class for signals in the frequency domain.&quot;];
+  &quot;audiotoolbox.base_signal.BaseSignal&quot; -&gt; &quot;audiotoolbox.freqdomain_signal.FrequencyDomainSignal&quot; [arrowsize=0.5,style=&quot;setlinewidth(0.5)&quot;];
   &quot;numpy.ndarray&quot; [fillcolor=white,fontname=&quot;Vera Sans, DejaVu Sans, Liberation Sans, Arial, Helvetica, sans&quot;,fontsize=10,height=0.25,shape=box,style=&quot;setlinewidth(0.5),filled&quot;,tooltip=&quot;ndarray(shape, dtype=float, buffer=None, offset=0,&quot;];
 }
 <dl class="py class">
@@ -345,7 +358,7 @@ method is not applied in-place but a new
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="api_fluent_signal.html" class="btn btn-neutral float-left" title="Signals in the time domain (audiotoolbox.Signal)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="api_function.html" class="btn btn-neutral float-right" title="Function Based API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="api_core.html" class="btn btn-neutral float-right" title="Core functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
