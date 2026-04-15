@@ -1051,11 +1051,12 @@ def inst_cmplx_corr(signal, window_duration, window="hann"):
 
     asig = signal.to_analytical()
     iccp = asig.ch[0] * asig.ch[1].conjugate()
-    icpow = np.abs(asig.ch[0]) * np.abs(asig.ch[1])
     win_samps = int(window_duration * signal.fs)
     win = as_signal(get_window(window, win_samps), signal.fs)
-    filt_iccp = iccp.convolve(win, "same")
-    filt_icpow = icpow.convolve(win, "same")
+    filt_iccp = iccp.convolve(win, "same")    
+    filt_pow1 = (np.abs(asig.ch[0])**2).convolve(win, "same")
+    filt_pow2 = (np.abs(asig.ch[1])**2).convolve(win, "same")
+    filt_icpow = np.sqrt(filt_pow1 * filt_pow2)
     coh = filt_iccp / filt_icpow
     return coh
 
