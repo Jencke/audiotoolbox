@@ -3,10 +3,6 @@ import numpy as np
 from numpy import testing
 from audiotoolbox import Signal
 
-import numpy as np
-import pytest
-from audiotoolbox import Signal
-
 
 def test_fade_window_hann_shape():
     """Test that fade window with 'hann' shape fades in and out correctly."""
