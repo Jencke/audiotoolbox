@@ -1,10 +1,25 @@
 1.0 -> Develop
- - Added spectrum plotting method to Visualization sub-class
- - Implemented complex exponential filter
- - bandpass with complex output now returns a new complex Signal (with warning) instead of attempting unsafe in-place dtype mutation
- - Fixed SignalStats.octave_band_levels return order to (frequencies, levels) and updated call sites
- - Fixed Visualization.spectrum to apply minx/maxx and use 10*log10 for power spectra in dB mode
- - Fixed Visualization.specgram_overview frequency/level axis unpacking for octave band levels
+ - Added spectrum plotting method to Visualization sub-class.
+ - Implemented complex exponential filter.
+
+  Breaking/API changes
+ - BaseSignal now always keeps an explicit channel axis. Mono signals are represented as `(n_samples, 1)`.
+ - This removes mixed mono/multichannel shape semantics and aligns signal processing behavior across all channel counts.
+
+  Signal/filter behavior
+ - `Signal.bandpass(..., return_complex=True)` now returns a new complex Signal instead of trying in-place dtype mutation.
+ - A UserWarning is emitted for the complex-output path to make this behavior explicit.
+ - Added documentation hint for explicit dtype control: `complex_signal = signal.astype(complex)`.
+
+  Stats/visualization fixes
+ - `SignalStats.octave_band_levels` now returns `(frequencies, levels)`.
+ - `Visualization.specgram_overview` now unpacks octave-band outputs correctly (frequency/level axes are no longer swapped).
+ - `Visualization.spectrum` now applies `minx`/`maxx` via `ax.set_xlim(...)`.
+ - `Visualization.spectrum` now uses `10*log10` for `power=True, in_db=True` (and keeps `20*log10` for amplitude).
+
+  Testing/maintenance
+ - Added/updated regression tests for visualization, filter behavior, and mono-shape migration paths.
+ - Fixed NumPy deprecation warnings in filterbank tests by explicitly extracting scalar values.
 
 0.75 -> 1.0
   - Deprecated the old unused function interface
