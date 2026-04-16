@@ -366,16 +366,22 @@ def test_bandpass_gammatone():
     # check complex output
     sig = audio.Signal(1, 1, 48000).add_tone(500)
     sig2 = sig.copy()
-    sig.bandpass(500, 100, "gammatone", return_complex=True)
-    assert np.iscomplexobj(sig)
-    assert sig.shape == sig2.shape
+    with pytest.warns(
+        UserWarning,
+        match="returns a new Signal instead of modifying in-place",
+    ):
+        out = sig.bandpass(500, 100, "gammatone", return_complex=True)
+    assert out is not sig
+    assert np.iscomplexobj(out)
+    assert out.shape == sig2.shape
+    testing.assert_array_equal(sig, sig2)
 
     # check equivalence of real and complex results
     sig = audio.Signal(1, 1, 48000).add_tone(500)
     sig2 = sig.copy()
     sig.bandpass(500, 100, "gammatone")
-    sig2.bandpass(500, 100, "gammatone", return_complex=True)
-    testing.assert_array_equal(sig2.real, sig)
+    out = sig2.bandpass(500, 100, "gammatone", return_complex=True)
+    testing.assert_array_equal(out.real, sig)
 
     # check kwargs
     sig = audio.Signal(1, 1, 48000).add_tone(500)

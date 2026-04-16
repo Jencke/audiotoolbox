@@ -46,6 +46,18 @@ class FilteringMixin:
         --------
             Returns itself : Signal
 
+            When a complex-valued output is requested (e.g. gammatone
+            with ``return_complex=True``), a new complex Signal is
+            returned and a UserWarning is emitted. In-place conversion
+            from real to complex is not possible without reallocating
+            the underlying ndarray buffer.
+
+            If you want explicit control, cast first and call bandpass
+            on the complex signal:
+
+            ``complex_signal = signal.astype(complex)``
+            ``complex_signal = complex_signal.bandpass(..., return_complex=True)``
+
         See Also
         --------
         audiotoolbox.filter.brickwall
@@ -59,12 +71,18 @@ class FilteringMixin:
 
         filt_signal = filt.bandpass(self, fc, bw, filter_type, **kwargs)
 
-        # in case of complex output, signal needs to be reshaped and
-        # typecast
+        # Complex output cannot be represented in-place on the existing
+        # real-valued ndarray without corrupting its buffer layout.
         if np.iscomplexobj(filt_signal):
-            shape = self.shape
-            self.dtype = complex
-            self.resize(shape, refcheck=False)
+            warnings.warn(
+                "bandpass with complex output returns a new Signal instead of modifying in-place",
+                UserWarning,
+                stacklevel=2,
+            )
+            complex_signal = self.astype(complex)
+            complex_signal[:] = filt_signal
+            return complex_signal
+
         self[:] = filt_signal
 
         return self
