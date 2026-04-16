@@ -76,6 +76,13 @@ class BaseSignal(np.ndarray):
             return self.shape[1:]
 
     @property
+    def channel_shape(self) -> tuple:
+        """Tuple describing the channel axes shape."""
+        if self.ndim == 1:
+            return (1,)
+        return self.shape[1:]
+
+    @property
     def n_samples(self):
         """Number of samples in the signal"""
         return self.shape[0]

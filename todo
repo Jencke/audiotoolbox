@@ -1,0 +1,187 @@
+# Audiotoolbox - TODO
+
+
+---
+
+## Architecture (High Impact)
+
+
+### `BaseSignal` — `n_channels` Return Type
+- [x] Keep `n_channels` ergonomic for user-facing code (`int` for mono/stereo).
+- [x] Added `channel_shape` (always `tuple`) for internal shape logic.
+        Internal code now uses `channel_shape` instead of `atleast_1d(n_channels)` workarounds.
+
+---
+
+## Performance
+
+### `__array_finalize__` Overhead
+- [ ] `SignalStats`, `Visualization`, and `TimeFrequency` are reconstructed on every slice/view.
+      Make them lazy properties that only instantiate on first access:
+      ```python
+      @property
+      def viz(self):
+          if not hasattr(self, '_viz') or self._viz.sig is not self:
+              self._viz = Visualization(self)
+          return self._viz
+      ```
+      Apply same pattern to `stats` and `time_frequency`
+
+### `FilterBank.filt` Loops
+- [ ] `ButterworthBank.filt`: One `sosfilt` call per filter — `scipy.signal.sosfilt` accepts a
+      batch axis. Replace the per-filter loop with a batched call
+- [ ] `GammaToneBank.filt`: Same issue — loop over filters where batching is possible
+
+### `convolve`
+- [ ] Current implementation is an O(n²) Python loop over channel pairs.
+      Replace with vectorised `fftconvolve` using broadcasting for the common cases.
+      Consider splitting into `_convolve_matched` and `_convolve_outer` private methods
+      to make each case independently readable and testable
+
+### `to_analytical`
+- [ ] Currently does two FFT round-trips (forward FFT → zero negative freqs → IFFT).
+      Can be done in one pass — zero negative frequencies directly in the frequency domain
+      without a separate `to_timedomain` call
+
+### `copy_empty`
+- [ ] `copy_empty` copies all data then zeroes it. Replace with:
+      ```python
+      def copy_empty(self):
+          return np.zeros_like(self)
+      ```
+
+---
+
+## Code Quality
+
+### `BaseSignal`
+- [ ] `_chIndexer` is reconstructed on every `.ch` access — cache it:
+      ```python
+      @property
+      def ch(self):
+          if not hasattr(self, '_ch_indexer'):
+              self._ch_indexer = _chIndexer(self)
+          return self._ch_indexer
+      ```
+- [ ] `Signal.__array_finalize__` returns `obj` — should return `None`
+- [ ] `time_offset` defaults to `None` via `getattr(obj, "time_offset", None)` which
+      causes `TypeError` in `time` property. Change default to `0`
+- [ ] `plot()` raises `DeprecationWarning` instead of warning — use `warnings.warn(...)`
+
+### `FrequencyDomainSignal`
+- [ ] `to_analytical` modifies in-place but `to_timedomain` returns a new object —
+      inconsistent API contract. Consider naming convention: `make_analytical()` vs `as_timedomain()`
+- [ ] `angle = phase` class-level alias is fragile — replace with explicit `@property`
+- [ ] `to_timedomain` copies `self` only to multiply by `n_samples` — pass scale directly:
+      `wv = np.fft.ifft(self * self.n_samples, axis=0)`
+
+### `FilterBank`
+- [ ] Replace bare `Exception` with `ValueError` throughout
+- [ ] Fix typo: `coefficents` → `coefficients` throughout (`ButterworthBank`, `GammaToneBank`)
+- [ ] `_update_params`: Use `np.atleast_1d` to handle 0-d array edge case
+- [ ] `__getitem__` with integer index collapses filter axis — wrap with `np.atleast_1d`:
+      ```python
+      bank.fc = np.atleast_1d(self.fc[i])
+      bank.bw = np.atleast_1d(self.bw[i])
+      bank.coefficients = self.coefficients[..., np.atleast_1d(i)]
+      ```
+- [ ] Add abstract `filt` method to `FilterBank` base class using `abc.ABC`
+- [ ] `ButterworthBank.filt`: `.T` transpose fragile for N-D channels —
+      replace `out_sig.T[i_filt] = out.T` with `out_sig.ch[..., i_filt] = out`
+- [ ] Same `.T` issue in `BrickBank.filt`
+- [ ] `GammaToneBank.__init__`: Calls `_update_params(**kwargs)` twice — remove redundant call
+- [ ] `GammaToneBank` coefficient layout `[b0, unused, a0, a1]` — document the layout explicitly
+- [ ] Squeeze behaviour in `GammaToneBank.filt` is inconsistent with other subclasses —
+      move to parent or remove entirely
+- [ ] `create_filterbank` return type annotation `Union[FilterBank, GammaToneBank, ...]`
+      should simplify to `-> FilterBank`
+
+### `ModificationMixin`
+- [ ] `set_dbfs`, `set_dbspl`, `set_dbpeak` normalise per-channel independently,
+      which changes relative levels between channels. Add `per_channel: bool = False` parameter
+      or at minimum document the behaviour explicitly
+- [ ] `delay` with `method='sample'` silently rounds sub-sample delays — add a warning
+- [ ] `delay` has no `else` branch for invalid method — add `raise ValueError`
+- [ ] `add_cos_modulator` docstring LaTeX has `f_m * t * φ₀` (multiply) but implementation
+      correctly uses `+`. Fix docstring
+
+### `Visualization`
+- [ ] Replace `assert` with `raise ValueError` in `plot` and `specgram_overview`
+- [ ] Replace `if not ax:` with `if ax is None:` in `plot` and `spectrum`
+- [ ] `spectrum`: Remove dead variables `min_f = 20` and `max_f = 20000`
+- [ ] `spectrum`: Single-sided amplitude correction (`*= 2`) is applied before dB conversion
+      which is correct, but add a comment making the order dependency explicit
+
+### `SignalStats`
+- [ ] `dbc` docstring says "A weighted" — should say "C weighted"
+- [ ] `dbfs` convention (0 dBFS = RMS of full-scale sine) should be documented explicitly —
+      the other common convention (0 dBFS = peak = 1) differs by 3 dB
+- [ ] `FreqDomainStats` inherits `mean`, `var`, `rms` from `BaseStats` but these are not
+      meaningful for complex frequency domain bins — either override to raise `NotImplementedError`
+      or add frequency-domain relevant properties (spectral centroid, total power via Parseval)
+
+### `inst_cmplx_corr`
+- [ ] Window is not normalised — divide by `win.sum()` for correct absolute magnitude.
+      Phase is currently unaffected but magnitude will be wrong if `filt_iccp` is used directly
+- [ ] Add coherence magnitude check — when `|coh|` is near 0, `phi_avg` is unreliable.
+      Consider returning both phase and magnitude or exposing a `min_coherence` threshold
+
+---
+
+## Missing Tests
+
+### Known Bugs Without Regression Tests
+- [ ] `zeropad(number=1, duration=1e-3)` — both args provided, should raise `ValueError`
+- [ ] `resample(-1000)` — negative int, should raise `ValueError`
+- [ ] `resample(24000.0)` — float input, should raise `ValueError`
+- [ ] `create_filterbank([100], [10], "unknown_type", 48000)` — should raise `ValueError`
+- [ ] `bank[0].filt(sig)` — scalar index then filt, currently breaks
+
+### Missing Invariant Tests
+- [ ] FFT round-trip: `sig.to_freqdomain().to_timedomain() ≈ sig`
+- [ ] `set_dbfs` round-trip: `sig.set_dbfs(-20); assert sig.stats.dbfs ≈ -20`
+- [ ] `set_dbfs` inter-channel: relative RMS between channels preserved after normalisation
+- [ ] `|inst_cmplx_corr| ≤ 1` for all inputs
+- [ ] Resample round-trip: `sig.resample(96000).resample(48000) ≈ original`
+
+### Missing Filterbank Tests
+- [ ] Output shape consistency across all three filter types for identical inputs
+- [ ] Scalar `__getitem__` followed by `filt` for all subclasses
+- [ ] `ButterworthBank` with N-dimensional channel input
+
+### Test Hygiene
+- [ ] Remove module-level executable code from `test_filterbank.py` —
+      it runs on import during test collection and will cause confusing failures
+- [ ] Parametrize filter type tests using `@pytest.mark.parametrize`
+- [ ] Add pytest fixtures for common signals to reduce boilerplate
+- [ ] Fix loop variable shadowing in `test_butterworth` and `test_gammatone`:
+      `for i_filt, (fc, bw)` shadows the outer `fc` and `bw` lists
+
+---
+
+## New Features
+
+### Stereo Overview Plot
+- [ ] Implement `Visualization.specgram_overview` for stereo signals with layout:
+  - Row 1: L and R waveforms (shared time axis)
+  - Row 2: L octave band spectrogram
+  - Row 3: R octave band spectrogram
+  - Row 4: ILD per band over time | L vs R band levels
+  - Row 5: IPD per band over time | Mean coherence per band
+- [ ] ILD = `20 * log10(rms_L / rms_R)` per octave band over sliding window
+- [ ] IPD via `inst_cmplx_corr` applied to octave bank output
+- [ ] Coherence magnitude from same `inst_cmplx_corr` call
+
+### `FilterBank`
+- [ ] Add `ButterworthBank` mixed-order coefficient storage — current padded array wastes
+      memory when filter orders vary. Consider list of SOS arrays instead
+- [ ] Expose filter states in `filt` for block-processing use case —
+      current implementation discards states, causing transient artefacts at block boundaries
+
+### `ModificationMixin`
+- [ ] `delay` with `method='sample'`: emit warning when requested delay is not
+      an integer number of samples
+
+### `FrequencyDomainSignal`
+- [ ] `phase_shift` sign convention comment — explain why `np.sign(self.freq)` is used
+      and what it achieves for real-valued output preservation
