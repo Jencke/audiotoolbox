@@ -298,17 +298,17 @@ def test_extract_binaural_differences():
     assert np.all(np.isclose(ipd, 0))
 
 
-def test_crest_factor():
+def test_crest_factor_array():
     # Test that c for sine is equal to sqrt(2)
-    signal = audio.generate_tone(100, 1, 100e3)
+    signal = audio.Signal(1, 1, 100000).add_tone(100)
     c = audio.crest_factor(signal)
-    testing.assert_almost_equal(c, 20 * np.log10(np.sqrt(2)))
+    testing.assert_almost_equal(c, np.sqrt(2))
 
     # test that c for half wave rect. sine is 2
-    signal = audio.generate_tone(100, 1, 100e3)
+    signal = audio.Signal(1, 1, 100000).add_tone(100)
     signal[signal < 0] = 0
     c = audio.crest_factor(signal)
-    testing.assert_almost_equal(c, 20 * np.log10(2))
+    testing.assert_almost_equal(c, 2)
 
 
 def test_band2rms():

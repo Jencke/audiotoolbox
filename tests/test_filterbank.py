@@ -12,6 +12,7 @@ from audiotoolbox.filter.bank.filterbank import GammaToneBank
 
 
 def test_base_signal():
+    rng = np.random.default_rng(0)
     bank = FilterBank([500, 200], [10, 2], 48000, myparam=3)
     assert len(bank) == 2
     assert np.all(bank.params["myparam"] == [3, 3])
@@ -23,13 +24,13 @@ def test_base_signal():
     assert bank[0].params["myparam"] == 3
 
     bank = FilterBank(
-        np.random.random(10),
-        np.random.random(10),
+        rng.random(10),
+        rng.random(10),
         48000,
-        myparam1=np.random.random(10),
-        myparam2=np.random.random(10),
+        myparam1=rng.random(10),
+        myparam2=rng.random(10),
     )
-    idx_vec = [np.random.randint(0, 10, 3) for i in range(3)]
+    idx_vec = [rng.integers(0, 10, 3) for i in range(3)]
 
     for i in idx_vec:
         sub = bank[i]
@@ -41,14 +42,15 @@ def test_base_signal():
 
 
 def test_sub_butterbank():
+    rng = np.random.default_rng(0)
     bank = create_filterbank(
-        fc=np.random.randint(500, 1000, 10),
-        bw=np.random.randint(10, 50, 10),
+        fc=rng.integers(500, 1000, 10),
+        bw=rng.integers(10, 50, 10),
         fs=48000,
         filter_type="butter",
-        order=np.random.randint(1, 10, 10),
+        order=rng.integers(1, 10, 10),
     )
-    idx_vec = [np.random.randint(0, 10, 3) for i in range(3)]
+    idx_vec = [rng.integers(0, 10, 3) for i in range(3)]
 
     sig = audio.Signal(1, 1, 48000).add_noise()
     main_out = bank.filt(sig)
@@ -64,14 +66,15 @@ def test_sub_butterbank():
 
 
 def test_sub_gamma():
+    rng = np.random.default_rng(0)
     bank = create_filterbank(
-        fc=np.random.randint(500, 1000, 10),
-        bw=np.random.randint(10, 50, 10),
+        fc=rng.integers(500, 1000, 10),
+        bw=rng.integers(10, 50, 10),
         fs=48000,
         filter_type="gammatone",
-        order=np.random.randint(1, 10, 10),
+        order=rng.integers(1, 10, 10),
     )
-    idx_vec = [np.random.randint(0, 10, 3) for i in range(3)]
+    idx_vec = [rng.integers(0, 10, 3) for i in range(3)]
 
     sig = audio.Signal(1, 1, 48000).add_noise()
     main_out = bank.filt(sig)
@@ -246,7 +249,4 @@ def test_default_octave_bank():
     bank_out = filt_bank.filt(noise.ch[1])
     power = np.var(bank_out, axis=0)
     assert power.std() < 0.01
-
-
-sig = audio.Signal(1, 1, 48000).add_noise()
 

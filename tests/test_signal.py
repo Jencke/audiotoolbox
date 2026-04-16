@@ -36,6 +36,7 @@ def test_time():
 def test_addtone():
     fs = 48000
     duration = 100e-3
+    rng = np.random.default_rng(0)
 
     sig = Signal(1, duration, fs)
     sig.add_tone(100)
@@ -67,9 +68,9 @@ def test_addtone():
     testing.assert_almost_equal(sig.ch[0, 1], test)
     testing.assert_almost_equal(sig.ch[1, 1], test)
 
-    freqs = np.random.random(10) * 1000 + 100
-    amplitudes = np.random.random(10) * 2
-    start_phases = np.random.random(10) * 2 * np.pi
+    freqs = rng.random(10) * 1000 + 100
+    amplitudes = rng.random(10) * 2
+    start_phases = rng.random(10) * 2 * np.pi
     sig = audio.Signal((2, 3), duration, fs)
     for i_freq in range(len(freqs)):
         sig.add_tone(
@@ -80,9 +81,9 @@ def test_addtone():
     sig2 = audio.Signal((2, 3), duration, fs)
     sig2.add_tone(freqs, amplitudes, start_phases)
 
-    freqs = np.random.random(1) * 1000 + 100
-    amplitudes = np.random.random(10) * 2
-    start_phases = np.random.random(10) * 2 * np.pi
+    freqs = rng.random(1) * 1000 + 100
+    amplitudes = rng.random(10) * 2
+    start_phases = rng.random(10) * 2 * np.pi
     sig = audio.Signal((2, 3), duration, fs)
     for i_freq in range(len(freqs)):
         sig.add_tone(
@@ -93,9 +94,9 @@ def test_addtone():
     sig2 = audio.Signal((2, 3), duration, fs)
     sig2.add_tone(freqs, amplitudes, start_phases)
 
-    freqs = np.random.random(10) * 1000 + 100
-    amplitudes = np.random.random(1) * 2
-    start_phases = np.random.random(10) * 2 * np.pi
+    freqs = rng.random(10) * 1000 + 100
+    amplitudes = rng.random(1) * 2
+    start_phases = rng.random(10) * 2 * np.pi
     sig = audio.Signal((2, 3), duration, fs)
     for i_freq in range(len(freqs)):
         sig.add_tone(
@@ -107,9 +108,9 @@ def test_addtone():
     sig2.add_tone(freqs, amplitudes, start_phases)
     testing.assert_almost_equal(sig, sig2)
 
-    freqs = np.random.random(10) * 1000 + 100
-    amplitudes = np.random.random(10) * 2
-    start_phases = np.random.random(1) * 2 * np.pi
+    freqs = rng.random(10) * 1000 + 100
+    amplitudes = rng.random(10) * 2
+    start_phases = rng.random(1) * 2 * np.pi
     sig = audio.Signal((2, 3), duration, fs)
     for i_freq in range(len(freqs)):
         sig.add_tone(
@@ -451,15 +452,16 @@ def test_analytical():
 
 
 def test_to_signal():
+    rng = np.random.default_rng(0)
     fs = 480000
-    sig_array = np.random.random(1000)
+    sig_array = rng.random(1000)
     sig = audio.as_signal(sig_array, fs)
     assert isinstance(sig, audio.Signal)
     testing.assert_array_equal(sig, sig_array)
 
     # test multiple dimensions
     fs = 480000
-    sig_array = np.random.random([1000, 3, 4])
+    sig_array = rng.random((1000, 3, 4))
     sig = audio.as_signal(sig_array, fs)
     assert isinstance(sig, audio.Signal)
     testing.assert_array_equal(sig, sig_array)
