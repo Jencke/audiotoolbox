@@ -161,6 +161,13 @@ def test_zeropad():
     assert np.all(sig[-n_zeros_e:] == 0)
 
 
+def test_zeropad_raises_when_number_and_duration_are_both_given():
+    sig = Signal(1, 100e-3, 48000)
+
+    with pytest.raises(ValueError, match="Must state only duration or number of zeros"):
+        sig.zeropad(number=1, duration=1e-3)
+
+
 def test_add():
     fs = 48000
     duration = 100e-3

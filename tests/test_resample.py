@@ -87,5 +87,11 @@ def test_resample_raises_error_on_slice(sine_wave_signal):
     # Create a view (slice) of the signal
     signal_view = sine_wave_signal.ch[0]
 
-    with pytest.raises(RuntimeError, match="can only be applied to the whole signal"):
+    with pytest.raises(RuntimeError, match="Resample can only be applied to the whole signal"):
         signal_view.resample(24000)
+
+
+@pytest.mark.parametrize("new_fs", [-1000, 24000.0])
+def test_resample_rejects_invalid_sampling_rates(sine_wave_signal, new_fs):
+    with pytest.raises(ValueError, match="new_fs must be a positive integer"):
+        sine_wave_signal.resample(new_fs)
