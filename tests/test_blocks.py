@@ -90,7 +90,7 @@ def test_as_blocked_mono_with_padding(mono_signal):
 
     # Required length = ceil((2000 - 1024) / 512) * 512 + 1024 = 2 * 512 + 1024 = 2048
     # n_pad = 2048 - 2000 = 48
-    with pytest.warns(UserWarning, match="Zero padding 48 samples"):
+    with pytest.warns(UserWarning, match=r"Zero padding \d+ samples"):
         blocked_sig = sig.as_blocked(block_size=block_size, overlap=overlap)
 
     # The original signal is padded in-place

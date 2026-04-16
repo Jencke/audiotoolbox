@@ -2,6 +2,48 @@ from audiotoolbox import Signal
 import audiotoolbox as audio
 import numpy as np
 import numpy.testing as testing
+import pytest
+
+
+def _channel_indices(signal):
+    channel_shape = signal.shape[1:]
+    if not channel_shape:
+        return [()]
+    return list(np.ndindex(channel_shape))
+
+
+def _assert_all_channels_equal(signal, expected):
+    for idx in _channel_indices(signal):
+        channel = signal if idx == () else signal.ch[idx]
+        testing.assert_almost_equal(channel, expected)
+
+
+def _assert_vectorized_addtone_matches_iterative(frequencies, amplitudes, start_phases):
+    duration = 100e-3
+    fs = 48000
+    target_length = max(
+        np.size(frequencies), np.size(amplitudes), np.size(start_phases)
+    )
+    freqs = np.broadcast_to(np.asarray(frequencies), (target_length,))
+    amps = np.broadcast_to(np.asarray(amplitudes), (target_length,))
+    phases = np.broadcast_to(np.asarray(start_phases), (target_length,))
+
+    sig = audio.Signal((2, 3), duration, fs)
+    for freq, amplitude, start_phase in zip(freqs, amps, phases):
+        sig.add_tone(frequency=freq, amplitude=amplitude, start_phase=start_phase)
+
+    sig2 = audio.Signal((2, 3), duration, fs)
+    sig2.add_tone(frequencies, amplitudes, start_phases)
+    testing.assert_almost_equal(sig, sig2)
+
+
+def _assert_convolution_shape(
+    signal_channels, kernel_channels, expected_channels, overlap_dimensions=True
+):
+    sig = audio.Signal(signal_channels, 1, 48000).add_noise()
+    kernel = audio.Signal(kernel_channels, 100e-3, 48000)
+    sig.convolve(kernel, overlap_dimensions=overlap_dimensions)
+    assert sig.n_channels == expected_channels
 
 
 def test_init_signal():
@@ -33,10 +75,9 @@ def test_time():
     assert sig.time[-1] == 99
 
 
-def test_addtone():
+def test_addtone_superposition():
     fs = 48000
     duration = 100e-3
-    rng = np.random.default_rng(0)
 
     sig = Signal(1, duration, fs)
     sig.add_tone(100)
@@ -47,80 +88,40 @@ def test_addtone():
 
     testing.assert_almost_equal(sig, test)
 
+
+def test_addtone_amplitude():
+    fs = 48000
+    duration = 100e-3
+
     sig = Signal(1, duration, fs)
     sig.add_tone(100, amplitude=2)
 
     test = 2 * np.cos(2 * np.pi * sig.time * 100)
     testing.assert_almost_equal(sig, test)
 
-    sig = Signal(2, duration, fs)
+
+@pytest.mark.parametrize("channels", [2, (2, 2)])
+def test_addtone_applies_to_all_channels(channels):
+    fs = 48000
+    duration = 100e-3
+
+    sig = Signal(channels, duration, fs)
     sig.add_tone(100, amplitude=2)
     test = 2 * np.cos(2 * np.pi * sig.time * 100)
-    testing.assert_almost_equal(sig.ch[0], test)
-    testing.assert_almost_equal(sig.ch[1], test)
+    _assert_all_channels_equal(sig, test)
 
-    sig = Signal((2, 2), duration, fs)
-    sig.add_tone(100, amplitude=2)
 
-    test = 2 * np.cos(2 * np.pi * sig.time * 100)
-    testing.assert_almost_equal(sig.ch[0, 0], test)
-    testing.assert_almost_equal(sig.ch[1, 0], test)
-    testing.assert_almost_equal(sig.ch[0, 1], test)
-    testing.assert_almost_equal(sig.ch[1, 1], test)
-
-    freqs = rng.random(10) * 1000 + 100
-    amplitudes = rng.random(10) * 2
-    start_phases = rng.random(10) * 2 * np.pi
-    sig = audio.Signal((2, 3), duration, fs)
-    for i_freq in range(len(freqs)):
-        sig.add_tone(
-            frequency=freqs[i_freq],
-            amplitude=amplitudes[i_freq],
-            start_phase=start_phases[i_freq],
-        )
-    sig2 = audio.Signal((2, 3), duration, fs)
-    sig2.add_tone(freqs, amplitudes, start_phases)
-
-    freqs = rng.random(1) * 1000 + 100
-    amplitudes = rng.random(10) * 2
-    start_phases = rng.random(10) * 2 * np.pi
-    sig = audio.Signal((2, 3), duration, fs)
-    for i_freq in range(len(freqs)):
-        sig.add_tone(
-            frequency=freqs,
-            amplitude=amplitudes[i_freq],
-            start_phase=start_phases[i_freq],
-        )
-    sig2 = audio.Signal((2, 3), duration, fs)
-    sig2.add_tone(freqs, amplitudes, start_phases)
-
-    freqs = rng.random(10) * 1000 + 100
-    amplitudes = rng.random(1) * 2
-    start_phases = rng.random(10) * 2 * np.pi
-    sig = audio.Signal((2, 3), duration, fs)
-    for i_freq in range(len(freqs)):
-        sig.add_tone(
-            frequency=freqs[i_freq],
-            amplitude=amplitudes,
-            start_phase=start_phases[i_freq],
-        )
-    sig2 = audio.Signal((2, 3), duration, fs)
-    sig2.add_tone(freqs, amplitudes, start_phases)
-    testing.assert_almost_equal(sig, sig2)
-
-    freqs = rng.random(10) * 1000 + 100
-    amplitudes = rng.random(10) * 2
-    start_phases = rng.random(1) * 2 * np.pi
-    sig = audio.Signal((2, 3), duration, fs)
-    for i_freq in range(len(freqs)):
-        sig.add_tone(
-            frequency=freqs[i_freq],
-            amplitude=amplitudes[i_freq],
-            start_phase=start_phases,
-        )
-    sig2 = audio.Signal((2, 3), duration, fs)
-    sig2.add_tone(freqs, amplitudes, start_phases)
-    testing.assert_almost_equal(sig, sig2)
+@pytest.mark.parametrize(
+    ("frequencies", "amplitudes", "start_phases"),
+    [
+        ([150.0, 300.0, 450.0], [0.3, 0.6, 0.9], [0.0, np.pi / 4, np.pi / 2]),
+        (np.array([220.0]), [0.2, 0.4, 0.6], [0.1, 0.2, 0.3]),
+        ([120.0, 240.0, 360.0], np.array([0.75]), [0.1, 0.2, 0.3]),
+        ([180.0, 360.0, 540.0], [0.5, 1.0, 1.5], np.array([np.pi / 3])),
+    ],
+)
+def test_addtone_vectorized_matches_iterative(frequencies, amplitudes, start_phases):
+    _assert_vectorized_addtone_matches_iterative(frequencies, amplitudes, start_phases)
 
 
 def test_stats():
@@ -436,15 +437,6 @@ def test_time_offset():
     assert sig2.time_offset == -5
 
 
-# def test_plot():
-#     sig = audio.Signal(2, 1, 48000).add_noise()
-#     fig, ax = sig.plot()
-#     assert len(ax.lines) == sig.n_channels
-#     # Test for the correct colors in case of two channels
-#     assert ax.lines[0].get_color() == "#5c5cd6"
-#     assert ax.lines[1].get_color() == "#d65c5c"
-
-
 def test_analytical():
     sig = audio.Signal((2, 2), 1, 48000).add_noise()
     asig = sig.to_analytical()
@@ -489,75 +481,51 @@ def test_apply_gain():
     testing.assert_almost_equal(sig.stats.dbfs, -10)
 
 
-def test_writefile():
+def test_writefile(tmp_path):
+    filename = tmp_path / "test.wav"
     sig = audio.Signal(1, 1, 48000).add_noise()
-    sig.write_file("test.wav")
+    sig.write_file(str(filename))
     sig.set_dbfs(-20)
-    rsig = audio.from_file("test.wav")
+    rsig = audio.from_file(str(filename))
+    assert rsig.fs == sig.fs
+    assert rsig.shape == sig.shape
 
 
-def test_convolve():
-    # test simple convolution shape
-    sig = audio.Signal(1, 1, 48000).add_noise()
-    kernel = audio.Signal(1, 100e-3, 48000)
-    sig.convolve(kernel)
-    assert sig.n_channels == 1
+@pytest.mark.parametrize(
+    ("signal_channels", "kernel_channels", "expected_channels"),
+    [
+        (1, 1, 1),
+        (2, 1, 2),
+        (1, 2, 2),
+        ((2, 1), 3, (2, 3)),
+        ((3, 1), 4, (3, 4)),
+        (2, 3, (2, 3)),
+        ((2, 4), 3, (2, 4, 3)),
+        ((2, 4), (3, 4), (2, 4, 3, 4)),
+        (2, 2, 2),
+        ((2, 2), (2, 2), (2, 2)),
+    ],
+)
+def test_convolve_shape_cases(signal_channels, kernel_channels, expected_channels):
+    _assert_convolution_shape(signal_channels, kernel_channels, expected_channels)
 
-    # test squeezing of single dimensions
-    sig = audio.Signal(2, 1, 48000).add_noise()
-    kernel = audio.Signal(1, 100e-3, 48000)
-    sig.convolve(kernel)
-    assert sig.n_channels == 2
-    sig = audio.Signal(1, 1, 48000).add_noise()
-    kernel = audio.Signal(2, 100e-3, 48000)
-    sig.convolve(kernel)
-    assert sig.n_channels == 2
 
-    # test squeezing with multiple dimensins
-    sig = audio.Signal((2, 1), 1, 48000).add_noise()
-    kernel = audio.Signal(3, 100e-3, 48000)
-    sig.convolve(kernel)
-    assert sig.n_channels == (2, 3)
-    sig = audio.Signal((3, 1), 1, 48000).add_noise()
-    kernel = audio.Signal((4), 100e-3, 48000)
-    sig.convolve(kernel)
-    assert sig.n_channels == (3, 4)
-
-    # test extension of non-matching dimension
-    sig = audio.Signal(2, 1, 48000).add_noise()
-    kernel = audio.Signal(3, 100e-3, 48000)
-    sig.convolve(kernel)
-    assert sig.n_channels == (2, 3)
-    sig = audio.Signal((2, 4), 1, 48000).add_noise()
-    kernel = audio.Signal(3, 100e-3, 48000)
-    sig.convolve(kernel)
-    assert sig.n_channels == (2, 4, 3)
-    sig = audio.Signal((2, 4), 1, 48000).add_noise()
-    kernel = audio.Signal((3, 4), 100e-3, 48000)
-    sig.convolve(kernel)
-    assert sig.n_channels == (2, 4, 3, 4)
-
-    # Test channel matching with one channel
-    sig = audio.Signal(2, 1, 48000).add_noise()
-    kernel = audio.Signal(2, 100e-3, 48000)
-    sig.convolve(kernel)
-    assert sig.n_channels == 2
-
-    # Test channel matching with multiple channels
-    sig = audio.Signal((2, 2), 1, 48000).add_noise()
-    kernel = audio.Signal((2, 2), 100e-3, 48000)
-    sig.convolve(kernel)
-    assert sig.n_channels == (2, 2)
-
-    # Test channel matching with multiple channels
-    sig = audio.Signal((2, 2), 1, 48000).add_noise()
-    kernel = audio.Signal((2, 2, 3), 100e-3, 48000)
-    sig.convolve(kernel, overlap_dimensions=True)
-    assert sig.n_channels == (2, 2, 3)
-    sig = audio.Signal((1, 3, 3), 1, 48000).add_noise()
-    kernel = audio.Signal((3, 3, 4), 100e-3, 48000)
-    sig.convolve(kernel, overlap_dimensions=True)
-    assert sig.n_channels == (1, 3, 3, 4)
+@pytest.mark.parametrize(
+    ("signal_channels", "kernel_channels", "expected_channels"),
+    [
+        ((2, 2), (2, 2, 3), (2, 2, 3)),
+        ((1, 3, 3), (3, 3, 4), (1, 3, 3, 4)),
+    ],
+)
+def test_convolve_overlap_dimension_cases(
+    signal_channels, kernel_channels, expected_channels
+):
+    _assert_convolution_shape(
+        signal_channels,
+        kernel_channels,
+        expected_channels,
+        overlap_dimensions=True,
+    )
 
     # Test channel matching with multiple channels
     sig = audio.Signal((2, 2), 1, 48000).add_noise()
