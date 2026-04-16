@@ -38,7 +38,7 @@ def test_nsamples():
 
 def test_low_noise_noise():
     noise = audio.generate_low_noise_noise(1, 500, 200, fs=48000)
-    assert noise.shape == (48000,)
+    assert noise.shape == (48000, 1)
 
     # test directly using signal
     # sig = audio.Signal((2, 3), 1, 48000)
@@ -315,7 +315,7 @@ def test_cmplx_crosscorr():
     nsamp = 1000
     start = np.where(coh.time == 0)[0][0]
     testing.assert_allclose(
-        coh[start + 1 : start + nsamp], coh_analytic[: nsamp - 1], rtol=0, atol=0.03
+        coh[start + 1 : start + nsamp, 0], coh_analytic[: nsamp - 1], rtol=0, atol=0.03
     )
 
     # calculate auto-coherrence

@@ -211,6 +211,8 @@ class ModificationMixin:
         """
 
         modulator = 1 + m * np.cos(2 * np.pi * frequency * self.time + start_phase)
+        if self.ndim > 1:
+            modulator = modulator.reshape((self.n_samples,) + (1,) * (self.ndim - 1))
 
         self *= modulator
         return self

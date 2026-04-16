@@ -21,7 +21,7 @@ def _copy_to_dim(array, dim):
     tiled_array = np.tile(array, (*dim[::-1], 1)).T
     # make sure that dimensions are only squeezed if the last dimension of the
     # goal dimension does not equal 1
-    if not (len(dim) > 1 & dim[-1] == 1):
+    if dim[-1] != 1:
         # squeeze to remove axis of lenght 1
         tiled_array = np.squeeze(tiled_array)
 
@@ -133,16 +133,9 @@ def pad_for_fft(signal):
 
     """
 
-    if signal.ndim == 1:
-        n_channels = 1
-    else:
-        n_channels = signal.shape[1]
-
     n_out = nextpower2(len(signal))
-    if n_channels == 1:
-        out_signal = np.zeros(int(n_out))
-    else:
-        out_signal = np.zeros([int(n_out), n_channels])
+    out_shape = (int(n_out),) + signal.shape[1:]
+    out_signal = np.zeros(out_shape)
     out_signal[: len(signal)] = signal
 
     return out_signal

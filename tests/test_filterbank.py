@@ -127,7 +127,7 @@ def test_butterworth():
     amps = np.zeros(len(fc))
     for i_fc, f in enumerate(fc):
         spec = sig_out.ch[i_fc].to_freqdomain()
-        amps[i_fc] = np.abs(spec[spec.freq == f])[0]
+        amps[i_fc] = np.abs(spec[spec.freq == f]).ravel()[0]
     # Amplitudes should be 0.5 (two sided spectrum)
     assert np.all((amps - 0.5) <= 0.01)
 
@@ -160,7 +160,7 @@ def test_gammatone():
     amps = np.zeros(len(fc))
     for i_fc, f in enumerate(fc):
         spec = sig_out.ch[i_fc].to_freqdomain()
-        amps[i_fc] = np.abs(spec[spec.freq == f])[0]
+        amps[i_fc] = np.abs(spec[spec.freq == f]).ravel()[0]
     # Amplitudes hould be 1 (one sided spectrum)
     assert np.all((amps - 1) <= 0.01)
 
@@ -193,7 +193,7 @@ def test_brickwall():
     amps = np.zeros(len(fc))
     for i_fc, f in enumerate(fc):
         spec = sig_out.ch[i_fc].to_freqdomain()
-        amps[i_fc] = np.abs(spec[spec.freq == f])[0]
+        amps[i_fc] = np.abs(spec[spec.freq == f]).ravel()[0]
     # Amplitudes hould be 0.5 (double sided spectrum)
     assert np.all((amps - 0.5) <= 0.01)
 
