@@ -1,122 +1,232 @@
-1.0 -> Develop
- - Added spectrum plotting method to Visualization sub-class.
- - Implemented complex exponential filter.
+## 1.0 -> Develop
 
-  Breaking/API changes
- - BaseSignal now always keeps an explicit channel axis. Mono signals are represented as `(n_samples, 1)`.
- - This removes mixed mono/multichannel shape semantics and aligns signal processing behavior across all channel counts.
+### Added
 
-  Signal/filter behavior
- - `Signal.bandpass(..., return_complex=True)` now returns a new complex Signal instead of trying in-place dtype mutation.
- - A UserWarning is emitted for the complex-output path to make this behavior explicit.
- - Added documentation hint for explicit dtype control: `complex_signal = signal.astype(complex)`.
+- Spectrum plotting in the `Visualization` sub-class.
+- Complex exponential filter support.
+- Explicit guidance for complex dtype workflows: `complex_signal = signal.astype(complex)`.
 
-  Stats/visualization fixes
- - `SignalStats.octave_band_levels` now returns `(frequencies, levels)`.
- - `Visualization.specgram_overview` now unpacks octave-band outputs correctly (frequency/level axes are no longer swapped).
- - `Visualization.spectrum` now applies `minx`/`maxx` via `ax.set_xlim(...)`.
- - `Visualization.spectrum` now uses `10*log10` for `power=True, in_db=True` (and keeps `20*log10` for amplitude).
+### Changed
 
-  Testing/maintenance
- - Added/updated regression tests for visualization, filter behavior, and mono-shape migration paths.
- - Fixed NumPy deprecation warnings in filterbank tests by explicitly extracting scalar values.
+- `BaseSignal` now always keeps an explicit channel axis. Mono signals are represented as `(n_samples, 1)`.
+- `Signal.bandpass(..., return_complex=True)` now returns a new complex `Signal` instead of attempting in-place dtype mutation.
 
-0.75 -> 1.0
-  - Deprecated the old unused function interface
-  - Major refactoring of codebase for better maintainability
-  - Moved plotting functionality in Signal.viz subclass
-  - Added specgram_overview function which plots a 1/3 octave spectrogram, the time signal as well as the overall 1/3 octave band levels.
-  - Removed a bug that would result in wrong dtypes when convolveing.
-  - Add instantaneous complex correlation function with sliding window
-  - moved Signal.plot to Signal.viz.plot
+### Fixed
 
-0.57 -> 0.6
-  - Improved Documentation
-  - swap return values in octave_band_levels for consistency
+- `SignalStats.octave_band_levels` return order is now `(frequencies, levels)`.
+- `Visualization.specgram_overview` now unpacks octave-band outputs correctly.
+- `Visualization.spectrum` now correctly applies `minx` and `maxx` via `ax.set_xlim(...)`.
+- `Visualization.spectrum` now uses `10*log10` for `power=True, in_db=True` and `20*log10` for amplitude.
+- NumPy deprecation warnings in filterbank tests by explicitly extracting scalar values.
 
-0.74 -> 0.75
-  - Major restructuring of Signal class (fully backwards compatible)
-  - Improvement of Documentation
-  - New play method for quick signal playback
-  - Added resample method to signal
-  - Renamed clip into trim to not conflict with numpy method
+### Deprecated
 
-0.73 -> 0.74
-  - Improvements of the Documentation.
-  - Implemented several spectrograms in the time_frequency sub-module of the Signal class.
-  - Implemented Signal.as_blocked method that generates a blocked view on the original Signal.
-- 
-  Changes
-  - Octave bands now use preferred frequencies as default.
+- `Signal.bandpass(..., return_complex=True)` now emits a `UserWarning` to make complex-output behavior explicit.
 
-0.72 -> 0.73
-  - Added a octave_band_levels method to the Signal.stats submodule
-   
-  Bugfixes
-   - Fixed bug that lead to linear crossfade to be inverted
-  
-  Changes
-   - Removed depricated calc_dbfs method from signal
-    
+### Tests
 
-0.70 -> 0.72
- - Improved documentation
- - renamed writefile method to write_file
- - renamed wav submodule to file_io
- - moved rms into stats submodule
+- Added and updated regression tests for visualization, filter behavior, and mono-shape migration paths.
 
-0.68 -> 0.70
- - Renaming the library to audiotoolbox
- - Started refracturing structure for auditory scales
- - Implemented a crossfade function
- - Added a convolve method to the Signal class
- - Added the option to define the first and last sample to be read from file
- - Added info function to extract information about an audio file without having to read it
+## 0.75 -> 1.0
 
-0.67 -> 0.68
- - Reading and Writing Audiofiles is now handled using the soundfile library
- - Fixed some tests and depricated numpy apis
+### Added
 
-0.66.1 -> 0.67
- - Changed functions in stats to property
- - Implemented functions for A and C frequency weighting
- - Implemented an add_gain method to the signal class
+- `specgram_overview`, which plots a 1/3-octave spectrogram, the time signal, and overall 1/3-octave band levels.
+- Instantaneous complex correlation with a sliding window.
 
-0.66 -> 0.66.1
- - Changed a type hint for better backward compatibility
+### Changed
 
-0.65.1 -> 0.66
- - Added option to generate partly correlated noise with different spectral shapes
+- Major refactoring of the codebase for better maintainability.
+- Plotting functionality moved into the `Signal.viz` submodule.
+- `Signal.plot` moved to `Signal.viz.plot`.
 
-0.65 -> 0.65.1
- - Made filterbanks indexable to gain excess to individual filters
- - fixed a small bug in the erb to 3db calculation function of the gammatone
-   filter which could result in a type error
+### Fixed
 
-0.64.1 -> 0.65
- - Added a default auditory gammatone filterbank
- - Added a default fractional octave filterbank
- - Added function to convert frequency into band number following ANSI norm
- - Fixed a small bug in _copy_to_dim which would remove the last dimension of an error if it equaled 1
- - Deleted broken audio playback functionality
- - Moved filterbanks from audiotools.filter to audiotools.filter.bank submodule
- - audiotools.freqarange now supports octave spacing
+- Bug that could result in incorrect dtypes when convolving.
 
-0.64 -> 0.64.1
- - Fixed a bug in the FrequencyDomainSignal.to_timedomain() method
+### Deprecated
 
-0.62 -> 0.64
- - Added parameter to auditools.dbfs to specify if dB fullscale is relative to peak or rms level
- - Deleted the long depricated Signal.add_noise_noise method
- - Implemented Signal.stats submodule
- - Added deprecationwarning to Signal.calc_dbfs and Signal.calc_dbspl which
-   moved to the Signal.stats submodule
- - Added the option to directly  apply filters when generating partly correlated noise
- - Added the audiotools.cmplx_corr function which calculates the
-   complex-valued correlation coefficent
- - Renamed calc_coherence to cmplx_crosscorr
- - Fixed a bug in signal.phase_shift that sometimes resulted in a complex valued signal
+- Old, unused function interface.
 
-0.61 -> 0.62
- - Fixed the shape of the channels after appling a filterbank
- - Added a summary method that prints information about size and shape of the object
+## 0.74 -> 0.75
+
+### Added
+
+- `play` method for quick signal playback.
+- `resample` method on `Signal`.
+
+### Changed
+
+- Major restructuring of the `Signal` class (fully backward compatible).
+- `clip` renamed to `trim` to avoid conflicting with the NumPy method.
+
+### Documentation
+
+- Improved documentation.
+
+## 0.73 -> 0.74
+
+### Added
+
+- Several spectrograms in the `time_frequency` submodule of `Signal`.
+- `Signal.as_blocked`, generating a blocked view on the original signal.
+
+### Changed
+
+- Octave-band defaults now use preferred frequencies.
+
+### Documentation
+
+- Improved documentation.
+
+## 0.72 -> 0.73
+
+### Added
+
+- `octave_band_levels` method in the `Signal.stats` submodule.
+
+### Fixed
+
+- Bug that caused linear crossfade inversion.
+
+### Removed
+
+- Deprecated `calc_dbfs` from `Signal`.
+
+## 0.70 -> 0.72
+
+### Changed
+
+- `writefile` renamed to `write_file`.
+- `wav` submodule renamed to `file_io`.
+- `rms` moved into the `stats` submodule.
+
+### Documentation
+
+- Improved documentation.
+
+## 0.68 -> 0.70
+
+### Added
+
+- `crossfade` function.
+- `convolve` method on `Signal`.
+- Options to define the first and last sample to read from file.
+- `info` function to extract audio file metadata without reading full sample data.
+
+### Changed
+
+- Library renamed to `audiotoolbox`.
+- Ongoing refactoring of the auditory-scales structure.
+
+## 0.67 -> 0.68
+
+### Changed
+
+- Reading and writing audio files moved to the `soundfile` library.
+
+### Fixed
+
+- Test fixes and compatibility fixes for deprecated NumPy APIs.
+
+## 0.66.1 -> 0.67
+
+### Added
+
+- A-weighting and C-weighting functions.
+- `add_gain` method on the `Signal` class.
+
+### Changed
+
+- `stats` functions converted to properties.
+
+## 0.66 -> 0.66.1
+
+### Changed
+
+- Type hint updated for better backward compatibility.
+
+## 0.65.1 -> 0.66
+
+### Added
+
+- Option to generate partly correlated noise with different spectral shapes.
+
+## 0.65 -> 0.65.1
+
+### Changed
+
+- Filterbanks became indexable for easier access to individual filters.
+
+### Fixed
+
+- Small bug in the ERB-to-3dB conversion for gammatone filters that could result in a type error.
+
+## 0.64.1 -> 0.65
+
+### Added
+
+- Default auditory gammatone filterbank.
+- Default fractional-octave filterbank.
+- Function to convert frequency into band number following the ANSI norm.
+- Octave spacing support in `audiotools.freqarange`.
+
+### Changed
+
+- Filterbanks moved from `audiotools.filter` to `audiotools.filter.bank`.
+
+### Fixed
+
+- Small bug in `_copy_to_dim` that could remove the last dimension of an array if it equaled 1.
+
+### Removed
+
+- Broken audio playback functionality.
+
+## 0.64 -> 0.64.1
+
+### Fixed
+
+- Bug in `FrequencyDomainSignal.to_timedomain()`.
+
+## 0.62 -> 0.64
+
+### Added
+
+- Parameter in `audiotools.dbfs` to specify whether dB full scale is relative to peak or RMS.
+- `Signal.stats` submodule.
+- Option to directly apply filters when generating partly correlated noise.
+- `audiotools.cmplx_corr` for complex-valued correlation coefficients.
+- `DeprecationWarning` for `Signal.calc_dbfs` and `Signal.calc_dbspl`, which moved to `Signal.stats`.
+
+### Changed
+
+- `calc_coherence` renamed to `cmplx_crosscorr`.
+
+### Fixed
+
+- Bug in `signal.phase_shift` that could produce a complex-valued signal unexpectedly.
+
+### Removed
+
+- Long-deprecated `Signal.add_noise_noise` method.
+
+## 0.61 -> 0.62
+
+### Added
+
+- `summary` method that prints object size and shape information.
+
+### Fixed
+
+- Channel shape handling after applying a filterbank.
+
+## 0.57 -> 0.6
+
+### Changed
+
+- Return values in `octave_band_levels` swapped for consistency.
+
+### Documentation
+
+- Improved documentation.
