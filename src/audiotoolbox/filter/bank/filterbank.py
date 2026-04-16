@@ -91,7 +91,10 @@ class ButterworthBank(FilterBank):
             self.coefficents[:order, :, i_filt] = sos
 
     def filt(self, signal):
-        n_ch_out = (*signal.shape[1:], self.n_filters)
+        in_ch = tuple(np.atleast_1d(signal.n_channels))
+        if in_ch == (1,):
+            in_ch = ()
+        n_ch_out = (*in_ch, self.n_filters)
         duration = len(signal) / self.fs
         out_sig = audio.Signal(n_ch_out, duration, self.fs)
         for i_filt, freq in enumerate(self.fc):
@@ -99,7 +102,7 @@ class ButterworthBank(FilterBank):
             # sos has to be C-contigous
             sos = self.coefficents[:order, :, i_filt].copy(order="C")
             out, states = butter.apply_sos(signal, sos)
-            out_sig.T[i_filt] = out.T
+            out_sig.ch[..., i_filt] = out
         return out_sig
 
     def __getitem__(self, i):
@@ -132,7 +135,10 @@ class GammaToneBank(FilterBank):
             self.coefficents[2:, i_filt] = a
 
     def filt(self, signal):
-        n_ch_out = (*signal.shape[1:], self.n_filters)
+        in_ch = tuple(np.atleast_1d(signal.n_channels))
+        if in_ch == (1,):
+            in_ch = ()
+        n_ch_out = (*in_ch, self.n_filters)
         duration = len(signal) / self.fs
         out_sig = audio.Signal(n_ch_out, duration, self.fs, dtype=complex)
         for i_filt, freq in enumerate(self.fc):
@@ -141,11 +147,8 @@ class GammaToneBank(FilterBank):
             b = (coeff[0],)
             a = coeff[2:]
             out, states = gamma.gammatonefos_apply(signal, b, a, order)
-            out_sig.T[i_filt] = out.T
+            out_sig.ch[..., i_filt] = out
 
-        # squeeze to leave dimensions unchanged if n_filters == 1
-        if out_sig.shape[-1] == 1:
-            out_sig = out_sig.squeeze(-1)
         return out_sig
 
     def __getitem__(self, i):
@@ -159,14 +162,17 @@ class BrickBank(FilterBank):
         FilterBank.__init__(self, fc, bw, fs)
 
     def filt(self, signal):
-        n_ch_out = (*signal.shape[1:], self.n_filters)
+        in_ch = tuple(np.atleast_1d(signal.n_channels))
+        if in_ch == (1,):
+            in_ch = ()
+        n_ch_out = (*in_ch, self.n_filters)
         duration = len(signal) / self.fs
         out_sig = audio.Signal(n_ch_out, duration, self.fs)
         for i_filt, (freq, bw) in enumerate(zip(self.fc, self.bw)):
             low_f = freq - bw / 2
             high_f = freq + bw / 2
             out = brick.brickwall(signal, low_f, high_f, self.fs)
-            out_sig.T[i_filt] = out.T
+            out_sig.ch[..., i_filt] = out
         return out_sig
 
 

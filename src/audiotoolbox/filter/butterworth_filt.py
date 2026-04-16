@@ -136,13 +136,10 @@ def apply_sos(signal, sos, states=None, axis=0):
         states = np.tile(states.T, (*dim, 1, 1)).T
     elif states is None:
         order = sos.shape[0]
-        if np.ndim(n_channel) == 0:
-            if n_channel == 1:  # only one channel
-                shape = [order, 2]
-            else:  # more then one channels
-                shape = [order, 2, n_channel]
-        else:  # Multiple dimensions
-            shape = [order, 2, *n_channel]
+        if np.ndim(signal) == 1:
+            shape = [order, 2]
+        else:
+            shape = [order, 2, *np.atleast_1d(n_channel)]
         states = np.zeros(shape)
 
     sig_out, states = sig.sosfilt(sos, signal, zi=states, axis=axis)

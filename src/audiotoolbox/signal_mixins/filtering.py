@@ -301,6 +301,11 @@ class FilteringMixin:
                 b = kernel.ch[idx_k_combined]
                 newsig_idx = idx_sig + overlap_slice + idx_k
 
+                if np.ndim(a) < np.ndim(b):
+                    a = a.reshape(a.shape + (1,) * (np.ndim(b) - np.ndim(a)))
+                elif np.ndim(b) < np.ndim(a):
+                    b = b.reshape(b.shape + (1,) * (np.ndim(a) - np.ndim(b)))
+
                 new_signal.ch[newsig_idx] = fftconvolve(a, b, mode=mode, axes=0)
         self.resize(new_signal.shape, refcheck=False)
         self[:] = new_signal

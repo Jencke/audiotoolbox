@@ -107,16 +107,12 @@ def gammatonefos_apply(signal, b, a, order, states=None):
     _, _, n_channel = audio._duration_is_signal(signal, None, None)
 
     # state shape
-    if not states:
-        if np.ndim(n_channel) == 0:
-            if n_channel == 1:  # only one channel
-                shape = [order, 1]
-            else:  # more then one channels
-                shape = [order, 1, n_channel]
-        else:  # Multiple dimensions
-            shape = [order, 1, *n_channel]
-
-    states = np.zeros(shape, dtype=np.complex128)
+    if states is None:
+      if np.ndim(signal) == 1:
+        shape = [order, 1]
+      else:
+        shape = [order, 1, *np.atleast_1d(n_channel)]
+      states = np.zeros(shape, dtype=np.complex128)
 
     # copy results into a new complex Signal or array
     if isinstance(signal, audio.Signal):

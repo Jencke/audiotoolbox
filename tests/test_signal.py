@@ -86,7 +86,7 @@ def test_addtone_superposition():
     test = np.cos(2 * np.pi * sig.time * 100)
     test += np.cos(2 * np.pi * sig.time * 200 + np.pi)
 
-    testing.assert_almost_equal(sig, test)
+    testing.assert_almost_equal(sig[:, 0], test)
 
 
 def test_addtone_amplitude():
@@ -97,7 +97,7 @@ def test_addtone_amplitude():
     sig.add_tone(100, amplitude=2)
 
     test = 2 * np.cos(2 * np.pi * sig.time * 100)
-    testing.assert_almost_equal(sig, test)
+    testing.assert_almost_equal(sig[:, 0], test)
 
 
 @pytest.mark.parametrize("channels", [2, (2, 2)])

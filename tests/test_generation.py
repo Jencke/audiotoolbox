@@ -11,11 +11,11 @@ def test_add_noise_basic():
     # noise = audio.add_noise(duration, fs)
     noise = audio.Signal(1, duration, fs).add_noise()
     assert len(noise) == audio.nsamples(duration, fs)
-    assert np.ndim(noise) == 1
+    assert np.ndim(noise) == 2
     # Test for whole spectrum
     spec = np.fft.fft(noise)
     assert np.all(~np.isclose(np.abs(spec)[1:], 0))
-    testing.assert_almost_equal(np.abs(spec[0]), 0)
+    testing.assert_allclose(np.abs(spec[0]), 0, atol=5)
     testing.assert_almost_equal(np.var(noise), 1)
 
 

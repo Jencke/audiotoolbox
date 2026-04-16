@@ -18,10 +18,10 @@ def test_brickwall():
     flow = fc - bw / 2
     fhigh = fc + bw / 2
     out = filter.brickwall(noise, flow, fhigh, fs)
-    spec = np.abs(np.fft.fft(out))
-    freqs = np.fft.fftfreq(len(spec), 1.0 / fs)
+    spec = np.abs(np.fft.fft(out, axis=0)).squeeze()
+    freqs = np.fft.fftfreq(out.shape[0], 1.0 / fs)
     passband = (np.abs(freqs) >= flow) & (np.abs(freqs) <= fhigh)
-    non_zero = ~np.isclose(spec, 0)
+    non_zero = ~np.isclose(np.squeeze(spec), 0)
 
     assert np.array_equal(non_zero, passband)
 
@@ -30,8 +30,8 @@ def test_brickwall():
     flow = 900
     fhigh = 1130
     out = filter.brickwall(noise, flow, fhigh, fs)
-    spec = np.abs(np.fft.fft(out))
-    freqs = np.fft.fftfreq(len(spec), 1.0 / fs)
+    spec = np.abs(np.fft.fft(out, axis=0)).squeeze()
+    freqs = np.fft.fftfreq(out.shape[0], 1.0 / fs)
     passband = (np.abs(freqs) >= flow) & (np.abs(freqs) <= fhigh)
     non_zero = ~np.isclose(spec, 0)
 
@@ -46,12 +46,12 @@ def test_brickwall_lowpass():
 
     fc = 300
     out = filter.brickwall(noise, None, fc, fs)
-    spec = np.abs(np.fft.fft(out))
-    freqs = np.fft.fftfreq(len(spec), 1.0 / fs)
+    spec = np.abs(np.fft.fft(out, axis=0)).squeeze()
+    freqs = np.fft.fftfreq(out.shape[0], 1.0 / fs)
 
     # check if only frequencies within the passband are non-zero
     passband = (np.abs(freqs) <= fc) & (freqs != 0)
-    non_zero = ~np.isclose(spec, 0)
+    non_zero = ~np.isclose(np.squeeze(spec), 0)
 
     assert np.array_equal(non_zero, passband)
 
@@ -64,8 +64,8 @@ def test_brickwall_highpass():
 
     fc = 300
     out = filter.brickwall(noise, fc, None, fs)
-    spec = np.abs(np.fft.fft(out))
-    freqs = np.fft.fftfreq(len(spec), 1.0 / fs)
+    spec = np.abs(np.fft.fft(out, axis=0)).squeeze()
+    freqs = np.fft.fftfreq(out.shape[0], 1.0 / fs)
 
     # check if only frequencies within the passband are non-zero
     passband = np.abs(freqs) >= fc
