@@ -1,4 +1,8 @@
-0.6 -> 1.0
+1.0 -> Develop
+ - Added spectrum plotting method to Visualization sub-class
+ - Implemented complex exponential filter
+
+0.75 -> 1.0
   - Deprecated the old unused function interface
   - Major refactoring of codebase for better maintainability
   - Moved plotting functionality in Signal.viz subclass
