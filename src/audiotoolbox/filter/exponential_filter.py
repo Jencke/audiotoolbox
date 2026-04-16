@@ -1,16 +1,18 @@
-import scipy.signal as sig
-import numpy as np
-from .. import core as audio
-from typing import Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 
 import numpy as np
 from scipy.signal import lfilter
 
+if TYPE_CHECKING:
+    from ..signal import Signal
+
 
 def efilt(
-    signal: audio.Signal, fc: float, bw: float, return_complex: bool = False
-) -> audio.Signal:
+    signal: Signal, fc: float, bw: float, return_complex: bool = False
+) -> Signal:
     """
     Apply complex exponential filter to the signal.
 
@@ -71,8 +73,8 @@ def design_efilt(fc: float, bw: float, fs: float) -> tuple[np.ndarray, np.ndarra
 
 
 def apply_efilt(
-    signal: audio.Signal, b: np.ndarray, a: np.ndarray, return_complex: bool = False
-) -> audio.Signal:
+    signal: Signal, b: np.ndarray, a: np.ndarray, return_complex: bool = False
+) -> Signal:
     """
     Apply complex exponential filter to the signal.
 
