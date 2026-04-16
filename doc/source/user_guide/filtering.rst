@@ -18,6 +18,10 @@ filtering.
 * :meth:`~audiotoolbox.Signal.highpass`
 * :meth:`~audiotoolbox.Signal.bandpass`
 
+For gammatone filtering, ``bandpass`` can return a complex-valued signal
+via ``return_complex=True``. In that case, a new complex ``Signal`` is
+returned instead of modifying the input in place.
+
 The following example demonstrates applying a low-pass filter to a
 white noise signal.
 

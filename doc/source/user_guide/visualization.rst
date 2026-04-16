@@ -24,10 +24,12 @@ The viz.plot method allowes for a quick visualization of the timedomain signal.
 Signal Overview
 ---------------
 
-The specgram_overview method shows an overview that contains a plot of the timedomain-signal, the 1/3rd octave band spectrogram, and the 1/3 octave band levels. As well as some signal statistics.
+The ``specgram_overview`` method shows an overview with the time-domain
+signal, a 1/3-octave-band spectrogram, and 1/3-octave-band levels.
 
-.. plot::
-    :include-source:
+.. code-block:: python
+
+    import audiotoolbox as audio
 
     sig = (
     audio.Signal(1, 1, 48000)

@@ -57,6 +57,12 @@ properties of the :class:`audiotoolbox.Signal` class:
 >>> print(f'No. of samples: {signal.n_samples}, No. of channels: {signal.n_channels}')
 No. of samples: 48000, No. of channels: (2, 3)
 
+For user-facing code, :attr:`audiotoolbox.Signal.n_channels` remains
+convenient (e.g., ``1`` for mono and ``2`` for stereo). For generic
+shape-building logic, use :attr:`audiotoolbox.Signal.channel_shape`,
+which always returns a tuple (e.g., ``(1,)``, ``(2,)``, or
+``(2, 3)``).
+
 The time axis can be accessed directly using the
 :attr:`audiotoolbox.Signal.time` property:
 
