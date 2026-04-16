@@ -1,6 +1,10 @@
 1.0 -> Develop
  - Added spectrum plotting method to Visualization sub-class
  - Implemented complex exponential filter
+ - bandpass with complex output now returns a new complex Signal (with warning) instead of attempting unsafe in-place dtype mutation
+ - Fixed SignalStats.octave_band_levels return order to (frequencies, levels) and updated call sites
+ - Fixed Visualization.spectrum to apply minx/maxx and use 10*log10 for power spectra in dB mode
+ - Fixed Visualization.specgram_overview frequency/level axis unpacking for octave band levels
 
 0.75 -> 1.0
   - Deprecated the old unused function interface

@@ -44,8 +44,8 @@ class Visualization(object):
         else:
             oct_fraction = 3
 
-        spec, freq = self.sig.time_frequency.octave_band_specgram(**specgram_args)
-        bandlevels, freq = self.sig.stats.octave_band_levels(oct_fraction=oct_fraction)
+        spec, spec_freq = self.sig.time_frequency.octave_band_specgram(**specgram_args)
+        freq, bandlevels = self.sig.stats.octave_band_levels(oct_fraction=oct_fraction)
 
         basevalue = bandlevels.min() * 1.1
 
@@ -62,7 +62,7 @@ class Visualization(object):
         )
         ax[0, 0].plot(self.sig.time, self.sig)
         ax[0, 0].set_ylabel("Amplitude")
-        ax[1, 0].pcolormesh(spec.time, freq, spec.T)
+        ax[1, 0].pcolormesh(spec.time, spec_freq, spec.T)
         ax[0, 1].set_visible(False)
         ax[1, 0].set_yscale("log")
         ax[1, 0].set_xlabel("Time / s")
@@ -166,9 +166,7 @@ class Visualization(object):
         fsig = self.sig.to_freqdomain()
         freq = fsig.freq
         amplitude = np.abs(fsig)
-        if in_db:
-            amplitude = 20 * np.log10(amplitude + 1e-12)
-        elif power:
+        if power:
             amplitude = amplitude**2
 
         if single_sided:
@@ -177,8 +175,11 @@ class Visualization(object):
             amplitude = amplitude[:half_n]
             amplitude *= 2  # compensate for single sided spectrum
 
-        min_f = 20  # Hz
-        max_f = 20000  # Hz
+        if in_db:
+            if power:
+                amplitude = 10 * np.log10(amplitude + 1e-12)
+            else:
+                amplitude = 20 * np.log10(amplitude + 1e-12)
 
         ax.plot(freq, amplitude)
         ax.set_xlabel("Frequency / Hz")
@@ -186,4 +187,5 @@ class Visualization(object):
         if power:
             ax.set_ylabel("Power")
         ax.set_xscale("log")
+        ax.set_xlim(minx, maxx)
         return fig, ax
