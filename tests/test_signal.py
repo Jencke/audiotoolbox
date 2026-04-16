@@ -380,7 +380,11 @@ def test_bandpass_gammatone():
     sig = audio.Signal(1, 1, 48000).add_tone(500)
     sig2 = sig.copy()
     sig.bandpass(500, 100, "gammatone")
-    out = sig2.bandpass(500, 100, "gammatone", return_complex=True)
+    with pytest.warns(
+        UserWarning,
+        match="returns a new Signal instead of modifying in-place",
+    ):
+        out = sig2.bandpass(500, 100, "gammatone", return_complex=True)
     testing.assert_array_equal(out.real, sig)
 
     # check kwargs
