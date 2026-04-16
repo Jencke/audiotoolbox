@@ -91,7 +91,7 @@ class ButterworthBank(FilterBank):
             self.coefficents[:order, :, i_filt] = sos
 
     def filt(self, signal):
-        in_ch = tuple(np.atleast_1d(signal.n_channels))
+        in_ch = signal.channel_shape
         if in_ch == (1,):
             in_ch = ()
         n_ch_out = (*in_ch, self.n_filters)
@@ -135,7 +135,7 @@ class GammaToneBank(FilterBank):
             self.coefficents[2:, i_filt] = a
 
     def filt(self, signal):
-        in_ch = tuple(np.atleast_1d(signal.n_channels))
+        in_ch = signal.channel_shape
         if in_ch == (1,):
             in_ch = ()
         n_ch_out = (*in_ch, self.n_filters)
@@ -162,7 +162,7 @@ class BrickBank(FilterBank):
         FilterBank.__init__(self, fc, bw, fs)
 
     def filt(self, signal):
-        in_ch = tuple(np.atleast_1d(signal.n_channels))
+        in_ch = signal.channel_shape
         if in_ch == (1,):
             in_ch = ()
         n_ch_out = (*in_ch, self.n_filters)

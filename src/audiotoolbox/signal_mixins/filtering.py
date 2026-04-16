@@ -249,8 +249,8 @@ class FilteringMixin:
 
         """
         fs = self.fs
-        dim_sig = np.atleast_1d(self.n_channels)
-        dim_kernel = np.atleast_1d(kernel.n_channels)
+        dim_sig = self.channel_shape
+        dim_kernel = kernel.channel_shape
 
         # Determine if some of the dimension overlap
         if overlap_dimensions:
@@ -280,10 +280,10 @@ class FilteringMixin:
         new_signal = audio.Signal(new_nch, new_nsamp / fs, fs, dtype=self.dtype)
 
         if dim_overlap != 0:
-            n_sig = np.prod(dim_sig[:-dim_overlap])
+            n_sig = int(np.prod(dim_sig[:-dim_overlap], dtype=int))
         else:
-            n_sig = np.prod(dim_sig)
-        n_kernel = np.prod(dim_kernel[dim_overlap:])
+            n_sig = int(np.prod(dim_sig, dtype=int))
+        n_kernel = int(np.prod(dim_kernel[dim_overlap:], dtype=int))
         for i_sig in range(n_sig):
             for i_k in range(n_kernel):
                 # only indices that do not overlap need to be looked at
