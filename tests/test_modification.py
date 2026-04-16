@@ -135,3 +135,36 @@ def test_set_dbspl_invertable():
 
     signal.set_dbspl(0)
     testing.assert_almost_equal(signal.stats.rms, 20e-6)
+
+
+def test_zeropad_both_args_raises():
+    """Providing both number and duration must raise ValueError."""
+    sig = Signal(1, 0.1, 48000)
+    with pytest.raises(ValueError):
+        sig.zeropad(number=1, duration=1e-3)
+
+
+def test_set_dbfs_per_channel_behavior():
+    """set_dbfs normalises independently per channel, which changes relative RMS.
+
+    This is the current documented behavior. If per-channel=False global normalisation
+    is added in the future, update this test accordingly.
+    """
+    rng = np.random.default_rng(42)
+    sig = Signal(2, 1, 48000)
+    sig[:, 0] = rng.standard_normal(sig.n_samples)
+    sig[:, 1] = rng.standard_normal(sig.n_samples) * 4.0
+
+    rms0_before = sig[:, 0].std()
+    rms1_before = sig[:, 1].std()
+    ratio_before = rms1_before / rms0_before
+
+    sig.set_dbfs(-20)
+
+    rms0_after = sig[:, 0].std()
+    rms1_after = sig[:, 1].std()
+    ratio_after = rms1_after / rms0_after
+
+    # Each channel is normalised to -20 dBFS independently, so ratio collapses to ~1
+    assert abs(rms0_after - rms1_after) < 1e-4, "Both channels should have equal RMS after per-channel normalisation"
+    assert abs(ratio_before - ratio_after) > 0.1, "Ratio must change because normalisation is per-channel"

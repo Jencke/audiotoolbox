@@ -423,3 +423,10 @@ def test_crossfade():
     sig2 = audio.Signal(1, 1, 48000).add_noise()
     out = audio.crossfade(sig1, sig2, 450e-3, fade_type="cos")
     assert np.abs(1 - out.stats.var.mean()) < 0.01
+
+
+def test_inst_cmplx_corr_magnitude_bounded():
+    """|inst_cmplx_corr| must be <= 1 for all samples (coherence property)."""
+    sig = audio.Signal(2, 0.5, 48000).add_noise(seed=0)
+    coh = audio.inst_cmplx_corr(sig, window_duration=10e-3)
+    assert np.all(np.abs(coh) <= 1.0 + 1e-9)

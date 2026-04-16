@@ -95,3 +95,16 @@ def test_resample_raises_error_on_slice(sine_wave_signal):
 def test_resample_rejects_invalid_sampling_rates(sine_wave_signal, new_fs):
     with pytest.raises(ValueError, match="new_fs must be a positive integer"):
         sine_wave_signal.resample(new_fs)
+
+
+def test_resample_roundtrip():
+    """Resampling up then down must approximately recover the original signal."""
+    sig = Signal(1, 0.5, 48000).add_tone(500)
+    original = np.array(sig)
+    sig.resample(96000)
+    sig.resample(48000)
+    # Trim transient artefacts at both ends caused by the anti-aliasing filter.
+    trim = 500
+    np.testing.assert_allclose(
+        sig.flatten()[trim:-trim], original.flatten()[trim:-trim], atol=1e-3
+    )

@@ -62,11 +62,11 @@ class FilterBank(object):
 
     def __getitem__(self, i):
         bank = deepcopy(self)
-        bank.bw = self.bw[i]
-        bank.fc = self.fc[i]
+        bank.bw = np.atleast_1d(self.bw[i])
+        bank.fc = np.atleast_1d(self.fc[i])
         bank.fs = self.fs
         for k, v in self.params.items():
-            bank.params[k] = v[i]
+            bank.params[k] = np.atleast_1d(v[i])
         return bank
 
 
@@ -107,7 +107,7 @@ class ButterworthBank(FilterBank):
 
     def __getitem__(self, i):
         bank = super().__getitem__(i)
-        bank.coefficents = self.coefficents[:, :, i]
+        bank.coefficents = self.coefficents[:, :, np.atleast_1d(i)]
         return bank
 
 
@@ -153,7 +153,7 @@ class GammaToneBank(FilterBank):
 
     def __getitem__(self, i):
         bank = super().__getitem__(i)
-        bank.coefficents = self.coefficents[:, i]
+        bank.coefficents = self.coefficents[:, np.atleast_1d(i)]
         return bank
 
 
@@ -213,4 +213,9 @@ def create_filterbank(
         bank = GammaToneBank(fc, bw, fs, **kwargs)
     elif filter_type == "brickwall":
         bank = BrickBank(fc, bw, fs)
+    else:
+        raise ValueError(
+            f"Unknown filter_type '{filter_type}'. "
+            "Expected one of: 'butter', 'gammatone', 'brickwall'."
+        )
     return bank
