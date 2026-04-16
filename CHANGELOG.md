@@ -5,6 +5,7 @@
 - Spectrum plotting in the `Visualization` sub-class.
 - Complex exponential filter support.
 - Explicit guidance for complex dtype workflows: `complex_signal = signal.astype(complex)`.
+- `BaseSignal.channel_shape` property: always returns a `tuple` of the channel axes shape (e.g. `(1,)` for mono, `(2,)` for stereo). Use this in generic shape-building code instead of `n_channels`, which stays user-friendly as an `int`.
 
 ### Changed
 
