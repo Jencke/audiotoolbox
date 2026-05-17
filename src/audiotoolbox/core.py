@@ -9,6 +9,9 @@ from scipy.signal import hilbert, get_window
 from .signal import Signal, as_signal
 from . import filter
 from . import din_iso_226
+from .scales import bark as bark_scale
+from .scales import erb as erb_scale
+from .scales import octave as octave_scale
 
 COLOR_R = "#d65c5c"
 COLOR_L = "#5c5cd6"
@@ -317,34 +320,7 @@ def get_bark_limits():
         248-248. http://dx.doi.org/10.1121/1.1908630
 
     """
-    bark_table = [
-        20,
-        100,
-        200,
-        300,
-        400,
-        510,
-        630,
-        770,
-        920,
-        1080,
-        1270,
-        1480,
-        1720,
-        2000,
-        2320,
-        2700,
-        3150,
-        3700,
-        4400,
-        5300,
-        6400,
-        7700,
-        9500,
-        12000,
-        15500,
-    ]
-    return bark_table
+    return bark_scale.get_bark_limits()
 
 
 def freqspace(min_frequency, max_frequency, n, scale="bark"):
@@ -461,11 +437,7 @@ def bark_to_freq(bark):
 
     """
 
-    # reverse apply corrections
-    bark[bark < 2.0] = (bark[bark < 2.0] - 0.3) / 0.85
-    bark[bark > 20.1] = (bark[bark > 20.1] + 4.422) / 1.22
-    f = 1960 * (bark + 0.53) / (26.28 - bark)
-    return f
+    return bark_scale.to_freq(bark)
 
 
 def octband_to_freq(
@@ -503,19 +475,11 @@ def octband_to_freq(
         Beuth Verlag, Berlin, 1997.
     """
 
-    b = oct_fraction
-
-    if base_system == 10:
-        gbase = 10 ** (3 / 10)
-    elif base_system == 2:
-        gbase = 2
-    else:
-        raise (ValueError("base_system must be 2 or 10"))
-
-    if b % 2:  # if odd
-        freq = gbase ** ((band_nr - 30.0) / b) * 1e3
-    else:  # if even:
-        freq = gbase ** ((2 * band_nr - 59.0) / (2 * b)) * 1e3
+    freq = octave_scale.to_freq(
+        band_nr,
+        oct_fraction=oct_fraction,
+        base_system=base_system,
+    )
 
     if pref_band:
         freq = din_iso_226.round_array_to_pref_freq(freq)
@@ -543,17 +507,11 @@ def freq_to_octband(
         If True, the band number is rounded to the nearest integer.
         (default = True)
     """
-    b = oct_fraction
-    if base_system == 10:
-        gbase = 10 ** (3 / 10)
-    elif base_system == 2:
-        gbase = 2
-    else:
-        raise (ValueError("base_system must be 2 or 10"))
-    if b % 2:
-        band_nr = np.log(frequency / 1000) / np.log(gbase) * b + 30
-    else:
-        band_nr = 0.5 * (np.log(frequency / 1000) / np.log(gbase) * 2 * b + 59)
+    band_nr = octave_scale.from_freq(
+        frequency,
+        oct_fraction=oct_fraction,
+        base_system=base_system,
+    )
 
     if round:
         band_nr = np.round(band_nr, 0)
@@ -592,27 +550,7 @@ def freq_to_bark(frequency, use_table=False):
         97-100. http://dx.doi.org/10.1121/1.399849
 
     """
-    assert np.all(frequency >= 20)
-    assert np.all(frequency < 15500)
-
-    if use_table:
-        # Only use the table with no intermdiate values
-        bark_table = np.array(get_bark_limits())
-        scale_limits = zip(bark_table[:-1], bark_table[1:])
-        i = 0
-        cb_val = np.zeros(len(frequency))
-        for lower, upper in scale_limits:
-            in_border = (frequency >= lower) & (frequency < upper)
-            cb_val[in_border] = i
-            i += 1
-        return cb_val
-    else:
-        cb_val = (26.81 * frequency / (1960 + frequency)) - 0.53
-        if min(cb_val) < 2.0:
-            cb_val[cb_val < 2.0] += 0.15 * (2 - cb_val[cb_val < 2.0])
-        if max(cb_val) > 20.1:
-            cb_val[cb_val > 20.1] += 0.22 * (cb_val[cb_val > 20.1] - 20.1)
-        return cb_val
+    return bark_scale.from_freq(frequency, use_table=use_table)
 
 
 def freq_to_erb(frequency):
@@ -639,8 +577,7 @@ def freq_to_erb(frequency):
 
     """
 
-    n_erb = (1000.0 / (24.7 * 4.37)) * np.log(4.37 * frequency / 1000 + 1)
-    return n_erb
+    return erb_scale.from_freq(frequency)
 
 
 def erb_to_freq(n_erb):
@@ -665,8 +602,7 @@ def erb_to_freq(n_erb):
         Research, 47(1-2), 103-138.
 
     """
-    fkhz = (np.exp(n_erb * (24.7 * 4.37) / 1000) - 1) / 4.37
-    return fkhz * 1000
+    return erb_scale.to_freq(n_erb)
 
 
 def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
@@ -872,11 +808,12 @@ def calc_bandwidth(fc, scale="cbw"):
     """
 
     if "cbw" in scale:
-        bw = 25 + 75 * (1 + 1.4 * (fc / 1000.0) ** 2) ** 0.69
-    elif "erb" in scale:
-        bw = 24.7 * (4.37 * (fc / 1000.0) + 1)
-
-    return bw
+        return bark_scale.calc_bw(fc)
+    if "erb" in scale:
+        return erb_scale.calc_bw(fc)
+    if "oct" in scale:
+        return octave_scale.calc_bw(fc)
+    raise ValueError("scale must contain 'cbw', 'erb', or 'oct'")
 
 
 def extract_binaural_differences(signal, log_ilds=True):
