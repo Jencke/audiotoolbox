@@ -27,3 +27,14 @@ def test_spectrum_power_in_db_uses_10log10():
     # Validate the peak bin where numerical flooring has negligible impact.
     peak_idx = int(np.argmax(amp_y))
     np.testing.assert_allclose(pow_y[peak_idx], amp_y[peak_idx], atol=1e-8, rtol=0)
+
+def test_specgram_overview():    
+    sig = (
+    audio.Signal(1, 1, 48000)
+    .add_noise("pink")
+    .bandpass(500, 500, "butter", order=2)
+    .add_cos_modulator(6, 1)
+    .set_dbfs(-10)
+    )
+    fig, ax = sig.viz.specgram_overview()
+    fig.show()    
