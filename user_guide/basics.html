@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Signal Basics &mdash; audiotoolbox  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
@@ -149,6 +149,11 @@ properties of the <a class="reference internal" href="../api_fluent_signal.html#
 <span class="go">No. of samples: 48000, No. of channels: (2, 3)</span>
 </pre></div>
 </div>
+<p>For user-facing code, <a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal.n_channels" title="audiotoolbox.Signal.n_channels"><code class="xref py py-attr docutils literal notranslate"><span class="pre">audiotoolbox.Signal.n_channels</span></code></a> remains
+convenient (e.g., <code class="docutils literal notranslate"><span class="pre">1</span></code> for mono and <code class="docutils literal notranslate"><span class="pre">2</span></code> for stereo). For generic
+shape-building logic, use <code class="xref py py-attr docutils literal notranslate"><span class="pre">audiotoolbox.Signal.channel_shape</span></code>,
+which always returns a tuple (e.g., <code class="docutils literal notranslate"><span class="pre">(1,)</span></code>, <code class="docutils literal notranslate"><span class="pre">(2,)</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">3)</span></code>).</p>
 <p>The time axis can be accessed directly using the
 <a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal.time" title="audiotoolbox.Signal.time"><code class="xref py py-attr docutils literal notranslate"><span class="pre">audiotoolbox.Signal.time</span></code></a> property:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">signal</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>

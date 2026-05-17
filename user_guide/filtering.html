@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Filtering &mdash; audiotoolbox  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
@@ -114,10 +114,13 @@ available on the <a class="reference internal" href="../api_fluent_signal.html#a
 unified, fluent interface for low-pass, high-pass, and band-pass
 filtering.</p>
 <ul class="simple">
-<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">lowpass()</span></code></p></li>
-<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">highpass()</span></code></p></li>
+<li><p><a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal.lowpass" title="audiotoolbox.Signal.lowpass"><code class="xref py py-meth docutils literal notranslate"><span class="pre">lowpass()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal.highpass" title="audiotoolbox.Signal.highpass"><code class="xref py py-meth docutils literal notranslate"><span class="pre">highpass()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal.bandpass" title="audiotoolbox.Signal.bandpass"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bandpass()</span></code></a></p></li>
 </ul>
+<p>For gammatone filtering, <code class="docutils literal notranslate"><span class="pre">bandpass</span></code> can return a complex-valued signal
+via <code class="docutils literal notranslate"><span class="pre">return_complex=True</span></code>. In that case, a new complex <code class="docutils literal notranslate"><span class="pre">Signal</span></code> is
+returned instead of modifying the input in place.</p>
 <p>The following example demonstrates applying a low-pass filter to a
 white noise signal.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
@@ -159,13 +162,31 @@ white noise signal.</p>
 <p>For more direct control, you can also use the filter functions available in
 the <a class="reference internal" href="../api_core.html#module-audiotoolbox.filter" title="audiotoolbox.filter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">audiotoolbox.filter</span></code></a> submodule. These functions take a signal
 as their first argument.</p>
+<p>The unified functional API mirrors the fluent <a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Signal</span></code></a>
+methods and is useful when working with arrays/signals in a functional style:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../api_core.html#audiotoolbox.filter.lowpass" title="audiotoolbox.filter.lowpass"><code class="xref py py-func docutils literal notranslate"><span class="pre">lowpass()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../api_core.html#audiotoolbox.filter.highpass" title="audiotoolbox.filter.highpass"><code class="xref py py-func docutils literal notranslate"><span class="pre">highpass()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../api_core.html#audiotoolbox.filter.bandpass" title="audiotoolbox.filter.bandpass"><code class="xref py py-func docutils literal notranslate"><span class="pre">bandpass()</span></code></a></p></li>
+</ul>
 <p>The following filters are available:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../api_core.html#audiotoolbox.filter.butterworth" title="audiotoolbox.filter.butterworth"><code class="xref py py-func docutils literal notranslate"><span class="pre">butterworth()</span></code></a>: A Butterworth filter.</p></li>
 <li><p><a class="reference internal" href="../api_core.html#audiotoolbox.filter.brickwall" title="audiotoolbox.filter.brickwall"><code class="xref py py-func docutils literal notranslate"><span class="pre">brickwall()</span></code></a>: A brickwall (ideal) filter
 implemented in the frequency domain.</p></li>
 <li><p><a class="reference internal" href="../api_core.html#audiotoolbox.filter.gammatone" title="audiotoolbox.filter.gammatone"><code class="xref py py-func docutils literal notranslate"><span class="pre">gammatone()</span></code></a>: A (complex-valued) gammatone filter.</p></li>
+<li><p><a class="reference internal" href="../api_core.html#audiotoolbox.filter.efilt" title="audiotoolbox.filter.efilt"><code class="xref py py-func docutils literal notranslate"><span class="pre">efilt()</span></code></a>: A complex exponential band-pass filter.</p></li>
 </ul>
+<p>In <a class="reference internal" href="../api_core.html#audiotoolbox.filter.bandpass" title="audiotoolbox.filter.bandpass"><code class="xref py py-func docutils literal notranslate"><span class="pre">bandpass()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">filter_type</span></code> also supports
+<code class="docutils literal notranslate"><span class="pre">'exponential'</span></code> for a complex exponential band-pass filter.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+
+<span class="c1"># Complex exponential band-pass filter around 1 kHz</span>
+<span class="n">exp_sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">filter</span><span class="o">.</span><span class="n">efilt</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">bw</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">return_complex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
 
 <span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
@@ -224,7 +245,8 @@ output of one filter in the bank.</p>
 <section id="custom-filterbanks">
 <h3>Custom Filterbanks<a class="headerlink" href="#custom-filterbanks" title="Link to this heading"></a></h3>
 <p>The <a class="reference internal" href="../api_core.html#audiotoolbox.filter.bank.create_filterbank" title="audiotoolbox.filter.bank.create_filterbank"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_filterbank()</span></code></a> function can be
-used to create custom filterbanks from any of the available filter types.</p>
+used to create custom filterbanks from <code class="docutils literal notranslate"><span class="pre">'butter'</span></code>, <code class="docutils literal notranslate"><span class="pre">'gammatone'</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">'brickwall'</span></code> filter types.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -244,7 +266,8 @@ used to create custom filterbanks from any of the available filter types.</p>
 <h2>Frequency Weighting Filters<a class="headerlink" href="#frequency-weighting-filters" title="Link to this heading"></a></h2>
 <p><strong>audiotoolbox</strong> implements A- and C-weighting filters following the
 IEC 61672-1 standard. While the weighted levels can be accessed directly
-via the <code class="xref py py-attr docutils literal notranslate"><span class="pre">stats</span></code> property (e.g., <code class="docutils literal notranslate"><span class="pre">sig.stats.dba</span></code>),
+via the <code class="docutils literal notranslate"><span class="pre">sig.stats</span></code> interface (see <a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.stats.SignalStats" title="audiotoolbox.stats.SignalStats"><code class="xref py py-class docutils literal notranslate"><span class="pre">SignalStats</span></code></a>,
+e.g., <code class="docutils literal notranslate"><span class="pre">sig.stats.dba</span></code>),
 the filters can also be applied directly.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../api_core.html#audiotoolbox.filter.a_weighting" title="audiotoolbox.filter.a_weighting"><code class="xref py py-func docutils literal notranslate"><span class="pre">a_weighting()</span></code></a></p></li>

@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Loading and Saving Audio Files &mdash; audiotoolbox  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
@@ -110,18 +110,19 @@ backed by <a class="reference external" href="http://www.mega-nerd.com/libsndfil
 WAV, FLAC, and AIFF.</p>
 <section id="loading-audio-files">
 <h2>Loading Audio Files<a class="headerlink" href="#loading-audio-files" title="Link to this heading"></a></h2>
-<p>There are two primary ways to load an audio file: creating a new <code class="docutils literal notranslate"><span class="pre">Signal</span></code>
-object directly from a file, or loading audio data into an existing <code class="docutils literal notranslate"><span class="pre">Signal</span></code>.</p>
+<p>There are two primary ways to load an audio file: using the
+<a class="reference internal" href="../api_core.html#audiotoolbox.from_file" title="audiotoolbox.from_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_file()</span></code></a> helper to create a new signal, or loading
+audio data into an existing <code class="docutils literal notranslate"><span class="pre">Signal</span></code> object via
+<a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal.from_file" title="audiotoolbox.Signal.from_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_file()</span></code></a>.</p>
 <section id="creating-a-signal-from-a-file">
 <h3>Creating a Signal from a File<a class="headerlink" href="#creating-a-signal-from-a-file" title="Link to this heading"></a></h3>
-<p>The most direct way to load an audio file is to use the
-<a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal.from_file" title="audiotoolbox.Signal.from_file"><code class="xref py py-meth docutils literal notranslate"><span class="pre">from_file()</span></code></a> class method. This creates a new
-<code class="docutils literal notranslate"><span class="pre">Signal</span></code> object with the properties (channel count, sample rate)
-inferred from the file.</p>
+<p>The most direct way to load an audio file into a new object is to use
+<a class="reference internal" href="../api_core.html#audiotoolbox.from_file" title="audiotoolbox.from_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">from_file()</span></code></a>. This returns a <code class="docutils literal notranslate"><span class="pre">Signal</span></code> with channel
+count, duration, and sample rate inferred from the file.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
 
 <span class="c1"># Load the signal from &quot;example.wav&quot; into a new Signal object</span>
-<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;example.wav&quot;</span><span class="p">)</span>
+<span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;example.wav&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

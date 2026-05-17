@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Basic Signal Modifications &mdash; audiotoolbox  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
@@ -125,7 +125,7 @@ available as methods. Tones are easily added through the
 
 <span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="n">n_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mf">100e-3</span><span class="p">,</span> <span class="n">fs</span><span class="o">=</span><span class="mi">48000</span><span class="p">)</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="n">frequency</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">amplitude</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_phase</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">sig</span><span class="o">.</span><span class="n">add_fade_window</span><span class="p">(</span><span class="n">rise_time</span><span class="o">=</span><span class="mf">30e-3</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;cos&#39;</span><span class="p">)</span>
+<span class="n">sig</span><span class="o">.</span><span class="n">add_fade_window</span><span class="p">(</span><span class="n">rise_time</span><span class="o">=</span><span class="mf">30e-3</span><span class="p">,</span> <span class="n">win_type</span><span class="o">=</span><span class="s1">&#39;cos&#39;</span><span class="p">)</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">time</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">,</span> <span class="n">sig</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Time / ms&#39;</span><span class="p">)</span>
@@ -135,7 +135,10 @@ available as methods. Tones are easily added through the
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>(<a class="reference download internal" download="" href="../_downloads/9bf5a8bfd0769c4d9a9adc0e8e94d742/modifications-2.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>)</p>
+<p>(<a class="reference download internal" download="" href="../_downloads/9bf5a8bfd0769c4d9a9adc0e8e94d742/modifications-2.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="../_downloads/25ad001664f1901733b97152425f87cb/modifications-2.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/c478948d0d4e36f7bdb7bb215e372265/modifications-2.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/cc4f6a00cb881f51a72e762ef1fc45e8/modifications-2.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<figure class="align-default">
+<img alt="../_images/modifications-2.png" class="plot-directive" src="../_images/modifications-2.png" />
+</figure>
 <p>Similarly, a cosine modulator can be added through the
 <a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal.add_cos_modulator" title="audiotoolbox.Signal.add_cos_modulator"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.add_cos_modulator()</span></code></a> method:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>

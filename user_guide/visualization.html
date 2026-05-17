@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Stimulus visualization &mdash; audiotoolbox  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
@@ -63,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="playback.html">Playback</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Stimulus visualization</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#timedomain-visualization">Timedomain visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#frequency-domain-visualization">Frequency domain visualization</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#signal-overview">Signal Overview</a></li>
 </ul>
 </li>
@@ -101,7 +102,7 @@
 <p>The visualization submodule provides methods for visualizing stimuli.</p>
 <section id="timedomain-visualization">
 <h2>Timedomain visualization<a class="headerlink" href="#timedomain-visualization" title="Link to this heading"></a></h2>
-<p>The viz.plot method allowes for a quick visualization of the timedomain signal.</p>
+<p>The <a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.viz.Visualization.plot" title="audiotoolbox.viz.Visualization.plot"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.viz.Visualization.plot()</span></code></a> method allows for a quick visualization of the timedomain signal.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sig</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">100e-3</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">add_tone</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">start_phase</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
@@ -115,9 +116,30 @@
 <img alt="../_images/visualization-1.png" class="plot-directive" src="../_images/visualization-1.png" />
 </figure>
 </section>
+<section id="frequency-domain-visualization">
+<h2>Frequency domain visualization<a class="headerlink" href="#frequency-domain-visualization" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.viz.Visualization.spectrum" title="audiotoolbox.viz.Visualization.spectrum"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.viz.Visualization.spectrum()</span></code></a> method allows for quick visualization of the stimulus spectrum.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sig</span> <span class="o">=</span> <span class="p">(</span>
+<span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
+<span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="s2">&quot;pink&quot;</span><span class="p">)</span>
+<span class="o">.</span><span class="n">bandpass</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="s2">&quot;butter&quot;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="o">.</span><span class="n">add_cos_modulator</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="o">.</span><span class="n">set_dbfs</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">viz</span><span class="o">.</span><span class="n">spectrum</span><span class="p">(</span><span class="n">single_sided</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">in_db</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference download internal" download="" href="../_downloads/87787e7e5a20485882921fee19f81be1/visualization-2.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="../_downloads/a727514594f72e331097321c35d21617/visualization-2.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/c28926ed1925c772053fc66ce5da4fbd/visualization-2.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/339d5a05414da0e5f62f42e0da977aef/visualization-2.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<figure class="align-default">
+<img alt="../_images/visualization-2.png" class="plot-directive" src="../_images/visualization-2.png" />
+</figure>
+</section>
 <section id="signal-overview">
 <h2>Signal Overview<a class="headerlink" href="#signal-overview" title="Link to this heading"></a></h2>
-<p>The specgram_overview method shows an overview that contains a plot of the timedomain-signal, the 1/3rd octave band spectrogram, and the 1/3 octave band levels. As well as some signal statistics.</p>
+<p>The <a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.viz.Visualization.specgram_overview" title="audiotoolbox.viz.Visualization.specgram_overview"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.viz.Visualization.specgram_overview()</span></code></a> method shows an overview with the time-domain
+signal, a 1/3-octave-band spectrogram, and 1/3-octave-band levels.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sig</span> <span class="o">=</span> <span class="p">(</span>
 <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>
 <span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="s2">&quot;pink&quot;</span><span class="p">)</span>
@@ -129,9 +151,9 @@
 <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>(<a class="reference download internal" download="" href="../_downloads/87787e7e5a20485882921fee19f81be1/visualization-2.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="../_downloads/a727514594f72e331097321c35d21617/visualization-2.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/c28926ed1925c772053fc66ce5da4fbd/visualization-2.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/339d5a05414da0e5f62f42e0da977aef/visualization-2.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
+<p>(<a class="reference download internal" download="" href="../_downloads/5e1a299c4c2dfd1430dd31b0968bfd0f/visualization-3.py"><code class="xref download docutils literal notranslate"><span class="pre">Source</span> <span class="pre">code</span></code></a>, <a class="reference download internal" download="" href="../_downloads/984a7ea5134ab840c27b0b663435683c/visualization-3.png"><code class="xref download docutils literal notranslate"><span class="pre">png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/b87c40cf6012a17f26e4c5d2e503227f/visualization-3.hires.png"><code class="xref download docutils literal notranslate"><span class="pre">hires.png</span></code></a>, <a class="reference download internal" download="" href="../_downloads/1540598a6008f4f2a96c511f8c7d8b68/visualization-3.pdf"><code class="xref download docutils literal notranslate"><span class="pre">pdf</span></code></a>)</p>
 <figure class="align-default">
-<img alt="../_images/visualization-2.png" class="plot-directive" src="../_images/visualization-2.png" />
+<img alt="../_images/visualization-3.png" class="plot-directive" src="../_images/visualization-3.png" />
 </figure>
 </section>
 </section>

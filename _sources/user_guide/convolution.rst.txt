@@ -28,10 +28,10 @@ being played in a room, you could convolve the 2-channel signal with a
 2-channel Room Impulse Response (RIR).
 
 >>> # Assume 'stereo_signal.wav' is a 2-channel audio file
->>> signal = audio.Signal('stereo_signal.wav')
+>>> signal = audio.from_file('stereo_signal.wav')
 >>>
 >>> # Assume 'stereo_rir.wav' is a 2-channel impulse response
->>> rir = audio.Signal('stereo_rir.wav')
+>>> rir = audio.from_file('stereo_rir.wav')
 >>>
 >>> # Convolve the signal with the RIR
 >>> signal.convolve(rir)

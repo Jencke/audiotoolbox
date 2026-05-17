@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Core functions &mdash; audiotoolbox  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
       <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
 
@@ -60,12 +60,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#audiotoolbox.phon_to_dbspl"><code class="docutils literal notranslate"><span class="pre">phon_to_dbspl()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#audiotoolbox.schroeder_phase"><code class="docutils literal notranslate"><span class="pre">schroeder_phase()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#audiotoolbox.time2phase"><code class="docutils literal notranslate"><span class="pre">time2phase()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#audiotoolbox-filter">audiotoolbox.filter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#filter-module">Filter Module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.a_weighting"><code class="docutils literal notranslate"><span class="pre">a_weighting()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.bandpass"><code class="docutils literal notranslate"><span class="pre">bandpass()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.brickwall"><code class="docutils literal notranslate"><span class="pre">brickwall()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.butterworth"><code class="docutils literal notranslate"><span class="pre">butterworth()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.c_weighting"><code class="docutils literal notranslate"><span class="pre">c_weighting()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.efilt"><code class="docutils literal notranslate"><span class="pre">efilt()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.gammatone"><code class="docutils literal notranslate"><span class="pre">gammatone()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.highpass"><code class="docutils literal notranslate"><span class="pre">highpass()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.filter.lowpass"><code class="docutils literal notranslate"><span class="pre">lowpass()</span></code></a></li>
@@ -246,18 +247,13 @@ necessary to reach a specific loudness level following DIN ISO
 226:2006-04</p>
 <p>The normed values are tabulated for the following frequencies and
 sound pressure levels:</p>
-<ol class="arabic">
-<li><p>20phon to 90phon
-* 20 Hz, 25 Hz, 31.5 Hz, 40 Hz, 50 Hz, 63 Hz, 80 Hz, 100 Hz,</p>
-<blockquote>
-<div><p>125 Hz, 160 Hz, 200 Hz, 250 Hz, 315 Hz, 400 Hz, 500 Hz, 630
-Hz, 800 Hz, 1000 Hz, 1250 Hz, 1600 Hz, 2000 Hz, 2500 Hz, 3150
-Hz, 4000 Hz</p>
-</div></blockquote>
-</li>
-<li><p>20phon to 80phon
-* 5000 Hz, 6300 Hz, 8000 Hz, 10000 Hz, 12500 Hz</p></li>
-</ol>
+<ul class="simple">
+<li><p>20 to 90 phon: 20 Hz, 25 Hz, 31.5 Hz, 40 Hz, 50 Hz, 63 Hz,
+80 Hz, 100 Hz, 125 Hz, 160 Hz, 200 Hz, 250 Hz, 315 Hz,
+400 Hz, 500 Hz, 630 Hz, 800 Hz, 1000 Hz, 1250 Hz, 1600 Hz,
+2000 Hz, 2500 Hz, 3150 Hz, 4000 Hz.</p></li>
+<li><p>20 to 80 phon: 5000 Hz, 6300 Hz, 8000 Hz, 10000 Hz, 12500 Hz.</p></li>
+</ul>
 <p>Values for other frequencies can be interpolated (cubic spline) by
 setting the parameter <cite>interpolate=True</cite>. The check for correct
 sound pressure levels can be switched off by setting
@@ -315,7 +311,7 @@ calculated</p></li>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="id2" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id6">2</a>)</span>
 <p>Schroeder, M. (1970). Synthesis of low-peak-factor signals
 and binary sequences with low autocorrelation
 (corresp.). IEEE Transactions on Information Theory, 16(1),
@@ -343,9 +339,9 @@ and binary sequences with low autocorrelation
 </dl>
 </dd></dl>
 
-<section id="audiotoolbox-filter">
-<h2>audiotoolbox.filter<a class="headerlink" href="#audiotoolbox-filter" title="Link to this heading"></a></h2>
-<p>Individual filter can either be applied by directly calling the respective filter functions such as <a class="reference internal" href="#audiotoolbox.filter.gammatone" title="audiotoolbox.filter.gammatone"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter.gammatone()</span></code></a> or by using the unified interfaces for <a class="reference internal" href="#audiotoolbox.filter.bandpass" title="audiotoolbox.filter.bandpass"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter.bandpass()</span></code></a>, <a class="reference internal" href="#audiotoolbox.filter.lowpass" title="audiotoolbox.filter.lowpass"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter.lowpass()</span></code></a> and <a class="reference internal" href="#audiotoolbox.filter.highpass" title="audiotoolbox.filter.highpass"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter.highpass()</span></code></a> filters. When using the unified interface, all additional arguments are passed to the respective filter functions.</p>
+<section id="filter-module">
+<h2>Filter Module<a class="headerlink" href="#filter-module" title="Link to this heading"></a></h2>
+<p>Individual filters can either be applied by directly calling the respective filter functions such as <a class="reference internal" href="#audiotoolbox.filter.gammatone" title="audiotoolbox.filter.gammatone"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter.gammatone()</span></code></a> or <a class="reference internal" href="#audiotoolbox.filter.efilt" title="audiotoolbox.filter.efilt"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter.efilt()</span></code></a>, or by using the unified interfaces for <a class="reference internal" href="#audiotoolbox.filter.bandpass" title="audiotoolbox.filter.bandpass"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter.bandpass()</span></code></a>, <a class="reference internal" href="#audiotoolbox.filter.lowpass" title="audiotoolbox.filter.lowpass"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter.lowpass()</span></code></a> and <a class="reference internal" href="#audiotoolbox.filter.highpass" title="audiotoolbox.filter.highpass"><code class="xref py py-func docutils literal notranslate"><span class="pre">filter.highpass()</span></code></a> filters. When using the unified interface, all additional arguments are passed to the respective filter functions.</p>
 <dl class="py function" id="module-audiotoolbox.filter">
 <dt class="sig sig-object py" id="audiotoolbox.filter.a_weighting">
 <span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">a_weighting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.filter.a_weighting" title="Link to this definition"></a></dt>
@@ -382,7 +378,7 @@ implemented in audiotoolbox.</p>
 <li><p><strong>signal</strong> (<em>ndarray</em><em> or </em><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><em>Signal</em></a>) – The input signal.</p></li>
 <li><p><strong>fc</strong> (<em>float</em>) – The center frequency in Hz.</p></li>
 <li><p><strong>bw</strong> (<em>float</em>) – The bandwidth in Hz</p></li>
-<li><p><strong>filter_type</strong> (<em>string</em>) – The filter type, ‘gammatone’, ‘butter’, ‘brickwall’</p></li>
+<li><p><strong>filter_type</strong> (<em>string</em>) – The filter type, ‘gammatone’, ‘butter’, ‘brickwall’, ‘exponential’</p></li>
 <li><p><strong>fs</strong> (<em>None</em><em> or </em><em>int</em>) – The sampling frequency, must be provided if not using the Signal
 class.</p></li>
 <li><p><strong>**kwargs</strong> – Further arguments such as ‘order’ that are passed to the filter
@@ -475,10 +471,37 @@ sufficent to result in a Class 1 filter following IEC 61672-1.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="audiotoolbox.filter.efilt">
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">efilt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><span class="pre">Signal</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_complex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><span class="pre">Signal</span></a></span></span><a class="headerlink" href="#audiotoolbox.filter.efilt" title="Link to this definition"></a></dt>
+<dd><p>Apply complex exponential filter to the signal.</p>
+<section id="id4">
+<h3>Parameters:<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>signal<span class="classifier">ndarray</span></dt><dd><p>Input signal.</p>
+</dd>
+<dt>fc<span class="classifier">float</span></dt><dd><p>Center frequency in Hz.</p>
+</dd>
+<dt>bw<span class="classifier">float</span></dt><dd><p>Bandwidth in Hz.</p>
+</dd>
+<dt>return_complex<span class="classifier">bool</span></dt><dd><p>If True, return complex output. If False, return real part only.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filtered_signal</strong> – Filtered output signal.</p>
+</dd>
+<dt class="field-even">rtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>ndarray</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="audiotoolbox.filter.gammatone">
 <span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">gammatone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attenuation_db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'erb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_complex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.filter.gammatone" title="Link to this definition"></a></dt>
 <dd><p>Apply a gammatone filter to the signal.</p>
-<p>Applys a gammatone filter following <a class="reference internal" href="#hohmann2002" id="id4"><span>[Hohmann2002]</span></a> to the input
+<p>Applys a gammatone filter following <a class="reference internal" href="#hohmann2002" id="id5"><span>[Hohmann2002]</span></a> to the input
 signal and returns the filtered signal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -502,7 +525,7 @@ part is returned (default = True)</p></li>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="hohmann2002" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">Hohmann2002</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">Hohmann2002</a><span class="fn-bracket">]</span></span>
 <p>Hohmann, V., Frequency analysis and synthesis
 using a Gammatone filterbank, Acta Acustica, Vol 88 (2002),
 43 -3442</p>
@@ -568,7 +591,7 @@ functions.</p></li>
 <span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.bank.</span></span><span class="sig-name descname"><span class="pre">auditory_gamma_bank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fhigh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">16000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GammaToneBank</span></span></span><a class="headerlink" href="#audiotoolbox.filter.bank.auditory_gamma_bank" title="Link to this definition"></a></dt>
 <dd><p>Equivalent Rectangular Bandwidth spaced gammatone filterbank.</p>
 <p>Creates a gammatone filterbank with center freequencies equally spaced on
-the auditory ERB scale as proposed by <a class="footnote-reference brackets" href="#id2" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
+the auditory ERB scale as proposed by <a class="footnote-reference brackets" href="#id2" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.</p>
 <dl class="simple">
 <dt>..[1] Glasberg, B. R., &amp; Moore, B. C. (1990). Derivation of</dt><dd><p>auditory filter shapes from notched-noise data. Hearing
 Research, 47(1-2), 103-138.</p>

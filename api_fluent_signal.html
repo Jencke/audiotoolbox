@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Signals in the time domain (audiotoolbox.Signal) &mdash; audiotoolbox  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
       <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
 
@@ -68,6 +68,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.Signal.duration"><code class="docutils literal notranslate"><span class="pre">Signal.duration</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.Signal.from_file"><code class="docutils literal notranslate"><span class="pre">Signal.from_file()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.Signal.fs"><code class="docutils literal notranslate"><span class="pre">Signal.fs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.Signal.highpass"><code class="docutils literal notranslate"><span class="pre">Signal.highpass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.Signal.lowpass"><code class="docutils literal notranslate"><span class="pre">Signal.lowpass()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.Signal.multiply"><code class="docutils literal notranslate"><span class="pre">Signal.multiply()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.Signal.n_channels"><code class="docutils literal notranslate"><span class="pre">Signal.n_channels</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.Signal.n_samples"><code class="docutils literal notranslate"><span class="pre">Signal.n_samples</span></code></a></li>
@@ -90,6 +92,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#the-signal-time-frequency-sub-module">The <cite>Signal.time_frequency</cite> sub-module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.time_frequency.TimeFrequency"><code class="docutils literal notranslate"><span class="pre">TimeFrequency</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#the-signal-viz-sub-module">The <cite>Signal.viz</cite> sub-module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.viz.Visualization"><code class="docutils literal notranslate"><span class="pre">Visualization</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -376,8 +382,8 @@ is then mixed with the remaining noise tokens using the equation</p>
 <p>where <span class="math notranslate nohighlight">\(X_{\rho,n}\)</span> is the nth output and noise,
 <span class="math notranslate nohighlight">\(X_{n}\)</span> the nth indipendent noise and <span class="math notranslate nohighlight">\(X_{N=1}\)</span> is the
 common noise.</p>
-<p>for two noise tokens, this is identical to the assymetric
-three-generator method described in <a href="#id5"><span class="problematic" id="id1">[1]_</span></a></p>
+<p>For two noise tokens, this is identical to the asymmetric
+three-generator method described by Hartmann and Cho (2011).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -406,15 +412,10 @@ the audiotoolbox.filter.highpass function</p></li>
 <p><a class="reference internal" href="#audiotoolbox.Signal.add_noise" title="audiotoolbox.Signal.add_noise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotoolbox.Signal.add_noise</span></code></a></p>
 </div>
 <p class="rubric">References</p>
-<aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id2" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<p>Hartmann, W. M., &amp; Cho, Y. J. (2011). Generating partially</p>
-</aside>
-</aside>
-<p>correlated noise—a comparison of methods. The Journal of the
-Acoustical Society of America, 130(1),
-292-301. <a class="reference external" href="http://dx.doi.org/10.1121/1.3596475">http://dx.doi.org/10.1121/1.3596475</a></p>
+<p>Hartmann, W. M., &amp; Cho, Y. J. (2011). Generating partially
+correlated noise - a comparison of methods. The Journal of the
+Acoustical Society of America, 130(1), 292-301.
+<a class="reference external" href="http://dx.doi.org/10.1121/1.3596475">http://dx.doi.org/10.1121/1.3596475</a></p>
 </dd></dl>
 
 <dl class="py method">
@@ -446,10 +447,19 @@ filter functions</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>Returns itself</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#audiotoolbox.Signal" title="audiotoolbox.Signal">Signal</a></p>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>Returns itself</strong> (<em>Signal</em>)</p></li>
+<li><p><em>When a complex-valued output is requested (e.g. gammatone</em></p></li>
+<li><p>with <code class="docutils literal notranslate"><span class="pre">return_complex=True</span></code>), a new complex Signal is</p></li>
+<li><p><em>returned and a UserWarning is emitted. In-place conversion</em></p></li>
+<li><p><em>from real to complex is not possible without reallocating</em></p></li>
+<li><p><em>the underlying ndarray buffer.</em></p></li>
+<li><p><em>If you want explicit control, cast first and call bandpass</em></p></li>
+<li><p><em>on the complex signal</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">complex_signal</span> <span class="pre">=</span> <span class="pre">signal.astype(complex)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">complex_signal</span> <span class="pre">=</span> <span class="pre">complex_signal.bandpass(...,</span> <span class="pre">return_complex=True)</span></code></p></li>
+</ul>
+</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -642,6 +652,86 @@ all channels. Default is “all”.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.Signal.highpass">
+<span class="sig-name descname"><span class="pre">highpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_cut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.highpass" title="Link to this definition"></a></dt>
+<dd><p>Apply a highpass filter to the Signal.</p>
+<p>This function provieds a unified interface to all highpass
+filters implemented in audiotoolbox.</p>
+<ul class="simple">
+<li><p>brickwall: A ‘optimal’ brickwall filter</p></li>
+<li><p>butter: A butterworth filter</p></li>
+</ul>
+<p>For additional filter parameters and detailed description see
+the respective implementations:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="api_core.html#audiotoolbox.filter.brickwall" title="audiotoolbox.filter.brickwall"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.filter.brickwall()</span></code></a></p></li>
+<li><p><a class="reference internal" href="api_core.html#audiotoolbox.filter.butterworth" title="audiotoolbox.filter.butterworth"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.filter.butterworth()</span></code></a></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ndarray</em><em> or </em><a class="reference internal" href="#audiotoolbox.Signal" title="audiotoolbox.Signal"><em>Signal</em></a>) – The input signal.</p></li>
+<li><p><strong>f_cut</strong> (<em>float</em>) – The cutoff frequency in Hz</p></li>
+<li><p><strong>filter_type</strong> (<em>{'butter'</em><em>, </em><em>'brickwall'}</em>) – The filter type</p></li>
+<li><p><strong>fs</strong> (<em>None</em><em> or </em><em>int</em>) – The sampling frequency, must be provided if not using the
+Signal class.</p></li>
+<li><p><strong>**kwargs</strong> – Further arguments such as ‘order’ that are passed to the
+filter functions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Signal</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The filtered Signal</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="api_core.html#audiotoolbox.filter.brickwall" title="audiotoolbox.filter.brickwall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotoolbox.filter.brickwall</span></code></a>, <a class="reference internal" href="api_core.html#audiotoolbox.filter.butterworth" title="audiotoolbox.filter.butterworth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotoolbox.filter.butterworth</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.Signal.lowpass">
+<span class="sig-name descname"><span class="pre">lowpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_cut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.lowpass" title="Link to this definition"></a></dt>
+<dd><p>Apply a lowpass filter to the Signal.</p>
+<p>This function provieds a unified interface to all lowpass
+filters implemented in audiotoolbox.</p>
+<ul class="simple">
+<li><p>brickwall: A ‘optimal’ brickwall filter</p></li>
+<li><p>butter: A butterworth filter</p></li>
+</ul>
+<p>For additional filter parameters and detailed description see
+the respective implementations:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="api_core.html#audiotoolbox.filter.brickwall" title="audiotoolbox.filter.brickwall"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.filter.brickwall()</span></code></a></p></li>
+<li><p><a class="reference internal" href="api_core.html#audiotoolbox.filter.butterworth" title="audiotoolbox.filter.butterworth"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.filter.butterworth()</span></code></a></p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<em>ndarray</em><em> or </em><a class="reference internal" href="#audiotoolbox.Signal" title="audiotoolbox.Signal"><em>Signal</em></a>) – The input signal.</p></li>
+<li><p><strong>f_cut</strong> (<em>float</em>) – The cutoff frequency in Hz</p></li>
+<li><p><strong>filter_type</strong> (<em>{'butter'</em><em>, </em><em>'brickwall'}</em>) – The filter type</p></li>
+<li><p><strong>fs</strong> (<em>None</em><em> or </em><em>int</em>) – The sampling frequency, must be provided if not using the Signal class.</p></li>
+<li><p><strong>**kwargs</strong> – Further arguments such as ‘order’ that are passed to the filter functions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Signal</strong></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The filtered Signal</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="api_core.html#audiotoolbox.filter.brickwall" title="audiotoolbox.filter.brickwall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotoolbox.filter.brickwall</span></code></a>, <a class="reference internal" href="api_core.html#audiotoolbox.filter.butterworth" title="audiotoolbox.filter.butterworth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">audiotoolbox.filter.butterworth</span></code></a></p>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="audiotoolbox.Signal.multiply">
 <span class="sig-name descname"><span class="pre">multiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.multiply" title="Link to this definition"></a></dt>
 <dd><p>In-place multiplication</p>
@@ -726,17 +816,9 @@ Default is True.</p>
 <span class="sig-name descname"><span class="pre">resample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_fs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.resample" title="Link to this definition"></a></dt>
 <dd><p>Resample the signal to a new sampling rate.</p>
 <p>This method uses the <cite>resampy</cite> library to resample the signal to a new
-sampling rate. It is based on the band-limited sinc interpolation method
-for sampling rate conversion as described by Smith (2015). <a href="#id6"><span class="problematic" id="id3">[1]_</span></a>.</p>
-<aside class="footnote-list brackets">
-<aside class="footnote brackets" id="id4" role="doc-footnote">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<p>Smith, Julius O. Digital Audio Resampling Home Page
-Center for Computer Research in Music and Acoustics (CCRMA),
-Stanford University, 2015-02-23.
-Web published at <a class="reference external" href="http://ccrma.stanford.edu/~jos/resample/">http://ccrma.stanford.edu/~jos/resample/</a>.</p>
-</aside>
-</aside>
+sampling rate. It is based on band-limited sinc interpolation methods
+described by Smith (2015):
+<a class="reference external" href="http://ccrma.stanford.edu/~jos/resample/">http://ccrma.stanford.edu/~jos/resample/</a></p>
 </dd></dl>
 
 <dl class="py method">
@@ -1112,6 +1194,77 @@ e.g.:</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tuple[audio.Signal, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="the-signal-viz-sub-module">
+<h2>The <cite>Signal.viz</cite> sub-module<a class="headerlink" href="#the-signal-viz-sub-module" title="Link to this heading"></a></h2>
+<p>The <cite>Signal.viz</cite> submodule gives access to an instance of the <cite>audiotoolbox.viz.Visualization</cite> class that provides plotting and visualization helpers.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="audiotoolbox.viz.Visualization">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">audiotoolbox.viz.</span></span><span class="sig-name descname"><span class="pre">Visualization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sig</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.viz.Visualization" title="Link to this definition"></a></dt>
+<dd><p>Class containing time-frequency analysis methods.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.viz.Visualization.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.viz.Visualization.plot" title="Link to this definition"></a></dt>
+<dd><p>Plot the Signal using matplotlib.</p>
+<p>This function quickly plots the signal over time. If the
+signal only contains two channels, they are plotted in blue
+and red.</p>
+<p>Currently only works for signals with 1 dimensional channel
+shape.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ax</strong> (<em>None</em><em>, </em><em>matplotlib.axis</em><em> (</em><em>optional</em><em>)</em>) – The axis that should be used for plotting. If None, a new
+figure is created. (default is None)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.viz.Visualization.specgram_overview">
+<span class="sig-name descname"><span class="pre">specgram_overview</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">specgram_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#audiotoolbox.viz.Visualization.specgram_overview" title="Link to this definition"></a></dt>
+<dd><p>Plot a signal overview with octave band spectrogram, signal and octave band levels.</p>
+<p>This function creates a figure with three subplots: the time-domain signal,
+the octave band spectrogram, and the octave band levels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>specgram_args</strong> (<em>dict</em>) – Arguments to be passed to the spectrogram function.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib.figure.Figure</em>) – The figure object containing the plots.</p></li>
+<li><p><strong>ax</strong> (<em>numpy.ndarray</em>) – The array of axes objects for the subplots.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.viz.Visualization.spectrum">
+<span class="sig-name descname"><span class="pre">spectrum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">single_sided</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">None</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Axes</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Figure</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Axes</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#audiotoolbox.viz.Visualization.spectrum" title="Link to this definition"></a></dt>
+<dd><p>Plot the spectrum of the Signal using matplotlib.</p>
+<p>This function computes and plots the amplitude spectrum of the signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>single_sided</strong> (<em>bool</em>) – If True, only the positive frequencies are plotted.
+(default is True)</p></li>
+<li><p><strong>minx</strong> (<em>float</em>) – Minimum x-axis value in Hz. (default is 20.0).</p></li>
+<li><p><strong>maxx</strong> (<em>float</em>) – Maximum x-axis value in Hz. (default is 20000.0). Values above
+the Nyquist frequency are clamped to the Nyquist frequency.</p></li>
+<li><p><strong>power</strong> (<em>bool</em>) – If True, the power spectrum is plotted instead of the amplitude
+spectrum. (default is False)</p></li>
+<li><p><strong>in_db</strong> (<em>bool</em>) – If True, the amplitude/power values are converted to dB scale.
+(default is True)</p></li>
+<li><p><strong>ax</strong> (<em>None</em><em>, </em><em>matplotlib.axis</em><em> (</em><em>optional</em><em>)</em>) – The axis that should be used for plotting. If None, a new
+figure is created. (default is None)</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>

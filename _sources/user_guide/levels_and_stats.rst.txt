@@ -26,8 +26,8 @@ The following properties are available:
 * **.stats.rms**: The Root-Mean-Square level of the signal.
 * **.stats.dbspl**: The level in dB Sound Pressure Level (SPL), assuming
     the signal values are pressure in Pascals relative to 20 µPa.
-* **.stats.dbfs**: The level in dB Full Scale, where 0 dBFS is a sine
-    wave with an amplitude of 1.
+* **.stats.dbfs**: The level in dB Full Scale using an RMS convention,
+    where 0 dBFS corresponds to the RMS of a full-scale sine wave.
 * **.stats.dba** and **.stats.dbc**: A- and C-weighted SPL.
 * **.stats.crest_factor**: The ratio of the peak amplitude to the RMS value.
 * **.stats.mean**: The mean value of the signal.

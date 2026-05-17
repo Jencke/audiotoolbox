@@ -12,23 +12,24 @@ WAV, FLAC, and AIFF.
 Loading Audio Files
 -------------------
 
-There are two primary ways to load an audio file: creating a new ``Signal``
-object directly from a file, or loading audio data into an existing ``Signal``.
+There are two primary ways to load an audio file: using the
+:func:`~audiotoolbox.from_file` helper to create a new signal, or loading
+audio data into an existing ``Signal`` object via
+:meth:`~audiotoolbox.Signal.from_file`.
 
 Creating a Signal from a File
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The most direct way to load an audio file is to use the
-:meth:`~audiotoolbox.Signal.from_file` class method. This creates a new
-``Signal`` object with the properties (channel count, sample rate)
-inferred from the file.
+The most direct way to load an audio file into a new object is to use
+:func:`~audiotoolbox.from_file`. This returns a ``Signal`` with channel
+count, duration, and sample rate inferred from the file.
 
 .. code-block:: python
 
    import audiotoolbox as audio
 
    # Load the signal from "example.wav" into a new Signal object
-   sig = audio.Signal.from_file("example.wav")
+   sig = audio.from_file("example.wav")
 
 Loading Data into an Existing Signal
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
