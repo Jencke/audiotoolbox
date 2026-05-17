@@ -81,7 +81,7 @@ class OctaveScale(ScaleBase):
             freq = gbase ** ((2 * scale_value - 59.0) / (2 * b)) * 1e3
         return freq[0] if scalar_input else freq
 
-    def calc_bw(self, fc, oct_fraction: int = 3, base_system: int = 2):
+    def get_bw(self, fc, oct_fraction: int = 3, base_system: int = 2):
         """Fractional-octave bandwidth around center frequency.
 
         The bandwidth is computed as upper minus lower band edge with

@@ -62,7 +62,7 @@ class ErbScale(ScaleBase):
         freq = fkhz * 1000
         return freq[0] if scalar_input else freq
 
-    def calc_bw(self, fc):
+    def get_bw(self, fc):
         r"""Calculate bandwidth on the ERB scale.
 
         Returns the equivalent rectangular bandwidth for a given center

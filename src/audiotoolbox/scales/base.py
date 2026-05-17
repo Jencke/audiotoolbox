@@ -19,9 +19,9 @@ class ScaleBase(ABC):
         """Convert scale value to frequency in Hz."""
 
     @abstractmethod
-    def calc_bw(self, fc, **kwargs):
+    def get_bw(self, fc, **kwargs):
         """Calculate bandwidth in Hz for a center frequency."""
 
-    def get_bw(self, fc, **kwargs):
-        """Alias for calc_bw."""
-        return self.calc_bw(fc, **kwargs)
+    def calc_bw(self, fc, **kwargs):
+        """Compatibility alias for get_bw."""
+        return self.get_bw(fc, **kwargs)

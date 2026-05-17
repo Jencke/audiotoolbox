@@ -140,7 +140,7 @@ class BarkScale(ScaleBase):
         f = 1960 * (bark + 0.53) / (26.28 - bark)
         return f[0] if scalar_input else f
 
-    def calc_bw(self, fc):
+    def get_bw(self, fc):
         r"""Calculate critical bandwidth.
 
         Returns the critical bandwidth following [Zwicker1980]_.
