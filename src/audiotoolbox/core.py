@@ -12,7 +12,10 @@ from . import filter
 from . import din_iso_226
 from .scales import bark as bark_scale
 from .scales import erb as erb_scale
+from .scales import greenwood as greenwood_scale
+from .scales import mel as mel_scale
 from .scales import octave as octave_scale
+from .scales import semitone as semitone_scale
 
 COLOR_R = "#d65c5c"
 COLOR_L = "#5c5cd6"
@@ -363,16 +366,24 @@ def freqspace(min_frequency, max_frequency, n, scale="bark"):
 
     """
 
-    if scale == "bark":
-        min_bark, max_bark = freq_to_bark(np.array([min_frequency, max_frequency]))
-        barks = np.linspace(min_bark, max_bark, n)
-        freqs = bark_to_freq(barks)
-    elif scale == "erb":
-        min_erb, max_erb = freq_to_erb(np.array([min_frequency, max_frequency]))
-        erbs = np.linspace(min_erb, max_erb, n)
-        freqs = erb_to_freq(erbs)
-    else:
-        raise NotImplementedError("only ERB and Bark implemented")
+    scale_map = {
+        "bark": bark_scale,
+        "erb": erb_scale,
+        "octave": octave_scale,
+        "mel": mel_scale,
+        "semitone": semitone_scale,
+        "greenwood": greenwood_scale,
+    }
+
+    if scale not in scale_map:
+        raise NotImplementedError(
+            "implemented scales are: bark, erb, octave, mel, semitone, greenwood"
+        )
+
+    scale_obj = scale_map[scale]
+    min_scale, max_scale = scale_obj.from_freq(np.array([min_frequency, max_frequency]))
+    scale_vals = np.linspace(min_scale, max_scale, n)
+    freqs = scale_obj.to_freq(scale_vals)
 
     return freqs
 
@@ -381,7 +392,7 @@ def freqarange(
     min_frequency: float,
     max_frequency: float,
     step: float = 1,
-    scale: Literal["bark", "erb", "octave"] = "bark",
+    scale: Literal["bark", "erb", "octave", "mel", "semitone", "greenwood"] = "bark",
 ) -> np.ndarray:
     r"""Calculate a of frequencies with a predifined spacing on a given frequency
     scale.
@@ -408,20 +419,29 @@ def freqarange(
     ndarray: frequencies spaced following step on respective scale
 
     """
-    if scale == "bark":
-        min_bark, max_bark = freq_to_bark(np.array([min_frequency, max_frequency]))
-        bark = np.arange(min_bark, max_bark, step)
-        freqs = bark_to_freq(bark)
-    elif scale == "erb":
-        min_erb, max_erb = freq_to_erb(np.array([min_frequency, max_frequency]))
-        erbs = np.arange(min_erb, max_erb, step)
-        freqs = erb_to_freq(erbs)
-    elif scale == "octave":
+    if scale == "octave":
+        # Keep legacy octave stepping behavior for backward compatibility.
         n_steps = int(np.log2(max_frequency / min_frequency) / step)
         exponents = step * (np.arange(n_steps) + 1)
-        freqs = max_frequency / 2 ** exponents[::-1]
-    else:
-        raise NotImplementedError("only ERB and Bark implemented")
+        return max_frequency / 2 ** exponents[::-1]
+
+    scale_map = {
+        "bark": bark_scale,
+        "erb": erb_scale,
+        "mel": mel_scale,
+        "semitone": semitone_scale,
+        "greenwood": greenwood_scale,
+    }
+
+    if scale not in scale_map:
+        raise NotImplementedError(
+            "implemented scales are: bark, erb, octave, mel, semitone, greenwood"
+        )
+
+    scale_obj = scale_map[scale]
+    min_scale, max_scale = scale_obj.from_freq(np.array([min_frequency, max_frequency]))
+    scale_vals = np.arange(min_scale, max_scale, step)
+    freqs = scale_obj.to_freq(scale_vals)
 
     return freqs
 

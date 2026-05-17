@@ -89,6 +89,21 @@ def test_freqspace():
     # check if really equally spaced in erbs
     testing.assert_array_almost_equal(diff, diff[::-1])
 
+    freqs = audio.freqspace(100, 1200, 20, scale="mel")
+    mel = audio.mel.from_freq(freqs)
+    diff = np.diff(mel)
+    testing.assert_array_almost_equal(diff, diff[::-1])
+
+    freqs = audio.freqspace(110, 1760, 20, scale="semitone")
+    semi = audio.semitone.from_freq(freqs)
+    diff = np.diff(semi)
+    testing.assert_array_almost_equal(diff, diff[::-1])
+
+    freqs = audio.freqspace(100, 1200, 20, scale="greenwood")
+    green = audio.greenwood.from_freq(freqs)
+    diff = np.diff(green)
+    testing.assert_array_almost_equal(diff, diff[::-1])
+
 
 def test_freq_to_erb():
     # test that scale starts with 0
@@ -130,6 +145,21 @@ def test_freqarange():
 
     freqs = audio.freqarange(16, 16000, 1 / 2, "octave")
     assert freqs[-4] == 4000
+
+    freqs = audio.freqarange(100, 2000, 1, scale="mel")
+    mel = audio.mel.from_freq(freqs)
+    diff = np.diff(mel)
+    testing.assert_almost_equal(diff[0], 1)
+
+    freqs = audio.freqarange(110, 1760, 1, scale="semitone")
+    semi = audio.semitone.from_freq(freqs)
+    diff = np.diff(semi)
+    testing.assert_almost_equal(diff[0], 1)
+
+    freqs = audio.freqarange(100, 2000, 0.1, scale="greenwood")
+    green = audio.greenwood.from_freq(freqs)
+    diff = np.diff(green)
+    testing.assert_almost_equal(diff[0], 0.1)
 
 
 def test_erb_to_freq():
