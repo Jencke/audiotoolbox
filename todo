@@ -1,17 +1,6 @@
 # Audiotoolbox - TODO
 
 
----
-
-## Architecture (High Impact)
-
-
-### `BaseSignal` — `n_channels` Return Type
-- [x] Keep `n_channels` ergonomic for user-facing code (`int` for mono/stereo).
-- [x] Added `channel_shape` (always `tuple`) for internal shape logic.
-        Internal code now uses `channel_shape` instead of `atleast_1d(n_channels)` workarounds.
-
----
 
 ## Performance
 
@@ -131,30 +120,30 @@
 ## Missing Tests
 
 ### Known Bugs Without Regression Tests
-- [ ] `zeropad(number=1, duration=1e-3)` — both args provided, should raise `ValueError`
-- [ ] `resample(-1000)` — negative int, should raise `ValueError`
-- [ ] `resample(24000.0)` — float input, should raise `ValueError`
-- [ ] `create_filterbank([100], [10], "unknown_type", 48000)` — should raise `ValueError`
-- [ ] `bank[0].filt(sig)` — scalar index then filt, currently breaks
+- [x] `zeropad(number=1, duration=1e-3)` — both args provided, should raise `ValueError`
+- [x] `resample(-1000)` — negative int, should raise `ValueError`
+- [x] `resample(24000.0)` — float input, should raise `ValueError`
+- [x] `create_filterbank([100], [10], "unknown_type", 48000)` — raises `ValueError` (source fixed + test added)
+- [x] `bank[0].filt(sig)` — scalar index then filt (source fixed via `atleast_1d` in `__getitem__` + test added)
 
 ### Missing Invariant Tests
-- [ ] FFT round-trip: `sig.to_freqdomain().to_timedomain() ≈ sig`
-- [ ] `set_dbfs` round-trip: `sig.set_dbfs(-20); assert sig.stats.dbfs ≈ -20`
-- [ ] `set_dbfs` inter-channel: relative RMS between channels preserved after normalisation
-- [ ] `|inst_cmplx_corr| ≤ 1` for all inputs
-- [ ] Resample round-trip: `sig.resample(96000).resample(48000) ≈ original`
+- [x] FFT round-trip: `sig.to_freqdomain().to_timedomain() ≈ sig`
+- [x] `set_dbfs` round-trip: `sig.set_dbfs(-20); assert sig.stats.dbfs ≈ -20`
+- [x] `set_dbfs` inter-channel: documents per-channel normalization behavior (ratio changes independently)
+- [x] `|inst_cmplx_corr| ≤ 1` for all inputs
+- [x] Resample round-trip: `sig.resample(96000).resample(48000) ≈ original`
 
 ### Missing Filterbank Tests
-- [ ] Output shape consistency across all three filter types for identical inputs
-- [ ] Scalar `__getitem__` followed by `filt` for all subclasses
-- [ ] `ButterworthBank` with N-dimensional channel input
+- [x] Output shape consistency across all three filter types for identical inputs
+- [x] Scalar `__getitem__` followed by `filt` for all subclasses
+- [x] `ButterworthBank` with N-dimensional channel input
 
 ### Test Hygiene
-- [ ] Remove module-level executable code from `test_filterbank.py` —
+- [x] Remove module-level executable code from `test_filterbank.py` —
       it runs on import during test collection and will cause confusing failures
-- [ ] Parametrize filter type tests using `@pytest.mark.parametrize`
-- [ ] Add pytest fixtures for common signals to reduce boilerplate
-- [ ] Fix loop variable shadowing in `test_butterworth` and `test_gammatone`:
+- [x] Parametrize filter type tests using `@pytest.mark.parametrize`
+- [x] Add pytest fixtures for common signals to reduce boilerplate
+- [x] Fix loop variable shadowing in `test_butterworth` and `test_gammatone`:
       `for i_filt, (fc, bw)` shadows the outer `fc` and `bw` lists
 
 ---

@@ -72,7 +72,7 @@ class Visualization(object):
         ax[1, 1].barh(freq, bandlevels - basevalue, left=basevalue, height=0.15 * freq)
         ax[1, 1].set_xlabel("Level / dB FS")
         ax[1, 1].minorticks_off()
-        dbfs = self.sig.stats.dbfs
+        dbfs = self.sig.stats.dbfs[0]
         duration = self.sig.duration
         samples = self.sig.n_samples
         max_val = self.sig.max()
@@ -183,9 +183,10 @@ class Visualization(object):
 
         ax.plot(freq, amplitude)
         ax.set_xlabel("Frequency / Hz")
-        ax.set_ylabel("Amplitude")
-        if power:
-            ax.set_ylabel("Power")
+        if not in_db:
+            ax.set_ylabel("Power" if power else "Amplitude")
+        else:
+            ax.set_ylabel("Power / dB" if power else "Amplitude / dB")
         ax.set_xscale("log")
         ax.set_xlim(minx, maxx)
         return fig, ax
