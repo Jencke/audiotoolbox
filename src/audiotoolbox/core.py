@@ -21,7 +21,7 @@ def _copy_to_dim(array, dim):
     tiled_array = np.tile(array, (*dim[::-1], 1)).T
     # make sure that dimensions are only squeezed if the last dimension of the
     # goal dimension does not equal 1
-    if not (len(dim) > 1 & dim[-1] == 1):
+    if dim[-1] != 1:
         # squeeze to remove axis of lenght 1
         tiled_array = np.squeeze(tiled_array)
 
@@ -133,16 +133,9 @@ def pad_for_fft(signal):
 
     """
 
-    if signal.ndim == 1:
-        n_channels = 1
-    else:
-        n_channels = signal.shape[1]
-
     n_out = nextpower2(len(signal))
-    if n_channels == 1:
-        out_signal = np.zeros(int(n_out))
-    else:
-        out_signal = np.zeros([int(n_out), n_channels])
+    out_shape = (int(n_out),) + signal.shape[1:]
+    out_signal = np.zeros(out_shape)
     out_signal[: len(signal)] = signal
 
     return out_signal
@@ -686,14 +679,11 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
     The normed values are tabulated for the following frequencies and
     sound pressure levels:
 
-    1. 20phon to 90phon
-       * 20 Hz, 25 Hz, 31.5 Hz, 40 Hz, 50 Hz, 63 Hz, 80 Hz, 100 Hz,
-        125 Hz, 160 Hz, 200 Hz, 250 Hz, 315 Hz, 400 Hz, 500 Hz, 630
-        Hz, 800 Hz, 1000 Hz, 1250 Hz, 1600 Hz, 2000 Hz, 2500 Hz, 3150
-        Hz, 4000 Hz
-
-    2. 20phon to 80phon
-       * 5000 Hz, 6300 Hz, 8000 Hz, 10000 Hz, 12500 Hz
+    - 20 to 90 phon: 20 Hz, 25 Hz, 31.5 Hz, 40 Hz, 50 Hz, 63 Hz,
+      80 Hz, 100 Hz, 125 Hz, 160 Hz, 200 Hz, 250 Hz, 315 Hz,
+      400 Hz, 500 Hz, 630 Hz, 800 Hz, 1000 Hz, 1250 Hz, 1600 Hz,
+      2000 Hz, 2500 Hz, 3150 Hz, 4000 Hz.
+    - 20 to 80 phon: 5000 Hz, 6300 Hz, 8000 Hz, 10000 Hz, 12500 Hz.
 
     Values for other frequencies can be interpolated (cubic spline) by
     setting the parameter `interpolate=True`. The check for correct
@@ -1051,11 +1041,12 @@ def inst_cmplx_corr(signal, window_duration, window="hann"):
 
     asig = signal.to_analytical()
     iccp = asig.ch[0] * asig.ch[1].conjugate()
-    icpow = np.abs(asig.ch[0]) * np.abs(asig.ch[1])
     win_samps = int(window_duration * signal.fs)
     win = as_signal(get_window(window, win_samps), signal.fs)
-    filt_iccp = iccp.convolve(win, "same")
-    filt_icpow = icpow.convolve(win, "same")
+    filt_iccp = iccp.convolve(win, "same")    
+    filt_pow1 = (np.abs(asig.ch[0])**2).convolve(win, "same")
+    filt_pow2 = (np.abs(asig.ch[1])**2).convolve(win, "same")
+    filt_icpow = np.sqrt(filt_pow1 * filt_pow2)
     coh = filt_iccp / filt_icpow
     return coh
 
@@ -1196,7 +1187,7 @@ def crossfade(
     if sig1.fs != sig2.fs:
         raise (ValueError("The sample rate of the two signals has to match."))
     fs = sig1.fs
-    n_channels = sig1.n_channels
+    channel_shape = sig1.channel_shape
 
     fade = Signal(1, fade_duration, fs)
     if fade_type == "cos":
@@ -1208,13 +1199,13 @@ def crossfade(
 
     n_out = sig1.n_samples + sig2.n_samples - fade.n_samples
     out_duration = n_out / fs
-    out_sig = Signal((2,) + tuple(np.atleast_1d(n_channels)), out_duration, fs)
+    out_sig = Signal((2,) + channel_shape, out_duration, fs)
 
     # Reshape signals to ensure they can be broadcast into the temporary out_sig.
     # This is necessary because a 1D signal (N,) cannot be assigned to a
     # 2D slice (N, 1) without an explicit reshape.
-    s1 = sig1.reshape(sig1.n_samples, *np.atleast_1d(sig1.n_channels))
-    s2 = sig2.reshape(sig2.n_samples, *np.atleast_1d(sig2.n_channels))
+    s1 = sig1.reshape(sig1.n_samples, *sig1.channel_shape)
+    s2 = sig2.reshape(sig2.n_samples, *sig2.channel_shape)
 
     out_sig[: sig1.n_samples, 0] = s1
     out_sig[-sig2.n_samples :, 1] = s2
@@ -1225,7 +1216,7 @@ def crossfade(
     # Reshape fade ramps to allow broadcasting across all channel dimensions.
     # A ramp of shape (N,) becomes (N, 1) or (N, 1, 1) etc., to match the
     # shape of the signal slice it's being multiplied with.
-    n_channel_dims = len(np.atleast_1d(n_channels))
+    n_channel_dims = len(channel_shape)
     fade_shape = (-1,) + (1,) * n_channel_dims
     fade_out_ramp = fade.reshape(fade_shape)
     fade_in_ramp = fade[::-1].reshape(fade_shape)

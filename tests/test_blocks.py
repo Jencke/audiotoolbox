@@ -46,13 +46,13 @@ def test_as_blocked_mono_perfect_fit(mono_signal):
     blocked_sig = sig.as_blocked(block_size=block_size, overlap=overlap)
 
     assert isinstance(blocked_sig, Signal)
-    assert blocked_sig.shape == (block_size, 2)
+    assert blocked_sig.shape == (block_size, 2, 1)
     assert blocked_sig.fs == sig.fs
 
     # Check content of the first block
-    np.testing.assert_array_equal(blocked_sig[:, 0], sig[0:block_size])
+    np.testing.assert_array_equal(blocked_sig[:, 0, :], sig[0:block_size])
     # Check content of the second block
-    np.testing.assert_array_equal(blocked_sig[:, 1], sig[step : step + block_size])
+    np.testing.assert_array_equal(blocked_sig[:, 1, :], sig[step : step + block_size])
 
 
 def test_as_blocked_stereo_perfect_fit(stereo_signal):
@@ -90,20 +90,20 @@ def test_as_blocked_mono_with_padding(mono_signal):
 
     # Required length = ceil((2000 - 1024) / 512) * 512 + 1024 = 2 * 512 + 1024 = 2048
     # n_pad = 2048 - 2000 = 48
-    with pytest.warns(UserWarning, match="Zero padding 48 samples"):
+    with pytest.warns(UserWarning, match=r"Zero padding \d+ samples"):
         blocked_sig = sig.as_blocked(block_size=block_size, overlap=overlap)
 
     # The original signal is padded in-place
     assert sig.n_samples == 2048
-    assert blocked_sig.shape == (block_size, 3)
+    assert blocked_sig.shape == (block_size, 3, 1)
 
     # Check that the padded part is zero
-    np.testing.assert_array_equal(sig[original_length:], np.zeros(48))
+    np.testing.assert_array_equal(sig[original_length:], np.zeros((48, 1)))
 
     # Check the last block's content
     last_block_start = 2 * step
     np.testing.assert_array_equal(
-        blocked_sig[:, -1], sig[last_block_start : last_block_start + block_size]
+        blocked_sig[:, -1, :], sig[last_block_start : last_block_start + block_size]
     )
 
 
@@ -118,7 +118,7 @@ def test_as_blocked_no_overlap(mono_signal):
 
     blocked_sig = sig.as_blocked(block_size=block_size, overlap=overlap)
 
-    assert blocked_sig.shape == (block_size, 4)
+    assert blocked_sig.shape == (block_size, 4, 1)
 
     # Check the third block
-    np.testing.assert_array_equal(blocked_sig[:, 2], sig[2 * step : 3 * step])
+    np.testing.assert_array_equal(blocked_sig[:, 2, :], sig[2 * step : 3 * step])

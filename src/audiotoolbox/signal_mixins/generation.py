@@ -207,8 +207,8 @@ class GenerationMixin:
         :math:`X_{n}` the nth indipendent noise and :math:`X_{N=1}` is the
         common noise.
 
-        for two noise tokens, this is identical to the assymetric
-        three-generator method described in [1]_
+        For two noise tokens, this is identical to the asymmetric
+        three-generator method described by Hartmann and Cho (2011).
 
         Parameters
         ----------
@@ -241,10 +241,10 @@ class GenerationMixin:
 
         References
         ----------
-        .. [1] Hartmann, W. M., & Cho, Y. J. (2011). Generating partially
-        correlated noise—a comparison of methods. The Journal of the
-        Acoustical Society of America, 130(1),
-        292-301. http://dx.doi.org/10.1121/1.3596475
+        Hartmann, W. M., & Cho, Y. J. (2011). Generating partially
+        correlated noise - a comparison of methods. The Journal of the
+        Acoustical Society of America, 130(1), 292-301.
+        http://dx.doi.org/10.1121/1.3596475
 
         """
         if corr < 0:

@@ -80,27 +80,27 @@ def test_dbc():
 def test_octave_band_levels():
     sig = audio.Signal(1, 10, 48000).add_noise("pink").set_dbfs(-10)
 
-    dbfs2, fc2 = sig.stats.octave_band_levels(oct_fraction=1)
-    assert fc2.shape == dbfs2.shape
-    assert fc2.size == dbfs2.size
+    fc2, dbfs2 = sig.stats.octave_band_levels(oct_fraction=1)
+    assert dbfs2.shape[-1] == fc2.shape[0]
+    assert fc2.size == dbfs2.shape[-1]
     bank = audio.filter.bank.octave_bank(sig.fs, oct_fraction=1)
     bank_out = bank.filt(sig)
     testing.assert_array_almost_equal(dbfs2, bank_out.stats.dbfs)
 
-    dbfs3, fc3 = sig.stats.octave_band_levels(oct_fraction=3)
-    assert fc3.shape == dbfs3.shape
-    assert fc3.size == dbfs3.size
+    fc3, dbfs3 = sig.stats.octave_band_levels(oct_fraction=3)
+    assert dbfs3.shape[-1] == fc3.shape[0]
+    assert fc3.size == dbfs3.shape[-1]
     bank = audio.filter.bank.octave_bank(sig.fs, oct_fraction=3)
     bank_out = bank.filt(sig)
     testing.assert_array_almost_equal(dbfs3, bank_out.stats.dbfs)
 
     sig2 = audio.Signal((2, 3), 10, 48000).add_noise("pink").set_dbfs(-10)
-    dbfs2, fc2 = sig2.stats.octave_band_levels(oct_fraction=1)
+    fc2, dbfs2 = sig2.stats.octave_band_levels(oct_fraction=1)
     assert fc2.shape[0] == dbfs2.shape[-1]
     bank = audio.filter.bank.octave_bank(sig2.fs, oct_fraction=1)
     bank_out = bank.filt(sig2)
     testing.assert_array_almost_equal(dbfs2, bank_out.stats.dbfs)
 
     sig2 = audio.Signal((2, 3), 10, 48000).add_noise("pink").set_dbfs(-10)
-    dbfs2, fc2 = sig2.stats.octave_band_levels(oct_fraction=1)
+    fc2, dbfs2 = sig2.stats.octave_band_levels(oct_fraction=1)
     assert sig2.n_channels == dbfs2.shape[:-1]

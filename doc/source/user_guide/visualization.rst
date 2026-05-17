@@ -6,7 +6,7 @@ The visualization submodule provides methods for visualizing stimuli.
 Timedomain visualization
 ------------------------
 
-The viz.plot method allowes for a quick visualization of the timedomain signal.
+The :meth:`audiotoolbox.viz.Visualization.plot` method allows for a quick visualization of the timedomain signal.
 
 .. plot::
     :include-source:
@@ -20,11 +20,30 @@ The viz.plot method allowes for a quick visualization of the timedomain signal.
 
 
 
+Frequency domain visualization
+-------------------------------
+
+The :meth:`audiotoolbox.viz.Visualization.spectrum` method allows for quick visualization of the stimulus spectrum.
+
+.. plot::
+    :include-source:
+
+    sig = (
+    audio.Signal(1, 1, 48000)
+    .add_noise("pink")
+    .bandpass(1000, 500, "butter", order=2)
+    .add_cos_modulator(6, 1)
+    .set_dbfs(-10)
+    )
+
+    fig, ax = sig.viz.spectrum(single_sided=True, in_db=True)
+    fig.show()
 
 Signal Overview
 ---------------
 
-The specgram_overview method shows an overview that contains a plot of the timedomain-signal, the 1/3rd octave band spectrogram, and the 1/3 octave band levels. As well as some signal statistics.
+The :meth:`audiotoolbox.viz.Visualization.specgram_overview` method shows an overview with the time-domain
+signal, a 1/3-octave-band spectrogram, and 1/3-octave-band levels.
 
 .. plot::
     :include-source:

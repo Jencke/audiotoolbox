@@ -38,7 +38,7 @@ def test_nsamples():
 
 def test_low_noise_noise():
     noise = audio.generate_low_noise_noise(1, 500, 200, fs=48000)
-    assert noise.shape == (48000,)
+    assert noise.shape == (48000, 1)
 
     # test directly using signal
     # sig = audio.Signal((2, 3), 1, 48000)
@@ -48,39 +48,6 @@ def test_low_noise_noise():
     assert noise.shape == (48000, 2, 3)
     testing.assert_array_equal(noise[:, 0, :], noise[:, 1, :])
     testing.assert_array_equal(noise[:, :, 0], noise[:, :, 1])
-
-
-# def test_get_time():
-#     tone = audio.generate_tone(1, 1, 1e3)
-#     time = audio.get_time(tone, 1e3)
-
-#     # Test sampling rate
-#     assert time[2] - time[1] == 1.0 / 1e3
-
-#     # Test duration
-#     assert time[-1] == 1 - 1.0 / 1e3
-
-#     tone1 = audio.generate_tone(1, 1, 1e3)
-#     tone2 = audio.generate_tone(1, 1, 1e3)
-
-#     tone_two_channel = np.column_stack([tone1, tone2])
-
-#     time = audio.get_time(tone, 1e3)
-
-#     assert len(time) == len(tone_two_channel)
-
-#     # Test sampling rate
-#     assert time[2] - time[1] == 1.0 / 1e3
-
-#     # Test duration
-#     assert time[-1] == 1 - 1.0 / 1e3
-
-#     # Test appearence of extra sample due to numerics
-#     fs = 48e3
-#     left = np.linspace(0, 1, 50976)
-#     time = audio.get_time(left, fs)
-#     assert len(left) == len(time)
-
 
 def test_bark():
     # Compare the tabled values to the ones resulting from the equation
@@ -298,17 +265,17 @@ def test_extract_binaural_differences():
     assert np.all(np.isclose(ipd, 0))
 
 
-def test_crest_factor():
+def test_crest_factor_array():
     # Test that c for sine is equal to sqrt(2)
-    signal = audio.generate_tone(100, 1, 100e3)
+    signal = audio.Signal(1, 1, 100000).add_tone(100)
     c = audio.crest_factor(signal)
-    testing.assert_almost_equal(c, 20 * np.log10(np.sqrt(2)))
+    testing.assert_almost_equal(c, np.sqrt(2))
 
     # test that c for half wave rect. sine is 2
-    signal = audio.generate_tone(100, 1, 100e3)
+    signal = audio.Signal(1, 1, 100000).add_tone(100)
     signal[signal < 0] = 0
     c = audio.crest_factor(signal)
-    testing.assert_almost_equal(c, 20 * np.log10(2))
+    testing.assert_almost_equal(c, 2)
 
 
 def test_band2rms():
@@ -348,7 +315,7 @@ def test_cmplx_crosscorr():
     nsamp = 1000
     start = np.where(coh.time == 0)[0][0]
     testing.assert_allclose(
-        coh[start + 1 : start + nsamp], coh_analytic[: nsamp - 1], rtol=0, atol=0.03
+        coh[start + 1 : start + nsamp, 0], coh_analytic[: nsamp - 1], rtol=0, atol=0.03
     )
 
     # calculate auto-coherrence
@@ -391,8 +358,6 @@ def test_cmplx_correlation():
     signal.ch[1].phase_shift(np.pi / 2)
     ccc = audio.cmplx_corr(signal)
     testing.assert_allclose(np.angle(ccc), np.pi / 2)
-
-    # If the
 
     signal = audio.Signal(2, 1, 48000).add_uncorr_noise(0.2)
     ccc = audio.cmplx_corr(signal)
@@ -458,3 +423,10 @@ def test_crossfade():
     sig2 = audio.Signal(1, 1, 48000).add_noise()
     out = audio.crossfade(sig1, sig2, 450e-3, fade_type="cos")
     assert np.abs(1 - out.stats.var.mean()) < 0.01
+
+
+def test_inst_cmplx_corr_magnitude_bounded():
+    """|inst_cmplx_corr| must be <= 1 for all samples (coherence property)."""
+    sig = audio.Signal(2, 0.5, 48000).add_noise(seed=0)
+    coh = audio.inst_cmplx_corr(sig, window_duration=10e-3)
+    assert np.all(np.abs(coh) <= 1.0 + 1e-9)

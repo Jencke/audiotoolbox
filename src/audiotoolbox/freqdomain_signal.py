@@ -13,8 +13,9 @@ def _copy_to_dim(array, dim):
 
     # tile by the number of dimensions
     tiled_array = np.tile(array, (*dim[::-1], 1)).T
-    # squeeze to remove axis of lenght 1
-    tiled_array = np.squeeze(tiled_array)
+    if dim[-1] != 1:
+        # squeeze to remove axis of lenght 1
+        tiled_array = np.squeeze(tiled_array)
 
     return tiled_array
 
@@ -178,7 +179,10 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
         return self
 
     def from_timedomain(self, signal):
-        self[:] = np.fft.fft(signal, axis=0)
+        transformed = np.fft.fft(signal, axis=0)
+        if self.ndim == 2 and self.shape[1] == 1 and transformed.ndim == 1:
+            transformed = transformed[:, np.newaxis]
+        self[:] = transformed
         self /= signal.n_samples
         return self
 
@@ -201,6 +205,8 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
         fsig *= fsig.n_samples
         wv = np.fft.ifft(fsig, axis=0)
         wv = np.real_if_close(wv)
+        if np.ndim(wv) == 1:
+            wv = wv[:, np.newaxis]
         signal = audio.Signal(fsig.n_channels, fsig.duration, fsig.fs, dtype=wv.dtype)
         signal[:] = wv
         return signal

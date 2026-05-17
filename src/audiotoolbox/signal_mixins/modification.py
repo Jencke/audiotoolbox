@@ -1,5 +1,6 @@
 """Signal mixins for organizing Signal class functionality."""
 
+from numbers import Integral
 import signal
 from typing import TYPE_CHECKING, Literal, Union
 
@@ -210,6 +211,8 @@ class ModificationMixin:
         """
 
         modulator = 1 + m * np.cos(2 * np.pi * frequency * self.time + start_phase)
+        if self.ndim > 1:
+            modulator = modulator.reshape((self.n_samples,) + (1,) * (self.ndim - 1))
 
         self *= modulator
         return self
@@ -353,9 +356,8 @@ class ModificationMixin:
         # Only one number or duration must be stated
         if duration is None and number is None:
             raise ValueError("Must state duration or number of zeros")
-        elif duration is None and number is None:
+        elif duration is not None and number is not None:
             raise ValueError("Must state only duration or number of zeros")
-            return
 
         # If duration instead of number is stated, calculate the
         # number of samples to buffer with
@@ -423,19 +425,15 @@ class ModificationMixin:
         """Resample the signal to a new sampling rate.
 
         This method uses the `resampy` library to resample the signal to a new
-        sampling rate. It is based on the band-limited sinc interpolation method
-        for sampling rate conversion as described by Smith (2015). [1]_.
-
-        .. [1] Smith, Julius O. Digital Audio Resampling Home Page
-            Center for Computer Research in Music and Acoustics (CCRMA),
-            Stanford University, 2015-02-23.
-            Web published at `<http://ccrma.stanford.edu/~jos/resample/>`_.
+        sampling rate. It is based on band-limited sinc interpolation methods
+        described by Smith (2015):
+        http://ccrma.stanford.edu/~jos/resample/
         """
 
-        if new_fs <= 0 and not isinstance(new_fs, int):
+        if not isinstance(new_fs, Integral) or isinstance(new_fs, bool) or new_fs <= 0:
             raise ValueError("new_fs must be a positive integer")
         if not isinstance(self.base, type(None)):
-            raise RuntimeError("Zeropad can only be applied to" " the whole signal")
+            raise RuntimeError("Resample can only be applied to the whole signal")
         else:
             out = resampy.resample(x=self, sr_orig=self.fs, sr_new=new_fs, axis=0)
             self.resize(out.shape, refcheck=False)

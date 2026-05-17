@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from typing import Union
 
 COLOR_R = "#d65c5c"
 COLOR_L = "#5c5cd6"
@@ -33,7 +35,6 @@ class Visualization(object):
         ax : numpy.ndarray
             The array of axes objects for the subplots.
         """
-        import matplotlib.pyplot as plt
 
         assert self.sig.n_channels == 1, "Only single channel signals supported"
 
@@ -43,8 +44,8 @@ class Visualization(object):
         else:
             oct_fraction = 3
 
-        spec, freq = self.sig.time_frequency.octave_band_specgram(**specgram_args)
-        bandlevels, freq = self.sig.stats.octave_band_levels(oct_fraction=oct_fraction)
+        spec, spec_freq = self.sig.time_frequency.octave_band_specgram(**specgram_args)
+        freq, bandlevels = self.sig.stats.octave_band_levels(oct_fraction=oct_fraction)
 
         basevalue = bandlevels.min() * 1.1
 
@@ -61,7 +62,7 @@ class Visualization(object):
         )
         ax[0, 0].plot(self.sig.time, self.sig)
         ax[0, 0].set_ylabel("Amplitude")
-        ax[1, 0].pcolormesh(spec.time, freq, spec.T)
+        ax[1, 0].pcolormesh(spec.time, spec_freq, spec.T)
         ax[0, 1].set_visible(False)
         ax[1, 0].set_yscale("log")
         ax[1, 0].set_xlabel("Time / s")
@@ -71,7 +72,7 @@ class Visualization(object):
         ax[1, 1].barh(freq, bandlevels - basevalue, left=basevalue, height=0.15 * freq)
         ax[1, 1].set_xlabel("Level / dB FS")
         ax[1, 1].minorticks_off()
-        dbfs = self.sig.stats.dbfs
+        dbfs = self.sig.stats.dbfs[0]
         duration = self.sig.duration
         samples = self.sig.n_samples
         max_val = self.sig.max()
@@ -101,7 +102,6 @@ class Visualization(object):
             figure is created. (default is None)
 
         """
-        import matplotlib.pyplot as plt
 
         assert np.ndim(self.sig) <= 2, "Only 1 dimensional channel shapes allowed"
 
@@ -116,4 +116,77 @@ class Visualization(object):
             ax.plot(self.sig.time, self.sig)
         ax.set_xlabel("Time / s")
         ax.set_ylabel("Amplitude")
+        return fig, ax
+
+    def spectrum(
+        self,
+        single_sided: bool = True,
+        minx: float = 20.0,
+        maxx: float = 20000.0,
+        power: bool = False,
+        in_db: bool = True,
+        ax: Union[None, plt.Axes] = None,
+    ) -> tuple[plt.Figure, plt.Axes]:
+        """Plot the spectrum of the Signal using matplotlib.
+
+        This function computes and plots the amplitude spectrum of the signal.
+
+        Parameters
+        ----------
+        single_sided : bool
+            If True, only the positive frequencies are plotted.
+            (default is True)
+        minx : float
+            Minimum x-axis value in Hz. (default is 20.0).
+        maxx : float
+            Maximum x-axis value in Hz. (default is 20000.0). Values above
+            the Nyquist frequency are clamped to the Nyquist frequency.
+        power : bool
+            If True, the power spectrum is plotted instead of the amplitude
+            spectrum. (default is False)
+        in_db : bool
+            If True, the amplitude/power values are converted to dB scale.
+            (default is True)
+        ax : None, matplotlib.axis (optional)
+            The axis that should be used for plotting. If None, a new
+            figure is created. (default is None)
+
+        """
+        import matplotlib.pyplot as plt
+
+        nyquist = self.sig.fs / 2.0
+        if maxx > nyquist:
+            maxx = nyquist
+
+        if not ax:
+            fig, ax = plt.subplots(1, 1)
+        else:
+            fig = ax.figure
+
+        fsig = self.sig.to_freqdomain()
+        freq = fsig.freq
+        amplitude = np.abs(fsig)
+        if power:
+            amplitude = amplitude**2
+
+        if single_sided:
+            half_n = len(freq) // 2
+            freq = freq[:half_n]
+            amplitude = amplitude[:half_n]
+            amplitude *= 2  # compensate for single sided spectrum
+
+        if in_db:
+            if power:
+                amplitude = 10 * np.log10(amplitude + 1e-12)
+            else:
+                amplitude = 20 * np.log10(amplitude + 1e-12)
+
+        ax.plot(freq, amplitude)
+        ax.set_xlabel("Frequency / Hz")
+        if not in_db:
+            ax.set_ylabel("Power" if power else "Amplitude")
+        else:
+            ax.set_ylabel("Power / dB" if power else "Amplitude / dB")
+        ax.set_xscale("log")
+        ax.set_xlim(minx, maxx)
         return fig, ax

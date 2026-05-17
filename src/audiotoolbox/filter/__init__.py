@@ -9,6 +9,7 @@ from . filter import bandpass, lowpass, highpass
 from .brickwall_filt import brickwall
 from .butterworth_filt import butterworth
 from .gammatone_filt import gammatone
+from .exponential_filter import efilt
 from .freq_weighting import a_weighting, c_weighting
 
 from . import bank

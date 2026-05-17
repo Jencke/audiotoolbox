@@ -9,19 +9,11 @@ class BaseSignal(np.ndarray):
 
         n_samples = audio.nsamples(duration, fs)
 
-        if not np.ndim(n_channels):  # if channels is only an integer
-            if n_channels == 1:
-                obj = super(BaseSignal, cls).__new__(
-                    cls, shape=(n_samples), dtype=dtype
-                )
-            else:
-                obj = super(BaseSignal, cls).__new__(
-                    cls, shape=(n_samples, n_channels), dtype=dtype
-                )
-        else:
-            obj = super(BaseSignal, cls).__new__(
-                cls, shape=[n_samples] + list(n_channels), dtype=dtype
-            )
+        # Always keep an explicit channel axis so mono and multichannel
+        # signals use a consistent memory layout.
+        obj = super(BaseSignal, cls).__new__(
+            cls, shape=(n_samples, *np.atleast_1d(n_channels)), dtype=dtype
+        )
         obj._fs = fs
         obj.fill(0)
 
@@ -35,6 +27,36 @@ class BaseSignal(np.ndarray):
         # If it was called after e.g slicing, copy
         # copy sample rate
         self._fs = getattr(obj, "_fs", None)
+
+    def __setitem__(self, key, value):
+        try:
+            return super().__setitem__(key, value)
+        except ValueError:
+            target = np.ndarray.__getitem__(self, key)
+            arr = np.asarray(value)
+
+            # Compatibility path: allow assigning a mono 1D vector (N,)
+            # into explicit-channel slices like (N, 1).
+            if (
+                isinstance(target, np.ndarray)
+                and target.ndim >= 2
+                and target.shape[-1] == 1
+                and arr.ndim == target.ndim - 1
+                and arr.shape == target.shape[:-1]
+            ):
+                return super().__setitem__(key, arr[..., np.newaxis])
+
+            # Compatibility path in the other direction: if a view resolves
+            # to 1D (N,), accept incoming mono-column data shaped (N, 1).
+            if (
+                isinstance(target, np.ndarray)
+                and target.ndim == 1
+                and arr.ndim == 2
+                and arr.shape[1] == 1
+                and arr.shape[0] == target.shape[0]
+            ):
+                return super().__setitem__(key, arr[:, 0])
+            raise
 
     @property  # getter to handle the sample rates
     def fs(self) -> int:
@@ -52,6 +74,13 @@ class BaseSignal(np.ndarray):
             return self.shape[1]
         else:
             return self.shape[1:]
+
+    @property
+    def channel_shape(self) -> tuple:
+        """Tuple describing the channel axes shape."""
+        if self.ndim == 1:
+            return (1,)
+        return self.shape[1:]
 
     @property
     def n_samples(self):
@@ -220,6 +249,9 @@ class _chIndexer(object):
             # In case, it's only a 1D array, allways return the whole
             # array
             idx = slice(None, None, None)
+        elif np.ndim(self.idx_obj) == 2 and self.idx_obj.shape[1] == 1:
+            # Keep mono signals 2D when indexing channels.
+            idx = (slice(None, None, None), slice(0, 1, None))
         else:
             # return only the slice
             idx = (slice(None, None, None),) + key
@@ -236,6 +268,9 @@ class _chIndexer(object):
             # In case, it's only a 1D array, allways return the whole
             # array
             idx = slice(None, None, None)
+        elif np.ndim(self.idx_obj) == 2 and self.idx_obj.shape[1] == 1:
+            # Keep mono signals 2D when indexing channels.
+            idx = (slice(None, None, None), slice(0, 1, None))
         else:
             # return only the slice
             idx = (slice(None, None, None),) + key

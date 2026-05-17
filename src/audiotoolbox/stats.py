@@ -116,7 +116,7 @@ class SignalStats(BaseStats):
         """
         bank = audio.filter.bank.octave_bank(self.sig.fs, oct_fraction=oct_fraction)
         bank_out = bank.filt(self.sig)
-        return bank_out.stats.dbfs, bank.fc
+        return bank.fc, bank_out.stats.dbfs
 
 
 class FreqDomainStats(BaseStats):

@@ -46,6 +46,18 @@ class FilteringMixin:
         --------
             Returns itself : Signal
 
+            When a complex-valued output is requested (e.g. gammatone
+            with ``return_complex=True``), a new complex Signal is
+            returned and a UserWarning is emitted. In-place conversion
+            from real to complex is not possible without reallocating
+            the underlying ndarray buffer.
+
+            If you want explicit control, cast first and call bandpass
+            on the complex signal:
+
+            ``complex_signal = signal.astype(complex)``
+            ``complex_signal = complex_signal.bandpass(..., return_complex=True)``
+
         See Also
         --------
         audiotoolbox.filter.brickwall
@@ -59,12 +71,18 @@ class FilteringMixin:
 
         filt_signal = filt.bandpass(self, fc, bw, filter_type, **kwargs)
 
-        # in case of complex output, signal needs to be reshaped and
-        # typecast
+        # Complex output cannot be represented in-place on the existing
+        # real-valued ndarray without corrupting its buffer layout.
         if np.iscomplexobj(filt_signal):
-            shape = self.shape
-            self.dtype = complex
-            self.resize(shape, refcheck=False)
+            warnings.warn(
+                "bandpass with complex output returns a new Signal instead of modifying in-place",
+                UserWarning,
+                stacklevel=2,
+            )
+            complex_signal = self.astype(complex)
+            complex_signal[:] = filt_signal
+            return complex_signal
+
         self[:] = filt_signal
 
         return self
@@ -231,8 +249,8 @@ class FilteringMixin:
 
         """
         fs = self.fs
-        dim_sig = np.atleast_1d(self.n_channels)
-        dim_kernel = np.atleast_1d(kernel.n_channels)
+        dim_sig = self.channel_shape
+        dim_kernel = kernel.channel_shape
 
         # Determine if some of the dimension overlap
         if overlap_dimensions:
@@ -262,10 +280,10 @@ class FilteringMixin:
         new_signal = audio.Signal(new_nch, new_nsamp / fs, fs, dtype=self.dtype)
 
         if dim_overlap != 0:
-            n_sig = np.prod(dim_sig[:-dim_overlap])
+            n_sig = int(np.prod(dim_sig[:-dim_overlap], dtype=int))
         else:
-            n_sig = np.prod(dim_sig)
-        n_kernel = np.prod(dim_kernel[dim_overlap:])
+            n_sig = int(np.prod(dim_sig, dtype=int))
+        n_kernel = int(np.prod(dim_kernel[dim_overlap:], dtype=int))
         for i_sig in range(n_sig):
             for i_k in range(n_kernel):
                 # only indices that do not overlap need to be looked at
@@ -282,6 +300,11 @@ class FilteringMixin:
                 a = self.ch[idx_sig_combined]
                 b = kernel.ch[idx_k_combined]
                 newsig_idx = idx_sig + overlap_slice + idx_k
+
+                if np.ndim(a) < np.ndim(b):
+                    a = a.reshape(a.shape + (1,) * (np.ndim(b) - np.ndim(a)))
+                elif np.ndim(b) < np.ndim(a):
+                    b = b.reshape(b.shape + (1,) * (np.ndim(a) - np.ndim(b)))
 
                 new_signal.ch[newsig_idx] = fftconvolve(a, b, mode=mode, axes=0)
         self.resize(new_signal.shape, refcheck=False)

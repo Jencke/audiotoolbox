@@ -3,6 +3,7 @@ import numpy as np
 from .gammatone_filt import gammatone
 from .butterworth_filt import butterworth
 from .brickwall_filt import brickwall
+from .exponential_filter import efilt
 from .. import core as audio
 
 
@@ -21,7 +22,7 @@ def bandpass(signal, fc, bw, filter_type, fs=None, **kwargs):
     bw : float
       The bandwidth in Hz
     filter_type : string
-      The filter type, 'gammatone', 'butter', 'brickwall'
+      The filter type, 'gammatone', 'butter', 'brickwall', 'exponential'
     fs : None or int
       The sampling frequency, must be provided if not using the Signal
       class.
@@ -44,6 +45,8 @@ def bandpass(signal, fc, bw, filter_type, fs=None, **kwargs):
         sig_out = gammatone(signal, fc, bw, fs, **kwargs)
     elif filter_type == "brickwall":
         sig_out = brickwall(signal, low_f, high_f, fs, **kwargs)
+    elif filter_type == "exponential":
+        sig_out = efilt(signal, fc, bw, **kwargs)
     else:
         raise (ValueError, f"Filtertype {filter_type} not implemented.")
         return None

@@ -102,3 +102,16 @@ def test_freqdomain_multiple_copy():
     fsig_orig = fsig.copy()
     fsig.to_timedomain()
     np.testing.assert_array_equal(fsig_orig, fsig)
+
+
+def test_fft_roundtrip():
+    """sig.to_freqdomain().to_timedomain() must approximate the original signal."""
+    sig = audio.Signal(2, 0.1, 48000).add_noise(seed=0)
+    result = sig.to_freqdomain().to_timedomain()
+    testing.assert_almost_equal(result, sig)
+
+
+def test_fft_roundtrip_multichannel():
+    sig = audio.Signal((3, 2), 0.1, 48000).add_noise(seed=0)
+    result = sig.to_freqdomain().to_timedomain()
+    testing.assert_almost_equal(result, sig)
