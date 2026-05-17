@@ -63,12 +63,32 @@ For more direct control, you can also use the filter functions available in
 the :mod:`audiotoolbox.filter` submodule. These functions take a signal
 as their first argument.
 
+The unified functional API mirrors the fluent :class:`~audiotoolbox.Signal`
+methods and is useful when working with arrays/signals in a functional style:
+
+* :func:`~audiotoolbox.filter.lowpass`
+* :func:`~audiotoolbox.filter.highpass`
+* :func:`~audiotoolbox.filter.bandpass`
+
 The following filters are available:
 
 * :func:`~audiotoolbox.filter.butterworth`: A Butterworth filter.
 * :func:`~audiotoolbox.filter.brickwall`: A brickwall (ideal) filter
   implemented in the frequency domain.
 * :func:`~audiotoolbox.filter.gammatone`: A (complex-valued) gammatone filter.
+* :func:`~audiotoolbox.filter.efilt`: A complex exponential band-pass filter.
+
+In :func:`~audiotoolbox.filter.bandpass`, ``filter_type`` also supports
+``'exponential'`` for a complex exponential band-pass filter.
+
+.. code-block:: python
+
+   import audiotoolbox as audio
+
+   sig = audio.Signal(n_channels=1, duration=1, fs=48000).add_noise('white')
+
+   # Complex exponential band-pass filter around 1 kHz
+   exp_sig = audio.filter.efilt(sig, fc=1000, bw=200, return_complex=True)
 
 .. code-block:: python
 
@@ -137,7 +157,8 @@ Custom Filterbanks
 ~~~~~~~~~~~~~~~~~~
 
 The :func:`~audiotoolbox.filter.bank.create_filterbank` function can be
-used to create custom filterbanks from any of the available filter types.
+used to create custom filterbanks from ``'butter'``, ``'gammatone'``,
+and ``'brickwall'`` filter types.
 
 .. code-block:: python
 
@@ -158,7 +179,8 @@ Frequency Weighting Filters
 
 **audiotoolbox** implements A- and C-weighting filters following the
 IEC 61672-1 standard. While the weighted levels can be accessed directly
-via the :attr:`~audiotoolbox.Signal.stats` property (e.g., ``sig.stats.dba``),
+via the ``sig.stats`` interface (see :class:`~audiotoolbox.stats.SignalStats`,
+e.g., ``sig.stats.dba``),
 the filters can also be applied directly.
 
 * :func:`~audiotoolbox.filter.a_weighting`

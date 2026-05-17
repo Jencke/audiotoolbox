@@ -7,13 +7,13 @@ Core functions
             time2phase, phase2time, crossfade, from_file
 
 
-audiotoolbox.filter
-^^^^^^^^^^^^^^^^^
+Filter Module
+^^^^^^^^^^^^^
 
-Individual filter can either be applied by directly calling the respective filter functions such as :func:`filter.gammatone` or by using the unified interfaces for :func:`filter.bandpass`, :func:`filter.lowpass` and :func:`filter.highpass` filters. When using the unified interface, all additional arguments are passed to the respective filter functions.
+Individual filters can either be applied by directly calling the respective filter functions such as :func:`filter.gammatone` or :func:`filter.efilt`, or by using the unified interfaces for :func:`filter.bandpass`, :func:`filter.lowpass` and :func:`filter.highpass` filters. When using the unified interface, all additional arguments are passed to the respective filter functions.
 
 .. automodule:: audiotoolbox.filter
-    :members: bandpass, lowpass, highpass, gammatone, butterworth, brickwall, a_weighting, c_weighting
+    :members: bandpass, lowpass, highpass, gammatone, butterworth, brickwall, efilt, a_weighting, c_weighting
 
 Filterbanks are created using the :func:`create_filterbank` command
 
