@@ -679,14 +679,11 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
     The normed values are tabulated for the following frequencies and
     sound pressure levels:
 
-    1. 20phon to 90phon
-       * 20 Hz, 25 Hz, 31.5 Hz, 40 Hz, 50 Hz, 63 Hz, 80 Hz, 100 Hz,
-        125 Hz, 160 Hz, 200 Hz, 250 Hz, 315 Hz, 400 Hz, 500 Hz, 630
-        Hz, 800 Hz, 1000 Hz, 1250 Hz, 1600 Hz, 2000 Hz, 2500 Hz, 3150
-        Hz, 4000 Hz
-
-    2. 20phon to 80phon
-       * 5000 Hz, 6300 Hz, 8000 Hz, 10000 Hz, 12500 Hz
+    - 20 to 90 phon: 20 Hz, 25 Hz, 31.5 Hz, 40 Hz, 50 Hz, 63 Hz,
+      80 Hz, 100 Hz, 125 Hz, 160 Hz, 200 Hz, 250 Hz, 315 Hz,
+      400 Hz, 500 Hz, 630 Hz, 800 Hz, 1000 Hz, 1250 Hz, 1600 Hz,
+      2000 Hz, 2500 Hz, 3150 Hz, 4000 Hz.
+    - 20 to 80 phon: 5000 Hz, 6300 Hz, 8000 Hz, 10000 Hz, 12500 Hz.
 
     Values for other frequencies can be interpolated (cubic spline) by
     setting the parameter `interpolate=True`. The check for correct

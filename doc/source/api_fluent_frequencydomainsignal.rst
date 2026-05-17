@@ -1,5 +1,5 @@
 Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The `FrequencyDomainSignal` class also inherits from `numpy.ndarray` via the
 `audiotoolbox.BaseSignal` class:
