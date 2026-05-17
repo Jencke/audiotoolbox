@@ -9,6 +9,9 @@ psychoacoustic scales:
 - Bark
 - ERB (Equivalent Rectangular Bandwidth rate)
 - Fractional octave-band number
+- Mel
+- Semitone (MIDI-like)
+- Greenwood place-frequency mapping
 
 The scales API is available through ready-to-use instances:
 
@@ -99,18 +102,76 @@ Bandwidth for a fractional-octave band:
 ``oct_fraction`` must be a positive integer; invalid values raise
 ``ValueError``.
 
-Legacy Function Wrappers
-------------------------
+Mel Scale
+---------
 
-For compatibility with existing code, `audiotoolbox` still exposes helper
-functions in the top-level namespace:
+The Mel scale is commonly used in speech/audio features and provides a
+perceptual mapping from frequency to a quasi-linear low-frequency and
+logarithmic high-frequency scale.
 
+.. code-block:: python
+
+	import audiotoolbox as audio
+
+	mel_vals = audio.mel.from_freq([125, 500, 1000, 4000])
+	freqs = audio.mel.to_freq(mel_vals)
+	bw = audio.mel.get_bw(1000)
+
+Semitone Scale
+--------------
+
+The semitone scale maps frequency to a MIDI-like continuous note number.
+Default reference is A4 = 440 Hz at note 69.
+
+.. code-block:: python
+
+	import audiotoolbox as audio
+
+	notes = audio.semitone.from_freq([220, 440, 880])
+	freqs = audio.semitone.to_freq(notes)
+	bw = audio.semitone.get_bw(1000)
+
+Greenwood Scale
+---------------
+
+The Greenwood scale maps frequency to cochlear place using the Greenwood
+equation (human defaults are used by default).
+
+.. code-block:: python
+
+	import audiotoolbox as audio
+
+	x = audio.greenwood.from_freq([125, 500, 1000, 4000])
+	freqs = audio.greenwood.to_freq(x)
+	bw = audio.greenwood.get_bw(1000)
+
+Deprecated Core Wrapper Functions
+---------------------------------
+
+For backward compatibility, `audiotoolbox` still exposes legacy helper
+functions in the top-level namespace. These wrappers now emit
+``DeprecationWarning`` and should be replaced with the scale-object API.
+
+Deprecated wrappers:
+
+- ``audio.get_bark_limits(...)``
 - ``audio.freq_to_bark(...)`` and ``audio.bark_to_freq(...)``
 - ``audio.freq_to_erb(...)`` and ``audio.erb_to_freq(...)``
 - ``audio.freq_to_octband(...)`` and ``audio.octband_to_freq(...)``
 - ``audio.calc_bandwidth(...)``
 
-These wrappers delegate to the scale instances shown above.
+Recommended replacements:
+
+- ``audio.get_bark_limits()`` -> ``audio.bark.get_bark_limits()``
+- ``audio.freq_to_bark(f)`` -> ``audio.bark.from_freq(f)``
+- ``audio.bark_to_freq(b)`` -> ``audio.bark.to_freq(b)``
+- ``audio.freq_to_erb(f)`` -> ``audio.erb.from_freq(f)``
+- ``audio.erb_to_freq(e)`` -> ``audio.erb.to_freq(e)``
+- ``audio.freq_to_octband(f, ...)`` -> ``audio.octave.from_freq(f, ...)``
+- ``audio.octband_to_freq(n, ...)`` -> ``audio.octave.to_freq(n, ...)``
+- ``audio.calc_bandwidth(fc, 'cbw')`` -> ``audio.bark.get_bw(fc)``
+- ``audio.calc_bandwidth(fc, 'erb')`` -> ``audio.erb.get_bw(fc)``
+- ``audio.calc_bandwidth(fc, 'oct')`` -> ``audio.octave.get_bw(fc)``
 
 Frequency Grids on Perceptual Scales
 ------------------------------------

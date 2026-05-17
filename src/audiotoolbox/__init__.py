@@ -10,6 +10,6 @@ if not (version_info.major == 3 and version_info.minor >= 0):  # pragma: no cove
     exit(1)
 
 from .core import *
-from .scales import erb, bark, octave
+from .scales import erb, bark, octave, mel, semitone, greenwood
 from .signal import Signal, as_signal
 from .freqdomain_signal import FrequencyDomainSignal

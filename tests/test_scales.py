@@ -6,7 +6,14 @@ import audiotoolbox as audio
 
 
 def test_scale_modules_expose_consistent_api():
-	for scale in (audio.bark, audio.erb, audio.octave):
+	for scale in (
+		audio.bark,
+		audio.erb,
+		audio.octave,
+		audio.mel,
+		audio.semitone,
+		audio.greenwood,
+	):
 		assert hasattr(scale, "from_freq")
 		assert hasattr(scale, "to_freq")
 		assert hasattr(scale, "get_bw")
@@ -18,6 +25,9 @@ def test_scale_instances_expose_consistent_api():
 		audio.scales.bark_scale,
 		audio.scales.erb_scale,
 		audio.scales.octave_scale,
+		audio.scales.mel_scale,
+		audio.scales.semitone_scale,
+		audio.scales.greenwood_scale,
 	):
 		assert hasattr(scale, "from_freq")
 		assert hasattr(scale, "to_freq")
@@ -79,3 +89,33 @@ def test_bark_limits_return_copy():
 	limits = audio.bark.get_bark_limits()
 	limits.append(99999)
 	assert 99999 not in audio.bark.get_bark_limits()
+
+
+def test_mel_roundtrip_and_bw():
+	freqs = np.array([125.0, 500.0, 1000.0, 4000.0])
+	mel = audio.mel.from_freq(freqs)
+	recovered = audio.mel.to_freq(mel)
+	testing.assert_allclose(recovered, freqs)
+	bw = audio.mel.get_bw(1000.0)
+	assert bw > 0
+	testing.assert_allclose(audio.mel.calc_bw(1000.0), bw)
+
+
+def test_semitone_roundtrip_and_bw():
+	freqs = np.array([110.0, 220.0, 440.0, 880.0])
+	semi = audio.semitone.from_freq(freqs)
+	recovered = audio.semitone.to_freq(semi)
+	testing.assert_allclose(recovered, freqs)
+	bw = audio.semitone.get_bw(1000.0)
+	assert bw > 0
+	testing.assert_allclose(audio.semitone.calc_bw(1000.0), bw)
+
+
+def test_greenwood_roundtrip_and_bw():
+	freqs = np.array([125.0, 500.0, 1000.0, 4000.0])
+	g = audio.greenwood.from_freq(freqs)
+	recovered = audio.greenwood.to_freq(g)
+	testing.assert_allclose(recovered, freqs)
+	bw = audio.greenwood.get_bw(1000.0)
+	assert bw > 0
+	testing.assert_allclose(audio.greenwood.calc_bw(1000.0), bw)

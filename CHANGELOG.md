@@ -5,6 +5,7 @@
 - New class-based auditory scales API in `audiotoolbox.scales` with `BarkScale`, `ErbScale`, and `OctaveScale`.
 - Unified scale method surface across scales: `from_freq(...)`, `to_freq(...)`, and `get_bw(...)` (`calc_bw(...)` kept as a compatibility alias).
 - Ready-to-use scale instances exported as `audio.bark`, `audio.erb`, and `audio.octave`.
+- Added `MelScale`, `SemitoneScale`, and `GreenwoodScale` with top-level instances `audio.mel`, `audio.semitone`, and `audio.greenwood`.
 
 ### Changed
 
