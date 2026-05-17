@@ -13,9 +13,9 @@
 	   :width: 7cm
            :align: center
 
-====================
+======================
 What is audiotoolbox ?
-====================
+======================
 **audiotoolbox** is a python package designed to generate and analyze acoustic stimuli for use in auditory research. It aims to provide an easy to use and intuitive interface.
 
 **auditools** provides the powerfull `Signal` class which extends the standard `numpy` array class with a fluent interface that provides methods and attributes often used in auditory signal processing.

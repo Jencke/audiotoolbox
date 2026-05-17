@@ -1,5 +1,9 @@
 *.pyc
 *.egg*
+.coverage
+.coverage.*
+.pytest_cache/
+__pycache__/
 /doc/build
 /htmlcov
 /tests/test.wav

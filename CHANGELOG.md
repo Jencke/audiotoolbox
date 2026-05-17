@@ -1,4 +1,4 @@
-## 1.0 -> Develop
+## 1.0 -> 1.10
 
 ### Added
 
@@ -24,9 +24,6 @@
 
 - `Signal.bandpass(..., return_complex=True)` now emits a `UserWarning` to make complex-output behavior explicit.
 
-### Tests
-
-- Added and updated regression tests for visualization, filter behavior, and mono-shape migration paths.
 
 ## 0.75 -> 1.0
 

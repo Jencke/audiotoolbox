@@ -425,13 +425,9 @@ class ModificationMixin:
         """Resample the signal to a new sampling rate.
 
         This method uses the `resampy` library to resample the signal to a new
-        sampling rate. It is based on the band-limited sinc interpolation method
-        for sampling rate conversion as described by Smith (2015). [1]_.
-
-        .. [1] Smith, Julius O. Digital Audio Resampling Home Page
-            Center for Computer Research in Music and Acoustics (CCRMA),
-            Stanford University, 2015-02-23.
-            Web published at `<http://ccrma.stanford.edu/~jos/resample/>`_.
+        sampling rate. It is based on band-limited sinc interpolation methods
+        described by Smith (2015):
+        http://ccrma.stanford.edu/~jos/resample/
         """
 
         if not isinstance(new_fs, Integral) or isinstance(new_fs, bool) or new_fs <= 0:
