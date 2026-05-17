@@ -1,0 +1,170 @@
+Running Sphinx v8.1.3
+loading translations [en]... done
+building [mo]: targets for 0 po files that are out of date
+writing output... 
+building [html]: targets for 17 source files that are out of date
+updating environment: [new config] 17 added, 0 changed, 0 removed
+reading sources... [  6%] api
+reading sources... [ 12%] api_core
+reading sources... [ 18%] api_fluent_frequencydomainsignal
+reading sources... [ 24%] api_fluent_signal
+reading sources... [ 29%] index
+reading sources... [ 35%] introduction
+reading sources... [ 41%] user_guide
+reading sources... [ 47%] user_guide/basics
+reading sources... [ 53%] user_guide/convolution
+reading sources... [ 59%] user_guide/filtering
+reading sources... [ 65%] user_guide/input_output
+reading sources... [ 71%] user_guide/levels_and_stats
+reading sources... [ 76%] user_guide/modifications
+reading sources... [ 82%] user_guide/noise
+/home/joerg/Projects/repos/audiotoolbox/src/audiotoolbox/signal_mixins/analysis.py:47: UserWarning: Zero padding 128 samples to the end of the signal to create blocks.
+  warnings.warn(
+reading sources... [ 88%] user_guide/playback
+reading sources... [ 94%] user_guide/time_frequency
+/home/joerg/Projects/repos/audiotoolbox/src/audiotoolbox/signal_mixins/analysis.py:47: UserWarning: Zero padding 128 samples to the end of the signal to create blocks.
+  warnings.warn(
+/home/joerg/Projects/repos/audiotoolbox/src/audiotoolbox/signal_mixins/analysis.py:47: UserWarning: Zero padding 128 samples to the end of the signal to create blocks.
+  warnings.warn(
+/home/joerg/Projects/repos/audiotoolbox/src/audiotoolbox/signal_mixins/analysis.py:47: UserWarning: Zero padding 128 samples to the end of the signal to create blocks.
+  warnings.warn(
+reading sources... [100%] user_guide/visualization
+/home/joerg/Projects/repos/audiotoolbox/src/audiotoolbox/signal_mixins/analysis.py:47: UserWarning: Zero padding 128 samples to the end of the signal to create blocks.
+  warnings.warn(
+
+/home/joerg/Projects/repos/audiotoolbox/src/audiotoolbox/__init__.py:docstring of audiotoolbox.core.phon_to_dbspl:12: ERROR: Unexpected indentation. [docutils]
+/home/joerg/Projects/repos/audiotoolbox/doc/source/api_fluent_frequencydomainsignal.rst:2: WARNING: Title underline too short.
+
+Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ [docutils]
+/home/joerg/Projects/repos/audiotoolbox/src/audiotoolbox/signal.py:docstring of audiotoolbox.signal_mixins.generation.GenerationMixin.add_uncorr_noise:48: WARNING: Explicit markup ends without a blank line; unexpected unindent. [docutils]
+/home/joerg/Projects/repos/audiotoolbox/src/audiotoolbox/signal.py:docstring of audiotoolbox.signal_mixins.modification.ModificationMixin.resample:7: WARNING: Duplicate explicit target name: "1". [docutils]
+/home/joerg/Projects/repos/audiotoolbox/src/audiotoolbox/signal.py:docstring of audiotoolbox.signal_mixins.generation.GenerationMixin.add_uncorr_noise:18: ERROR: Duplicate target name, cannot be used as a unique reference: "1". [docutils]
+/home/joerg/Projects/repos/audiotoolbox/src/audiotoolbox/signal.py:docstring of audiotoolbox.signal_mixins.modification.ModificationMixin.resample:3: ERROR: Duplicate target name, cannot be used as a unique reference: "1". [docutils]
+/home/joerg/Projects/repos/audiotoolbox/doc/source/index.rst:16: WARNING: Title overline too short.
+
+====================
+What is audiotoolbox ?
+==================== [docutils]
+looking for now-outdated files... none found
+pickling environment... done
+checking consistency... done
+preparing documents... done
+copying assets... 
+copying downloadable files... [  2%] ../build/plot_directive/introduction-1.py
+copying downloadable files... [  3%] ../build/plot_directive/introduction-1.png
+copying downloadable files... [  5%] ../build/plot_directive/introduction-1.hires.png
+copying downloadable files... [  6%] ../build/plot_directive/introduction-1.pdf
+copying downloadable files... [  8%] ../build/plot_directive/user_guide/filtering-1.py
+copying downloadable files... [  9%] ../build/plot_directive/user_guide/filtering-1.png
+copying downloadable files... [ 11%] ../build/plot_directive/user_guide/filtering-1.hires.png
+copying downloadable files... [ 12%] ../build/plot_directive/user_guide/filtering-1.pdf
+copying downloadable files... [ 14%] ../build/plot_directive/user_guide/levels_and_stats-1.py
+copying downloadable files... [ 16%] ../build/plot_directive/user_guide/levels_and_stats-1.png
+copying downloadable files... [ 17%] ../build/plot_directive/user_guide/levels_and_stats-1.hires.png
+copying downloadable files... [ 19%] ../build/plot_directive/user_guide/levels_and_stats-1.pdf
+copying downloadable files... [ 20%] ../build/plot_directive/user_guide/modifications-1.py
+copying downloadable files... [ 22%] ../build/plot_directive/user_guide/modifications-1.png
+copying downloadable files... [ 23%] ../build/plot_directive/user_guide/modifications-1.hires.png
+copying downloadable files... [ 25%] ../build/plot_directive/user_guide/modifications-1.pdf
+copying downloadable files... [ 27%] ../build/plot_directive/user_guide/modifications-2.py
+copying downloadable files... [ 28%] ../build/plot_directive/user_guide/modifications-2.png
+copying downloadable files... [ 30%] ../build/plot_directive/user_guide/modifications-2.hires.png
+copying downloadable files... [ 31%] ../build/plot_directive/user_guide/modifications-2.pdf
+copying downloadable files... [ 33%] ../build/plot_directive/user_guide/modifications-3.py
+copying downloadable files... [ 34%] ../build/plot_directive/user_guide/modifications-3.png
+copying downloadable files... [ 36%] ../build/plot_directive/user_guide/modifications-3.hires.png
+copying downloadable files... [ 38%] ../build/plot_directive/user_guide/modifications-3.pdf
+copying downloadable files... [ 39%] ../build/plot_directive/user_guide/modifications-4.py
+copying downloadable files... [ 41%] ../build/plot_directive/user_guide/modifications-4.png
+copying downloadable files... [ 42%] ../build/plot_directive/user_guide/modifications-4.hires.png
+copying downloadable files... [ 44%] ../build/plot_directive/user_guide/modifications-4.pdf
+copying downloadable files... [ 45%] ../build/plot_directive/user_guide/modifications-5.py
+copying downloadable files... [ 47%] ../build/plot_directive/user_guide/modifications-5.png
+copying downloadable files... [ 48%] ../build/plot_directive/user_guide/modifications-5.hires.png
+copying downloadable files... [ 50%] ../build/plot_directive/user_guide/modifications-5.pdf
+copying downloadable files... [ 52%] ../build/plot_directive/user_guide/modifications-6.py
+copying downloadable files... [ 53%] ../build/plot_directive/user_guide/modifications-6.png
+copying downloadable files... [ 55%] ../build/plot_directive/user_guide/modifications-6.hires.png
+copying downloadable files... [ 56%] ../build/plot_directive/user_guide/modifications-6.pdf
+copying downloadable files... [ 58%] ../build/plot_directive/user_guide/noise-1.py
+copying downloadable files... [ 59%] ../build/plot_directive/user_guide/noise-1.png
+copying downloadable files... [ 61%] ../build/plot_directive/user_guide/noise-1.hires.png
+copying downloadable files... [ 62%] ../build/plot_directive/user_guide/noise-1.pdf
+copying downloadable files... [ 64%] ../build/plot_directive/user_guide/time_frequency-1.py
+copying downloadable files... [ 66%] ../build/plot_directive/user_guide/time_frequency-1.png
+copying downloadable files... [ 67%] ../build/plot_directive/user_guide/time_frequency-1.hires.png
+copying downloadable files... [ 69%] ../build/plot_directive/user_guide/time_frequency-1.pdf
+copying downloadable files... [ 70%] ../build/plot_directive/user_guide/time_frequency-2.py
+copying downloadable files... [ 72%] ../build/plot_directive/user_guide/time_frequency-2.png
+copying downloadable files... [ 73%] ../build/plot_directive/user_guide/time_frequency-2.hires.png
+copying downloadable files... [ 75%] ../build/plot_directive/user_guide/time_frequency-2.pdf
+copying downloadable files... [ 77%] ../build/plot_directive/user_guide/time_frequency-3.py
+copying downloadable files... [ 78%] ../build/plot_directive/user_guide/time_frequency-3.png
+copying downloadable files... [ 80%] ../build/plot_directive/user_guide/time_frequency-3.hires.png
+copying downloadable files... [ 81%] ../build/plot_directive/user_guide/time_frequency-3.pdf
+copying downloadable files... [ 83%] ../build/plot_directive/user_guide/visualization-1.py
+copying downloadable files... [ 84%] ../build/plot_directive/user_guide/visualization-1.png
+copying downloadable files... [ 86%] ../build/plot_directive/user_guide/visualization-1.hires.png
+copying downloadable files... [ 88%] ../build/plot_directive/user_guide/visualization-1.pdf
+copying downloadable files... [ 89%] ../build/plot_directive/user_guide/visualization-2.py
+copying downloadable files... [ 91%] ../build/plot_directive/user_guide/visualization-2.png
+copying downloadable files... [ 92%] ../build/plot_directive/user_guide/visualization-2.hires.png
+copying downloadable files... [ 94%] ../build/plot_directive/user_guide/visualization-2.pdf
+copying downloadable files... [ 95%] ../build/plot_directive/user_guide/visualization-3.py
+copying downloadable files... [ 97%] ../build/plot_directive/user_guide/visualization-3.png
+copying downloadable files... [ 98%] ../build/plot_directive/user_guide/visualization-3.hires.png
+copying downloadable files... [100%] ../build/plot_directive/user_guide/visualization-3.pdf
+
+copying static files... 
+Writing evaluated template result to /home/joerg/Projects/repos/audiotoolbox/doc/build/html/_static/language_data.js
+Writing evaluated template result to /home/joerg/Projects/repos/audiotoolbox/doc/build/html/_static/basic.css
+Writing evaluated template result to /home/joerg/Projects/repos/audiotoolbox/doc/build/html/_static/documentation_options.js
+Writing evaluated template result to /home/joerg/Projects/repos/audiotoolbox/doc/build/html/_static/js/versions.js
+copying static files: done
+copying extra files... 
+copying extra files: done
+copying assets: done
+writing output... [  6%] api
+writing output... [ 12%] api_core
+writing output... [ 18%] api_fluent_frequencydomainsignal
+writing output... [ 24%] api_fluent_signal
+writing output... [ 29%] index
+writing output... [ 35%] introduction
+writing output... [ 41%] user_guide
+writing output... [ 47%] user_guide/basics
+writing output... [ 53%] user_guide/convolution
+writing output... [ 59%] user_guide/filtering
+writing output... [ 65%] user_guide/input_output
+writing output... [ 71%] user_guide/levels_and_stats
+writing output... [ 76%] user_guide/modifications
+writing output... [ 82%] user_guide/noise
+writing output... [ 88%] user_guide/playback
+writing output... [ 94%] user_guide/time_frequency
+writing output... [100%] user_guide/visualization
+
+generating indices... genindex py-modindex done
+writing additional pages... search done
+copying images... [  6%] logo.png
+copying images... [ 12%] ../build/plot_directive/introduction-1.png
+copying images... [ 18%] ../build/plot_directive/user_guide/filtering-1.png
+copying images... [ 24%] ../build/plot_directive/user_guide/levels_and_stats-1.png
+copying images... [ 29%] ../build/plot_directive/user_guide/modifications-1.png
+copying images... [ 35%] ../build/plot_directive/user_guide/modifications-2.png
+copying images... [ 41%] ../build/plot_directive/user_guide/modifications-3.png
+copying images... [ 47%] ../build/plot_directive/user_guide/modifications-4.png
+copying images... [ 53%] ../build/plot_directive/user_guide/modifications-5.png
+copying images... [ 59%] ../build/plot_directive/user_guide/modifications-6.png
+copying images... [ 65%] ../build/plot_directive/user_guide/noise-1.png
+copying images... [ 71%] ../build/plot_directive/user_guide/time_frequency-1.png
+copying images... [ 76%] ../build/plot_directive/user_guide/time_frequency-2.png
+copying images... [ 82%] ../build/plot_directive/user_guide/time_frequency-3.png
+copying images... [ 88%] ../build/plot_directive/user_guide/visualization-1.png
+copying images... [ 94%] ../build/plot_directive/user_guide/visualization-2.png
+copying images... [100%] ../build/plot_directive/user_guide/visualization-3.png
+
+dumping search index in English (code: en)... done
+dumping object inventory... done
+build succeeded, 7 warnings.
+
+The HTML pages are in build/html.
