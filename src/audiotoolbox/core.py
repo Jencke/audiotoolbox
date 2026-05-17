@@ -1,6 +1,7 @@
 """Function based interface to audiotoolbox."""
 
 from typing import Literal, Optional, Union
+import warnings
 import numpy as np
 from numpy import pi
 from scipy.interpolate import interp1d
@@ -15,6 +16,17 @@ from .scales import octave as octave_scale
 
 COLOR_R = "#d65c5c"
 COLOR_L = "#5c5cd6"
+
+
+def _warn_deprecated_scale_wrapper(function_name: str, replacement: str) -> None:
+    warnings.warn(
+        (
+            f"audio.{function_name} is deprecated and will be removed in a "
+            f"future release. Use {replacement} instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
 
 def _copy_to_dim(array, dim):
@@ -320,6 +332,7 @@ def get_bark_limits():
         248-248. http://dx.doi.org/10.1121/1.1908630
 
     """
+    _warn_deprecated_scale_wrapper("get_bark_limits", "audio.bark.get_bark_limits()")
     return bark_scale.get_bark_limits()
 
 
@@ -436,7 +449,7 @@ def bark_to_freq(bark):
         97-100. http://dx.doi.org/10.1121/1.399849
 
     """
-
+    _warn_deprecated_scale_wrapper("bark_to_freq", "audio.bark.to_freq(...)")
     return bark_scale.to_freq(bark)
 
 
@@ -474,6 +487,7 @@ def octband_to_freq(
     ..[1] DIN ISO 266-1:1997-08, "Acoustics - Preferred frequencies",
         Beuth Verlag, Berlin, 1997.
     """
+    _warn_deprecated_scale_wrapper("octband_to_freq", "audio.octave.to_freq(...)")
 
     freq = octave_scale.to_freq(
         band_nr,
@@ -507,6 +521,7 @@ def freq_to_octband(
         If True, the band number is rounded to the nearest integer.
         (default = True)
     """
+    _warn_deprecated_scale_wrapper("freq_to_octband", "audio.octave.from_freq(...)")
     band_nr = octave_scale.from_freq(
         frequency,
         oct_fraction=oct_fraction,
@@ -550,6 +565,7 @@ def freq_to_bark(frequency, use_table=False):
         97-100. http://dx.doi.org/10.1121/1.399849
 
     """
+    _warn_deprecated_scale_wrapper("freq_to_bark", "audio.bark.from_freq(...)")
     return bark_scale.from_freq(frequency, use_table=use_table)
 
 
@@ -576,7 +592,7 @@ def freq_to_erb(frequency):
         Research, 47(1-2), 103-138.
 
     """
-
+    _warn_deprecated_scale_wrapper("freq_to_erb", "audio.erb.from_freq(...)")
     return erb_scale.from_freq(frequency)
 
 
@@ -602,6 +618,7 @@ def erb_to_freq(n_erb):
         Research, 47(1-2), 103-138.
 
     """
+    _warn_deprecated_scale_wrapper("erb_to_freq", "audio.erb.to_freq(...)")
     return erb_scale.to_freq(n_erb)
 
 
@@ -807,12 +824,14 @@ def calc_bandwidth(fc, scale="cbw"):
 
     """
 
+    _warn_deprecated_scale_wrapper("calc_bandwidth", "audio.bark/erb/octave.get_bw(...)")
+
     if "cbw" in scale:
-        return bark_scale.calc_bw(fc)
+        return bark_scale.get_bw(fc)
     if "erb" in scale:
-        return erb_scale.calc_bw(fc)
+        return erb_scale.get_bw(fc)
     if "oct" in scale:
-        return octave_scale.calc_bw(fc)
+        return octave_scale.get_bw(fc)
     raise ValueError("scale must contain 'cbw', 'erb', or 'oct'")
 
 

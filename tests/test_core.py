@@ -235,6 +235,32 @@ def test_audfilter_bw():
     assert bw == bw2
 
 
+def test_deprecated_core_scale_wrappers_warn():
+    with pytest.deprecated_call(match="audio.get_bark_limits"):
+        audio.get_bark_limits()
+
+    with pytest.deprecated_call(match="audio.bark_to_freq"):
+        audio.bark_to_freq(np.array([10.0]))
+
+    with pytest.deprecated_call(match="audio.freq_to_bark"):
+        audio.freq_to_bark(np.array([100.0]))
+
+    with pytest.deprecated_call(match="audio.freq_to_erb"):
+        audio.freq_to_erb(np.array([100.0]))
+
+    with pytest.deprecated_call(match="audio.erb_to_freq"):
+        audio.erb_to_freq(np.array([1.0]))
+
+    with pytest.deprecated_call(match="audio.freq_to_octband"):
+        audio.freq_to_octband(1000.0)
+
+    with pytest.deprecated_call(match="audio.octband_to_freq"):
+        audio.octband_to_freq(30.0)
+
+    with pytest.deprecated_call(match="audio.calc_bandwidth"):
+        audio.calc_bandwidth(1000.0)
+
+
 def test_extract_binaural_differences():
     from scipy.signal import hilbert
 
