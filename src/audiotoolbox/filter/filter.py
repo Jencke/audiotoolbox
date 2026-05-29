@@ -1,4 +1,3 @@
-import numpy as np
 
 from .gammatone_filt import gammatone
 from .butterworth_filt import butterworth

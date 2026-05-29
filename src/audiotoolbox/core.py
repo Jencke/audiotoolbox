@@ -1,14 +1,14 @@
 """Function based interface to audiotoolbox."""
 
-from typing import Literal, Optional, Union
+from typing import Literal, Optional
 import warnings
 import numpy as np
 from numpy import pi
 from scipy.interpolate import interp1d
-from scipy.signal import hilbert, get_window
+from scipy.signal import get_window
 
 from .signal import Signal, as_signal
-from . import filter
+from . import filter  # noqa: F401  re-exported as audio.filter for other modules
 from . import din_iso_226
 from .scales import bark as bark_scale
 from .scales import erb as erb_scale

@@ -1,13 +1,10 @@
 """Signal mixins for organizing Signal class functionality."""
 
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 import numpy as np
 from scipy.signal import fftconvolve
 import warnings
-from .. import core as audio, filter as filt, io
-
-if TYPE_CHECKING:
-    from ..signal import Signal
+from .. import core as audio, filter as filt
 
 
 class FilteringMixin:

@@ -1,14 +1,8 @@
 """Signal mixins for organizing Signal class functionality."""
 
-from typing import TYPE_CHECKING
-
-import numpy as np
 import sounddevice as sd
 
 from .. import core as audio, io
-
-if TYPE_CHECKING:
-    from ..signal import Signal
 
 
 class IOMixin:
@@ -65,8 +59,6 @@ class IOMixin:
             channels = (channels,)
 
         sig = sig.ch[channels]
-        print(sig.shape)
-        print(self.shape)
         if sig.n_channels != self.n_channels:
             raise ValueError("Number of channels must match.")
 

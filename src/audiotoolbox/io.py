@@ -1,7 +1,5 @@
 import warnings
-import numpy as np
 import soundfile
-import audiotoolbox as audio
 from typing import Optional
 
 

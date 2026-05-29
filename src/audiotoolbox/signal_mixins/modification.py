@@ -1,19 +1,14 @@
 """Signal mixins for organizing Signal class functionality."""
 
 from numbers import Integral
-import signal
-from typing import TYPE_CHECKING, Literal, Union
+from typing import Literal, Union
 
 import numpy as np
 from scipy.signal import get_window
 
 import resampy
 
-import warnings
 from .. import core as audio
-
-if TYPE_CHECKING:
-    from ..signal import Signal
 
 
 class ModificationMixin:
