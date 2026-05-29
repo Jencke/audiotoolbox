@@ -10,7 +10,7 @@ from .. import core as audio
 def design_gammatone(fc, bw, fs, order=4, attenuation_db="erb"):
     """Return the coefficient of a gammatone filter.
 
-    Calculates the filter coefficents for a gammatone filter following
+    Calculates the filter coefficients for a gammatone filter following
     Eq. 11 and 12 of [hohmann2002b]_.
 
 
@@ -81,7 +81,7 @@ def gammatonefos_apply(signal, b, a, order, states=None):
     """Process an input signal by applying the filter `order` times.
 
     Filter the signal with a gammatone filter defined by the
-    coeffients `b` and `a`. The filter is applied `order` times.
+    coefficients `b` and `a`. The filter is applied `order` times.
 
     Parameters
     ----------

@@ -53,7 +53,7 @@ def design_butterworth(low_f, high_f, fs, order=2):
     r"""Return the coeffiecent of a butterwoth filter.
 
     Returns the cascated second-order sections representation of a
-    butterwoth IIR filter. coefficents are calculated using
+    butterwoth IIR filter. coefficients are calculated using
     scipy.signal.butter
 
     To construct a lowpass filter, set low_f to None. For a highpass,

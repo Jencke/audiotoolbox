@@ -152,7 +152,7 @@ def test_butterworth_coefficients():
         low_f = f - b / 2
         high_f = f + b / 2
         sos = butterworth_filt.design_butterworth(low_f, high_f, fs)
-        coeff = butter.coefficents[:, :, i_filt]
+        coeff = butter.coefficients[:, :, i_filt]
         testing.assert_array_equal(sos, coeff)
 
 
@@ -190,8 +190,8 @@ def test_gammatone_coefficients():
     gamma = create_filterbank(fc_list, bw_list, "gammatone", fs)
     for i_filt, (f, b) in enumerate(zip(fc_list, bw_list)):
         bcoeff, acoeff = gammatone_filt.design_gammatone(f, b, fs)
-        b_bank = gamma.coefficents[0, i_filt]
-        a_bank = gamma.coefficents[2:, i_filt]
+        b_bank = gamma.coefficients[0, i_filt]
+        a_bank = gamma.coefficients[2:, i_filt]
         testing.assert_array_equal(acoeff, a_bank)
         testing.assert_array_equal(bcoeff, b_bank)
 
@@ -284,8 +284,8 @@ def test_set_params():
 
     for i_filt, (fc, bw) in enumerate(zip(fc, bw)):
         b, a = gammatone_filt.design_gammatone(fc, bw, fs, order=5, attenuation_db=-3)
-        b_bank = gamma.coefficents[0, i_filt]
-        a_bank = gamma.coefficents[2:, i_filt]
+        b_bank = gamma.coefficients[0, i_filt]
+        a_bank = gamma.coefficients[2:, i_filt]
         testing.assert_array_equal(a, a_bank)
         testing.assert_array_equal(b, b_bank)
 

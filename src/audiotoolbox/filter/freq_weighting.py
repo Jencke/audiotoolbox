@@ -98,11 +98,11 @@ def design_a_filter(fs, ftype="sos"):
     fs : int
         The sampling frequency
     ftype: {'sos', 'zpk', 'ba'}, optional
-        The filter coefficents that should be returned. default is 'zpk'
+        The filter coefficients that should be returned. default is 'zpk'
 
     Returns
     -------
-        The filter coefficents. sos in case of sos, (z, p, k) in case of zpk and
+        The filter coefficients. sos in case of sos, (z, p, k) in case of zpk and
         b, a in case of ba.
     """
     f1, f2, f3, f4 = calc_analog_poles()
@@ -134,11 +134,11 @@ def design_c_filter(fs, ftype="sos"):
     fs : int
         The sampling frequency
     ftype: {'sos', 'zpk', 'ba'}, optional
-        The filter coefficents that should be returned. default is 'zpk'
+        The filter coefficients that should be returned. default is 'zpk'
 
     Returns
     -------
-        The filter coefficents. sos in case of sos, (z, p, k) in case of zpk and
+        The filter coefficients. sos in case of sos, (z, p, k) in case of zpk and
         b, a in case of ba.
     """
     f1, f2, f3, f4 = calc_analog_poles()
