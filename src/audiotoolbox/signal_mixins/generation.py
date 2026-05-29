@@ -154,7 +154,7 @@ class GenerationMixin:
             # Power proportional to 1 / f**2
             f_weights[lowbin:highbin] = 1.0 / freqs[lowbin:]
         else:
-            raise (ValueError("ntype not implemented"))
+            raise ValueError("ntype not implemented")
 
         # generate noise
         a = np.zeros([nfft])

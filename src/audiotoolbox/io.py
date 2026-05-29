@@ -1,3 +1,4 @@
+import warnings
 import numpy as np
 import soundfile
 import audiotoolbox as audio
@@ -5,13 +6,13 @@ from typing import Optional
 
 
 def readwav(filename):
+    warnings.warn("readwav is deprecated, please use readfile", DeprecationWarning, stacklevel=2)
     sig, fs = readfile(filename)
-    raise (DeprecationWarning("readwav is depricated please use readfile"))
     return sig, fs
 
 
 def writewav(filename, signal, fs):
-    raise (DeprecationWarning("writewav is depricated please use writefile"))
+    warnings.warn("writewav is deprecated, please use writefile", DeprecationWarning, stacklevel=2)
     write_file(filename, signal, fs)
 
 

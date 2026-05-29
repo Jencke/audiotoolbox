@@ -48,8 +48,7 @@ def bandpass(signal, fc, bw, filter_type, fs=None, **kwargs):
     elif filter_type == "exponential":
         sig_out = efilt(signal, fc, bw, **kwargs)
     else:
-        raise (ValueError, f"Filtertype {filter_type} not implemented.")
-        return None
+        raise ValueError(f"Filtertype {filter_type} not implemented.")
 
     return sig_out
 
@@ -87,8 +86,7 @@ def lowpass(signal, f_cut, filter_type, fs=None, **kwargs):
     elif filter_type == "brickwall":
         sig_out = brickwall(signal, None, f_cut, fs, **kwargs)
     else:
-        raise (ValueError, f"Filtertype {filter_type} not implemented.")
-        return None
+        raise ValueError(f"Filtertype {filter_type} not implemented.")
 
     return sig_out
 
@@ -123,7 +121,6 @@ def highpass(signal, f_cut, filter_type, fs=None, **kwargs):
     elif filter_type == "brickwall":
         sig_out = brickwall(signal, f_cut, None, fs, **kwargs)
     else:
-        raise (ValueError, f"Filtertype {filter_type} not implemented.")
-        return None
+        raise ValueError(f"Filtertype {filter_type} not implemented.")
 
     return sig_out

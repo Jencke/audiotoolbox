@@ -31,7 +31,7 @@ def get_edge_frequencies(
     elif base_system == 2:
         gbase = 2
     else:
-        raise (ValueError("base_system must be 2 or 10"))
+        raise ValueError("base_system must be 2 or 10")
 
     f_l = gbase ** (-1 / (2 * b)) * fc
     f_h = gbase ** (1 / (2 * b)) * fc

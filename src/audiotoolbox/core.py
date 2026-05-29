@@ -1159,9 +1159,9 @@ def crossfade(
         The resulting signal.
     """
     if sig1.n_channels != sig2.n_channels:
-        raise (ValueError("The two signals need to match in number of channels."))
+        raise ValueError("The two signals need to match in number of channels.")
     if sig1.fs != sig2.fs:
-        raise (ValueError("The sample rate of the two signals has to match."))
+        raise ValueError("The sample rate of the two signals has to match.")
     fs = sig1.fs
     channel_shape = sig1.channel_shape
 
@@ -1171,7 +1171,7 @@ def crossfade(
     elif fade_type == "linear":
         fade[:] = 1 - fade.time / fade.time[-1]
     else:
-        raise (ValueError("fade_type not implemented"))
+        raise ValueError("fade_type not implemented")
 
     n_out = sig1.n_samples + sig2.n_samples - fade.n_samples
     out_duration = n_out / fs
