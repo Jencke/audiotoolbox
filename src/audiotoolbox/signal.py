@@ -164,7 +164,7 @@ def as_signal(signal, fs) -> Signal:
     The converted signal : Signal
 
     """
-    # if allready signal class
+    # if already signal class
     if isinstance(signal, Signal):
         return signal
     else:

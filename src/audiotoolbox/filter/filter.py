@@ -10,7 +10,7 @@ from .. import core as audio
 def bandpass(signal, fc, bw, filter_type, fs=None, **kwargs):
     """Apply a bandpass filter to the Signal.
 
-    This function provieds a unified interface to all bandpass filters
+    This function provides a unified interface to all bandpass filters
     implemented in audiotoolbox.
 
     Parameters
@@ -56,7 +56,7 @@ def bandpass(signal, fc, bw, filter_type, fs=None, **kwargs):
 def lowpass(signal, f_cut, filter_type, fs=None, **kwargs):
     """Apply a lowpass filter to the Signal.
 
-    This function provieds a unified interface to all lowpass filters
+    This function provides a unified interface to all lowpass filters
     implemented in audiotoolbox.
 
     Parameters
@@ -94,7 +94,7 @@ def lowpass(signal, f_cut, filter_type, fs=None, **kwargs):
 def highpass(signal, f_cut, filter_type, fs=None, **kwargs):
     """Apply a highpass filter to the Signal.
 
-    This function provieds a unified interface to all highpass filters
+    This function provides a unified interface to all highpass filters
     implemented in audiotoolbox.
 
     Parameters

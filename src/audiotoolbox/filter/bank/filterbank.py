@@ -21,8 +21,8 @@ class FilterBank(object):
     fs : int
         Sampling frequency
     **kwargs :
-        Further paramters such as filter order to pass to the Filter
-        function, see filter documenation for details. Value can
+        Further parameters such as filter order to pass to the Filter
+        function, see filter documentation for details. Value can
         either be an ndarray that matches the length of `fc` or a
         single value in which case this value is used for all filters.
 
@@ -53,7 +53,7 @@ class FilterBank(object):
                 if len(v) == n_val:
                     self.params[k] = np.asarray(v)
                 else:
-                    raise Exception(f"Size missmatch in parameter '{k}'")
+                    raise Exception(f"Size mismatch in parameter '{k}'")
             else:
                 self.params[k] = np.asarray(n_val * [v])
 
@@ -196,8 +196,8 @@ def create_filterbank(
     fs : int
         Sampling frequency
     **kwargs
-        Further paramters such as filter order to pass to the Filter
-        function, see filter documenation for details. Value can either be
+        Further parameters such as filter order to pass to the Filter
+        function, see filter documentation for details. Value can either be
         an ndarray that matches the length of `fc` or a single value in
         which case this value is used for all filters.
 

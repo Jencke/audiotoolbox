@@ -117,7 +117,7 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
         phases = -self.omega * time
 
         # fix the last bin in case of odd samples in order to keep the
-        # tranformed signal real
+        # transformed signal real
         if not self.n_samples % 2:
             phases[self.n_samples // 2] = 0
 
@@ -204,7 +204,7 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
 
         Converts the spectrum to that of the equivalent analytical
         signal by removing the negative frequency components and
-        doubling the positive coponents.
+        doubling the positive components.
 
         Returns:
         --------

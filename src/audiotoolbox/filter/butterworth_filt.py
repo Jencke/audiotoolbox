@@ -26,11 +26,11 @@ def butterworth(
     order : integer, optional
        filter order (default = 2)
     return_states : bool, optional
-       Wheather the filter states should be returned. (default=False)
+       Whether the filter states should be returned. (default=False)
     states : True, None or array_like, optional
-        Inital conditions for the filter. if True, the conditions for
-        a step response are constructed. if set to None, the inital rest is
-        assumed (all 0). Otherwise, expects the inital filter delay
+        Initial conditions for the filter. if True, the conditions for
+        a step response are constructed. if set to None, the initial rest is
+        assumed (all 0). Otherwise, expects the initial filter delay
         values.
 
     Returns
@@ -103,9 +103,9 @@ def apply_sos(signal, sos, states=None, axis=0):
         coefficients and the last three providing the denominator
         coefficients.
     states : True, None or array_like, optional
-        Inital conditions for the filter. if True, the conditions for
-        a step response are constructed. if set to None, the inital rest is
-        assumed (all 0). Otherwise, expects the inital filter delay
+        Initial conditions for the filter. if True, the conditions for
+        a step response are constructed. if set to None, the initial rest is
+        assumed (all 0). Otherwise, expects the initial filter delay
         values.
 
     Returns:

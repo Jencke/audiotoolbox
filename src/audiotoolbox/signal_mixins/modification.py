@@ -56,7 +56,7 @@ class ModificationMixin:
     def set_dbpeak(self, dbpeak: float):
         """Peak normalization of the signal.
 
-        Normalizes the signal in relation to it's peak amplitude. 0dB peak corresponds to a maximum amplitude of 1.
+        Normalizes the signal in relation to its peak amplitude. 0dB peak corresponds to a maximum amplitude of 1.
 
         Parameters:
         -----------
@@ -220,14 +220,14 @@ class ModificationMixin:
     def delay(self, delay: float, method: Literal["fft", "sample"] = "fft"):
         r"""Delays the signal by circular shifting.
 
-        Circular shift the functions foreward to create a certain time
-        delay relative to the orginal time. E.g if shifted by an
+        Circular shift the functions forward to create a certain time
+        delay relative to the original time. E.g if shifted by an
         equivalent of N samples, the value at sample i will move to
         sample i + N.
 
         Two methods can be used. Using the default method 'fft', the
-        signal is shifted by applyint a FFT transform, and phase
-        shifting each frequency accoring to the delay and applying an
+        signal is shifted by applying a FFT transform, and phase
+        shifting each frequency according to the delay and applying an
         inverse transform. This is identical to using the
         :meth:'audiotoolbox.FrequencyDomainSignal.time_shift'
         method. When using the method 'sample', the signal is time
@@ -237,7 +237,7 @@ class ModificationMixin:
         Parameters
         -----------
         delay : float
-            The delay in secons
+            The delay in seconds
         method : {'fft', 'samples'} optional
             The method used to delay the signal (default: 'fft')
 
@@ -316,7 +316,7 @@ class ModificationMixin:
         else:
             i_end = self.n_samples
 
-        #  store the cliped part in the signal
+        #  store the clipped part in the signal
         self[0 : i_end - i_start] = self[i_start:i_end]
 
         newshape = list(self.shape)
@@ -398,7 +398,7 @@ class ModificationMixin:
         return self
 
     def apply_gain(self, gain: float):
-        r"""Applys gain factor to the signal
+        r"""Applies gain factor to the signal
 
         Fixed gain by multiplying the signal with a fixed factor calculated as
 

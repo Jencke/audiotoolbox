@@ -54,7 +54,7 @@ def write_file(filename, signal, fs, **kwargs):
 
     Per default, the major format to be stored is determined by the file
     extension. E.g. a .wav ending indicates a WAV (Microsoft) file. See
-    `audiotoolbox.wav.available_formats` for a list of availible formats and
+    `audiotoolbox.wav.available_formats` for a list of available formats and
     endings. The major format can be forced by passing a `format` argument.
 
     If not specifically designed, the subtype (such as Signed 32 bit PCM) is
@@ -66,7 +66,7 @@ def write_file(filename, signal, fs, **kwargs):
     Parameters
     ----------
     filename : str
-      Filname of the audiofile
+      Filename of the audiofile
     signal : ndarray
       The data
     fs : int

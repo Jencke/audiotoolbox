@@ -1,13 +1,12 @@
-import numpy as np
 
 def calc_bandwidth(fc, scale='cbw'):
     '''Calculate auditory filter bandwidth using different scales
 
-    This Function calculates aproximations for the auditory filter
-    bandwidth using differnt concepts:
+    This Function calculates approximations for the auditory filter
+    bandwidth using different concepts:
 
      - cbw: Use the critical bandwidth concept following [1]_
-     - erb: Use the equivalent rectangular bandwith concept following [2]_
+     - erb: Use the equivalent rectangular bandwidth concept following [2]_
 
 Parameters:
 -----------

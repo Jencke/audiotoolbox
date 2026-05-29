@@ -10,7 +10,7 @@ class BaseStats(object):
 
     @property
     def mean(self):
-        """aritmetic mean"""
+        """arithmetic mean"""
         mean = np.mean(self.sig, axis=0)
         return mean
 

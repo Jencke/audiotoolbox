@@ -125,7 +125,7 @@ def pad_for_fft(signal):
     r"""Zero buffer a signal with zeros so that it reaches the next closest :math`$2^n$` length.
 
     This Function attaches zeros to a signal to adjust the length
-    of the signal to a multiple of 2 for efficent FFT calculation.
+    of the signal to a multiple of 2 for efficient FFT calculation.
 
     Parameters
     -----------
@@ -156,7 +156,7 @@ def band2rms(bandlevel, bw):
     r"""Convert bandlevel to rms level
 
     Assuming a white spectrum, this functions converts a Bandlevel in
-    dB/sqrt(Hz) into the corresponding RMS levle in dB
+    dB/sqrt(Hz) into the corresponding RMS level in dB
 
     ..math:: L_{rms} = L_{band} + 10 \log_10(f_\delta)
 
@@ -202,7 +202,7 @@ def time2phase(time, frequency):
 
 
 def phase2time(phase, frequency):
-    r"""Pase to Time for a given frequency
+    r"""Phase to Time for a given frequency
 
     .. math:: t = \frac{\phi}{2 \pi f}
 
@@ -381,7 +381,7 @@ def freqarange(
     step: float = 1,
     scale: Literal["bark", "erb", "octave", "mel", "semitone", "greenwood"] = "bark",
 ) -> np.ndarray:
-    r"""Calculate a of frequencies with a predifined spacing on a given frequency
+    r"""Calculate a of frequencies with a predefined spacing on a given frequency
     scale.
 
     Returns frequencies between min_frequency and max_frequency with
@@ -480,7 +480,7 @@ def octband_to_freq(
         The fractional octave scale to use. e.g 3 for 1/3 octave bands.
         default = 3
     base_system: 2 or 10
-        The base system used for calcuation. default = 10,
+        The base system used for calculation. default = 10,
     pref_band: bool
         If True, the frequency is rounded to the nearest preferred
         frequency according to ISO 226:2003. (default = True)
@@ -523,7 +523,7 @@ def freq_to_octband(
         The fractional octave scale to use. e.g 3 for 1/3 octave bands.
         default = 3
     base_system: 2 or 10
-        The base system used for calcuation. default = 2
+        The base system used for calculation. default = 2
     round: bool
         If True, the band number is rounded to the nearest integer.
         (default = True)
@@ -552,12 +552,12 @@ def freq_to_bark(frequency, use_table=False):
         The frequency in Hz. Value has to be between 20 and 15500 Hz
     use_table: bool, optional
         If True, the original table by [1]_ instead of the equation by
-        [2]_ is used. This also results in the CB beeing returned as
+        [2]_ is used. This also results in the CB being returned as
         integers.  (default = False)
 
     Returns
     -------
-    scalar or ndarray : The Critical Bandwith in bark
+    scalar or ndarray : The Critical Bandwidth in bark
 
     References
     ----------
@@ -632,7 +632,7 @@ def erb_to_freq(n_erb):
 def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
     r"""Sound pressure levels from loudness level (following DIN ISO 226:2006-04)
 
-    Calulates the sound pressure level at a given frequency that is
+    Calculates the sound pressure level at a given frequency that is
     necessary to reach a specific loudness level following DIN ISO
     226:2006-04
 
@@ -716,7 +716,7 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
 def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
     r"""loudness levels from sound pressure level (following DIN ISO 226:2006-04)
 
-    Calulates the loudness level at a given frequency from the sound
+    Calculates the loudness level at a given frequency from the sound
     pressure level following DIN ISO 226:2006-04
 
     The normed values are tabulated for the following frequencies and
@@ -799,16 +799,16 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
 def calc_bandwidth(fc, scale="cbw"):
     r"""Calculate approximation of auditory filter bandwidth
 
-    This Function calculates aproximations for the auditory filter
-    bandwidth using differnt concepts:
+    This Function calculates approximations for the auditory filter
+    bandwidth using different concepts:
 
     - cbw: Use the critical bandwidth concept following [1]_
-    - erb: Use the equivalent rectangular bandwith concept following [2]_
+    - erb: Use the equivalent rectangular bandwidth concept following [2]_
 
     Equation used for critical bandwidth:
     .. math:: B = 25 + 75 (1 + 1.4 \frac{f_c}{1000}^2)^0.69
 
-    Equation used for critical equivalent rectangular bandwith:
+    Equation used for critical equivalent rectangular bandwidth:
     .. math:: B = 24.7 (4.37 \frac{f_c}{1000} + 1)
 
     Parameters
@@ -845,7 +845,7 @@ def calc_bandwidth(fc, scale="cbw"):
 def extract_binaural_differences(signal, log_ilds=True):
     r"""Extract the binaural differences between two narrowband signals
 
-    This function extimates the binaural evelope difference as well as the
+    This function estimates the binaural envelope difference as well as the
     phase difference by applying the hilbert transform.
 
     The envelope difference is defined as the hilbert envelope of the
@@ -901,7 +901,7 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.0):
     r"""Phases for a schroeder phase harmonic complex
 
     This function calculates the phases for a schroeder phase harmonic
-    comlex following eq. 11 of [1]_:
+    complex following eq. 11 of [1]_:
 
     .. math:: \phi_n = \phi_l - 2\pi \sum\limits^{n-1}_{l=1}(n - l)p_l
 
@@ -920,7 +920,7 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.0):
 
     Returns
     -------
-    The phase values for the harmonic compontents : ndarray
+    The phase values for the harmonic components : ndarray
 
 
     References
@@ -1015,9 +1015,9 @@ def inst_cmplx_corr(signal, window_duration, window="hann"):
 
 
 def cmplx_corr(signal, fs=None):
-    r"""The complex valued correlation coefficent.
+    r"""The complex valued correlation coefficient.
 
-    This function calculates the complex valued correlation coefficent which
+    This function calculates the complex valued correlation coefficient which
     equals the value of the complex_valued_cross_correlation at :math:`\tau=0`
 
     .. math:: \gamma = \frac{<f_a(t)^*_g_a(t)>}{\sqrt{<|f_a(t)|^2><|g_a(t)|^2>}}

@@ -148,7 +148,7 @@ class GenerationMixin:
         # amplitude weighting factor
         f_weights = np.zeros(nfft)
         if ntype == "pink":
-            # Power proportinal to 1 / f
+            # Power proportional to 1 / f
             f_weights[lowbin:highbin] = 1.0 / np.sqrt(freqs[lowbin:])
         elif ntype == "brown":
             # Power proportional to 1 / f**2
@@ -196,15 +196,15 @@ class GenerationMixin:
         generator method.
 
         To generate N partly uncorrelated noises with a desired
-        correlation coefficent of $\rho$, the algoritm first generates N+1
+        correlation coefficient of $\rho$, the algorithm first generates N+1
         noise tokens which are then orthogonalized using the Gram-Schmidt
-        process (as implementd in numpy.linalg.qr). The N+1 th noise token
+        process (as implemented in numpy.linalg.qr). The N+1 th noise token
         is then mixed with the remaining noise tokens using the equation
 
         .. math:: X_{\rho,n} = X_{N+1}  \sqrt{\rho} + X_n \beta \sqrt{1 - \rho}
 
         where :math:`X_{\rho,n}` is the nth output and noise,
-        :math:`X_{n}` the nth indipendent noise and :math:`X_{N=1}` is the
+        :math:`X_{n}` the nth independent noise and :math:`X_{N=1}` is the
         common noise.
 
         For two noise tokens, this is identical to the asymmetric

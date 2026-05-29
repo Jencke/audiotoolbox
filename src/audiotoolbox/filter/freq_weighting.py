@@ -166,7 +166,7 @@ def a_weighting(signal, fs=None):
     Apply an digital A-weighting filter following IEC 61672-1.
     Take care that the sampling frequency is high enough to prevent steep
     high frequency drop-off. A sampling frequency of about 48 kHz should be
-    sufficent to result in a Class 1 filter following IEC 61672-1.
+    sufficient to result in a Class 1 filter following IEC 61672-1.
 
     Parameters:
     -----------
@@ -196,7 +196,7 @@ def c_weighting(signal, fs=None):
     Apply an digital C-weighting filter following IEC 61672-1.
     Take care that the sampling frequency is high enough to prevent steep
     high frequency drop-off. A sampling frequency of about 48 kHz should be
-    sufficent to result in a Class 1 filter following IEC 61672-1.
+    sufficient to result in a Class 1 filter following IEC 61672-1.
 
     Parameters:
     -----------
