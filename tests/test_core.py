@@ -220,8 +220,9 @@ def test_phon_to_dbspl():
     testing.assert_almost_equal(l_int, l_tab)
 
     # Test Limits
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         audio.phon_to_dbspl(10000, 90)
+    with pytest.raises(ValueError):
         audio.phon_to_dbspl(10000, 10)
 
     audio.phon_to_dbspl(10000, 10, limit=False)

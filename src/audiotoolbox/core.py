@@ -673,12 +673,21 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
     """
     if limit:
         # Definition only valid starting from 20 phon
-        assert l_phon >= 20
+        if l_phon < 20:
+            raise ValueError("Loudness level must be >= 20 phon (set limit=False to override).")
 
         if 20 <= frequency <= 4500:
-            assert l_phon <= 90
+            if l_phon > 90:
+                raise ValueError(
+                    "Loudness level must be <= 90 phon between 20 and 4500 Hz "
+                    "(set limit=False to override)."
+                )
         elif 4500 < frequency <= 12500:
-            assert l_phon <= 80
+            if l_phon > 80:
+                raise ValueError(
+                    "Loudness level must be <= 80 phon between 4500 and 12500 Hz "
+                    "(set limit=False to override)."
+                )
 
     # Equation Parameters
     frequency_list = din_iso_226.frequency_list
@@ -692,7 +701,11 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
     t_f_list = din_iso_226.t_f_list
 
     if interpolate is False:
-        assert frequency in frequency_list
+        if frequency not in frequency_list:
+            raise ValueError(
+                f"frequency must be one of the tabulated values {list(frequency_list)} "
+                "when interpolate=False; set interpolate=True for other frequencies."
+            )
         n_param = np.where(frequency_list == frequency)[0][0]
 
         alpha_f = alpha_f_list[n_param]
@@ -765,7 +778,11 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
     t_f_list = din_iso_226.t_f_list
 
     if interpolate is False:
-        assert frequency in frequency_list
+        if frequency not in frequency_list:
+            raise ValueError(
+                f"frequency must be one of the tabulated values {list(frequency_list)} "
+                "when interpolate=False; set interpolate=True for other frequencies."
+            )
         n_param = np.where(frequency_list == frequency)[0][0]
 
         alpha_f = alpha_f_list[n_param]
@@ -786,12 +803,21 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
 
     if limit:
         # Definition only valid starting from 20 phon
-        assert l_phon >= 20
+        if l_phon < 20:
+            raise ValueError("Loudness level must be >= 20 phon (set limit=False to override).")
 
         if 20 <= frequency <= 4500:
-            assert l_phon <= 90
+            if l_phon > 90:
+                raise ValueError(
+                    "Loudness level must be <= 90 phon between 20 and 4500 Hz "
+                    "(set limit=False to override)."
+                )
         elif 4500 < frequency <= 12500:
-            assert l_phon <= 80
+            if l_phon > 80:
+                raise ValueError(
+                    "Loudness level must be <= 80 phon between 4500 and 12500 Hz "
+                    "(set limit=False to override)."
+                )
 
     return l_phon
 
