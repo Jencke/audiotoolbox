@@ -453,14 +453,6 @@ def test_duration_is_signal():
     assert n_ch == (2, 3)
 
 
-def test_copy_to_ndim():
-    a = np.random.random(1000)
-    b = audio.core._copy_to_dim(a, (2, 3))
-    assert b.shape == (1000, 2, 3)
-
-    b = audio.core._copy_to_dim(a, 3)
-    assert b.shape == (1000, 3)
-
 
 def test_crossfade():
     # cosine fade between uncorrelated noise should keep equal variance

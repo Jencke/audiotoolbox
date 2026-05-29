@@ -3,17 +3,6 @@ import numpy as np
 from .. import core as audio
 
 
-def _copy_to_dim(array, dim):
-    if np.ndim(dim) == 0:
-        dim = (dim,)
-
-    # tile by the number of dimensions
-    tiled_array = np.tile(array, (*dim[::-1], 1)).T
-    # squeeze to remove axis of lenght 1
-    tiled_array = tiled_array
-
-    return tiled_array
-
 
 def butterworth(
     signal, low_f, high_f, fs=None, order=2, return_states=False, states=None

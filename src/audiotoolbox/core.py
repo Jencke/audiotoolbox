@@ -32,19 +32,6 @@ def _warn_deprecated_scale_wrapper(function_name: str, replacement: str) -> None
     )
 
 
-def _copy_to_dim(array, dim):
-    if np.ndim(dim) == 0:
-        dim = (dim,)
-    # tile by the number of dimensions
-    tiled_array = np.tile(array, (*dim[::-1], 1)).T
-    # make sure that dimensions are only squeezed if the last dimension of the
-    # goal dimension does not equal 1
-    if dim[-1] != 1:
-        # squeeze to remove axis of lenght 1
-        tiled_array = np.squeeze(tiled_array)
-
-    return tiled_array
-
 
 def _duration_is_signal(duration, fs=None, n_channels=None):
     r"""Check if the duration which was passed was really a signal class."""
