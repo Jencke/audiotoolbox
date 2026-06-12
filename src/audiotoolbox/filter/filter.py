@@ -1,4 +1,3 @@
-import numpy as np
 
 from .gammatone_filt import gammatone
 from .butterworth_filt import butterworth
@@ -10,7 +9,7 @@ from .. import core as audio
 def bandpass(signal, fc, bw, filter_type, fs=None, **kwargs):
     """Apply a bandpass filter to the Signal.
 
-    This function provieds a unified interface to all bandpass filters
+    This function provides a unified interface to all bandpass filters
     implemented in audiotoolbox.
 
     Parameters
@@ -48,8 +47,7 @@ def bandpass(signal, fc, bw, filter_type, fs=None, **kwargs):
     elif filter_type == "exponential":
         sig_out = efilt(signal, fc, bw, **kwargs)
     else:
-        raise (ValueError, f"Filtertype {filter_type} not implemented.")
-        return None
+        raise ValueError(f"Filtertype {filter_type} not implemented.")
 
     return sig_out
 
@@ -57,7 +55,7 @@ def bandpass(signal, fc, bw, filter_type, fs=None, **kwargs):
 def lowpass(signal, f_cut, filter_type, fs=None, **kwargs):
     """Apply a lowpass filter to the Signal.
 
-    This function provieds a unified interface to all lowpass filters
+    This function provides a unified interface to all lowpass filters
     implemented in audiotoolbox.
 
     Parameters
@@ -87,8 +85,7 @@ def lowpass(signal, f_cut, filter_type, fs=None, **kwargs):
     elif filter_type == "brickwall":
         sig_out = brickwall(signal, None, f_cut, fs, **kwargs)
     else:
-        raise (ValueError, f"Filtertype {filter_type} not implemented.")
-        return None
+        raise ValueError(f"Filtertype {filter_type} not implemented.")
 
     return sig_out
 
@@ -96,7 +93,7 @@ def lowpass(signal, f_cut, filter_type, fs=None, **kwargs):
 def highpass(signal, f_cut, filter_type, fs=None, **kwargs):
     """Apply a highpass filter to the Signal.
 
-    This function provieds a unified interface to all highpass filters
+    This function provides a unified interface to all highpass filters
     implemented in audiotoolbox.
 
     Parameters
@@ -123,7 +120,6 @@ def highpass(signal, f_cut, filter_type, fs=None, **kwargs):
     elif filter_type == "brickwall":
         sig_out = brickwall(signal, f_cut, None, fs, **kwargs)
     else:
-        raise (ValueError, f"Filtertype {filter_type} not implemented.")
-        return None
+        raise ValueError(f"Filtertype {filter_type} not implemented.")
 
     return sig_out

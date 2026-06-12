@@ -27,9 +27,9 @@ def auditory_gamma_bank(
     fhigh : scalar (optional)
       Highest center frequency in Hz. (default = 16 kHz)
     step : scalar (optional)
-      Stepsize between filters on the ERB scale. Defauls to 1 filter per ERB
+      Stepsize between filters on the ERB scale. Defaults to 1 filter per ERB
     **kwargs
-      Further paramters such as filter order to pass to the
+      Further parameters such as filter order to pass to the
       filter.GammaToneBank function. Values can either be an ndarray that
       matches the length of `fc` or a single value in which case this value is
       used for all filters.

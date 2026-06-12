@@ -1,16 +1,14 @@
 """Definition for the Signal class."""
 
-from typing import Type, cast, Union, Literal
+from typing import Type, cast, Union
 
 import numpy as np
 
 from . import base_signal
-from . import core as audio
 from .freqdomain_signal import FrequencyDomainSignal
 from .stats import SignalStats
 from .time_frequency import TimeFrequency
 from .viz import Visualization
-from scipy.signal import fftconvolve
 import warnings
 
 # Import all mixins
@@ -105,7 +103,7 @@ class Signal(
         return time
 
     def plot(self, ax=None):
-        raise (DeprecationWarning("Use sig.viz.plot() instead of sig.plot()"))
+        warnings.warn("Use sig.viz.plot() instead of sig.plot()", DeprecationWarning, stacklevel=2)
         fig, ax = self.viz.plot(ax=ax)
         return fig, ax
 
@@ -164,7 +162,7 @@ def as_signal(signal, fs) -> Signal:
     The converted signal : Signal
 
     """
-    # if allready signal class
+    # if already signal class
     if isinstance(signal, Signal):
         return signal
     else:

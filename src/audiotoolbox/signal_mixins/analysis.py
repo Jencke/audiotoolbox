@@ -1,12 +1,8 @@
 """Signal mixins for organizing Signal class functionality."""
 
-from typing import TYPE_CHECKING
 import numpy as np
 import warnings
 from .. import core as audio
-
-if TYPE_CHECKING:
-    from ..signal import Signal
 
 
 class AnalysisMixin:

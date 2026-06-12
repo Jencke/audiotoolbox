@@ -89,6 +89,21 @@ def test_freqspace():
     # check if really equally spaced in erbs
     testing.assert_array_almost_equal(diff, diff[::-1])
 
+    freqs = audio.freqspace(100, 1200, 20, scale="mel")
+    mel = audio.mel.from_freq(freqs)
+    diff = np.diff(mel)
+    testing.assert_array_almost_equal(diff, diff[::-1])
+
+    freqs = audio.freqspace(110, 1760, 20, scale="semitone")
+    semi = audio.semitone.from_freq(freqs)
+    diff = np.diff(semi)
+    testing.assert_array_almost_equal(diff, diff[::-1])
+
+    freqs = audio.freqspace(100, 1200, 20, scale="greenwood")
+    green = audio.greenwood.from_freq(freqs)
+    diff = np.diff(green)
+    testing.assert_array_almost_equal(diff, diff[::-1])
+
 
 def test_freq_to_erb():
     # test that scale starts with 0
@@ -130,6 +145,21 @@ def test_freqarange():
 
     freqs = audio.freqarange(16, 16000, 1 / 2, "octave")
     assert freqs[-4] == 4000
+
+    freqs = audio.freqarange(100, 2000, 1, scale="mel")
+    mel = audio.mel.from_freq(freqs)
+    diff = np.diff(mel)
+    testing.assert_almost_equal(diff[0], 1)
+
+    freqs = audio.freqarange(110, 1760, 1, scale="semitone")
+    semi = audio.semitone.from_freq(freqs)
+    diff = np.diff(semi)
+    testing.assert_almost_equal(diff[0], 1)
+
+    freqs = audio.freqarange(100, 2000, 0.1, scale="greenwood")
+    green = audio.greenwood.from_freq(freqs)
+    diff = np.diff(green)
+    testing.assert_almost_equal(diff[0], 0.1)
 
 
 def test_erb_to_freq():
@@ -190,8 +220,9 @@ def test_phon_to_dbspl():
     testing.assert_almost_equal(l_int, l_tab)
 
     # Test Limits
-    with pytest.raises(AssertionError):
+    with pytest.raises(ValueError):
         audio.phon_to_dbspl(10000, 90)
+    with pytest.raises(ValueError):
         audio.phon_to_dbspl(10000, 10)
 
     audio.phon_to_dbspl(10000, 10, limit=False)
@@ -233,6 +264,32 @@ def test_audfilter_bw():
     bw = audio.calc_bandwidth(555.0, "erb")
     bw2 = audio.calc_bandwidth(555, "erb")
     assert bw == bw2
+
+
+def test_deprecated_core_scale_wrappers_warn():
+    with pytest.deprecated_call(match="audio.get_bark_limits"):
+        audio.get_bark_limits()
+
+    with pytest.deprecated_call(match="audio.bark_to_freq"):
+        audio.bark_to_freq(np.array([10.0]))
+
+    with pytest.deprecated_call(match="audio.freq_to_bark"):
+        audio.freq_to_bark(np.array([100.0]))
+
+    with pytest.deprecated_call(match="audio.freq_to_erb"):
+        audio.freq_to_erb(np.array([100.0]))
+
+    with pytest.deprecated_call(match="audio.erb_to_freq"):
+        audio.erb_to_freq(np.array([1.0]))
+
+    with pytest.deprecated_call(match="audio.freq_to_octband"):
+        audio.freq_to_octband(1000.0)
+
+    with pytest.deprecated_call(match="audio.octband_to_freq"):
+        audio.octband_to_freq(30.0)
+
+    with pytest.deprecated_call(match="audio.calc_bandwidth"):
+        audio.calc_bandwidth(1000.0)
 
 
 def test_extract_binaural_differences():
@@ -396,14 +453,6 @@ def test_duration_is_signal():
     assert fs == 3
     assert n_ch == (2, 3)
 
-
-def test_copy_to_ndim():
-    a = np.random.random(1000)
-    b = audio.core._copy_to_dim(a, (2, 3))
-    assert b.shape == (1000, 2, 3)
-
-    b = audio.core._copy_to_dim(a, 3)
-    assert b.shape == (1000, 3)
 
 
 def test_crossfade():

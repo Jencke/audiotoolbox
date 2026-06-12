@@ -31,7 +31,7 @@ def get_edge_frequencies(
     elif base_system == 2:
         gbase = 2
     else:
-        raise (ValueError("base_system must be 2 or 10"))
+        raise ValueError("base_system must be 2 or 10")
 
     f_l = gbase ** (-1 / (2 * b)) * fc
     f_h = gbase ** (1 / (2 * b)) * fc
@@ -69,7 +69,7 @@ def octave_bank(
       defined in DIN ISO 226. If True, the center frequencies will be adjusted
       to the nearest preferred band frequency. (default = True)
     **kwargs
-      Further paramters such as filter order to pass to the
+      Further parameters such as filter order to pass to the
       filter.ButterworthBank function. Values can either be an ndarray that
       matches the length of `fc` or a single value in which case this value is
       used for all filters.
@@ -83,7 +83,7 @@ def octave_bank(
     band_low = audio.freq_to_octband(flow, oct_fraction, round=round_to_band)
     band_high = audio.freq_to_octband(fhigh, oct_fraction, round=round_to_band)
 
-    # Equaly space filters between the start end end band and convert to center
+    # Equally space filters between the start end end band and convert to center
     # frequencies
     bands = np.arange(band_low, band_high + 1, 1)
     fc = audio.octband_to_freq(bands, oct_fraction, pref_band=round_to_band)

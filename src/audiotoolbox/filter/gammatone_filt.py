@@ -1,4 +1,3 @@
-import math
 
 import numpy as np
 from numpy import pi
@@ -11,7 +10,7 @@ from .. import core as audio
 def design_gammatone(fc, bw, fs, order=4, attenuation_db="erb"):
     """Return the coefficient of a gammatone filter.
 
-    Calculates the filter coefficents for a gammatone filter following
+    Calculates the filter coefficients for a gammatone filter following
     Eq. 11 and 12 of [hohmann2002b]_.
 
 
@@ -44,7 +43,7 @@ def design_gammatone(fc, bw, fs, order=4, attenuation_db="erb"):
           43 -3442
 
     """
-    # in case the bandwith is stated in equivalent rectangular
+    # in case the bandwidth is stated in equivalent rectangular
     # bandwidth:
     if attenuation_db == "erb":
         # Using Eq. 14 and 15 [Hohmann2002]
@@ -82,7 +81,7 @@ def gammatonefos_apply(signal, b, a, order, states=None):
     """Process an input signal by applying the filter `order` times.
 
     Filter the signal with a gammatone filter defined by the
-    coeffients `b` and `a`. The filter is applied `order` times.
+    coefficients `b` and `a`. The filter is applied `order` times.
 
     Parameters
     ----------
@@ -134,7 +133,7 @@ def gammatonefos_apply(signal, b, a, order, states=None):
 def gammatone(signal, fc, bw, fs, order=4, attenuation_db="erb", return_complex=True):
     """Apply a gammatone filter to the signal.
 
-    Applys a gammatone filter following [Hohmann2002]_ to the input
+    Applies a gammatone filter following [Hohmann2002]_ to the input
     signal and returns the filtered signal.
 
     Parameters

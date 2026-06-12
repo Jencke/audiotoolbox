@@ -21,8 +21,8 @@ class FilterBank(object):
     fs : int
         Sampling frequency
     **kwargs :
-        Further paramters such as filter order to pass to the Filter
-        function, see filter documenation for details. Value can
+        Further parameters such as filter order to pass to the Filter
+        function, see filter documentation for details. Value can
         either be an ndarray that matches the length of `fc` or a
         single value in which case this value is used for all filters.
 
@@ -53,7 +53,7 @@ class FilterBank(object):
                 if len(v) == n_val:
                     self.params[k] = np.asarray(v)
                 else:
-                    raise Exception(f"Size missmatch in parameter '{k}'")
+                    raise Exception(f"Size mismatch in parameter '{k}'")
             else:
                 self.params[k] = np.asarray(n_val * [v])
 
@@ -78,17 +78,17 @@ class ButterworthBank(FilterBank):
         if "order" not in self.params.keys():
             self._update_params(order=2)
 
-        # Calculate filter coefficents
-        self.coefficents = np.zeros((np.max(self.params["order"]), 6, self.n_filters))
+        # Calculate filter coefficients
+        self.coefficients = np.zeros((np.max(self.params["order"]), 6, self.n_filters))
         for i_filt in range(self.n_filters):
             # extract parameter set for current filter
             current_params = {k: v[i_filt] for k, v in self.params.items()}
             order = current_params["order"]
             low_f = self.fc[i_filt] - self.bw[i_filt] / 2
             high_f = self.fc[i_filt] + self.bw[i_filt] / 2
-            # design filter and save coefficents
+            # design filter and save coefficients
             sos = butter.design_butterworth(low_f, high_f, self.fs, **current_params)
-            self.coefficents[:order, :, i_filt] = sos
+            self.coefficients[:order, :, i_filt] = sos
 
     def filt(self, signal):
         in_ch = signal.channel_shape
@@ -100,14 +100,14 @@ class ButterworthBank(FilterBank):
         for i_filt, freq in enumerate(self.fc):
             order = self.params["order"][i_filt]
             # sos has to be C-contigous
-            sos = self.coefficents[:order, :, i_filt].copy(order="C")
+            sos = self.coefficients[:order, :, i_filt].copy(order="C")
             out, states = butter.apply_sos(signal, sos)
             out_sig.ch[..., i_filt] = out
         return out_sig
 
     def __getitem__(self, i):
         bank = super().__getitem__(i)
-        bank.coefficents = self.coefficents[:, :, np.atleast_1d(i)]
+        bank.coefficients = self.coefficients[:, :, np.atleast_1d(i)]
         return bank
 
 
@@ -122,8 +122,8 @@ class GammaToneBank(FilterBank):
         if "attenuation_db" not in self.params.keys():
             self._update_params(attenuation_db="erb")
 
-        # Calculate filter coefficents
-        self.coefficents = np.zeros([4, self.n_filters], complex)
+        # Calculate filter coefficients
+        self.coefficients = np.zeros([4, self.n_filters], complex)
 
         for i_filt in range(self.n_filters):
             current_params = {k: v[i_filt] for k, v in self.params.items()}
@@ -131,8 +131,8 @@ class GammaToneBank(FilterBank):
             b, a = gamma.design_gammatone(
                 self.fc[i_filt], self.bw[i_filt], self.fs, **current_params
             )
-            self.coefficents[0, i_filt] = b[0]
-            self.coefficents[2:, i_filt] = a
+            self.coefficients[0, i_filt] = b[0]
+            self.coefficients[2:, i_filt] = a
 
     def filt(self, signal):
         in_ch = signal.channel_shape
@@ -143,7 +143,7 @@ class GammaToneBank(FilterBank):
         out_sig = audio.Signal(n_ch_out, duration, self.fs, dtype=complex)
         for i_filt, freq in enumerate(self.fc):
             order = self.params["order"][i_filt]
-            coeff = self.coefficents[:, i_filt]
+            coeff = self.coefficients[:, i_filt]
             b = (coeff[0],)
             a = coeff[2:]
             out, states = gamma.gammatonefos_apply(signal, b, a, order)
@@ -153,7 +153,7 @@ class GammaToneBank(FilterBank):
 
     def __getitem__(self, i):
         bank = super().__getitem__(i)
-        bank.coefficents = self.coefficents[:, np.atleast_1d(i)]
+        bank.coefficients = self.coefficients[:, np.atleast_1d(i)]
         return bank
 
 
@@ -196,8 +196,8 @@ def create_filterbank(
     fs : int
         Sampling frequency
     **kwargs
-        Further paramters such as filter order to pass to the Filter
-        function, see filter documenation for details. Value can either be
+        Further parameters such as filter order to pass to the Filter
+        function, see filter documentation for details. Value can either be
         an ndarray that matches the length of `fc` or a single value in
         which case this value is used for all filters.
 

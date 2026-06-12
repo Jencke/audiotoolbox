@@ -7,18 +7,6 @@ from . import base_signal
 from .stats import FreqDomainStats
 
 
-def _copy_to_dim(array, dim):
-    if np.ndim(dim) == 0:
-        dim = (dim,)
-
-    # tile by the number of dimensions
-    tiled_array = np.tile(array, (*dim[::-1], 1)).T
-    if dim[-1] != 1:
-        # squeeze to remove axis of lenght 1
-        tiled_array = np.squeeze(tiled_array)
-
-    return tiled_array
-
 
 class FrequencyDomainSignal(base_signal.BaseSignal):
     """Base class for signals in the frequency domain.
@@ -129,12 +117,12 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
         phases = -self.omega * time
 
         # fix the last bin in case of odd samples in order to keep the
-        # tranformed signal real
+        # transformed signal real
         if not self.n_samples % 2:
             phases[self.n_samples // 2] = 0
 
         shift_factor = np.exp(1j * phases)
-        shift_factor = _copy_to_dim(shift_factor, self.shape[1:])
+        shift_factor = shift_factor[:, np.newaxis]
 
         self *= shift_factor
 
@@ -167,7 +155,7 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
         """
 
         shift_val = -1.0j * phase * np.sign(self.freq)
-        shift_val = _copy_to_dim(shift_val, self.shape[1:])
+        shift_val = shift_val[:, np.newaxis]
 
         # if even number of samples, do not apply phase shift to the overhanging
         # negative frequency bin as this results in a non real-valued inverse
@@ -216,7 +204,7 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
 
         Converts the spectrum to that of the equivalent analytical
         signal by removing the negative frequency components and
-        doubling the positive coponents.
+        doubling the positive components.
 
         Returns:
         --------

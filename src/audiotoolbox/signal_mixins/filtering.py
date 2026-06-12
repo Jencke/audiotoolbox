@@ -1,13 +1,10 @@
 """Signal mixins for organizing Signal class functionality."""
 
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 import numpy as np
 from scipy.signal import fftconvolve
 import warnings
-from .. import core as audio, filter as filt, io
-
-if TYPE_CHECKING:
-    from ..signal import Signal
+from .. import core as audio, filter as filt
 
 
 class FilteringMixin:
@@ -16,7 +13,7 @@ class FilteringMixin:
     def bandpass(self, fc, bw, filter_type, **kwargs):
         r"""Apply a bandpass filter.
 
-        Applies a bandpass filter to the signal. The availible filters
+        Applies a bandpass filter to the signal. The available filters
         are:
 
         - brickwall: A 'optimal' brickwall filter
@@ -33,7 +30,7 @@ class FilteringMixin:
         Parameters
         ----------
         fc : scalar
-            The banddpass center frequency in Hz
+            The bandpass center frequency in Hz
         bw : scalar
             The filter bandwidth in Hz
         filter_type : {'brickwall', 'gammatone', 'butter'}
@@ -90,7 +87,7 @@ class FilteringMixin:
     def lowpass(self, f_cut, filter_type, **kwargs):
         """Apply a lowpass filter to the Signal.
 
-        This function provieds a unified interface to all lowpass
+        This function provides a unified interface to all lowpass
         filters implemented in audiotoolbox.
 
         - brickwall: A 'optimal' brickwall filter
@@ -133,7 +130,7 @@ class FilteringMixin:
     def highpass(self, f_cut, filter_type, **kwargs):
         """Apply a highpass filter to the Signal.
 
-        This function provieds a unified interface to all highpass
+        This function provides a unified interface to all highpass
         filters implemented in audiotoolbox.
 
         - brickwall: A 'optimal' brickwall filter

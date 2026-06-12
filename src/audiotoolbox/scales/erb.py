@@ -1,77 +1,94 @@
 import numpy as np
 
-def to_freq(n_erb):
-    r"""number of ERBs to Frequency conversion
+from .base import ScaleBase
 
-    Calculates the frequency from a given number of ERBs using
-    equation by [1]_
+class ErbScale(ScaleBase):
+    """Object-oriented ERB scale API."""
 
-    Parameters
-    ----------
-    n_erb: scalar or ndarray
-        The number of ERBs
+    def from_freq(self, frequency):
+        r"""Frequency to number of ERBs conversion.
 
-    Returns
-    -------
-    scalar or ndarray : The corresponding frequency
+        Calculates the number of ERBs for a given sound frequency in Hz
+        using the equation by [1]_.
 
-    References
-    ----------
-    ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of
-          auditory filter shapes from notched-noise data. Hearing
-          Research, 47(1-2), 103-138.
+        Parameters
+        ----------
+        frequency: scalar or ndarray
+            The frequency in Hz.
 
-    """
-    fkhz = (np.exp(n_erb * (24.7 * 4.37) / 1000) - 1) / 4.37
-    return fkhz * 1000
+        Returns
+        -------
+        scalar or ndarray
+            The number of ERBs corresponding to the frequency.
+
+        References
+        ----------
+        .. [1] Glasberg, B. R., & Moore, B. C. (1990). Derivation of auditory
+            filter shapes from notched-noise data. Hearing Research, 47(1-2),
+            103-138.
+        """
+        frequency = np.asarray(frequency, dtype=float)
+        scalar_input = frequency.ndim == 0
+        frequency = np.atleast_1d(frequency)
+        erb = (1000.0 / (24.7 * 4.37)) * np.log(4.37 * frequency / 1000 + 1)
+        return erb[0] if scalar_input else erb
+
+    def to_freq(self, scale_value):
+        r"""Number of ERBs to frequency conversion.
+
+        Calculates the frequency from a given number of ERBs using the
+        equation by [1]_.
+
+        Parameters
+        ----------
+        scale_value: scalar or ndarray
+            The number of ERBs.
+
+        Returns
+        -------
+        scalar or ndarray
+            The corresponding frequency in Hz.
+
+        References
+        ----------
+        .. [1] Glasberg, B. R., & Moore, B. C. (1990). Derivation of auditory
+            filter shapes from notched-noise data. Hearing Research, 47(1-2),
+            103-138.
+        """
+        scale_value = np.asarray(scale_value, dtype=float)
+        scalar_input = scale_value.ndim == 0
+        scale_value = np.atleast_1d(scale_value)
+        fkhz = (np.exp(scale_value * (24.7 * 4.37) / 1000) - 1) / 4.37
+        freq = fkhz * 1000
+        return freq[0] if scalar_input else freq
+
+    def get_bw(self, fc):
+        r"""Calculate bandwidth on the ERB scale.
+
+        Returns the equivalent rectangular bandwidth for a given center
+        frequency following [Glasberg1990]_.
+
+        Parameters
+        ----------
+        fc : float or ndarray
+            Center frequency in Hz.
+
+        Returns
+        -------
+        float or ndarray
+            The ERB in Hz.
+
+        References
+        ----------
+        .. [Glasberg1990] Glasberg, B. R., & Moore, B. C. (1990). Derivation
+            of auditory filter shapes from notched-noise data. Hearing
+            Research, 47(1-2), 103-138.
+        """
+        fc = np.asarray(fc, dtype=float)
+        scalar_input = fc.ndim == 0
+        fc = np.atleast_1d(fc)
+        bw = 24.7 * (4.37 * (fc / 1000) + 1)
+        return float(bw[0]) if scalar_input else bw
 
 
-def from_freq(frequency):
-    r"""Frequency to number of ERBs conversion
-
-    Calculates the number of erbs for a given sound frequency in Hz
-    using the equation by [1]_
-
-    Parameters
-    ----------
-    frequency: scalar or ndarray
-        The frequency in Hz.
-
-    Returns
-    -------
-    scalar or ndarray : The number of erbs corresponding to the
-    frequency
-
-    References
-    ----------
-    ..[2] Glasberg, B. R., & Moore, B. C. (1990). Derivation of
-          auditory filter shapes from notched-noise data. Hearing
-          Research, 47(1-2), 103-138.
-
-    """
-
-    n_erb = (1000.0 / (24.7 * 4.37)) * np.log(4.37 * frequency / 1000 + 1)
-    return n_erb
-
-
-def bandwidth(fc):
-    '''Calculate bandwidth on the ERB scale.
-
-    This function returns the equivalent rectangular bandwidth for a given
-    center frequency following [Glasberg1990]_
-
-    Parameters
-    -----------
-    fc : float or ndarray
-      center frequency in Hz
-
-    Returns
-    -------
-    The ERB in Hz
-
-    ..[Glasberg1990] Glasberg, B. R., & Moore, B. C. (1990). Derivation of
-          auditory filter shapes from notched-noise data. Hearing Research,
-          47(1-2), 103-138.
-    '''
-    bw = 24.7 * (4.37 * (fc / 1000) + 1)
-    return bw
+scale = ErbScale()

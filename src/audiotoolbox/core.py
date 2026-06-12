@@ -1,31 +1,36 @@
 """Function based interface to audiotoolbox."""
 
-from typing import Literal, Optional, Union
+from typing import Literal, Optional
+import warnings
 import numpy as np
 from numpy import pi
 from scipy.interpolate import interp1d
-from scipy.signal import hilbert, get_window
+from scipy.signal import get_window
 
 from .signal import Signal, as_signal
-from . import filter
+from . import filter  # noqa: F401  re-exported as audio.filter for other modules
 from . import din_iso_226
+from .scales import bark as bark_scale
+from .scales import erb as erb_scale
+from .scales import greenwood as greenwood_scale
+from .scales import mel as mel_scale
+from .scales import octave as octave_scale
+from .scales import semitone as semitone_scale
 
 COLOR_R = "#d65c5c"
 COLOR_L = "#5c5cd6"
 
 
-def _copy_to_dim(array, dim):
-    if np.ndim(dim) == 0:
-        dim = (dim,)
-    # tile by the number of dimensions
-    tiled_array = np.tile(array, (*dim[::-1], 1)).T
-    # make sure that dimensions are only squeezed if the last dimension of the
-    # goal dimension does not equal 1
-    if dim[-1] != 1:
-        # squeeze to remove axis of lenght 1
-        tiled_array = np.squeeze(tiled_array)
+def _warn_deprecated_scale_wrapper(function_name: str, replacement: str) -> None:
+    warnings.warn(
+        (
+            f"audio.{function_name} is deprecated and will be removed in a "
+            f"future release. Use {replacement} instead."
+        ),
+        DeprecationWarning,
+        stacklevel=2,
+    )
 
-    return tiled_array
 
 
 def _duration_is_signal(duration, fs=None, n_channels=None):
@@ -120,7 +125,7 @@ def pad_for_fft(signal):
     r"""Zero buffer a signal with zeros so that it reaches the next closest :math`$2^n$` length.
 
     This Function attaches zeros to a signal to adjust the length
-    of the signal to a multiple of 2 for efficent FFT calculation.
+    of the signal to a multiple of 2 for efficient FFT calculation.
 
     Parameters
     -----------
@@ -151,7 +156,7 @@ def band2rms(bandlevel, bw):
     r"""Convert bandlevel to rms level
 
     Assuming a white spectrum, this functions converts a Bandlevel in
-    dB/sqrt(Hz) into the corresponding RMS levle in dB
+    dB/sqrt(Hz) into the corresponding RMS level in dB
 
     ..math:: L_{rms} = L_{band} + 10 \log_10(f_\delta)
 
@@ -197,7 +202,7 @@ def time2phase(time, frequency):
 
 
 def phase2time(phase, frequency):
-    r"""Pase to Time for a given frequency
+    r"""Phase to Time for a given frequency
 
     .. math:: t = \frac{\phi}{2 \pi f}
 
@@ -317,34 +322,8 @@ def get_bark_limits():
         248-248. http://dx.doi.org/10.1121/1.1908630
 
     """
-    bark_table = [
-        20,
-        100,
-        200,
-        300,
-        400,
-        510,
-        630,
-        770,
-        920,
-        1080,
-        1270,
-        1480,
-        1720,
-        2000,
-        2320,
-        2700,
-        3150,
-        3700,
-        4400,
-        5300,
-        6400,
-        7700,
-        9500,
-        12000,
-        15500,
-    ]
-    return bark_table
+    _warn_deprecated_scale_wrapper("get_bark_limits", "audio.bark.get_bark_limits()")
+    return bark_scale.get_bark_limits()
 
 
 def freqspace(min_frequency, max_frequency, n, scale="bark"):
@@ -374,16 +353,24 @@ def freqspace(min_frequency, max_frequency, n, scale="bark"):
 
     """
 
-    if scale == "bark":
-        min_bark, max_bark = freq_to_bark(np.array([min_frequency, max_frequency]))
-        barks = np.linspace(min_bark, max_bark, n)
-        freqs = bark_to_freq(barks)
-    elif scale == "erb":
-        min_erb, max_erb = freq_to_erb(np.array([min_frequency, max_frequency]))
-        erbs = np.linspace(min_erb, max_erb, n)
-        freqs = erb_to_freq(erbs)
-    else:
-        raise NotImplementedError("only ERB and Bark implemented")
+    scale_map = {
+        "bark": bark_scale,
+        "erb": erb_scale,
+        "octave": octave_scale,
+        "mel": mel_scale,
+        "semitone": semitone_scale,
+        "greenwood": greenwood_scale,
+    }
+
+    if scale not in scale_map:
+        raise NotImplementedError(
+            "implemented scales are: bark, erb, octave, mel, semitone, greenwood"
+        )
+
+    scale_obj = scale_map[scale]
+    min_scale, max_scale = scale_obj.from_freq(np.array([min_frequency, max_frequency]))
+    scale_vals = np.linspace(min_scale, max_scale, n)
+    freqs = scale_obj.to_freq(scale_vals)
 
     return freqs
 
@@ -392,9 +379,9 @@ def freqarange(
     min_frequency: float,
     max_frequency: float,
     step: float = 1,
-    scale: Literal["bark", "erb", "octave"] = "bark",
+    scale: Literal["bark", "erb", "octave", "mel", "semitone", "greenwood"] = "bark",
 ) -> np.ndarray:
-    r"""Calculate a of frequencies with a predifined spacing on a given frequency
+    r"""Calculate a of frequencies with a predefined spacing on a given frequency
     scale.
 
     Returns frequencies between min_frequency and max_frequency with
@@ -419,20 +406,29 @@ def freqarange(
     ndarray: frequencies spaced following step on respective scale
 
     """
-    if scale == "bark":
-        min_bark, max_bark = freq_to_bark(np.array([min_frequency, max_frequency]))
-        bark = np.arange(min_bark, max_bark, step)
-        freqs = bark_to_freq(bark)
-    elif scale == "erb":
-        min_erb, max_erb = freq_to_erb(np.array([min_frequency, max_frequency]))
-        erbs = np.arange(min_erb, max_erb, step)
-        freqs = erb_to_freq(erbs)
-    elif scale == "octave":
+    if scale == "octave":
+        # Keep legacy octave stepping behavior for backward compatibility.
         n_steps = int(np.log2(max_frequency / min_frequency) / step)
         exponents = step * (np.arange(n_steps) + 1)
-        freqs = max_frequency / 2 ** exponents[::-1]
-    else:
-        raise NotImplementedError("only ERB and Bark implemented")
+        return max_frequency / 2 ** exponents[::-1]
+
+    scale_map = {
+        "bark": bark_scale,
+        "erb": erb_scale,
+        "mel": mel_scale,
+        "semitone": semitone_scale,
+        "greenwood": greenwood_scale,
+    }
+
+    if scale not in scale_map:
+        raise NotImplementedError(
+            "implemented scales are: bark, erb, octave, mel, semitone, greenwood"
+        )
+
+    scale_obj = scale_map[scale]
+    min_scale, max_scale = scale_obj.from_freq(np.array([min_frequency, max_frequency]))
+    scale_vals = np.arange(min_scale, max_scale, step)
+    freqs = scale_obj.to_freq(scale_vals)
 
     return freqs
 
@@ -460,12 +456,8 @@ def bark_to_freq(bark):
         97-100. http://dx.doi.org/10.1121/1.399849
 
     """
-
-    # reverse apply corrections
-    bark[bark < 2.0] = (bark[bark < 2.0] - 0.3) / 0.85
-    bark[bark > 20.1] = (bark[bark > 20.1] + 4.422) / 1.22
-    f = 1960 * (bark + 0.53) / (26.28 - bark)
-    return f
+    _warn_deprecated_scale_wrapper("bark_to_freq", "audio.bark.to_freq(...)")
+    return bark_scale.to_freq(bark)
 
 
 def octband_to_freq(
@@ -488,7 +480,7 @@ def octband_to_freq(
         The fractional octave scale to use. e.g 3 for 1/3 octave bands.
         default = 3
     base_system: 2 or 10
-        The base system used for calcuation. default = 10,
+        The base system used for calculation. default = 10,
     pref_band: bool
         If True, the frequency is rounded to the nearest preferred
         frequency according to ISO 226:2003. (default = True)
@@ -502,20 +494,13 @@ def octband_to_freq(
     ..[1] DIN ISO 266-1:1997-08, "Acoustics - Preferred frequencies",
         Beuth Verlag, Berlin, 1997.
     """
+    _warn_deprecated_scale_wrapper("octband_to_freq", "audio.octave.to_freq(...)")
 
-    b = oct_fraction
-
-    if base_system == 10:
-        gbase = 10 ** (3 / 10)
-    elif base_system == 2:
-        gbase = 2
-    else:
-        raise (ValueError("base_system must be 2 or 10"))
-
-    if b % 2:  # if odd
-        freq = gbase ** ((band_nr - 30.0) / b) * 1e3
-    else:  # if even:
-        freq = gbase ** ((2 * band_nr - 59.0) / (2 * b)) * 1e3
+    freq = octave_scale.to_freq(
+        band_nr,
+        oct_fraction=oct_fraction,
+        base_system=base_system,
+    )
 
     if pref_band:
         freq = din_iso_226.round_array_to_pref_freq(freq)
@@ -538,22 +523,17 @@ def freq_to_octband(
         The fractional octave scale to use. e.g 3 for 1/3 octave bands.
         default = 3
     base_system: 2 or 10
-        The base system used for calcuation. default = 2
+        The base system used for calculation. default = 2
     round: bool
         If True, the band number is rounded to the nearest integer.
         (default = True)
     """
-    b = oct_fraction
-    if base_system == 10:
-        gbase = 10 ** (3 / 10)
-    elif base_system == 2:
-        gbase = 2
-    else:
-        raise (ValueError("base_system must be 2 or 10"))
-    if b % 2:
-        band_nr = np.log(frequency / 1000) / np.log(gbase) * b + 30
-    else:
-        band_nr = 0.5 * (np.log(frequency / 1000) / np.log(gbase) * 2 * b + 59)
+    _warn_deprecated_scale_wrapper("freq_to_octband", "audio.octave.from_freq(...)")
+    band_nr = octave_scale.from_freq(
+        frequency,
+        oct_fraction=oct_fraction,
+        base_system=base_system,
+    )
 
     if round:
         band_nr = np.round(band_nr, 0)
@@ -572,12 +552,12 @@ def freq_to_bark(frequency, use_table=False):
         The frequency in Hz. Value has to be between 20 and 15500 Hz
     use_table: bool, optional
         If True, the original table by [1]_ instead of the equation by
-        [2]_ is used. This also results in the CB beeing returned as
+        [2]_ is used. This also results in the CB being returned as
         integers.  (default = False)
 
     Returns
     -------
-    scalar or ndarray : The Critical Bandwith in bark
+    scalar or ndarray : The Critical Bandwidth in bark
 
     References
     ----------
@@ -592,27 +572,8 @@ def freq_to_bark(frequency, use_table=False):
         97-100. http://dx.doi.org/10.1121/1.399849
 
     """
-    assert np.all(frequency >= 20)
-    assert np.all(frequency < 15500)
-
-    if use_table:
-        # Only use the table with no intermdiate values
-        bark_table = np.array(get_bark_limits())
-        scale_limits = zip(bark_table[:-1], bark_table[1:])
-        i = 0
-        cb_val = np.zeros(len(frequency))
-        for lower, upper in scale_limits:
-            in_border = (frequency >= lower) & (frequency < upper)
-            cb_val[in_border] = i
-            i += 1
-        return cb_val
-    else:
-        cb_val = (26.81 * frequency / (1960 + frequency)) - 0.53
-        if min(cb_val) < 2.0:
-            cb_val[cb_val < 2.0] += 0.15 * (2 - cb_val[cb_val < 2.0])
-        if max(cb_val) > 20.1:
-            cb_val[cb_val > 20.1] += 0.22 * (cb_val[cb_val > 20.1] - 20.1)
-        return cb_val
+    _warn_deprecated_scale_wrapper("freq_to_bark", "audio.bark.from_freq(...)")
+    return bark_scale.from_freq(frequency, use_table=use_table)
 
 
 def freq_to_erb(frequency):
@@ -638,9 +599,8 @@ def freq_to_erb(frequency):
         Research, 47(1-2), 103-138.
 
     """
-
-    n_erb = (1000.0 / (24.7 * 4.37)) * np.log(4.37 * frequency / 1000 + 1)
-    return n_erb
+    _warn_deprecated_scale_wrapper("freq_to_erb", "audio.erb.from_freq(...)")
+    return erb_scale.from_freq(frequency)
 
 
 def erb_to_freq(n_erb):
@@ -665,14 +625,14 @@ def erb_to_freq(n_erb):
         Research, 47(1-2), 103-138.
 
     """
-    fkhz = (np.exp(n_erb * (24.7 * 4.37) / 1000) - 1) / 4.37
-    return fkhz * 1000
+    _warn_deprecated_scale_wrapper("erb_to_freq", "audio.erb.to_freq(...)")
+    return erb_scale.to_freq(n_erb)
 
 
 def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
     r"""Sound pressure levels from loudness level (following DIN ISO 226:2006-04)
 
-    Calulates the sound pressure level at a given frequency that is
+    Calculates the sound pressure level at a given frequency that is
     necessary to reach a specific loudness level following DIN ISO
     226:2006-04
 
@@ -713,12 +673,21 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
     """
     if limit:
         # Definition only valid starting from 20 phon
-        assert l_phon >= 20
+        if l_phon < 20:
+            raise ValueError("Loudness level must be >= 20 phon (set limit=False to override).")
 
         if 20 <= frequency <= 4500:
-            assert l_phon <= 90
+            if l_phon > 90:
+                raise ValueError(
+                    "Loudness level must be <= 90 phon between 20 and 4500 Hz "
+                    "(set limit=False to override)."
+                )
         elif 4500 < frequency <= 12500:
-            assert l_phon <= 80
+            if l_phon > 80:
+                raise ValueError(
+                    "Loudness level must be <= 80 phon between 4500 and 12500 Hz "
+                    "(set limit=False to override)."
+                )
 
     # Equation Parameters
     frequency_list = din_iso_226.frequency_list
@@ -732,7 +701,11 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
     t_f_list = din_iso_226.t_f_list
 
     if interpolate is False:
-        assert frequency in frequency_list
+        if frequency not in frequency_list:
+            raise ValueError(
+                f"frequency must be one of the tabulated values {list(frequency_list)} "
+                "when interpolate=False; set interpolate=True for other frequencies."
+            )
         n_param = np.where(frequency_list == frequency)[0][0]
 
         alpha_f = alpha_f_list[n_param]
@@ -756,7 +729,7 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
 def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
     r"""loudness levels from sound pressure level (following DIN ISO 226:2006-04)
 
-    Calulates the loudness level at a given frequency from the sound
+    Calculates the loudness level at a given frequency from the sound
     pressure level following DIN ISO 226:2006-04
 
     The normed values are tabulated for the following frequencies and
@@ -805,7 +778,11 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
     t_f_list = din_iso_226.t_f_list
 
     if interpolate is False:
-        assert frequency in frequency_list
+        if frequency not in frequency_list:
+            raise ValueError(
+                f"frequency must be one of the tabulated values {list(frequency_list)} "
+                "when interpolate=False; set interpolate=True for other frequencies."
+            )
         n_param = np.where(frequency_list == frequency)[0][0]
 
         alpha_f = alpha_f_list[n_param]
@@ -826,12 +803,21 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
 
     if limit:
         # Definition only valid starting from 20 phon
-        assert l_phon >= 20
+        if l_phon < 20:
+            raise ValueError("Loudness level must be >= 20 phon (set limit=False to override).")
 
         if 20 <= frequency <= 4500:
-            assert l_phon <= 90
+            if l_phon > 90:
+                raise ValueError(
+                    "Loudness level must be <= 90 phon between 20 and 4500 Hz "
+                    "(set limit=False to override)."
+                )
         elif 4500 < frequency <= 12500:
-            assert l_phon <= 80
+            if l_phon > 80:
+                raise ValueError(
+                    "Loudness level must be <= 80 phon between 4500 and 12500 Hz "
+                    "(set limit=False to override)."
+                )
 
     return l_phon
 
@@ -839,16 +825,16 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
 def calc_bandwidth(fc, scale="cbw"):
     r"""Calculate approximation of auditory filter bandwidth
 
-    This Function calculates aproximations for the auditory filter
-    bandwidth using differnt concepts:
+    This Function calculates approximations for the auditory filter
+    bandwidth using different concepts:
 
     - cbw: Use the critical bandwidth concept following [1]_
-    - erb: Use the equivalent rectangular bandwith concept following [2]_
+    - erb: Use the equivalent rectangular bandwidth concept following [2]_
 
     Equation used for critical bandwidth:
     .. math:: B = 25 + 75 (1 + 1.4 \frac{f_c}{1000}^2)^0.69
 
-    Equation used for critical equivalent rectangular bandwith:
+    Equation used for critical equivalent rectangular bandwidth:
     .. math:: B = 24.7 (4.37 \frac{f_c}{1000} + 1)
 
     Parameters
@@ -871,18 +857,21 @@ def calc_bandwidth(fc, scale="cbw"):
 
     """
 
-    if "cbw" in scale:
-        bw = 25 + 75 * (1 + 1.4 * (fc / 1000.0) ** 2) ** 0.69
-    elif "erb" in scale:
-        bw = 24.7 * (4.37 * (fc / 1000.0) + 1)
+    _warn_deprecated_scale_wrapper("calc_bandwidth", "audio.bark/erb/octave.get_bw(...)")
 
-    return bw
+    if "cbw" in scale:
+        return bark_scale.get_bw(fc)
+    if "erb" in scale:
+        return erb_scale.get_bw(fc)
+    if "oct" in scale:
+        return octave_scale.get_bw(fc)
+    raise ValueError("scale must contain 'cbw', 'erb', or 'oct'")
 
 
 def extract_binaural_differences(signal, log_ilds=True):
     r"""Extract the binaural differences between two narrowband signals
 
-    This function extimates the binaural evelope difference as well as the
+    This function estimates the binaural envelope difference as well as the
     phase difference by applying the hilbert transform.
 
     The envelope difference is defined as the hilbert envelope of the
@@ -938,7 +927,7 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.0):
     r"""Phases for a schroeder phase harmonic complex
 
     This function calculates the phases for a schroeder phase harmonic
-    comlex following eq. 11 of [1]_:
+    complex following eq. 11 of [1]_:
 
     .. math:: \phi_n = \phi_l - 2\pi \sum\limits^{n-1}_{l=1}(n - l)p_l
 
@@ -957,7 +946,7 @@ def schroeder_phase(harmonics, amplitudes, phi0=0.0):
 
     Returns
     -------
-    The phase values for the harmonic compontents : ndarray
+    The phase values for the harmonic components : ndarray
 
 
     References
@@ -1052,9 +1041,9 @@ def inst_cmplx_corr(signal, window_duration, window="hann"):
 
 
 def cmplx_corr(signal, fs=None):
-    r"""The complex valued correlation coefficent.
+    r"""The complex valued correlation coefficient.
 
-    This function calculates the complex valued correlation coefficent which
+    This function calculates the complex valued correlation coefficient which
     equals the value of the complex_valued_cross_correlation at :math:`\tau=0`
 
     .. math:: \gamma = \frac{<f_a(t)^*_g_a(t)>}{\sqrt{<|f_a(t)|^2><|g_a(t)|^2>}}
@@ -1183,9 +1172,9 @@ def crossfade(
         The resulting signal.
     """
     if sig1.n_channels != sig2.n_channels:
-        raise (ValueError("The two signals need to match in number of channels."))
+        raise ValueError("The two signals need to match in number of channels.")
     if sig1.fs != sig2.fs:
-        raise (ValueError("The sample rate of the two signals has to match."))
+        raise ValueError("The sample rate of the two signals has to match.")
     fs = sig1.fs
     channel_shape = sig1.channel_shape
 
@@ -1195,7 +1184,7 @@ def crossfade(
     elif fade_type == "linear":
         fade[:] = 1 - fade.time / fade.time[-1]
     else:
-        raise (ValueError("fade_type not implemented"))
+        raise ValueError("fade_type not implemented")
 
     n_out = sig1.n_samples + sig2.n_samples - fade.n_samples
     out_duration = n_out / fs

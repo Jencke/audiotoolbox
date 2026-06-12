@@ -1,17 +1,16 @@
-import numpy as np
+import warnings
 import soundfile
-import audiotoolbox as audio
 from typing import Optional
 
 
 def readwav(filename):
+    warnings.warn("readwav is deprecated, please use readfile", DeprecationWarning, stacklevel=2)
     sig, fs = readfile(filename)
-    raise (DeprecationWarning("readwav is depricated please use readfile"))
     return sig, fs
 
 
 def writewav(filename, signal, fs):
-    raise (DeprecationWarning("writewav is depricated please use writefile"))
+    warnings.warn("writewav is deprecated, please use writefile", DeprecationWarning, stacklevel=2)
     write_file(filename, signal, fs)
 
 
@@ -53,7 +52,7 @@ def write_file(filename, signal, fs, **kwargs):
 
     Per default, the major format to be stored is determined by the file
     extension. E.g. a .wav ending indicates a WAV (Microsoft) file. See
-    `audiotoolbox.wav.available_formats` for a list of availible formats and
+    `audiotoolbox.wav.available_formats` for a list of available formats and
     endings. The major format can be forced by passing a `format` argument.
 
     If not specifically designed, the subtype (such as Signed 32 bit PCM) is
@@ -65,7 +64,7 @@ def write_file(filename, signal, fs, **kwargs):
     Parameters
     ----------
     filename : str
-      Filname of the audiofile
+      Filename of the audiofile
     signal : ndarray
       The data
     fs : int

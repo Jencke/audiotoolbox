@@ -1,3 +1,29 @@
+## 1.10 -> 1.11
+
+### Added
+
+- New class-based auditory scales API in `audiotoolbox.scales` with `BarkScale`, `ErbScale`, and `OctaveScale`.
+- Unified scale method surface across scales: `from_freq(...)`, `to_freq(...)`, and `get_bw(...)` (`calc_bw(...)` kept as a compatibility alias).
+- Ready-to-use scale instances exported as `audio.bark`, `audio.erb`, and `audio.octave`.
+- Added `MelScale`, `SemitoneScale`, and `GreenwoodScale` with top-level instances `audio.mel`, `audio.semitone`, and `audio.greenwood`.
+
+### Changed
+
+- Scale conversion and bandwidth logic has been moved into the dedicated `scales` submodule classes; core scale helpers now delegate to those implementations.
+- Scale APIs now consistently accept Python lists and NumPy arrays for conversions and bandwidth calculations.
+
+### Fixed
+
+- Bark scale input range checks now raise explicit `ValueError`s instead of relying on `assert`.
+- Octave scale validation now rejects invalid `oct_fraction` values with clear errors.
+- `BarkScale.get_bark_limits()` now returns a copy to avoid accidental mutation of internal lookup data.
+
+### Deprecated
+
+- Core scale wrapper functions are now deprecated in favor of the scale object API:
+	`get_bark_limits`, `bark_to_freq`, `freq_to_bark`, `freq_to_erb`,
+	`erb_to_freq`, `freq_to_octband`, `octband_to_freq`, and `calc_bandwidth`.
+
 ## 1.0 -> 1.10
 
 ### Added

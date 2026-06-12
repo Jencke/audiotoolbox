@@ -3,17 +3,6 @@ import numpy as np
 from .. import core as audio
 
 
-def _copy_to_dim(array, dim):
-    if np.ndim(dim) == 0:
-        dim = (dim,)
-
-    # tile by the number of dimensions
-    tiled_array = np.tile(array, (*dim[::-1], 1)).T
-    # squeeze to remove axis of lenght 1
-    tiled_array = tiled_array
-
-    return tiled_array
-
 
 def butterworth(
     signal, low_f, high_f, fs=None, order=2, return_states=False, states=None
@@ -37,11 +26,11 @@ def butterworth(
     order : integer, optional
        filter order (default = 2)
     return_states : bool, optional
-       Wheather the filter states should be returned. (default=False)
+       Whether the filter states should be returned. (default=False)
     states : True, None or array_like, optional
-        Inital conditions for the filter. if True, the conditions for
-        a step response are constructed. if set to None, the inital rest is
-        assumed (all 0). Otherwise, expects the inital filter delay
+        Initial conditions for the filter. if True, the conditions for
+        a step response are constructed. if set to None, the initial rest is
+        assumed (all 0). Otherwise, expects the initial filter delay
         values.
 
     Returns
@@ -64,7 +53,7 @@ def design_butterworth(low_f, high_f, fs, order=2):
     r"""Return the coeffiecent of a butterwoth filter.
 
     Returns the cascated second-order sections representation of a
-    butterwoth IIR filter. coefficents are calculated using
+    butterwoth IIR filter. coefficients are calculated using
     scipy.signal.butter
 
     To construct a lowpass filter, set low_f to None. For a highpass,
@@ -114,9 +103,9 @@ def apply_sos(signal, sos, states=None, axis=0):
         coefficients and the last three providing the denominator
         coefficients.
     states : True, None or array_like, optional
-        Inital conditions for the filter. if True, the conditions for
-        a step response are constructed. if set to None, the inital rest is
-        assumed (all 0). Otherwise, expects the inital filter delay
+        Initial conditions for the filter. if True, the conditions for
+        a step response are constructed. if set to None, the initial rest is
+        assumed (all 0). Otherwise, expects the initial filter delay
         values.
 
     Returns:

@@ -20,7 +20,7 @@ class BaseSignal(np.ndarray):
         return obj
 
     def __array_finalize__(self, obj):
-        # If called explicitely, obj = None
+        # If called explicitly, obj = None
         if obj is None:
             return
 
@@ -99,7 +99,7 @@ class BaseSignal(np.ndarray):
         r"""Direct channel indexer
 
         Returns an indexer class which enables direct indexing and
-        slicing of the channels indipendent of samples.
+        slicing of the channels independent of samples.
 
         Examples
         --------
@@ -140,12 +140,12 @@ class BaseSignal(np.ndarray):
     def multiply(self, x: float | np.ndarray):
         """In-place multiplication
 
-        This function allowes for in-place multiplication
+        This function allows for in-place multiplication
 
         Parameters
         -----------
         x : scalar or ndarray
-            The value or array to muliply with the signal
+            The value or array to multiply with the signal
 
         Returns
         --------
@@ -164,7 +164,7 @@ class BaseSignal(np.ndarray):
     def add(self, x):
         """In-place summation
 
-        This function allowes for in-place summation.
+        This function allows for in-place summation.
 
         Parameters
         -----------
@@ -231,7 +231,7 @@ class BaseSignal(np.ndarray):
 class _chIndexer(object):
     """Channel Indexer
 
-    Allowes channels to be indexed directly without needing to care about
+    Allows channels to be indexed directly without needing to care about
     samples
 
     """
@@ -246,7 +246,7 @@ class _chIndexer(object):
             key = (key,)
 
         if np.ndim(self.idx_obj) == 1:
-            # In case, it's only a 1D array, allways return the whole
+            # In case, it's only a 1D array, always return the whole
             # array
             idx = slice(None, None, None)
         elif np.ndim(self.idx_obj) == 2 and self.idx_obj.shape[1] == 1:
@@ -265,7 +265,7 @@ class _chIndexer(object):
             key = (key,)
 
         if np.ndim(self.idx_obj) == 1:
-            # In case, it's only a 1D array, allways return the whole
+            # In case, it's only a 1D array, always return the whole
             # array
             idx = slice(None, None, None)
         elif np.ndim(self.idx_obj) == 2 and self.idx_obj.shape[1] == 1:
