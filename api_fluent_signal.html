@@ -197,7 +197,7 @@ of 48 kHz</p>
 <dt class="sig sig-object py" id="audiotoolbox.Signal.add">
 <span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.add" title="Link to this definition"></a></dt>
 <dd><p>In-place summation</p>
-<p>This function allowes for in-place summation.</p>
+<p>This function allows for in-place summation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>x</strong> (<em>scalar</em><em> or </em><em>ndarray</em>) – The value or array to add to the signal</p>
@@ -373,14 +373,14 @@ the same length as <cite>frequency</cite> if provided as an array. (default = 0)
 <p>This function adds partly uncorrelated noise using the N+1
 generator method.</p>
 <p>To generate N partly uncorrelated noises with a desired
-correlation coefficent of $rho$, the algoritm first generates N+1
+correlation coefficient of $rho$, the algorithm first generates N+1
 noise tokens which are then orthogonalized using the Gram-Schmidt
-process (as implementd in numpy.linalg.qr). The N+1 th noise token
+process (as implemented in numpy.linalg.qr). The N+1 th noise token
 is then mixed with the remaining noise tokens using the equation</p>
 <div class="math notranslate nohighlight">
 \[X_{\rho,n} = X_{N+1}  \sqrt{\rho} + X_n \beta \sqrt{1 - \rho}\]</div>
 <p>where <span class="math notranslate nohighlight">\(X_{\rho,n}\)</span> is the nth output and noise,
-<span class="math notranslate nohighlight">\(X_{n}\)</span> the nth indipendent noise and <span class="math notranslate nohighlight">\(X_{N=1}\)</span> is the
+<span class="math notranslate nohighlight">\(X_{n}\)</span> the nth independent noise and <span class="math notranslate nohighlight">\(X_{N=1}\)</span> is the
 common noise.</p>
 <p>For two noise tokens, this is identical to the asymmetric
 three-generator method described by Hartmann and Cho (2011).</p>
@@ -422,7 +422,7 @@ Acoustical Society of America, 130(1), 292-301.
 <dt class="sig sig-object py" id="audiotoolbox.Signal.bandpass">
 <span class="sig-name descname"><span class="pre">bandpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.bandpass" title="Link to this definition"></a></dt>
 <dd><p>Apply a bandpass filter.</p>
-<p>Applies a bandpass filter to the signal. The availible filters
+<p>Applies a bandpass filter to the signal. The available filters
 are:</p>
 <ul class="simple">
 <li><p>brickwall: A ‘optimal’ brickwall filter</p></li>
@@ -439,7 +439,7 @@ the respective implementations:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>fc</strong> (<em>scalar</em>) – The banddpass center frequency in Hz</p></li>
+<li><p><strong>fc</strong> (<em>scalar</em>) – The bandpass center frequency in Hz</p></li>
 <li><p><strong>bw</strong> (<em>scalar</em>) – The filter bandwidth in Hz</p></li>
 <li><p><strong>filter_type</strong> (<em>{'brickwall'</em><em>, </em><em>'gammatone'</em><em>, </em><em>'butter'}</em>) – The filtertype</p></li>
 <li><p><strong>**kwargs</strong> – Further keyword arguments are passed to the respective
@@ -473,7 +473,7 @@ filter functions</p></li>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ch</span></span><a class="headerlink" href="#audiotoolbox.Signal.ch" title="Link to this definition"></a></dt>
 <dd><p>Direct channel indexer</p>
 <p>Returns an indexer class which enables direct indexing and
-slicing of the channels indipendent of samples.</p>
+slicing of the channels independent of samples.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audiotoolbox</span><span class="o">.</span><span class="n">Signal</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="ow">is</span> <span class="n">sig</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
@@ -566,13 +566,13 @@ channels are instead convolved with all kernels.</p>
 <dt class="sig sig-object py" id="audiotoolbox.Signal.delay">
 <span class="sig-name descname"><span class="pre">delay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'fft'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'sample'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'fft'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.delay" title="Link to this definition"></a></dt>
 <dd><p>Delays the signal by circular shifting.</p>
-<p>Circular shift the functions foreward to create a certain time
-delay relative to the orginal time. E.g if shifted by an
+<p>Circular shift the functions forward to create a certain time
+delay relative to the original time. E.g if shifted by an
 equivalent of N samples, the value at sample i will move to
 sample i + N.</p>
 <p>Two methods can be used. Using the default method ‘fft’, the
-signal is shifted by applyint a FFT transform, and phase
-shifting each frequency accoring to the delay and applying an
+signal is shifted by applying a FFT transform, and phase
+shifting each frequency according to the delay and applying an
 inverse transform. This is identical to using the
 :meth:’audiotoolbox.FrequencyDomainSignal.time_shift’
 method. When using the method ‘sample’, the signal is time
@@ -581,7 +581,7 @@ samples that is closest to delay.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>delay</strong> (<em>float</em>) – The delay in secons</p></li>
+<li><p><strong>delay</strong> (<em>float</em>) – The delay in seconds</p></li>
 <li><p><strong>method</strong> (<em>{'fft'</em><em>, </em><em>'samples'} optional</em>) – The method used to delay the signal (default: ‘fft’)</p></li>
 </ul>
 </dd>
@@ -655,7 +655,7 @@ all channels. Default is “all”.</p></li>
 <dt class="sig sig-object py" id="audiotoolbox.Signal.highpass">
 <span class="sig-name descname"><span class="pre">highpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_cut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.highpass" title="Link to this definition"></a></dt>
 <dd><p>Apply a highpass filter to the Signal.</p>
-<p>This function provieds a unified interface to all highpass
+<p>This function provides a unified interface to all highpass
 filters implemented in audiotoolbox.</p>
 <ul class="simple">
 <li><p>brickwall: A ‘optimal’ brickwall filter</p></li>
@@ -696,7 +696,7 @@ filter functions.</p></li>
 <dt class="sig sig-object py" id="audiotoolbox.Signal.lowpass">
 <span class="sig-name descname"><span class="pre">lowpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_cut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.lowpass" title="Link to this definition"></a></dt>
 <dd><p>Apply a lowpass filter to the Signal.</p>
-<p>This function provieds a unified interface to all lowpass
+<p>This function provides a unified interface to all lowpass
 filters implemented in audiotoolbox.</p>
 <ul class="simple">
 <li><p>brickwall: A ‘optimal’ brickwall filter</p></li>
@@ -735,10 +735,10 @@ the respective implementations:</p>
 <dt class="sig sig-object py" id="audiotoolbox.Signal.multiply">
 <span class="sig-name descname"><span class="pre">multiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.Signal.multiply" title="Link to this definition"></a></dt>
 <dd><p>In-place multiplication</p>
-<p>This function allowes for in-place multiplication</p>
+<p>This function allows for in-place multiplication</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<em>scalar</em><em> or </em><em>ndarray</em>) – The value or array to muliply with the signal</p>
+<dd class="field-odd"><p><strong>x</strong> (<em>scalar</em><em> or </em><em>ndarray</em>) – The value or array to multiply with the signal</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Returns itself</p>
@@ -1052,7 +1052,7 @@ e.g.:</p>
 <dl class="py property">
 <dt class="sig sig-object py" id="audiotoolbox.stats.SignalStats.mean">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean</span></span><a class="headerlink" href="#audiotoolbox.stats.SignalStats.mean" title="Link to this definition"></a></dt>
-<dd><p>aritmetic mean</p>
+<dd><p>arithmetic mean</p>
 </dd></dl>
 
 <dl class="py method">

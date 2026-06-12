@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frequency Scales &mdash; audiotoolbox  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Basic Signal Modifications" href="modifications.html" />
+    <link rel="prev" title="Signal Basics" href="basics.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo_white.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../user_guide.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="basics.html">Signal Basics</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Frequency Scales</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bark-scale">Bark Scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#erb-scale">ERB Scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fractional-octave-scale">Fractional Octave Scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mel-scale">Mel Scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#semitone-scale">Semitone Scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#greenwood-scale">Greenwood Scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deprecated-core-wrapper-functions">Deprecated Core Wrapper Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#frequency-grids-on-perceptual-scales">Frequency Grids on Perceptual Scales</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modifications.html">Basic Signal Modifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modifications.html#resampling">Resampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modifications.html#trimming-signals">Trimming Signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modifications.html#crossfading-signals">Crossfading Signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="noise.html">Generating Noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="levels_and_stats.html">Levels and Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filtering.html">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_frequency.html">Time-Frequency Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="convolution.html">Convolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="input_output.html">Loading and Saving Audio Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="playback.html">Playback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">Stimulus visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">audiotoolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../user_guide.html">User Guide</a></li>
+      <li class="breadcrumb-item active">Frequency Scales</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user_guide/scales.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="frequency-scales">
+<span id="guide-scales"></span><h1>Frequency Scales<a class="headerlink" href="#frequency-scales" title="Link to this heading"></a></h1>
+<p><cite>audiotoolbox</cite> provides conversions between frequency (Hz) and commonly used
+psychoacoustic scales:</p>
+<ul class="simple">
+<li><p>Bark</p></li>
+<li><p>ERB (Equivalent Rectangular Bandwidth rate)</p></li>
+<li><p>Fractional octave-band number</p></li>
+<li><p>Mel</p></li>
+<li><p>Semitone (MIDI-like)</p></li>
+<li><p>Greenwood place-frequency mapping</p></li>
+</ul>
+<p>The scales API is available through ready-to-use instances:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audio</span><span class="o">.</span><span class="n">bark</span>
+<span class="go">&lt;audiotoolbox.scales.bark.BarkScale object at ...&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audio</span><span class="o">.</span><span class="n">erb</span>
+<span class="go">&lt;audiotoolbox.scales.erb.ErbScale object at ...&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audio</span><span class="o">.</span><span class="n">octave</span>
+<span class="go">&lt;audiotoolbox.scales.octave.OctaveScale object at ...&gt;</span>
+</pre></div>
+</div>
+<p>All scale objects expose the same core methods:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">from_freq(...)</span></code>: convert frequency in Hz to scale value</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">to_freq(...)</span></code>: convert from scale value to frequency in Hz</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_bw(...)</span></code>: bandwidth in Hz for a center frequency</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calc_bw(...)</span></code>: compatibility alias for <code class="docutils literal notranslate"><span class="pre">get_bw(...)</span></code></p></li>
+</ul>
+<section id="bark-scale">
+<h2>Bark Scale<a class="headerlink" href="#bark-scale" title="Link to this heading"></a></h2>
+<p>Use Bark when working with critical-band representations.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">125</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">4000</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">bark</span><span class="o">.</span><span class="n">from_freq</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span>
+<span class="go">array([ 1.21571703,  4.91918699,  8.52743243, 17.46328859])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audio</span><span class="o">.</span><span class="n">bark</span><span class="o">.</span><span class="n">to_freq</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="go">array([ 125.,  500., 1000., 4000.])</span>
+</pre></div>
+</div>
+<p>Bark bandwidth (critical bandwidth approximation):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">audio</span><span class="o">.</span><span class="n">bark</span><span class="o">.</span><span class="n">get_bw</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="go">162.21671568515828</span>
+</pre></div>
+</div>
+<p>The tabulated Bark limits can be retrieved with:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">audio</span><span class="o">.</span><span class="n">bark</span><span class="o">.</span><span class="n">get_bark_limits</span><span class="p">()</span>
+<span class="go">[20, 100, 200, 300, 400, 510, 630, 770, 920, 1080, 1270, 1480, 1720, 2000, 2320, 2700, 3150, 3700, 4400, 5300, 6400, 7700, 9500, 12000, 15500]</span>
+</pre></div>
+</div>
+<p>Note that Bark conversion is defined for approximately <code class="docutils literal notranslate"><span class="pre">20</span> <span class="pre">&lt;=</span> <span class="pre">f</span> <span class="pre">&lt;</span> <span class="pre">15500</span></code> Hz.
+Out-of-range values raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
+</section>
+<section id="erb-scale">
+<h2>ERB Scale<a class="headerlink" href="#erb-scale" title="Link to this heading"></a></h2>
+<p>Use ERB values for auditory-filter spacing and filterbank design.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">125</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">4000</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">erb</span><span class="o">.</span><span class="n">from_freq</span><span class="p">(</span><span class="n">freqs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span>
+<span class="go">array([ 4.03776804, 10.73247194, 15.57201668, 27.02164247])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audio</span><span class="o">.</span><span class="n">erb</span><span class="o">.</span><span class="n">to_freq</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="go">array([ 125.,  500., 1000., 4000.])</span>
+</pre></div>
+</div>
+<p>ERB bandwidth at a center frequency:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">audio</span><span class="o">.</span><span class="n">erb</span><span class="o">.</span><span class="n">get_bw</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="go">132.639</span>
+</pre></div>
+</div>
+</section>
+<section id="fractional-octave-scale">
+<h2>Fractional Octave Scale<a class="headerlink" href="#fractional-octave-scale" title="Link to this heading"></a></h2>
+<p>The octave scale converts between frequency and octave-band numbers.
+By convention, the 1000 Hz band is centered around band number 30.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">audio</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">from_freq</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="go">30.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audio</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">to_freq</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+<span class="go">1000.0</span>
+</pre></div>
+</div>
+<p>For fractional-octave systems, set <code class="docutils literal notranslate"><span class="pre">oct_fraction</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bands</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">from_freq</span><span class="p">([</span><span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> <span class="n">oct_fraction</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bands</span>
+<span class="go">array([27., 30., 33.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audio</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">to_freq</span><span class="p">(</span><span class="n">bands</span><span class="p">,</span> <span class="n">oct_fraction</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">array([ 500., 1000., 2000.])</span>
+</pre></div>
+</div>
+<p>Supported base systems are <code class="docutils literal notranslate"><span class="pre">base_system=2</span></code> and <code class="docutils literal notranslate"><span class="pre">base_system=10</span></code>.</p>
+<p>Bandwidth for a fractional-octave band:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">audio</span><span class="o">.</span><span class="n">octave</span><span class="o">.</span><span class="n">get_bw</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">oct_fraction</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">base_system</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">231.56333016903375</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">oct_fraction</span></code> must be a positive integer; invalid values raise
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
+</section>
+<section id="mel-scale">
+<h2>Mel Scale<a class="headerlink" href="#mel-scale" title="Link to this heading"></a></h2>
+<p>The Mel scale is commonly used in speech/audio features and provides a
+perceptual mapping from frequency to a quasi-linear low-frequency and
+logarithmic high-frequency scale.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+
+<span class="n">mel_vals</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">mel</span><span class="o">.</span><span class="n">from_freq</span><span class="p">([</span><span class="mi">125</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">4000</span><span class="p">])</span>
+<span class="n">freqs</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">mel</span><span class="o">.</span><span class="n">to_freq</span><span class="p">(</span><span class="n">mel_vals</span><span class="p">)</span>
+<span class="n">bw</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">mel</span><span class="o">.</span><span class="n">get_bw</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="semitone-scale">
+<h2>Semitone Scale<a class="headerlink" href="#semitone-scale" title="Link to this heading"></a></h2>
+<p>The semitone scale maps frequency to a MIDI-like continuous note number.
+Default reference is A4 = 440 Hz at note 69.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+
+<span class="n">notes</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">semitone</span><span class="o">.</span><span class="n">from_freq</span><span class="p">([</span><span class="mi">220</span><span class="p">,</span> <span class="mi">440</span><span class="p">,</span> <span class="mi">880</span><span class="p">])</span>
+<span class="n">freqs</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">semitone</span><span class="o">.</span><span class="n">to_freq</span><span class="p">(</span><span class="n">notes</span><span class="p">)</span>
+<span class="n">bw</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">semitone</span><span class="o">.</span><span class="n">get_bw</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="greenwood-scale">
+<h2>Greenwood Scale<a class="headerlink" href="#greenwood-scale" title="Link to this heading"></a></h2>
+<p>The Greenwood scale maps frequency to cochlear place using the Greenwood
+equation (human defaults are used by default).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">greenwood</span><span class="o">.</span><span class="n">from_freq</span><span class="p">([</span><span class="mi">125</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">4000</span><span class="p">])</span>
+<span class="n">freqs</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">greenwood</span><span class="o">.</span><span class="n">to_freq</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">bw</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">greenwood</span><span class="o">.</span><span class="n">get_bw</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="deprecated-core-wrapper-functions">
+<h2>Deprecated Core Wrapper Functions<a class="headerlink" href="#deprecated-core-wrapper-functions" title="Link to this heading"></a></h2>
+<p>For backward compatibility, <cite>audiotoolbox</cite> still exposes legacy helper
+functions in the top-level namespace. These wrappers now emit
+<code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code> and should be replaced with the scale-object API.</p>
+<p>Deprecated wrappers:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">audio.get_bark_limits(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">audio.freq_to_bark(...)</span></code> and <code class="docutils literal notranslate"><span class="pre">audio.bark_to_freq(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">audio.freq_to_erb(...)</span></code> and <code class="docutils literal notranslate"><span class="pre">audio.erb_to_freq(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">audio.freq_to_octband(...)</span></code> and <code class="docutils literal notranslate"><span class="pre">audio.octband_to_freq(...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">audio.calc_bandwidth(...)</span></code></p></li>
+</ul>
+<p>Recommended replacements:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">audio.get_bark_limits()</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">audio.bark.get_bark_limits()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">audio.freq_to_bark(f)</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">audio.bark.from_freq(f)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">audio.bark_to_freq(b)</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">audio.bark.to_freq(b)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">audio.freq_to_erb(f)</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">audio.erb.from_freq(f)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">audio.erb_to_freq(e)</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">audio.erb.to_freq(e)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">audio.freq_to_octband(f,</span> <span class="pre">...)</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">audio.octave.from_freq(f,</span> <span class="pre">...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">audio.octband_to_freq(n,</span> <span class="pre">...)</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">audio.octave.to_freq(n,</span> <span class="pre">...)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">audio.calc_bandwidth(fc,</span> <span class="pre">'cbw')</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">audio.bark.get_bw(fc)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">audio.calc_bandwidth(fc,</span> <span class="pre">'erb')</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">audio.erb.get_bw(fc)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">audio.calc_bandwidth(fc,</span> <span class="pre">'oct')</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">audio.octave.get_bw(fc)</span></code></p></li>
+</ul>
+</section>
+<section id="frequency-grids-on-perceptual-scales">
+<h2>Frequency Grids on Perceptual Scales<a class="headerlink" href="#frequency-grids-on-perceptual-scales" title="Link to this heading"></a></h2>
+<p>The core module also provides helpers to create frequency vectors with
+uniform spacing on Bark/ERB (and octave stepping):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">audio</span><span class="o">.</span><span class="n">freqspace</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">12000</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s1">&#39;bark&#39;</span><span class="p">)</span>
+<span class="go">array([  100.        ,   195.48602755,   285.31169734,   381.406472  ,</span>
+<span class="go">          486.09433527,   600.58186549,   726.31262467,   865.02834524,</span>
+<span class="go">         1018.85010641,  1190.38755782,  1382.88818708,  1600.4448737 ,</span>
+<span class="go">         1848.29013092,  2133.22243676,  2464.23942826,  2853.50536456,</span>
+<span class="go">         3317.87859436,  3881.41758407,  4579.68432764,  5467.55330545,</span>
+<span class="go">         6617.72959366,  7882.67567824,  9585.23586555, 12000.        ])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audio</span><span class="o">.</span><span class="n">freqarange</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">12000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s1">&#39;erb&#39;</span><span class="p">)</span>
+<span class="go">array([  100.        ,   137.48031099,   179.23261997,   225.74384839,</span>
+<span class="go">          277.55641688,   335.27457107,   399.57142839,   471.19682804,</span>
+<span class="go">          550.98607574,   639.86968518,   738.8842298 ,   849.18443149,</span>
+<span class="go">          972.05662706,  1108.93376974,  1261.41214048,  1431.26996398,</span>
+<span class="go">         1620.48814662,  1831.27337809,  2066.08386609,  2327.65800433,</span>
+<span class="go">         2619.04630806,  2943.64698962,  3305.24558887,  3708.05912073,</span>
+<span class="go">         4156.78525457,  4656.65709917,  5213.50423191,  5833.82068421,</span>
+<span class="go">         6524.84067582,  7294.62298133,  8152.1449128 ,  9107.40701439,</span>
+<span class="go">        10171.54969025, 11356.98312541])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">audio</span><span class="o">.</span><span class="n">freqarange</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16000</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s1">&#39;octave&#39;</span><span class="p">)</span>
+<span class="go">array([   19.6862664 ,    24.80314144,    31.25      ,    39.37253281,</span>
+<span class="go">           49.60628287,    62.5       ,    78.74506562,    99.21256575,</span>
+<span class="go">          125.        ,   157.49013124,   198.4251315 ,   250.        ,</span>
+<span class="go">          314.98026247,   396.85026299,   500.        ,   629.96052495,</span>
+<span class="go">          793.70052598,  1000.        ,  1259.92104989,  1587.40105197,</span>
+<span class="go">         2000.        ,  2519.84209979,  3174.80210394,  4000.        ,</span>
+<span class="go">         5039.68419958,  6349.60420787,  8000.        , 10079.36839916,</span>
+<span class="go">        12699.20841575])</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="basics.html" class="btn btn-neutral float-left" title="Signal Basics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modifications.html" class="btn btn-neutral float-right" title="Basic Signal Modifications" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Jörg Encke.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

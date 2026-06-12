@@ -136,7 +136,7 @@ second signal.</p>
 <dt class="sig sig-object py" id="audiotoolbox.dbspl_to_phon">
 <span class="sig-prename descclassname"><span class="pre">audiotoolbox.</span></span><span class="sig-name descname"><span class="pre">dbspl_to_phon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_dbspl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.dbspl_to_phon" title="Link to this definition"></a></dt>
 <dd><p>loudness levels from sound pressure level (following DIN ISO 226:2006-04)</p>
-<p>Calulates the loudness level at a given frequency from the sound
+<p>Calculates the loudness level at a given frequency from the sound
 pressure level following DIN ISO 226:2006-04</p>
 <p>The normed values are tabulated for the following frequencies and
 sound pressure levels:</p>
@@ -222,7 +222,7 @@ is read until the end of the file. Default is None.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="audiotoolbox.phase2time">
 <span class="sig-prename descclassname"><span class="pre">audiotoolbox.</span></span><span class="sig-name descname"><span class="pre">phase2time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">phase</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.phase2time" title="Link to this definition"></a></dt>
-<dd><p>Pase to Time for a given frequency</p>
+<dd><p>Phase to Time for a given frequency</p>
 <div class="math notranslate nohighlight">
 \[t = \frac{\phi}{2 \pi f}\]</div>
 <dl class="field-list simple">
@@ -242,7 +242,7 @@ is read until the end of the file. Default is None.</p></li>
 <dt class="sig sig-object py" id="audiotoolbox.phon_to_dbspl">
 <span class="sig-prename descclassname"><span class="pre">audiotoolbox.</span></span><span class="sig-name descname"><span class="pre">phon_to_dbspl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_phon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.phon_to_dbspl" title="Link to this definition"></a></dt>
 <dd><p>Sound pressure levels from loudness level (following DIN ISO 226:2006-04)</p>
-<p>Calulates the sound pressure level at a given frequency that is
+<p>Calculates the sound pressure level at a given frequency that is
 necessary to reach a specific loudness level following DIN ISO
 226:2006-04</p>
 <p>The normed values are tabulated for the following frequencies and
@@ -286,7 +286,7 @@ interpolated using a cubic spline (default = False)</p></li>
 <span class="sig-prename descclassname"><span class="pre">audiotoolbox.</span></span><span class="sig-name descname"><span class="pre">schroeder_phase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">harmonics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amplitudes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.schroeder_phase" title="Link to this definition"></a></dt>
 <dd><p>Phases for a schroeder phase harmonic complex</p>
 <p>This function calculates the phases for a schroeder phase harmonic
-comlex following eq. 11 of <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>:</p>
+complex following eq. 11 of <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>:</p>
 <div class="math notranslate nohighlight">
 \[\phi_n = \phi_l - 2\pi \sum\limits^{n-1}_{l=1}(n - l)p_l\]</div>
 <p><span class="math notranslate nohighlight">\(n\)</span> is the order of the harmonic and p_l is the relative
@@ -301,7 +301,7 @@ calculated</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>The phase values for the harmonic compontents</strong></p>
+<dd class="field-even"><p><strong>The phase values for the harmonic components</strong></p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>ndarray</p>
@@ -349,7 +349,7 @@ and binary sequences with low autocorrelation
 <p>Apply an digital A-weighting filter following IEC 61672-1.
 Take care that the sampling frequency is high enough to prevent steep
 high frequency drop-off. A sampling frequency of about 48 kHz should be
-sufficent to result in a Class 1 filter following IEC 61672-1.</p>
+sufficient to result in a Class 1 filter following IEC 61672-1.</p>
 <section id="parameters">
 <h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
 <dl class="simple">
@@ -370,7 +370,7 @@ sufficent to result in a Class 1 filter following IEC 61672-1.</p>
 <dt class="sig sig-object py" id="audiotoolbox.filter.bandpass">
 <span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">bandpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.filter.bandpass" title="Link to this definition"></a></dt>
 <dd><p>Apply a bandpass filter to the Signal.</p>
-<p>This function provieds a unified interface to all bandpass filters
+<p>This function provides a unified interface to all bandpass filters
 implemented in audiotoolbox.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -430,10 +430,10 @@ highpass, set <cite>high_f</cite> to <cite>None</cite>.</p>
 <li><p><strong>high_f</strong> (<em>scalar</em><em> or </em><em>None</em>) – high cutoff in Hz</p></li>
 <li><p><strong>fs</strong> (<em>scalar</em>) – sampling frequency in Hz</p></li>
 <li><p><strong>order</strong> (<em>integer</em><em>, </em><em>optional</em>) – filter order (default = 2)</p></li>
-<li><p><strong>return_states</strong> (<em>bool</em><em>, </em><em>optional</em>) – Wheather the filter states should be returned. (default=False)</p></li>
-<li><p><strong>states</strong> (<em>True</em><em>, </em><em>None</em><em> or </em><em>array_like</em><em>, </em><em>optional</em>) – Inital conditions for the filter. if True, the conditions for
-a step response are constructed. if set to None, the inital rest is
-assumed (all 0). Otherwise, expects the inital filter delay
+<li><p><strong>return_states</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the filter states should be returned. (default=False)</p></li>
+<li><p><strong>states</strong> (<em>True</em><em>, </em><em>None</em><em> or </em><em>array_like</em><em>, </em><em>optional</em>) – Initial conditions for the filter. if True, the conditions for
+a step response are constructed. if set to None, the initial rest is
+assumed (all 0). Otherwise, expects the initial filter delay
 values.</p></li>
 </ul>
 </dd>
@@ -453,7 +453,7 @@ values.</p></li>
 <p>Apply an digital C-weighting filter following IEC 61672-1.
 Take care that the sampling frequency is high enough to prevent steep
 high frequency drop-off. A sampling frequency of about 48 kHz should be
-sufficent to result in a Class 1 filter following IEC 61672-1.</p>
+sufficient to result in a Class 1 filter following IEC 61672-1.</p>
 <section id="id3">
 <h3>Parameters:<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <dl class="simple">
@@ -501,7 +501,7 @@ sufficent to result in a Class 1 filter following IEC 61672-1.</p>
 <dt class="sig sig-object py" id="audiotoolbox.filter.gammatone">
 <span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">gammatone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attenuation_db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'erb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_complex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.filter.gammatone" title="Link to this definition"></a></dt>
 <dd><p>Apply a gammatone filter to the signal.</p>
-<p>Applys a gammatone filter following <a class="reference internal" href="#hohmann2002" id="id5"><span>[Hohmann2002]</span></a> to the input
+<p>Applies a gammatone filter following <a class="reference internal" href="#hohmann2002" id="id5"><span>[Hohmann2002]</span></a> to the input
 signal and returns the filtered signal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -537,7 +537,7 @@ using a Gammatone filterbank, Acta Acustica, Vol 88 (2002),
 <dt class="sig sig-object py" id="audiotoolbox.filter.highpass">
 <span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">highpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_cut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.filter.highpass" title="Link to this definition"></a></dt>
 <dd><p>Apply a highpass filter to the Signal.</p>
-<p>This function provieds a unified interface to all highpass filters
+<p>This function provides a unified interface to all highpass filters
 implemented in audiotoolbox.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -562,7 +562,7 @@ functions.</p></li>
 <dt class="sig sig-object py" id="audiotoolbox.filter.lowpass">
 <span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">lowpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_cut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.filter.lowpass" title="Link to this definition"></a></dt>
 <dd><p>Apply a lowpass filter to the Signal.</p>
-<p>This function provieds a unified interface to all lowpass filters
+<p>This function provides a unified interface to all lowpass filters
 implemented in audiotoolbox.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -603,8 +603,8 @@ Research, 47(1-2), 103-138.</p>
 <li><p><strong>fs</strong> (<em>int</em>) – sampling frequency</p></li>
 <li><p><strong>flow</strong> (<em>scalar</em><em> (</em><em>optional</em><em>)</em>) – Lowest center frequency in Hz. (default = 16 Hz)</p></li>
 <li><p><strong>fhigh</strong> (<em>scalar</em><em> (</em><em>optional</em><em>)</em>) – Highest center frequency in Hz. (default = 16 kHz)</p></li>
-<li><p><strong>step</strong> (<em>scalar</em><em> (</em><em>optional</em><em>)</em>) – Stepsize between filters on the ERB scale. Defauls to 1 filter per ERB</p></li>
-<li><p><strong>**kwargs</strong> – Further paramters such as filter order to pass to the
+<li><p><strong>step</strong> (<em>scalar</em><em> (</em><em>optional</em><em>)</em>) – Stepsize between filters on the ERB scale. Defaults to 1 filter per ERB</p></li>
+<li><p><strong>**kwargs</strong> – Further parameters such as filter order to pass to the
 filter.GammaToneBank function. Values can either be an ndarray that
 matches the length of <cite>fc</cite> or a single value in which case this value is
 used for all filters.</p></li>
@@ -630,8 +630,8 @@ used for all filters.</p></li>
 <li><p><strong>bw</strong> (<em>ndarray</em>) – Filter Bandwidths in Hz</p></li>
 <li><p><strong>filter_type</strong> (<em>'butter'</em><em>, </em><em>'gammatone'</em>) – Type of Bandpass filter</p></li>
 <li><p><strong>fs</strong> (<em>int</em>) – Sampling frequency</p></li>
-<li><p><strong>**kwargs</strong> – Further paramters such as filter order to pass to the Filter
-function, see filter documenation for details. Value can either be
+<li><p><strong>**kwargs</strong> – Further parameters such as filter order to pass to the Filter
+function, see filter documentation for details. Value can either be
 an ndarray that matches the length of <cite>fc</cite> or a single value in
 which case this value is used for all filters.</p></li>
 </ul>
@@ -661,7 +661,7 @@ spacing. (default = 3)</p></li>
 <li><p><strong>round_to_band</strong> (<em>bool</em><em> (</em><em>optional</em><em>)</em>) – Indicates if the bands should follow the preferred band frequencies
 defined in DIN ISO 226. If True, the center frequencies will be adjusted
 to the nearest preferred band frequency. (default = True)</p></li>
-<li><p><strong>**kwargs</strong> – Further paramters such as filter order to pass to the
+<li><p><strong>**kwargs</strong> – Further parameters such as filter order to pass to the
 filter.ButterworthBank function. Values can either be an ndarray that
 matches the length of <cite>fc</cite> or a single value in which case this value is
 used for all filters.</p></li>

@@ -148,7 +148,7 @@ size=&quot;8.0, 12.0&quot;;
 <dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.add">
 <span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.add" title="Link to this definition"></a></dt>
 <dd><p>In-place summation</p>
-<p>This function allowes for in-place summation.</p>
+<p>This function allows for in-place summation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>x</strong> (<em>scalar</em><em> or </em><em>ndarray</em>) – The value or array to add to the signal</p>
@@ -170,7 +170,7 @@ size=&quot;8.0, 12.0&quot;;
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ch</span></span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.ch" title="Link to this definition"></a></dt>
 <dd><p>Direct channel indexer</p>
 <p>Returns an indexer class which enables direct indexing and
-slicing of the channels indipendent of samples.</p>
+slicing of the channels independent of samples.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audiotoolbox</span><span class="o">.</span><span class="n">Signal</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="ow">is</span> <span class="n">sig</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
@@ -240,10 +240,10 @@ signal.</p>
 <dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.multiply">
 <span class="sig-name descname"><span class="pre">multiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.multiply" title="Link to this definition"></a></dt>
 <dd><p>In-place multiplication</p>
-<p>This function allowes for in-place multiplication</p>
+<p>This function allows for in-place multiplication</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>x</strong> (<em>scalar</em><em> or </em><em>ndarray</em>) – The value or array to muliply with the signal</p>
+<dd class="field-odd"><p><strong>x</strong> (<em>scalar</em><em> or </em><em>ndarray</em>) – The value or array to multiply with the signal</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Returns itself</p>
