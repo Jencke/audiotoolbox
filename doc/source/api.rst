@@ -6,4 +6,5 @@ API reference
 
    api_fluent_signal
    api_fluent_frequencydomainsignal
+   api_hrtf
    api_core

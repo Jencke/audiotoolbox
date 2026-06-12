@@ -1,3 +1,14 @@
+## 1.11 -> develop
+
+### Added
+
+- `HRIRSet` class (`audiotoolbox.HRIRSet`) for holding head-related impulse responses measured over directions. The impulse responses are stored as a `Signal` of shape `(n_taps, n_directions, 2)` alongside a source-position table, following the library's composition pattern.
+- `HRIRSet.from_sofa(...)` to load HRIRs from SOFA files (the standard HRTF interchange format) via the optional `sofar` dependency.
+- Direction lookup via `HRIRSet.nearest(...)` and direction interpolation via `HRIRSet.interpolate(...)`: barycentric over the surrounding spherical triangle for fully three-dimensional measurement grids, and angular interpolation between adjacent directions for coplanar grids (e.g. a horizontal ring).
+- `HRIRSet.render(...)` to spatialize a mono signal into a binaural signal by convolving it with the (left, right) HRIR for a requested direction.
+- `HRIRSet.to_hrtf()` returning the frequency-domain transfer functions as a `FrequencyDomainSignal`.
+- New optional dependency extra `hrtf` (installs `sofar`); use `pip install audiotoolbox[hrtf]` for SOFA file support.
+
 ## 1.10 -> 1.11
 
 ### Added

@@ -28,6 +28,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest", "coverage", "pytest-cov"]
 docs = ["sphinx", "sphinx-rtd-theme", "matplotlib"]
+hrtf = ["sofar"]
 
 [project.urls]
 "Homepage" = "https://jencke.github.io/audiotoolbox/index.html"

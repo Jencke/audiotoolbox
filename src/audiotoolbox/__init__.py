@@ -13,3 +13,4 @@ from .core import *
 from .scales import erb, bark, octave, mel, semitone, greenwood
 from .signal import Signal, as_signal
 from .freqdomain_signal import FrequencyDomainSignal
+from .hrtf import HRIRSet
