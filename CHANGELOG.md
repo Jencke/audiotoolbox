@@ -1,8 +1,12 @@
 ## 1.11 -> develop
 
+### Added
+
+- `Signal.add_uncorr_noise` now supports a negative `corr` for two channels, realised by sign-inverting one channel. For more than two channels (where a uniform negative correlation is not achievable) the positive magnitude is used and a `UserWarning` is emitted.
 ### Fixed
 
 - `Signal.add_noise` now consistently adds noise to the existing signal for all spectral shapes; previously the `white` branch overwrote the signal content instead of adding to it.
+- `Signal.add_uncorr_noise` now produces independent noise tokens when a `seed` is given. Previously each channel was reseeded with the same value, so all tokens were identical and the orthogonalization left all but one channel as a degenerate (non-noise) signal. `Signal.add_noise` now only reseeds the RNG when a seed is explicitly provided.
 - `Signal.convolve` now accepts a plain `ndarray` kernel as documented, instead of raising `AttributeError`.
 - `Signal.convolve` with a complex kernel no longer silently discards the imaginary part; the output dtype is promoted and a new complex `Signal` is returned when the input is real (mirroring `Signal.bandpass`).
 - `Signal.convolve` no longer raises a broadcasting `ValueError` when a trailing singleton channel axis takes part in the overlapping dimensions; the overlap is now determined after squeezing such axes.
