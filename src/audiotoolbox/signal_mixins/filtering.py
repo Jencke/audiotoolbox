@@ -220,6 +220,11 @@ class FilteringMixin:
             ``self`` after in-place modification — suitable for method
             chaining.
 
+            Exception: if the kernel is complex while the signal is real, the
+            result cannot be stored in the real-valued buffer in place. A new
+            complex ``Signal`` is returned instead and a ``UserWarning`` is
+            emitted (the same constraint as :meth:`bandpass`).
+
         Raises
         ------
         RuntimeError
