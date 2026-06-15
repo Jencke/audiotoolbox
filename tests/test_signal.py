@@ -593,3 +593,70 @@ def test_convolve_overlap_dimension_cases(
     kernel = audio.Signal(3, 5, fs)
     sig.convolve(kernel, mode="valid")
     assert sig.n_samples == 6
+
+
+def test_convolve_accepts_ndarray_kernel():
+    # Regression: `kernel` is type-hinted and documented as "Signal or
+    # ndarray", but convolve reads kernel.channel_shape / kernel.n_samples,
+    # so a plain ndarray raises AttributeError.
+    from scipy.signal import fftconvolve
+
+    np.random.seed(0)
+    fs = 48000
+    sig = audio.Signal(1, 20 / fs, fs)
+    sig[:] = np.random.randn(20, 1)
+    kernel = np.array([1.0, 0.5, 0.25, 0.125])
+
+    out = sig.convolved(kernel)
+
+    ref = fftconvolve(np.asarray(sig).ravel(), kernel, mode="full")
+    testing.assert_allclose(np.asarray(out).ravel(), ref, atol=1e-9)
+
+
+def test_convolve_complex_kernel_preserves_imaginary():
+    # Regression: the output buffer is allocated with dtype=self.dtype, so
+    # convolving a real signal with a complex kernel silently discards the
+    # imaginary part.
+    from scipy.signal import fftconvolve
+
+    np.random.seed(0)
+    fs = 48000
+    sig = audio.Signal(1, 16 / fs, fs)
+    sig[:] = np.random.randn(16, 1)
+    kernel = audio.Signal(1, 4 / fs, fs).astype(complex)
+    kernel[:] = np.random.randn(4, 1) + 1j * np.random.randn(4, 1)
+
+    out = sig.convolved(kernel)
+
+    assert np.iscomplexobj(np.asarray(out)), (
+        "convolving with a complex kernel should produce a complex result"
+    )
+    ref = fftconvolve(
+        np.asarray(sig).ravel(), np.asarray(kernel).ravel(), mode="full"
+    )
+    testing.assert_allclose(np.asarray(out).ravel(), ref, atol=1e-9)
+
+
+def test_convolve_singleton_dim_in_overlap():
+    # Regression: dim_overlap is computed before the trailing-singleton
+    # squeeze, but the reshapes use the post-squeeze dims. When a squeezed
+    # dimension took part in the overlap the broadcast fails with a
+    # ValueError instead of convolving each channel with the kernel.
+    from scipy.signal import fftconvolve
+
+    np.random.seed(0)
+    fs = 48000
+    sig = audio.Signal((2, 1), 20 / fs, fs)
+    sig[:] = np.random.randn(20, 2, 1)
+    kernel = audio.Signal(1, 5 / fs, fs)
+    kernel[:] = np.random.randn(5, 1)
+
+    out = sig.convolved(kernel)  # must not raise
+
+    sig_arr = np.asarray(sig).reshape(20, 2)
+    ker_arr = np.asarray(kernel).ravel()
+    ref = np.stack(
+        [fftconvolve(sig_arr[:, c], ker_arr, mode="full") for c in range(2)],
+        axis=1,
+    )
+    testing.assert_allclose(np.asarray(out).reshape(ref.shape), ref, atol=1e-9)
