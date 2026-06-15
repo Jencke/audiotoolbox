@@ -130,7 +130,7 @@ class GenerationMixin:
             noise *= np.sqrt(variance)
 
             new_shape = (self.n_samples,) + (1,) * (self.ndim - 1)
-            self[:] = noise.reshape(new_shape)
+            self[:] += noise.reshape(new_shape)
             return self
 
         # Otherwise create spectrum

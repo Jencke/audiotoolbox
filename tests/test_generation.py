@@ -44,6 +44,18 @@ def test_add_noise_variance():
     testing.assert_almost_equal(np.var(sig), 2)
 
 
+@pytest.mark.parametrize("ntype", ["white", "pink", "brown"])
+def test_add_noise_adds_to_existing_signal(ntype):
+    # Regression: add_noise must *add* to the signal, not overwrite it.
+    # Previously the white-noise branch replaced the signal content.
+    offset = 5.0
+    sig = audio.Signal(1, 0.1, 48000)
+    sig[:] = offset
+    sig.add_noise(ntype=ntype, seed=0)
+    # the generated noise is zero-mean, so the pre-existing DC offset survives
+    testing.assert_allclose(float(sig.mean()), offset, atol=1e-9)
+
+
 def test_add_uncorr_noise_basic():
     fs = 48000
     sig = audio.Signal(5, 1, fs).add_uncorr_noise()
