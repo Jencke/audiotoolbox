@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 
@@ -230,7 +230,7 @@ class HRIRSet:
     # ------------------------------------------------------------------
     # spatial lookup
     # ------------------------------------------------------------------
-    def _nearest_index(self, azimuth, elevation) -> int:
+    def _nearest_index(self, azimuth: float, elevation: float) -> int:
         """Index of the measured direction closest to the query direction."""
         query = _spherical_to_cartesian(azimuth, elevation)[0]
         # Nearest on the unit sphere == largest dot product (cosine distance).
