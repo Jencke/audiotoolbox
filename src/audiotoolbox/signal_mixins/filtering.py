@@ -251,6 +251,13 @@ class FilteringMixin:
         >>> signal.convolve(kernel)
         >>> signal.n_channels
         (5, 2, 3)
+        
+        This works in both directions
+        >>> signal = Signal(3, 1, 48000)
+        >>> kernel = Signal((2, 3), 100e-3, 48000)
+        >>> signal.convolve(kernel)
+        >>> signal.n_channels
+        (2, 3)
 
         The 'overlap_dimensions' keyword can be set to False if all signal
         channels are instead convolved with all kernels.
@@ -285,16 +292,28 @@ class FilteringMixin:
             dim_sig = dim_sig[:-1]
             squeeze_idx_sig = (0,)
 
-        # Determine if some of the dimensions overlap. This is computed on the
-        # *squeezed* shapes: counting a trailing singleton axis (that is then
-        # squeezed away) as overlapping would leave the reshape/broadcast below
-        # inconsistent.
+        # Determine overlapping dimensions on squeezed channel shapes.
+        # Prefer the original orientation (signal suffix vs kernel prefix),
+        # but support the reverse direction too so (3) with (2, 3) overlaps.
         if overlap_dimensions:
-            dim_overlap = audio._get_dim_overlap(dim_sig, dim_kernel)
+            overlap_sig_kernel = audio._get_dim_overlap(dim_sig, dim_kernel)
+            overlap_kernel_sig = audio._get_dim_overlap(dim_kernel, dim_sig)
+            use_reverse_overlap = overlap_kernel_sig > overlap_sig_kernel
+            if use_reverse_overlap:
+                dim_overlap = overlap_kernel_sig
+                left_dims = dim_kernel
+                right_dims = dim_sig
+            else:
+                dim_overlap = overlap_sig_kernel
+                left_dims = dim_sig
+                right_dims = dim_kernel
         else:
             dim_overlap = 0
+            use_reverse_overlap = False
+            left_dims = dim_sig
+            right_dims = dim_kernel
 
-        new_nch = (*dim_sig, *dim_kernel[dim_overlap:])
+        new_nch = (*left_dims, *right_dims[dim_overlap:])
         if mode == "same":
             new_nsamp = self.n_samples
         elif mode == "full":
@@ -333,31 +352,42 @@ class FilteringMixin:
         if squeeze_idx_k and ker_arr.ndim > 1:
             ker_arr = ker_arr[..., 0]
 
+        if use_reverse_overlap:
+            left_arr = ker_arr
+            right_arr = sig_arr
+        else:
+            left_arr = sig_arr
+            right_arr = ker_arr
+
         # Number of outer (non-overlapping) dims on each side.
         # Use max(0, ...) because after squeezing, len(dim_X) can be < dim_overlap.
-        n_sig_outer = max(0, len(dim_sig) - dim_overlap) if dim_overlap > 0 else len(dim_sig)
-        n_k_outer = max(0, len(dim_kernel) - dim_overlap)
+        n_left_outer = (
+            max(0, len(left_dims) - dim_overlap)
+            if dim_overlap > 0
+            else len(left_dims)
+        )
+        n_right_outer = max(0, len(right_dims) - dim_overlap)
 
-        sig_arr = sig_arr.reshape(sig_arr.shape + (1,) * n_k_outer)
-        ker_arr = ker_arr.reshape(
-            ker_arr.shape[:1] + (1,) * n_sig_outer + ker_arr.shape[1:]
+        left_arr = left_arr.reshape(left_arr.shape + (1,) * n_right_outer)
+        right_arr = right_arr.reshape(
+            right_arr.shape[:1] + (1,) * n_left_outer + right_arr.shape[1:]
         )
 
         n_fft = int(2 ** np.ceil(np.log2(self.n_samples + kernel.n_samples - 1)))
 
         # convolve in frequency domain, using real FFT if both inputs are real-valued
         # use complex FFT if either input is complex-valued
-        if np.isrealobj(sig_arr) and np.isrealobj(ker_arr):
+        if np.isrealobj(left_arr) and np.isrealobj(right_arr):
             raw = np.fft.irfft(
-                np.fft.rfft(sig_arr, n=n_fft, axis=0)
-                * np.fft.rfft(ker_arr, n=n_fft, axis=0),
+                np.fft.rfft(left_arr, n=n_fft, axis=0)
+                * np.fft.rfft(right_arr, n=n_fft, axis=0),
                 n=n_fft,
                 axis=0,
             )
         else:
             raw = np.fft.ifft(
-                np.fft.fft(sig_arr, n=n_fft, axis=0)
-                * np.fft.fft(ker_arr, n=n_fft, axis=0),
+                np.fft.fft(left_arr, n=n_fft, axis=0)
+                * np.fft.fft(right_arr, n=n_fft, axis=0),
                 axis=0,
             )
 
