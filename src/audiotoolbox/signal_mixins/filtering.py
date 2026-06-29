@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal, Union
 import numpy as np
 import warnings
+from scipy.signal import get_window
 from .. import core as audio, filter as filt
 
 if TYPE_CHECKING:
@@ -445,3 +446,148 @@ class FilteringMixin:
             A new Signal containing the convolution result.
         """
         return self.copy().convolve(kernel, mode=mode, overlap_dimensions=overlap_dimensions)
+
+    def remove_silence(
+        self: "Signal",
+        threshold_dbfs: float = -60.0,
+        block_duration: float = 50e-3,
+        overlap_duration: float = 10e-3,
+        edges_only: bool = False,
+        fade: bool = False,
+        fade_duration: float | None = None,
+        win_type: str = "hann",
+    ) -> "Signal":
+        """Remove low-level blocks from the signal in-place.
+
+        The signal is analyzed in overlapping blocks. Blocks whose RMS level
+        falls below ``threshold_dbfs`` are considered silent, and their samples
+        are removed. For multi-channel signals, a sample is removed only when
+        all channels are marked silent at that time index.
+
+        Parameters
+        ----------
+        threshold_dbfs : float, optional
+            Block RMS threshold in dBFS. Blocks below this threshold are
+            removed (default: -60.0).
+        block_duration : float, optional
+            Block size in seconds (default: 50e-3).
+        overlap_duration : float, optional
+            Block overlap in seconds (default: 10e-3).
+        edges_only : bool, optional
+            If True, remove only leading and trailing silence while keeping
+            interior low-level regions between the first and last detected
+            non-silent samples (default: False).
+        fade : bool, optional
+            Apply a short fade-out/fade-in window at each removed-silence join
+            to reduce clicks (default: False).
+        fade_duration : float or None, optional
+            Duration of the join fade in seconds. If None and ``fade`` is
+            True, ``block_duration`` is used.
+        win_type : str, optional
+            Join fade window type accepted by
+            :func:`scipy.signal.get_window`. For compatibility with other
+            Signal fade methods, ``'cos'`` maps to ``'hann'``
+            (default: ``'hann'``).
+
+        Returns
+        -------
+        Signal
+            Returns itself after in-place trimming.
+
+        Raises
+        ------
+        RuntimeError
+            If called on a view or slice.
+        ValueError
+            If block/overlap durations are invalid.
+        """
+        if not isinstance(self.base, type(None)):
+            raise RuntimeError(
+                "remove_silence can only be applied to the whole signal"
+            )
+
+        if block_duration <= 0:
+            raise ValueError("block_duration must be > 0")
+        if overlap_duration < 0:
+            raise ValueError("overlap_duration must be >= 0")
+
+        n_samp = int(block_duration * self.fs)
+        overlap = int(overlap_duration * self.fs)
+
+        if n_samp <= 0:
+            raise ValueError("block_duration results in zero samples")
+        if overlap >= n_samp:
+            raise ValueError("overlap_duration must be smaller than block_duration")
+        if fade_duration is not None and fade_duration <= 0:
+            raise ValueError("fade_duration must be > 0")
+
+        # Work on a copy because as_blocked may pad in-place.
+        analysis_sig = self.copy()
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                message=r"Zero padding .* samples to the end of the signal to create blocks\.",
+                category=UserWarning,
+            )
+            analysis_blocks = analysis_sig.as_blocked(block_size=n_samp, overlap=overlap)
+
+        # Silent analysis naturally creates zero-RMS blocks. Suppress the
+        # expected divide-by-zero warning from converting RMS to dBFS.
+        with np.errstate(divide="ignore", invalid="ignore"):
+            silent_blocks = analysis_blocks.stats.dbfs < threshold_dbfs
+        non_silent_blocks = ~silent_blocks
+
+        # as_blocked creates overlapping strided views. Avoid writing to such
+        # views (undefined with overlapping memory) and map windows to sample
+        # indices explicitly instead.
+        block_channel_axes = tuple(range(1, non_silent_blocks.ndim))
+        if block_channel_axes:
+            window_keep = np.any(non_silent_blocks, axis=block_channel_axes)
+        else:
+            window_keep = non_silent_blocks
+
+        step = n_samp - overlap
+        keep = np.zeros(analysis_sig.n_samples, dtype=bool)
+        starts = np.arange(analysis_blocks.shape[1]) * step
+        for start in starts[window_keep]:
+            keep[start : start + n_samp] = True
+
+        if edges_only:
+            kept_idx = np.flatnonzero(keep)
+            if kept_idx.size:
+                edge_keep = np.zeros_like(keep)
+                edge_keep[kept_idx[0] : kept_idx[-1] + 1] = True
+                keep = edge_keep
+
+        # Discard potential padding that was added during block analysis.
+        keep = keep[: self.n_samples]
+
+        kept_idx = np.flatnonzero(keep)
+        clipped_signal = self[keep].copy()
+
+        if fade and clipped_signal.n_samples > 1 and kept_idx.size > 1:
+            join_idx = np.flatnonzero(np.diff(kept_idx) > 1) + 1
+
+            if join_idx.size > 0:
+                fade_s = block_duration if fade_duration is None else fade_duration
+                fade_n = int(fade_s * self.fs)
+                fade_n = max(1, fade_n)
+
+                _win_type = "hann" if win_type == "cos" else win_type
+                fade_in = get_window(_win_type, 2 * fade_n)[:fade_n]
+                fade_out = fade_in[::-1]
+
+                n_chan_dims = clipped_signal.ndim - 1
+                for j in join_idx:
+                    left = min(fade_n, int(j))
+                    right = min(fade_n, clipped_signal.n_samples - int(j))
+                    if left > 0:
+                        out_shape = (-1,) + (1,) * n_chan_dims
+                        clipped_signal[j - left : j] *= fade_out[-left:].reshape(out_shape)
+                    if right > 0:
+                        in_shape = (-1,) + (1,) * n_chan_dims
+                        clipped_signal[j : j + right] *= fade_in[:right].reshape(in_shape)
+
+        self.resize(clipped_signal.shape, refcheck=False)
+        self[:] = clipped_signal
+        return self

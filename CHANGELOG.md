@@ -9,6 +9,7 @@
 - `HRIRSet.render(...)` to spatialize a mono signal into a binaural signal by convolving it with the (left, right) HRIR for a requested direction.
 - `HRIRSet.to_hrtf()` returning the frequency-domain transfer functions as a `FrequencyDomainSignal`.
 - New optional dependency extra `hrtf` (installs `sofar`); use `pip install audiotoolbox[hrtf]` for SOFA file support.
+- `Signal.remove_silence` now supports `edges_only=True` to remove only leading and trailing silence while preserving silent gaps inside the kept region.
 
 ### Fixed
 - `Signal.add_noise` now consistently adds noise to the existing signal for all spectral shapes; previously the `white` branch overwrote the signal content instead of adding to it.
@@ -16,6 +17,7 @@
 - `Signal.convolve` now accepts a plain `ndarray` kernel as documented, instead of raising `AttributeError`.
 - `Signal.convolve` with a complex kernel no longer silently discards the imaginary part; the output dtype is promoted and a new complex `Signal` is returned when the input is real (mirroring `Signal.bandpass`).
 - `Signal.convolve` no longer raises a broadcasting `ValueError` when a trailing singleton channel axis takes part in the overlapping dimensions; the overlap is now determined after squeezing such axes.
+- `Signal.remove_silence` no longer emits expected internal warnings during silence analysis (block zero-padding and dBFS divide-by-zero for silent blocks).
 
 ## 1.10 -> 1.11
 

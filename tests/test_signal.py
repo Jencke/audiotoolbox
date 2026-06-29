@@ -3,6 +3,7 @@ import audiotoolbox as audio
 import numpy as np
 import numpy.testing as testing
 import pytest
+import warnings
 
 
 def _channel_indices(signal):
@@ -334,6 +335,128 @@ def test_trim():
     assert sig.n_samples == n_samples
     assert np.all(sig == o_sig[:n_samples, :])
     assert sig.base == None
+
+
+def test_remove_silence_mono_blockwise():
+    fs = 1000
+    sig = Signal(1, 300e-3, fs)
+    sig[100:200] = 1.0
+
+    sig.remove_silence(
+        threshold_dbfs=-40,
+        block_duration=50e-3,
+        overlap_duration=10e-3,
+    )
+
+    # The three non-silent blocks span samples 80..209.
+    assert sig.n_samples == 130
+    assert np.sum(sig == 1.0) == 100
+
+
+def test_remove_silence_multichannel_keeps_alignment():
+    fs = 1000
+    sig = Signal(2, 300e-3, fs)
+    sig[100:200, 0] = 1.0
+
+    sig.remove_silence(
+        threshold_dbfs=-40,
+        block_duration=50e-3,
+        overlap_duration=10e-3,
+    )
+
+    assert sig.n_samples == 130
+    assert np.sum(sig[:, 0] == 1.0) == 100
+    assert np.all(sig[:, 1] == 0.0)
+
+
+def test_remove_silence_edges_only_keeps_inner_silence():
+    fs = 1000
+    sig = Signal(1, 500e-3, fs)
+    sig[50:120] = 1.0
+    sig[300:370] = 1.0
+
+    full_remove = sig.copy()
+    full_remove.remove_silence(
+        threshold_dbfs=-40,
+        block_duration=50e-3,
+        overlap_duration=10e-3,
+    )
+
+    edges_only = sig.copy()
+    edges_only.remove_silence(
+        threshold_dbfs=-40,
+        block_duration=50e-3,
+        overlap_duration=10e-3,
+        edges_only=True,
+    )
+
+    # Block settings produce active spans 40..129 and 280..409.
+    # Edges-only trimming keeps the full 40..409 range.
+    assert full_remove.n_samples == 220
+    assert edges_only.n_samples == 370
+    assert edges_only.n_samples > full_remove.n_samples
+
+
+def test_remove_silence_validation_errors():
+    sig = Signal(1, 100e-3, 1000).add_noise()
+
+    with pytest.raises(ValueError, match="block_duration must be > 0"):
+        sig.copy().remove_silence(block_duration=0.0)
+
+    with pytest.raises(ValueError, match="overlap_duration must be >= 0"):
+        sig.copy().remove_silence(overlap_duration=-1e-3)
+
+    with pytest.raises(
+        ValueError,
+        match="overlap_duration must be smaller than block_duration",
+    ):
+        sig.copy().remove_silence(block_duration=10e-3, overlap_duration=10e-3)
+
+    with pytest.raises(ValueError, match="fade_duration must be > 0"):
+        sig.copy().remove_silence(fade=True, fade_duration=0.0)
+
+
+def test_remove_silence_optional_join_fade():
+    fs = 1000
+    sig = Signal(1, 500e-3, fs)
+    sig[50:120] = 1.0
+    sig[300:370] = 1.0
+
+    no_fade = sig.copy()
+    no_fade.remove_silence(
+        threshold_dbfs=-40,
+        block_duration=50e-3,
+        overlap_duration=10e-3,
+    )
+
+    with_fade = sig.copy()
+    with_fade.remove_silence(
+        threshold_dbfs=-40,
+        block_duration=50e-3,
+        overlap_duration=10e-3,
+        fade=True,
+        fade_duration=20e-3,
+        win_type="triang",
+    )
+
+    assert with_fade.n_samples == no_fade.n_samples
+    assert np.sum(np.isclose(with_fade, 1.0)) < np.sum(np.isclose(no_fade, 1.0))
+
+
+def test_remove_silence_suppresses_expected_analysis_warnings():
+    fs = 1000
+    sig = Signal(1, 300e-3, fs)
+    sig[100:200] = 1.0
+
+    with warnings.catch_warnings(record=True) as rec:
+        warnings.simplefilter("always")
+        sig.remove_silence(
+            threshold_dbfs=-40,
+            block_duration=50e-3,
+            overlap_duration=10e-3,
+        )
+
+    assert len(rec) == 0
 
 
 def test_concatenate():
