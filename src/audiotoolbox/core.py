@@ -904,7 +904,7 @@ def extract_binaural_differences(signal, log_ilds=True):
         sig[:] = signal.copy()
     elif signal.n_channels == 1:
         sig = Signal(2, len(signal), 1)
-        sig[:] = signal.copy()[:, None]
+        sig[:] = signal.copy()
     else:
         sig = signal.copy()
 
@@ -1120,7 +1120,7 @@ def cmplx_crosscorr(signal):
         sig[:] = signal.copy()
     elif signal.n_channels == 1:
         sig = Signal(2, len(signal), 1)
-        sig[:] = signal.copy()[:, None]
+        sig[:] = signal.copy()
     else:
         sig = signal.copy()
 

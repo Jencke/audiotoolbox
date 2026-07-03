@@ -11,6 +11,10 @@
 - New optional dependency extra `hrtf` (installs `sofar`); use `pip install audiotoolbox[hrtf]` for SOFA file support.
 - `Signal.remove_silence` now supports `edges_only=True` to remove only leading and trailing silence while preserving silent gaps inside the kept region.
 
+### Changed
+
+- `Signal.to_analytical()` now uses `scipy.signal.hilbert(..., axis=0)` for real-valued signals instead of round-tripping through the frequency-domain representation, which substantially reduces runtime for common real-signal cases.
+
 ### Fixed
 - `Signal.add_noise` now consistently adds noise to the existing signal for all spectral shapes; previously the `white` branch overwrote the signal content instead of adding to it.
 - `Signal.add_uncorr_noise` now produces independent noise tokens when a `seed` is given. Previously each channel was reseeded with the same value, so all tokens were identical and the orthogonalization left all but one channel as a degenerate (non-noise) signal. `Signal.add_noise` now only reseeds the RNG when a seed is explicitly provided.
@@ -18,6 +22,7 @@
 - `Signal.convolve` with a complex kernel no longer silently discards the imaginary part; the output dtype is promoted and a new complex `Signal` is returned when the input is real (mirroring `Signal.bandpass`).
 - `Signal.convolve` no longer raises a broadcasting `ValueError` when a trailing singleton channel axis takes part in the overlapping dimensions; the overlap is now determined after squeezing such axes.
 - `Signal.remove_silence` no longer emits expected internal warnings during silence analysis (block zero-padding and dBFS divide-by-zero for silent blocks).
+- `Signal.to_analytical()` now preserves support for complex-valued inputs by falling back to the previous frequency-domain implementation when the input signal is already complex.
 
 ## 1.10 -> 1.11
 

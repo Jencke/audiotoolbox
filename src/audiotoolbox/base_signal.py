@@ -239,41 +239,35 @@ class _chIndexer(object):
     def __init__(self, obj):
         self.idx_obj = obj
 
+    def _channel_index(self, key):
+
+        if not isinstance(key, tuple):
+            # If only one index is handed over, convert key to tuple
+            key = (key,)
+
+        if np.ndim(self.idx_obj) == 1:
+            return slice(None, None, None)
+        return (slice(None, None, None),) + key
+
+    def _normalize_channel_view(self, out):
+
+        if not isinstance(out, np.ndarray):
+            return out
+
+        if out.ndim == 1:
+            return out[:, np.newaxis]
+
+        if out.ndim > 2 and np.prod(out.shape[1:]) == 1:
+            return out.reshape(out.shape[0], 1)
+
+        return out
+
     def __getitem__(self, key):
 
-        if not isinstance(key, tuple):
-            # If only one index is handed over, convert key to tuple
-            key = (key,)
-
-        if np.ndim(self.idx_obj) == 1:
-            # In case, it's only a 1D array, always return the whole
-            # array
-            idx = slice(None, None, None)
-        elif np.ndim(self.idx_obj) == 2 and self.idx_obj.shape[1] == 1:
-            # Keep mono signals 2D when indexing channels.
-            idx = (slice(None, None, None), slice(0, 1, None))
-        else:
-            # return only the slice
-            idx = (slice(None, None, None),) + key
-
-        return self.idx_obj[idx]
+        idx = self._channel_index(key)
+        return self._normalize_channel_view(self.idx_obj[idx])
 
     def __setitem__(self, key, value):
-
-        if not isinstance(key, tuple):
-            # If only one index is handed over, convert key to tuple
-            key = (key,)
-
-        if np.ndim(self.idx_obj) == 1:
-            # In case, it's only a 1D array, always return the whole
-            # array
-            idx = slice(None, None, None)
-        elif np.ndim(self.idx_obj) == 2 and self.idx_obj.shape[1] == 1:
-            # Keep mono signals 2D when indexing channels.
-            idx = (slice(None, None, None), slice(0, 1, None))
-        else:
-            # return only the slice
-            idx = (slice(None, None, None),) + key
-
+        idx = self._channel_index(key)
         self.idx_obj[idx] = value
         return self.idx_obj

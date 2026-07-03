@@ -487,7 +487,7 @@ def test_inst_cmplx_corr_handles_odd_and_even_window_lengths():
     for window_samples in (7, 8):
         window_duration = window_samples / sig.fs
         coh = audio.inst_cmplx_corr(sig, window_duration=window_duration)
-        assert coh.shape == sig.ch[0].shape
+        assert coh.shape[0] == sig.n_samples
         assert np.isfinite(np.asarray(coh)).all()
         assert np.all(np.abs(coh) <= 1.0 + 1e-9)
 

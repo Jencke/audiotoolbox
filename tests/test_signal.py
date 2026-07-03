@@ -16,7 +16,10 @@ def _channel_indices(signal):
 def _assert_all_channels_equal(signal, expected):
     for idx in _channel_indices(signal):
         channel = signal if idx == () else signal.ch[idx]
-        testing.assert_almost_equal(channel, expected)
+        expected_arr = np.asarray(expected)
+        if channel.ndim == 2 and channel.shape[1] == 1 and expected_arr.ndim == 1:
+            expected_arr = expected_arr[:, np.newaxis]
+        testing.assert_almost_equal(channel, expected_arr)
 
 
 def _assert_vectorized_addtone_matches_iterative(frequencies, amplitudes, start_phases):
@@ -549,7 +552,8 @@ def test_highpass():
 
 def test_channel_indexing():
     sig = Signal((2, 2), 1, 48000).add_noise()
-    testing.assert_equal(sig.ch[0, 0], sig[:, 0, 0])
+    assert sig.ch[0, 0].shape == (sig.n_samples, 1)
+    testing.assert_equal(sig.ch[0, 0][:, 0], sig[:, 0, 0])
     testing.assert_equal(sig.ch[0], sig[:, 0])
 
     sig = Signal(2, 1, 48000)
@@ -558,7 +562,8 @@ def test_channel_indexing():
 
     sig.ch[1].add_tone(500)
     tone_2 = np.cos(2 * np.pi * sig.time * 500)
-    testing.assert_almost_equal(sig.ch[1], tone_2)
+    assert sig.ch[1].shape == (sig.n_samples, 1)
+    testing.assert_almost_equal(sig.ch[1][:, 0], tone_2)
 
     # Indexing only one channel should still work
     sig = Signal(1, 1, 40000).add_noise()
