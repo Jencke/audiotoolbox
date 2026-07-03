@@ -583,6 +583,39 @@ def test_analytical():
     testing.assert_almost_equal(sig, asig.real)
 
 
+def test_analytical_tone_quadrature():
+    sig = audio.Signal(1, 0.1, 48000).add_tone(500)
+    sig2 = audio.Signal(1, 0.1, 48000).add_tone(500, start_phase=-np.pi / 2)
+
+    asig = sig.to_analytical()
+
+    testing.assert_almost_equal(asig.real, sig)
+    testing.assert_almost_equal(asig.imag, sig2)
+
+
+def test_analytical_complex_input_uses_fallback():
+    rng = np.random.default_rng(0)
+    sig = audio.Signal((2, 3), 0.05, 48000, dtype=complex)
+    sig[:] = rng.standard_normal(sig.shape) + 1j * rng.standard_normal(sig.shape)
+
+    asig = sig.to_analytical()
+    ref = sig.to_freqdomain().to_analytical().to_timedomain()
+
+    assert np.iscomplexobj(asig)
+    assert asig.shape == sig.shape
+    testing.assert_allclose(np.asarray(asig), np.asarray(ref), rtol=1e-12, atol=1e-12)
+
+
+def test_analytical_multidimensional_shape_and_dtype():
+    sig = audio.Signal((2, 3, 4), 0.05, 48000).add_noise(seed=0)
+
+    asig = sig.to_analytical()
+
+    assert asig.shape == sig.shape
+    assert np.iscomplexobj(asig)
+    testing.assert_almost_equal(asig.real, sig)
+
+
 def test_to_signal():
     rng = np.random.default_rng(0)
     fs = 480000

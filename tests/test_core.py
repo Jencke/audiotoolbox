@@ -479,3 +479,25 @@ def test_inst_cmplx_corr_magnitude_bounded():
     sig = audio.Signal(2, 0.5, 48000).add_noise(seed=0)
     coh = audio.inst_cmplx_corr(sig, window_duration=10e-3)
     assert np.all(np.abs(coh) <= 1.0 + 1e-9)
+
+
+def test_inst_cmplx_corr_handles_odd_and_even_window_lengths():
+    sig = audio.Signal(2, 0.05, 48000).add_noise(seed=0)
+
+    for window_samples in (7, 8):
+        window_duration = window_samples / sig.fs
+        coh = audio.inst_cmplx_corr(sig, window_duration=window_duration)
+        assert coh.shape == sig.ch[0].shape
+        assert np.isfinite(np.asarray(coh)).all()
+        assert np.all(np.abs(coh) <= 1.0 + 1e-9)
+
+
+def test_inst_cmplx_corr_handles_multidimensional_channels():
+    sig = audio.Signal((2, 3), 0.05, 48000).add_noise(seed=0)
+    window_samples = 8
+    window_duration = window_samples / sig.fs
+    coh = audio.inst_cmplx_corr(sig, window_duration=window_duration)
+
+    assert coh.shape == sig.ch[0].shape
+    assert np.isfinite(np.asarray(coh)).all()
+    assert np.all(np.abs(coh) <= 1.0 + 1e-9)
