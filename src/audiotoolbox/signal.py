@@ -3,6 +3,7 @@
 from typing import Type, cast, Union
 
 import numpy as np
+from scipy.signal import hilbert
 
 from . import base_signal
 from .freqdomain_signal import FrequencyDomainSignal
@@ -142,9 +143,12 @@ class Signal(
         The analytical signal : Signal
 
         """
-        fd_signal = self.to_freqdomain()
-        a_signal = fd_signal.to_analytical().to_timedomain()
-        return a_signal
+        if np.iscomplexobj(self):
+            fd_signal = self.to_freqdomain()
+            return fd_signal.to_analytical().to_timedomain()
+
+        analytical = hilbert(np.asarray(self), axis=0)
+        return as_signal(analytical, self.fs)
 
 
 def as_signal(signal, fs) -> Signal:
