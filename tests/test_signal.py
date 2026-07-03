@@ -556,6 +556,14 @@ def test_channel_indexing():
     testing.assert_equal(sig.ch[0, 0][:, 0], sig[:, 0, 0])
     testing.assert_equal(sig.ch[0], sig[:, 0])
 
+    sig = Signal((2, 5), 1, 48000).add_noise()
+    assert sig.ch[0].shape == (sig.n_samples, 5)
+    assert sig.ch[0, 0].shape == (sig.n_samples, 1)
+    testing.assert_equal(sig.ch[0, 0][:, 0], sig[:, 0, 0])
+    assert sig.ch[:, 0].shape == (sig.n_samples, 2)
+    testing.assert_equal(sig.ch[:, 0], sig[:, :, 0])
+    testing.assert_equal(sig.ch[..., 0], sig[:, :, 0])
+
     sig = Signal(2, 1, 48000)
     sig.ch[0] = 1
     assert np.all(sig[:, 0] == 1)
@@ -570,6 +578,12 @@ def test_channel_indexing():
     testing.assert_equal(sig.ch[0], sig)
     sig.ch[0] = 1
     testing.assert_equal(sig.ch[0], 1)
+
+    with pytest.raises(IndexError):
+        sig.ch[1]
+
+    with pytest.raises(IndexError):
+        sig.ch[0, 0]
 
 
 def test_time_offset():

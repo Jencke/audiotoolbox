@@ -101,11 +101,20 @@ class BaseSignal(np.ndarray):
         Returns an indexer class which enables direct indexing and
         slicing of the channels independent of samples.
 
+        Channel indices address only the trailing channel axes; the
+        sample axis is always preserved as the leading axis. If a
+        selection resolves to a single logical channel, the result is
+        normalized to the canonical mono shape ``(n_samples, 1)``.
+
         Examples
         --------
         >>> sig = audiotoolbox.Signal((2, 3), 1, 48000).add_noise()
-        >>> print(np.all(sig.ch[1, 2] is sig[:, 1, 2]))
-        True
+        >>> print(sig.ch[1, 2].shape)
+        (48000, 1)
+        >>> print(sig.ch[1].shape)
+        (48000, 3)
+        >>> print(sig.ch[:, 2].shape)
+        (48000, 2)
 
         """
         return _chIndexer(self)
@@ -239,15 +248,43 @@ class _chIndexer(object):
     def __init__(self, obj):
         self.idx_obj = obj
 
-    def _channel_index(self, key):
+    def _normalize_channel_key(self, key):
 
         if not isinstance(key, tuple):
             # If only one index is handed over, convert key to tuple
             key = (key,)
 
+        channel_ndim = max(self.idx_obj.ndim - 1, 0)
+        if channel_ndim == 0:
+            return tuple()
+
+        if key.count(Ellipsis) > 1:
+            raise IndexError("an index can only have a single ellipsis")
+
+        normalized = []
+        for item in key:
+            if item is Ellipsis:
+                remaining = channel_ndim - (len(key) - 1)
+                normalized.extend([slice(None)] * max(remaining, 0))
+            else:
+                normalized.append(item)
+
+        if len(normalized) > channel_ndim:
+            raise IndexError(
+                f"too many channel indices for signal with {channel_ndim} "
+                f"channel dimension{'s' if channel_ndim != 1 else ''}"
+            )
+
+        if len(normalized) < channel_ndim:
+            normalized.extend([slice(None)] * (channel_ndim - len(normalized)))
+
+        return tuple(normalized)
+
+    def _channel_index(self, key):
+
         if np.ndim(self.idx_obj) == 1:
             return slice(None, None, None)
-        return (slice(None, None, None),) + key
+        return (slice(None, None, None),) + self._normalize_channel_key(key)
 
     def _normalize_channel_view(self, out):
 
