@@ -237,7 +237,7 @@ def test_multiply():
 
 
 def test_mean():
-    sig = Signal(2, 100e-3, 100e3)
+    sig = Signal(2, 100e-3, 100_000)
     sig.add_tone(100)
     sig += np.array([1, 2])
     mean = sig.mean(0)

@@ -1,3 +1,5 @@
+from typing import Any, cast
+
 import numpy as np
 import audiotoolbox as audio
 
@@ -5,7 +7,13 @@ import audiotoolbox as audio
 class BaseSignal(np.ndarray):
     r"""Basic Signal class inherited by all Signal representations"""
 
-    def __new__(cls, n_channels: int | tuple, duration: float, fs: int, dtype=float):
+    def __new__(
+        cls,
+        n_channels: int | tuple,
+        duration: float,
+        fs: int,
+        dtype: Any = float,
+    ):
 
         n_samples = audio.nsamples(duration, fs)
 
@@ -27,6 +35,9 @@ class BaseSignal(np.ndarray):
         # If it was called after e.g slicing, copy
         # copy sample rate
         self._fs = getattr(obj, "_fs", None)
+
+    def __getitem__(self, key) -> Any:
+        return super().__getitem__(key)
 
     def __setitem__(self, key, value):
         try:
@@ -62,7 +73,8 @@ class BaseSignal(np.ndarray):
     def fs(self) -> int:
         """Sampling rate of the signal in Hz"""
 
-        return self._fs
+        assert self._fs is not None
+        return cast(int, self._fs)
 
     # getter to handle the number of channels in the signal
     @property
@@ -146,7 +158,7 @@ class BaseSignal(np.ndarray):
             self[old_n:] = signal
         return self
 
-    def multiply(self, x: float | np.ndarray):
+    def multiply(self, x: float | np.ndarray) -> "BaseSignal":
         """In-place multiplication
 
         This function allows for in-place multiplication
@@ -168,9 +180,9 @@ class BaseSignal(np.ndarray):
 
         """
         self *= x
-        return self
+        return cast(BaseSignal, self)
 
-    def add(self, x):
+    def add(self, x) -> "BaseSignal":
         """In-place summation
 
         This function allows for in-place summation.
@@ -193,7 +205,7 @@ class BaseSignal(np.ndarray):
         """
 
         self += x
-        return self
+        return cast(BaseSignal, self)
 
     def abs(self):
         """Absolute value
@@ -299,7 +311,7 @@ class _chIndexer(object):
 
         return out
 
-    def __getitem__(self, key):
+    def __getitem__(self, key) -> Any:
 
         idx = self._channel_index(key)
         return self._normalize_channel_view(self.idx_obj[idx])

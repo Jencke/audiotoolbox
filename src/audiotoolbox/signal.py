@@ -1,6 +1,6 @@
 """Definition for the Signal class."""
 
-from typing import Type, cast, Union
+from typing import Any, Type, cast, Union
 
 import numpy as np
 from scipy.signal import hilbert
@@ -63,7 +63,7 @@ class Signal(
         n_channels: Union[int, tuple, list],
         duration: float,
         fs: int,
-        dtype=float,
+        dtype: Any = float,
     ):
         """Create new objects."""
         obj = super().__new__(cls, n_channels, duration, fs, dtype)
