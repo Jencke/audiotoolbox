@@ -14,6 +14,8 @@
 ### Changed
 
 - `Signal.to_analytical()` now uses `scipy.signal.hilbert(..., axis=0)` for real-valued signals instead of round-tripping through the frequency-domain representation, which substantially reduces runtime for common real-signal cases.
+- `Signal.ch[...]` now normalizes single-channel selections back to the library's canonical mono shape `(n_samples, 1)` instead of collapsing them to a 1-D array when indexing multidimensional channel layouts.
+- `Signal.ch[...]` now handles slices and ellipsis consistently across channel axes and raises `IndexError` for invalid channel indices instead of relying on NumPy's less explicit indexing quirks.
 
 ### Fixed
 - `Signal.add_noise` now consistently adds noise to the existing signal for all spectral shapes; previously the `white` branch overwrote the signal content instead of adding to it.
@@ -23,6 +25,7 @@
 - `Signal.convolve` no longer raises a broadcasting `ValueError` when a trailing singleton channel axis takes part in the overlapping dimensions; the overlap is now determined after squeezing such axes.
 - `Signal.remove_silence` no longer emits expected internal warnings during silence analysis (block zero-padding and dBFS divide-by-zero for silent blocks).
 - `Signal.to_analytical()` now preserves support for complex-valued inputs by falling back to the previous frequency-domain implementation when the input signal is already complex.
+- Correlation helpers that duplicate mono channels internally now accept canonical mono `Signal.ch[...]` views directly instead of assuming channel selections collapse to 1-D arrays.
 
 ## 1.10 -> 1.11
 
