@@ -32,7 +32,6 @@ def _warn_deprecated_scale_wrapper(function_name: str, replacement: str) -> None
     )
 
 
-
 def _duration_is_signal(duration, fs=None, n_channels=None):
     r"""Check if the duration which was passed was really a signal class."""
     inval = duration
@@ -674,7 +673,9 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
     if limit:
         # Definition only valid starting from 20 phon
         if l_phon < 20:
-            raise ValueError("Loudness level must be >= 20 phon (set limit=False to override).")
+            raise ValueError(
+                "Loudness level must be >= 20 phon (set limit=False to override)."
+            )
 
         if 20 <= frequency <= 4500:
             if l_phon > 90:
@@ -804,7 +805,9 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
     if limit:
         # Definition only valid starting from 20 phon
         if l_phon < 20:
-            raise ValueError("Loudness level must be >= 20 phon (set limit=False to override).")
+            raise ValueError(
+                "Loudness level must be >= 20 phon (set limit=False to override)."
+            )
 
         if 20 <= frequency <= 4500:
             if l_phon > 90:
@@ -857,7 +860,9 @@ def calc_bandwidth(fc, scale="cbw"):
 
     """
 
-    _warn_deprecated_scale_wrapper("calc_bandwidth", "audio.bark/erb/octave.get_bw(...)")
+    _warn_deprecated_scale_wrapper(
+        "calc_bandwidth", "audio.bark/erb/octave.get_bw(...)"
+    )
 
     if "cbw" in scale:
         return bark_scale.get_bw(fc)

@@ -104,7 +104,9 @@ class Signal(
         return time
 
     def plot(self, ax=None):
-        warnings.warn("Use sig.viz.plot() instead of sig.plot()", DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "Use sig.viz.plot() instead of sig.plot()", DeprecationWarning, stacklevel=2
+        )
         fig, ax = self.viz.plot(ax=ax)
         return fig, ax
 

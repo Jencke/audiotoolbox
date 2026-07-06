@@ -270,7 +270,7 @@ class _chIndexer(object):
         if channel_ndim == 0:
             return tuple()
 
-        if key.count(Ellipsis) > 1:
+        if sum(item is Ellipsis for item in key) > 1:
             raise IndexError("an index can only have a single ellipsis")
 
         normalized = []
