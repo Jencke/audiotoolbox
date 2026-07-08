@@ -32,7 +32,6 @@ def _warn_deprecated_scale_wrapper(function_name: str, replacement: str) -> None
     )
 
 
-
 def _duration_is_signal(duration, fs=None, n_channels=None):
     r"""Check if the duration which was passed was really a signal class."""
     inval = duration
@@ -674,7 +673,9 @@ def phon_to_dbspl(frequency, l_phon, interpolate=False, limit=True):
     if limit:
         # Definition only valid starting from 20 phon
         if l_phon < 20:
-            raise ValueError("Loudness level must be >= 20 phon (set limit=False to override).")
+            raise ValueError(
+                "Loudness level must be >= 20 phon (set limit=False to override)."
+            )
 
         if 20 <= frequency <= 4500:
             if l_phon > 90:
@@ -804,7 +805,9 @@ def dbspl_to_phon(frequency, l_dbspl, interpolate=False, limit=True):
     if limit:
         # Definition only valid starting from 20 phon
         if l_phon < 20:
-            raise ValueError("Loudness level must be >= 20 phon (set limit=False to override).")
+            raise ValueError(
+                "Loudness level must be >= 20 phon (set limit=False to override)."
+            )
 
         if 20 <= frequency <= 4500:
             if l_phon > 90:
@@ -857,7 +860,9 @@ def calc_bandwidth(fc, scale="cbw"):
 
     """
 
-    _warn_deprecated_scale_wrapper("calc_bandwidth", "audio.bark/erb/octave.get_bw(...)")
+    _warn_deprecated_scale_wrapper(
+        "calc_bandwidth", "audio.bark/erb/octave.get_bw(...)"
+    )
 
     if "cbw" in scale:
         return bark_scale.get_bw(fc)
@@ -904,7 +909,7 @@ def extract_binaural_differences(signal, log_ilds=True):
         sig[:] = signal.copy()
     elif signal.n_channels == 1:
         sig = Signal(2, len(signal), 1)
-        sig[:] = signal.copy()[:, None]
+        sig[:] = signal.copy()
     else:
         sig = signal.copy()
 
@@ -1029,12 +1034,14 @@ def inst_cmplx_corr(signal, window_duration, window="hann"):
     """
 
     asig = signal.to_analytical()
-    iccp = asig.ch[0] * asig.ch[1].conjugate()
     win_samps = int(window_duration * signal.fs)
     win = as_signal(get_window(window, win_samps), signal.fs)
-    filt_iccp = iccp.convolve(win, "same")    
-    filt_pow1 = (np.abs(asig.ch[0])**2).convolve(win, "same")
-    filt_pow2 = (np.abs(asig.ch[1])**2).convolve(win, "same")
+    iccp = (asig.ch[0] * asig.ch[1].conjugate()).copy()
+    pow1 = (np.abs(asig.ch[0]) ** 2).copy()
+    pow2 = (np.abs(asig.ch[1]) ** 2).copy()
+    filt_iccp = iccp.convolve(win, "same")
+    filt_pow1 = pow1.convolve(win, "same")
+    filt_pow2 = pow2.convolve(win, "same")
     filt_icpow = np.sqrt(filt_pow1 * filt_pow2)
     coh = filt_iccp / filt_icpow
     return coh
@@ -1118,7 +1125,7 @@ def cmplx_crosscorr(signal):
         sig[:] = signal.copy()
     elif signal.n_channels == 1:
         sig = Signal(2, len(signal), 1)
-        sig[:] = signal.copy()[:, None]
+        sig[:] = signal.copy()
     else:
         sig = signal.copy()
 

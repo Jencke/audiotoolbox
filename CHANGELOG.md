@@ -1,3 +1,32 @@
+## 1.11 -> 1.12
+
+### Added
+
+- `Signal.add_uncorr_noise` now supports a negative `corr` for two channels, realised by sign-inverting one channel. For more than two channels (where a uniform negative correlation is not achievable) the positive magnitude is used and a `UserWarning` is emitted.
+- `HRIRSet` class (`audiotoolbox.HRIRSet`) for holding head-related impulse responses measured over directions. The impulse responses are stored as a `Signal` of shape `(n_taps, n_directions, 2)` alongside a source-position table, following the library's composition pattern.
+- `HRIRSet.from_sofa(...)` to load HRIRs from SOFA files (the standard HRTF interchange format) via the optional `sofar` dependency.
+- Direction lookup via `HRIRSet.nearest(...)` and direction interpolation via `HRIRSet.interpolate(...)`: barycentric over the surrounding spherical triangle for fully three-dimensional measurement grids, and angular interpolation between adjacent directions for coplanar grids (e.g. a horizontal ring).
+- `HRIRSet.render(...)` to spatialize a mono signal into a binaural signal by convolving it with the (left, right) HRIR for a requested direction.
+- `HRIRSet.to_hrtf()` returning the frequency-domain transfer functions as a `FrequencyDomainSignal`.
+- New optional dependency extra `hrtf` (installs `sofar`); use `pip install audiotoolbox[hrtf]` for SOFA file support.
+- `Signal.remove_silence` now supports `edges_only=True` to remove only leading and trailing silence while preserving silent gaps inside the kept region.
+
+### Changed
+
+- `Signal.to_analytical()` now uses `scipy.signal.hilbert(..., axis=0)` for real-valued signals instead of round-tripping through the frequency-domain representation, which substantially reduces runtime for common real-signal cases.
+- `Signal.ch[...]` now normalizes single-channel selections back to the library's canonical mono shape `(n_samples, 1)` instead of collapsing them to a 1-D array when indexing multidimensional channel layouts.
+- `Signal.ch[...]` now handles slices and ellipsis consistently across channel axes and raises `IndexError` for invalid channel indices instead of relying on NumPy's less explicit indexing quirks.
+
+### Fixed
+- `Signal.add_noise` now consistently adds noise to the existing signal for all spectral shapes; previously the `white` branch overwrote the signal content instead of adding to it.
+- `Signal.add_uncorr_noise` now produces independent noise tokens when a `seed` is given. Previously each channel was reseeded with the same value, so all tokens were identical and the orthogonalization left all but one channel as a degenerate (non-noise) signal. `Signal.add_noise` now only reseeds the RNG when a seed is explicitly provided.
+- `Signal.convolve` now accepts a plain `ndarray` kernel as documented, instead of raising `AttributeError`.
+- `Signal.convolve` with a complex kernel no longer silently discards the imaginary part; the output dtype is promoted and a new complex `Signal` is returned when the input is real (mirroring `Signal.bandpass`).
+- `Signal.convolve` no longer raises a broadcasting `ValueError` when a trailing singleton channel axis takes part in the overlapping dimensions; the overlap is now determined after squeezing such axes.
+- `Signal.remove_silence` no longer emits expected internal warnings during silence analysis (block zero-padding and dBFS divide-by-zero for silent blocks).
+- `Signal.to_analytical()` now preserves support for complex-valued inputs by falling back to the previous frequency-domain implementation when the input signal is already complex.
+- Correlation helpers that duplicate mono channels internally now accept canonical mono `Signal.ch[...]` views directly instead of assuming channel selections collapse to 1-D arrays.
+
 ## 1.10 -> 1.11
 
 ### Added

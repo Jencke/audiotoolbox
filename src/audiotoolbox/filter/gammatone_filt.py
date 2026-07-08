@@ -1,3 +1,5 @@
+from typing import Any
+
 
 import numpy as np
 from numpy import pi
@@ -130,7 +132,15 @@ def gammatonefos_apply(signal, b, a, order, states=None):
     return signal_out, states
 
 
-def gammatone(signal, fc, bw, fs, order=4, attenuation_db="erb", return_complex=True):
+def gammatone(
+  signal,
+  fc,
+  bw,
+  fs,
+  order=4,
+  attenuation_db: str | int | float = "erb",
+  return_complex=True,
+) -> Any:
     """Apply a gammatone filter to the signal.
 
     Applies a gammatone filter following [Hohmann2002]_ to the input

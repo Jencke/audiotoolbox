@@ -3,6 +3,7 @@ import audiotoolbox as audio
 import numpy as np
 import numpy.testing as testing
 import pytest
+import warnings
 
 
 def _channel_indices(signal):
@@ -15,7 +16,10 @@ def _channel_indices(signal):
 def _assert_all_channels_equal(signal, expected):
     for idx in _channel_indices(signal):
         channel = signal if idx == () else signal.ch[idx]
-        testing.assert_almost_equal(channel, expected)
+        expected_arr = np.asarray(expected)
+        if channel.ndim == 2 and channel.shape[1] == 1 and expected_arr.ndim == 1:
+            expected_arr = expected_arr[:, np.newaxis]
+        testing.assert_almost_equal(channel, expected_arr)
 
 
 def _assert_vectorized_addtone_matches_iterative(frequencies, amplitudes, start_phases):
@@ -233,7 +237,7 @@ def test_multiply():
 
 
 def test_mean():
-    sig = Signal(2, 100e-3, 100e3)
+    sig = Signal(2, 100e-3, 100_000)
     sig.add_tone(100)
     sig += np.array([1, 2])
     mean = sig.mean(0)
@@ -336,6 +340,128 @@ def test_trim():
     assert sig.base == None
 
 
+def test_remove_silence_mono_blockwise():
+    fs = 1000
+    sig = Signal(1, 300e-3, fs)
+    sig[100:200] = 1.0
+
+    sig.remove_silence(
+        threshold_dbfs=-40,
+        block_duration=50e-3,
+        overlap_duration=10e-3,
+    )
+
+    # The three non-silent blocks span samples 80..209.
+    assert sig.n_samples == 130
+    assert np.sum(sig == 1.0) == 100
+
+
+def test_remove_silence_multichannel_keeps_alignment():
+    fs = 1000
+    sig = Signal(2, 300e-3, fs)
+    sig[100:200, 0] = 1.0
+
+    sig.remove_silence(
+        threshold_dbfs=-40,
+        block_duration=50e-3,
+        overlap_duration=10e-3,
+    )
+
+    assert sig.n_samples == 130
+    assert np.sum(sig[:, 0] == 1.0) == 100
+    assert np.all(sig[:, 1] == 0.0)
+
+
+def test_remove_silence_edges_only_keeps_inner_silence():
+    fs = 1000
+    sig = Signal(1, 500e-3, fs)
+    sig[50:120] = 1.0
+    sig[300:370] = 1.0
+
+    full_remove = sig.copy()
+    full_remove.remove_silence(
+        threshold_dbfs=-40,
+        block_duration=50e-3,
+        overlap_duration=10e-3,
+    )
+
+    edges_only = sig.copy()
+    edges_only.remove_silence(
+        threshold_dbfs=-40,
+        block_duration=50e-3,
+        overlap_duration=10e-3,
+        edges_only=True,
+    )
+
+    # Block settings produce active spans 40..129 and 280..409.
+    # Edges-only trimming keeps the full 40..409 range.
+    assert full_remove.n_samples == 220
+    assert edges_only.n_samples == 370
+    assert edges_only.n_samples > full_remove.n_samples
+
+
+def test_remove_silence_validation_errors():
+    sig = Signal(1, 100e-3, 1000).add_noise()
+
+    with pytest.raises(ValueError, match="block_duration must be > 0"):
+        sig.copy().remove_silence(block_duration=0.0)
+
+    with pytest.raises(ValueError, match="overlap_duration must be >= 0"):
+        sig.copy().remove_silence(overlap_duration=-1e-3)
+
+    with pytest.raises(
+        ValueError,
+        match="overlap_duration must be smaller than block_duration",
+    ):
+        sig.copy().remove_silence(block_duration=10e-3, overlap_duration=10e-3)
+
+    with pytest.raises(ValueError, match="fade_duration must be > 0"):
+        sig.copy().remove_silence(fade=True, fade_duration=0.0)
+
+
+def test_remove_silence_optional_join_fade():
+    fs = 1000
+    sig = Signal(1, 500e-3, fs)
+    sig[50:120] = 1.0
+    sig[300:370] = 1.0
+
+    no_fade = sig.copy()
+    no_fade.remove_silence(
+        threshold_dbfs=-40,
+        block_duration=50e-3,
+        overlap_duration=10e-3,
+    )
+
+    with_fade = sig.copy()
+    with_fade.remove_silence(
+        threshold_dbfs=-40,
+        block_duration=50e-3,
+        overlap_duration=10e-3,
+        fade=True,
+        fade_duration=20e-3,
+        win_type="triang",
+    )
+
+    assert with_fade.n_samples == no_fade.n_samples
+    assert np.sum(np.isclose(with_fade, 1.0)) < np.sum(np.isclose(no_fade, 1.0))
+
+
+def test_remove_silence_suppresses_expected_analysis_warnings():
+    fs = 1000
+    sig = Signal(1, 300e-3, fs)
+    sig[100:200] = 1.0
+
+    with warnings.catch_warnings(record=True) as rec:
+        warnings.simplefilter("always")
+        sig.remove_silence(
+            threshold_dbfs=-40,
+            block_duration=50e-3,
+            overlap_duration=10e-3,
+        )
+
+    assert len(rec) == 0
+
+
 def test_concatenate():
     sig_a = Signal(2, 1, 48000).add_noise()
     old_n = sig_a.n_samples
@@ -426,8 +552,17 @@ def test_highpass():
 
 def test_channel_indexing():
     sig = Signal((2, 2), 1, 48000).add_noise()
-    testing.assert_equal(sig.ch[0, 0], sig[:, 0, 0])
+    assert sig.ch[0, 0].shape == (sig.n_samples, 1)
+    testing.assert_equal(sig.ch[0, 0][:, 0], sig[:, 0, 0])
     testing.assert_equal(sig.ch[0], sig[:, 0])
+
+    sig = Signal((2, 5), 1, 48000).add_noise()
+    assert sig.ch[0].shape == (sig.n_samples, 5)
+    assert sig.ch[0, 0].shape == (sig.n_samples, 1)
+    testing.assert_equal(sig.ch[0, 0][:, 0], sig[:, 0, 0])
+    assert sig.ch[:, 0].shape == (sig.n_samples, 2)
+    testing.assert_equal(sig.ch[:, 0], sig[:, :, 0])
+    testing.assert_equal(sig.ch[..., 0], sig[:, :, 0])
 
     sig = Signal(2, 1, 48000)
     sig.ch[0] = 1
@@ -435,13 +570,20 @@ def test_channel_indexing():
 
     sig.ch[1].add_tone(500)
     tone_2 = np.cos(2 * np.pi * sig.time * 500)
-    testing.assert_almost_equal(sig.ch[1], tone_2)
+    assert sig.ch[1].shape == (sig.n_samples, 1)
+    testing.assert_almost_equal(sig.ch[1][:, 0], tone_2)
 
     # Indexing only one channel should still work
     sig = Signal(1, 1, 40000).add_noise()
     testing.assert_equal(sig.ch[0], sig)
     sig.ch[0] = 1
     testing.assert_equal(sig.ch[0], 1)
+
+    with pytest.raises(IndexError):
+        sig.ch[1]
+
+    with pytest.raises(IndexError):
+        sig.ch[0, 0]
 
 
 def test_time_offset():
@@ -458,6 +600,39 @@ def test_analytical():
     sig = audio.Signal((2, 2), 1, 48000).add_noise()
     asig = sig.to_analytical()
     testing.assert_almost_equal(sig, asig.real)
+
+
+def test_analytical_tone_quadrature():
+    sig = audio.Signal(1, 0.1, 48000).add_tone(500)
+    sig2 = audio.Signal(1, 0.1, 48000).add_tone(500, start_phase=-np.pi / 2)
+
+    asig = sig.to_analytical()
+
+    testing.assert_almost_equal(asig.real, sig)
+    testing.assert_almost_equal(asig.imag, sig2)
+
+
+def test_analytical_complex_input_uses_fallback():
+    rng = np.random.default_rng(0)
+    sig = audio.Signal((2, 3), 0.05, 48000, dtype=complex)
+    sig[:] = rng.standard_normal(sig.shape) + 1j * rng.standard_normal(sig.shape)
+
+    asig = sig.to_analytical()
+    ref = sig.to_freqdomain().to_analytical().to_timedomain()
+
+    assert np.iscomplexobj(asig)
+    assert asig.shape == sig.shape
+    testing.assert_allclose(np.asarray(asig), np.asarray(ref), rtol=1e-12, atol=1e-12)
+
+
+def test_analytical_multidimensional_shape_and_dtype():
+    sig = audio.Signal((2, 3, 4), 0.05, 48000).add_noise(seed=0)
+
+    asig = sig.to_analytical()
+
+    assert asig.shape == sig.shape
+    assert np.iscomplexobj(asig)
+    testing.assert_almost_equal(asig.real, sig)
 
 
 def test_to_signal():
@@ -530,8 +705,11 @@ def test_convolve_shape_cases(signal_channels, kernel_channels, expected_channel
 @pytest.mark.parametrize(
     ("signal_channels", "kernel_channels", "expected_channels"),
     [
+        (3, (2, 3), (2, 3)),
         ((2, 2), (2, 2, 3), (2, 2, 3)),
         ((1, 3, 3), (3, 3, 4), (1, 3, 3, 4)),
+        ((5, 2, 3), (2, 3), (5, 2, 3)),
+        ((2, 3), (3, 2), (2, 3, 2)),
     ],
 )
 def test_convolve_overlap_dimension_cases(
@@ -593,3 +771,70 @@ def test_convolve_overlap_dimension_cases(
     kernel = audio.Signal(3, 5, fs)
     sig.convolve(kernel, mode="valid")
     assert sig.n_samples == 6
+
+
+def test_convolve_accepts_ndarray_kernel():
+    # Regression: `kernel` is type-hinted and documented as "Signal or
+    # ndarray", but convolve reads kernel.channel_shape / kernel.n_samples,
+    # so a plain ndarray raises AttributeError.
+    from scipy.signal import fftconvolve
+
+    np.random.seed(0)
+    fs = 48000
+    sig = audio.Signal(1, 20 / fs, fs)
+    sig[:] = np.random.randn(20, 1)
+    kernel = np.array([1.0, 0.5, 0.25, 0.125])
+
+    out = sig.convolved(kernel)
+
+    ref = fftconvolve(np.asarray(sig).ravel(), kernel, mode="full")
+    testing.assert_allclose(np.asarray(out).ravel(), ref, atol=1e-9)
+
+
+def test_convolve_complex_kernel_preserves_imaginary():
+    # Regression: the output buffer is allocated with dtype=self.dtype, so
+    # convolving a real signal with a complex kernel silently discards the
+    # imaginary part.
+    from scipy.signal import fftconvolve
+
+    np.random.seed(0)
+    fs = 48000
+    sig = audio.Signal(1, 16 / fs, fs)
+    sig[:] = np.random.randn(16, 1)
+    kernel = audio.Signal(1, 4 / fs, fs).astype(complex)
+    kernel[:] = np.random.randn(4, 1) + 1j * np.random.randn(4, 1)
+
+    out = sig.convolved(kernel)
+
+    assert np.iscomplexobj(np.asarray(out)), (
+        "convolving with a complex kernel should produce a complex result"
+    )
+    ref = fftconvolve(
+        np.asarray(sig).ravel(), np.asarray(kernel).ravel(), mode="full"
+    )
+    testing.assert_allclose(np.asarray(out).ravel(), ref, atol=1e-9)
+
+
+def test_convolve_singleton_dim_in_overlap():
+    # Regression: dim_overlap is computed before the trailing-singleton
+    # squeeze, but the reshapes use the post-squeeze dims. When a squeezed
+    # dimension took part in the overlap the broadcast fails with a
+    # ValueError instead of convolving each channel with the kernel.
+    from scipy.signal import fftconvolve
+
+    np.random.seed(0)
+    fs = 48000
+    sig = audio.Signal((2, 1), 20 / fs, fs)
+    sig[:] = np.random.randn(20, 2, 1)
+    kernel = audio.Signal(1, 5 / fs, fs)
+    kernel[:] = np.random.randn(5, 1)
+
+    out = sig.convolved(kernel)  # must not raise
+
+    sig_arr = np.asarray(sig).reshape(20, 2)
+    ker_arr = np.asarray(kernel).ravel()
+    ref = np.stack(
+        [fftconvolve(sig_arr[:, c], ker_arr, mode="full") for c in range(2)],
+        axis=1,
+    )
+    testing.assert_allclose(np.asarray(out).reshape(ref.shape), ref, atol=1e-9)

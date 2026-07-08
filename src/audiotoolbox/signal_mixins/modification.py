@@ -1,3 +1,5 @@
+from collections.abc import Sequence
+
 """Signal mixins for organizing Signal class functionality."""
 
 from numbers import Integral
@@ -322,8 +324,8 @@ class ModificationMixin:
 
     def zeropad(
         self,
-        number: Union[None, tuple[int, int]] = None,
-        duration: Union[None, tuple[float, float]] = None,
+        number: Union[None, int, Sequence[int]] = None,
+        duration: Union[None, float, Sequence[float]] = None,
     ):
         r"""Add zeros to start and end of signal.
 

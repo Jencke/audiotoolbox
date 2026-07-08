@@ -1,10 +1,15 @@
 """Signal mixins for organizing Signal class functionality."""
 
-from typing import Literal
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Literal, Union
 import numpy as np
-from scipy.signal import fftconvolve
 import warnings
+from scipy.signal import get_window
 from .. import core as audio, filter as filt
+
+if TYPE_CHECKING:
+    from ..signal import Signal
 
 
 class FilteringMixin:
@@ -173,46 +178,59 @@ class FilteringMixin:
         return self
 
     def convolve(
-        self,
-        kernel,
-        mode: Literal[
-            "full",
-            "valid",
-            "same",
-        ] = "full",
+        self: "Signal",
+        kernel: Union["Signal", np.ndarray],
+        mode: Literal["full", "valid", "same"] = "full",
         overlap_dimensions: bool = True,
-    ):
-        r"""Convolves the current signal with the given kernel.
+    ) -> "Signal":
+        r"""Convolve the signal with the kernel **in place** and return self.
 
-        This method performs a convolution operation between the current signal
-        and the provided kernel. The convolution is performed along the
-        overlapping dimensions of the two signals. E.g., If the signal has two channels
-        and the kernel has two channels, the first channel of the signal is convolved
-        with the first channel of the kernel, and the second channel of the signal is
-        convolved with the second channel of the kernel. The resulting signal will again have
-        two channels. If `overlap_dimensions` is False, the convolution is performed
-        along all dimensions. A Signal with two channels convolved with a two-channel kernel
-        will result in an output of shape (2, 2) where each channel of the signal is convolved with
-        each channel of the kernel.
+        .. warning::
+            This method modifies the signal in place, including resizing it.
+            Any other variable that holds a reference to this signal will see
+            the mutated data after this call.  To get a new Signal without
+            touching the original, use :meth:`convolved` instead::
 
-        this method uses scipy.Signal.fftconvolve for the convolution.
+                result = signal.convolved(kernel)
+
+            Calling this method on a view or slice (i.e. any Signal that does
+            not own its data) raises a ``RuntimeError``.  Call ``.copy()``
+            first if you need to convolve a slice in place.
+
+        The convolution is performed along the overlapping dimensions of the
+        two signals. If the signal has two channels and the kernel has two
+        channels, each channel of the signal is convolved with the matching
+        channel of the kernel, and the result again has two channels.
+        If `overlap_dimensions` is False, every signal channel is convolved
+        with every kernel channel, producing an output whose channel shape is
+        the outer product of the two channel shapes.
 
         Parameters
         ----------
-        kernel : Signal
+        kernel : Signal or ndarray
             The kernel to convolve with.
-        mode : str {'full', 'valid', 'same'}, optional
-            The convolution mode for fftconvolve (default=full)
+        mode : {'full', 'valid', 'same'}, optional
+            The convolution mode (default = ``'full'``).
         overlap_dimensions : bool, optional
-            Whether to convolve only along overlapping dimensions. If True, the
-            convolution is performed only along the dimensions that overlap between
-            the two signals. If False, the convolution is performed along all
-            dimensions. Defaults to True.
+            Whether to convolve only along overlapping dimensions (default =
+            ``True``).
 
         Returns
         -------
-        Self
-            The convolved signal.
+        Signal
+            ``self`` after in-place modification — suitable for method
+            chaining.
+
+            Exception: if the kernel is complex while the signal is real, the
+            result cannot be stored in the real-valued buffer in place. A new
+            complex ``Signal`` is returned instead and a ``UserWarning`` is
+            emitted (the same constraint as :meth:`bandpass`).
+
+        Raises
+        ------
+        RuntimeError
+            If ``self`` does not own its data (e.g. it is a slice or the
+            result of a ufunc).  Call ``.copy()`` first.
 
         Examples
         --------
@@ -234,6 +252,13 @@ class FilteringMixin:
         >>> signal.convolve(kernel)
         >>> signal.n_channels
         (5, 2, 3)
+        
+        This works in both directions
+        >>> signal = Signal(3, 1, 48000)
+        >>> kernel = Signal((2, 3), 100e-3, 48000)
+        >>> signal.convolve(kernel)
+        >>> signal.n_channels
+        (2, 3)
 
         The 'overlap_dimensions' keyword can be set to False if all signal
         channels are instead convolved with all kernels.
@@ -245,15 +270,18 @@ class FilteringMixin:
         (2, 2)
 
         """
+        if not self.flags.owndata:
+            raise RuntimeError(
+                "convolve resizes the signal in-place and cannot be called on "
+                "a view or slice. Call .copy() first, or use .convolved() for "
+                "a non-mutating alternative."
+            )
+        # Accept a plain ndarray kernel as documented; wrap it at the
+        # signal's sampling rate. A Signal is returned unchanged.
+        kernel = audio.as_signal(kernel, self.fs)
         fs = self.fs
         dim_sig = self.channel_shape
         dim_kernel = kernel.channel_shape
-
-        # Determine if some of the dimension overlap
-        if overlap_dimensions:
-            dim_overlap = audio._get_dim_overlap(dim_sig, dim_kernel)
-        else:
-            dim_overlap = 0
 
         # Squeeze the last dimension if it is 1
         squeeze_idx_k = ()
@@ -265,7 +293,28 @@ class FilteringMixin:
             dim_sig = dim_sig[:-1]
             squeeze_idx_sig = (0,)
 
-        new_nch = (*dim_sig, *dim_kernel[dim_overlap:])
+        # Determine overlapping dimensions on squeezed channel shapes.
+        # Prefer the original orientation (signal suffix vs kernel prefix),
+        # but support the reverse direction too so (3) with (2, 3) overlaps.
+        if overlap_dimensions:
+            overlap_sig_kernel = audio._get_dim_overlap(dim_sig, dim_kernel)
+            overlap_kernel_sig = audio._get_dim_overlap(dim_kernel, dim_sig)
+            use_reverse_overlap = overlap_kernel_sig > overlap_sig_kernel
+            if use_reverse_overlap:
+                dim_overlap = overlap_kernel_sig
+                left_dims = dim_kernel
+                right_dims = dim_sig
+            else:
+                dim_overlap = overlap_sig_kernel
+                left_dims = dim_sig
+                right_dims = dim_kernel
+        else:
+            dim_overlap = 0
+            use_reverse_overlap = False
+            left_dims = dim_sig
+            right_dims = dim_kernel
+
+        new_nch = (*left_dims, *right_dims[dim_overlap:])
         if mode == "same":
             new_nsamp = self.n_samples
         elif mode == "full":
@@ -274,36 +323,271 @@ class FilteringMixin:
             new_nsamp = self.n_samples - kernel.n_samples + 1
         else:
             raise ValueError("mode not implemented")
-        new_signal = audio.Signal(new_nch, new_nsamp / fs, fs, dtype=self.dtype)
+        # Promote the output dtype so a complex kernel (or signal) keeps its
+        # imaginary part instead of being silently truncated.
+        out_dtype = np.result_type(self.dtype, kernel.dtype)
+        new_signal = audio.Signal(new_nch, new_nsamp / fs, fs, dtype=out_dtype)
 
-        if dim_overlap != 0:
-            n_sig = int(np.prod(dim_sig[:-dim_overlap], dtype=int))
+        # Vectorized FFT convolution – replaces the O(n_sig * n_kernel) Python loop.
+        #
+        # Strategy: reshape sig and kernel so that their outer (non-overlapping)
+        # dims broadcast against each other, then run a single batched FFT.
+        #
+        #   sig:  (T, *sig_outer, *overlap) → (T, *sig_outer, *overlap, 1…)
+        #   ker:  (T, *overlap, *k_outer)   → (T, 1…, *overlap, *k_outer)
+        #   product:                           (T, *sig_outer, *overlap, *k_outer)
+        #
+        # The overlap dims multiply element-wise (correct for per-channel
+        # convolution); the outer dims multiply via singleton broadcasting
+        # (correct for the cross-product case).
+
+        sig_arr = np.asarray(self)
+        ker_arr = np.asarray(kernel)
+
+        # Apply the same trailing-singleton squeeze used by the original code,
+        # but only when the array is 2-D or higher (has an explicit channel
+        # axis).  For 1-D signals the sample axis IS the only axis; indexing
+        # [..., 0] would return a scalar rather than the full time series.
+        if squeeze_idx_sig and sig_arr.ndim > 1:
+            sig_arr = sig_arr[..., 0]
+        if squeeze_idx_k and ker_arr.ndim > 1:
+            ker_arr = ker_arr[..., 0]
+
+        if use_reverse_overlap:
+            left_arr = ker_arr
+            right_arr = sig_arr
         else:
-            n_sig = int(np.prod(dim_sig, dtype=int))
-        n_kernel = int(np.prod(dim_kernel[dim_overlap:], dtype=int))
-        for i_sig in range(n_sig):
-            for i_k in range(n_kernel):
-                # only indices that do not overlap need to be looked at
-                if dim_overlap != 0:
-                    idx_sig = np.unravel_index(i_sig, dim_sig[:-dim_overlap])
-                else:
-                    idx_sig = np.unravel_index(i_sig, dim_sig)
-                idx_k = np.unravel_index(i_k, dim_kernel[dim_overlap:])
+            left_arr = sig_arr
+            right_arr = ker_arr
 
-                overlap_slice = (slice(None, None, None),) * dim_overlap
-                idx_sig_combined = idx_sig + overlap_slice + squeeze_idx_sig
-                idx_k_combined = overlap_slice + idx_k + squeeze_idx_k
+        # Number of outer (non-overlapping) dims on each side.
+        # Use max(0, ...) because after squeezing, len(dim_X) can be < dim_overlap.
+        n_left_outer = (
+            max(0, len(left_dims) - dim_overlap)
+            if dim_overlap > 0
+            else len(left_dims)
+        )
+        n_right_outer = max(0, len(right_dims) - dim_overlap)
 
-                a = self.ch[idx_sig_combined]
-                b = kernel.ch[idx_k_combined]
-                newsig_idx = idx_sig + overlap_slice + idx_k
+        left_arr = left_arr.reshape(left_arr.shape + (1,) * n_right_outer)
+        right_arr = right_arr.reshape(
+            right_arr.shape[:1] + (1,) * n_left_outer + right_arr.shape[1:]
+        )
 
-                if np.ndim(a) < np.ndim(b):
-                    a = a.reshape(a.shape + (1,) * (np.ndim(b) - np.ndim(a)))
-                elif np.ndim(b) < np.ndim(a):
-                    b = b.reshape(b.shape + (1,) * (np.ndim(a) - np.ndim(b)))
+        n_fft = int(2 ** np.ceil(np.log2(self.n_samples + kernel.n_samples - 1)))
 
-                new_signal.ch[newsig_idx] = fftconvolve(a, b, mode=mode, axes=0)
+        # convolve in frequency domain, using real FFT if both inputs are real-valued
+        # use complex FFT if either input is complex-valued
+        if np.isrealobj(left_arr) and np.isrealobj(right_arr):
+            raw = np.fft.irfft(
+                np.fft.rfft(left_arr, n=n_fft, axis=0)
+                * np.fft.rfft(right_arr, n=n_fft, axis=0),
+                n=n_fft,
+                axis=0,
+            )
+        else:
+            raw = np.fft.ifft(
+                np.fft.fft(left_arr, n=n_fft, axis=0)
+                * np.fft.fft(right_arr, n=n_fft, axis=0),
+                axis=0,
+            )
+
+        # Trim to the requested output length.
+        if mode == "full":
+            new_signal[:] = raw[:new_nsamp]
+        elif mode == "same":
+            start = (kernel.n_samples - 1) // 2
+            new_signal[:] = raw[start : start + new_nsamp]
+        elif mode == "valid":
+            start = kernel.n_samples - 1
+            new_signal[:] = raw[start : start + new_nsamp]
+
+        # A complex result cannot be represented in a real-valued signal in
+        # place without reallocating the underlying buffer (same constraint as
+        # Signal.bandpass). Return a new complex Signal instead of truncating.
+        if np.iscomplexobj(new_signal) and not np.iscomplexobj(self):
+            warnings.warn(
+                "convolve produced a complex result and returns a new Signal "
+                "instead of modifying in place",
+                UserWarning,
+                stacklevel=2,
+            )
+            return new_signal
+
         self.resize(new_signal.shape, refcheck=False)
         self[:] = new_signal
+        return self
+
+    def convolved(
+        self: "Signal",
+        kernel: Union["Signal", np.ndarray],
+        mode: Literal["full", "valid", "same"] = "full",
+        overlap_dimensions: bool = True,
+    ) -> "Signal":
+        """Return a new Signal convolved with the kernel, leaving self unchanged.
+
+        This is the non-mutating counterpart of :meth:`convolve`.  It is
+        equivalent to ``self.copy().convolve(kernel, mode, overlap_dimensions)``
+        but makes the intent explicit.
+
+        Parameters
+        ----------
+        kernel : Signal or ndarray
+            The kernel to convolve with.
+        mode : {'full', 'valid', 'same'}, optional
+            The convolution mode (default = ``'full'``).
+        overlap_dimensions : bool, optional
+            Whether to convolve only along overlapping dimensions (default =
+            ``True``).
+
+        Returns
+        -------
+        Signal
+            A new Signal containing the convolution result.
+        """
+        return self.copy().convolve(kernel, mode=mode, overlap_dimensions=overlap_dimensions)
+
+    def remove_silence(
+        self: "Signal",
+        threshold_dbfs: float = -60.0,
+        block_duration: float = 50e-3,
+        overlap_duration: float = 10e-3,
+        edges_only: bool = False,
+        fade: bool = False,
+        fade_duration: float | None = None,
+        win_type: str = "hann",
+    ) -> "Signal":
+        """Remove low-level blocks from the signal in-place.
+
+        The signal is analyzed in overlapping blocks. Blocks whose RMS level
+        falls below ``threshold_dbfs`` are considered silent, and their samples
+        are removed. For multi-channel signals, a sample is removed only when
+        all channels are marked silent at that time index.
+
+        Parameters
+        ----------
+        threshold_dbfs : float, optional
+            Block RMS threshold in dBFS. Blocks below this threshold are
+            removed (default: -60.0).
+        block_duration : float, optional
+            Block size in seconds (default: 50e-3).
+        overlap_duration : float, optional
+            Block overlap in seconds (default: 10e-3).
+        edges_only : bool, optional
+            If True, remove only leading and trailing silence while keeping
+            interior low-level regions between the first and last detected
+            non-silent samples (default: False).
+        fade : bool, optional
+            Apply a short fade-out/fade-in window at each removed-silence join
+            to reduce clicks (default: False).
+        fade_duration : float or None, optional
+            Duration of the join fade in seconds. If None and ``fade`` is
+            True, ``block_duration`` is used.
+        win_type : str, optional
+            Join fade window type accepted by
+            :func:`scipy.signal.get_window`. For compatibility with other
+            Signal fade methods, ``'cos'`` maps to ``'hann'``
+            (default: ``'hann'``).
+
+        Returns
+        -------
+        Signal
+            Returns itself after in-place trimming.
+
+        Raises
+        ------
+        RuntimeError
+            If called on a view or slice.
+        ValueError
+            If block/overlap durations are invalid.
+        """
+        if not isinstance(self.base, type(None)):
+            raise RuntimeError(
+                "remove_silence can only be applied to the whole signal"
+            )
+
+        if block_duration <= 0:
+            raise ValueError("block_duration must be > 0")
+        if overlap_duration < 0:
+            raise ValueError("overlap_duration must be >= 0")
+
+        n_samp = int(block_duration * self.fs)
+        overlap = int(overlap_duration * self.fs)
+
+        if n_samp <= 0:
+            raise ValueError("block_duration results in zero samples")
+        if overlap >= n_samp:
+            raise ValueError("overlap_duration must be smaller than block_duration")
+        if fade_duration is not None and fade_duration <= 0:
+            raise ValueError("fade_duration must be > 0")
+
+        # Work on a copy because as_blocked may pad in-place.
+        analysis_sig = self.copy()
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                message=r"Zero padding .* samples to the end of the signal to create blocks\.",
+                category=UserWarning,
+            )
+            analysis_blocks = analysis_sig.as_blocked(block_size=n_samp, overlap=overlap)
+
+        # Silent analysis naturally creates zero-RMS blocks. Suppress the
+        # expected divide-by-zero warning from converting RMS to dBFS.
+        with np.errstate(divide="ignore", invalid="ignore"):
+            silent_blocks = analysis_blocks.stats.dbfs < threshold_dbfs
+        non_silent_blocks = ~silent_blocks
+
+        # as_blocked creates overlapping strided views. Avoid writing to such
+        # views (undefined with overlapping memory) and map windows to sample
+        # indices explicitly instead.
+        block_channel_axes = tuple(range(1, non_silent_blocks.ndim))
+        if block_channel_axes:
+            window_keep = np.any(non_silent_blocks, axis=block_channel_axes)
+        else:
+            window_keep = non_silent_blocks
+
+        step = n_samp - overlap
+        keep = np.zeros(analysis_sig.n_samples, dtype=bool)
+        starts = np.arange(analysis_blocks.shape[1]) * step
+        for start in starts[window_keep]:
+            keep[start : start + n_samp] = True
+
+        if edges_only:
+            kept_idx = np.flatnonzero(keep)
+            if kept_idx.size:
+                edge_keep = np.zeros_like(keep)
+                edge_keep[kept_idx[0] : kept_idx[-1] + 1] = True
+                keep = edge_keep
+
+        # Discard potential padding that was added during block analysis.
+        keep = keep[: self.n_samples]
+
+        kept_idx = np.flatnonzero(keep)
+        clipped_signal = self[keep].copy()
+
+        if fade and clipped_signal.n_samples > 1 and kept_idx.size > 1:
+            join_idx = np.flatnonzero(np.diff(kept_idx) > 1) + 1
+
+            if join_idx.size > 0:
+                fade_s = block_duration if fade_duration is None else fade_duration
+                fade_n = int(fade_s * self.fs)
+                fade_n = max(1, fade_n)
+
+                _win_type = "hann" if win_type == "cos" else win_type
+                fade_in = get_window(_win_type, 2 * fade_n)[:fade_n]
+                fade_out = fade_in[::-1]
+
+                n_chan_dims = clipped_signal.ndim - 1
+                for j in join_idx:
+                    left = min(fade_n, int(j))
+                    right = min(fade_n, clipped_signal.n_samples - int(j))
+                    if left > 0:
+                        out_shape = (-1,) + (1,) * n_chan_dims
+                        clipped_signal[j - left : j] *= fade_out[-left:].reshape(out_shape)
+                    if right > 0:
+                        in_shape = (-1,) + (1,) * n_chan_dims
+                        clipped_signal[j : j + right] *= fade_in[:right].reshape(in_shape)
+
+        self.resize(clipped_signal.shape, refcheck=False)
+        self[:] = clipped_signal
         return self

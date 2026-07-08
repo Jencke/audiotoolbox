@@ -1,3 +1,5 @@
+from typing import Any, cast
+
 import numpy as np
 import audiotoolbox as audio
 
@@ -5,7 +7,13 @@ import audiotoolbox as audio
 class BaseSignal(np.ndarray):
     r"""Basic Signal class inherited by all Signal representations"""
 
-    def __new__(cls, n_channels: int | tuple, duration: float, fs: int, dtype=float):
+    def __new__(
+        cls,
+        n_channels: int | tuple,
+        duration: float,
+        fs: int,
+        dtype: Any = float,
+    ):
 
         n_samples = audio.nsamples(duration, fs)
 
@@ -27,6 +35,9 @@ class BaseSignal(np.ndarray):
         # If it was called after e.g slicing, copy
         # copy sample rate
         self._fs = getattr(obj, "_fs", None)
+
+    def __getitem__(self, key) -> Any:
+        return super().__getitem__(key)
 
     def __setitem__(self, key, value):
         try:
@@ -62,7 +73,8 @@ class BaseSignal(np.ndarray):
     def fs(self) -> int:
         """Sampling rate of the signal in Hz"""
 
-        return self._fs
+        assert self._fs is not None
+        return cast(int, self._fs)
 
     # getter to handle the number of channels in the signal
     @property
@@ -101,11 +113,20 @@ class BaseSignal(np.ndarray):
         Returns an indexer class which enables direct indexing and
         slicing of the channels independent of samples.
 
+        Channel indices address only the trailing channel axes; the
+        sample axis is always preserved as the leading axis. If a
+        selection resolves to a single logical channel, the result is
+        normalized to the canonical mono shape ``(n_samples, 1)``.
+
         Examples
         --------
         >>> sig = audiotoolbox.Signal((2, 3), 1, 48000).add_noise()
-        >>> print(np.all(sig.ch[1, 2] is sig[:, 1, 2]))
-        True
+        >>> print(sig.ch[1, 2].shape)
+        (48000, 1)
+        >>> print(sig.ch[1].shape)
+        (48000, 3)
+        >>> print(sig.ch[:, 2].shape)
+        (48000, 2)
 
         """
         return _chIndexer(self)
@@ -137,7 +158,7 @@ class BaseSignal(np.ndarray):
             self[old_n:] = signal
         return self
 
-    def multiply(self, x: float | np.ndarray):
+    def multiply(self, x: float | np.ndarray) -> "BaseSignal":
         """In-place multiplication
 
         This function allows for in-place multiplication
@@ -159,9 +180,9 @@ class BaseSignal(np.ndarray):
 
         """
         self *= x
-        return self
+        return cast(BaseSignal, self)
 
-    def add(self, x):
+    def add(self, x) -> "BaseSignal":
         """In-place summation
 
         This function allows for in-place summation.
@@ -184,7 +205,7 @@ class BaseSignal(np.ndarray):
         """
 
         self += x
-        return self
+        return cast(BaseSignal, self)
 
     def abs(self):
         """Absolute value
@@ -239,41 +260,63 @@ class _chIndexer(object):
     def __init__(self, obj):
         self.idx_obj = obj
 
-    def __getitem__(self, key):
+    def _normalize_channel_key(self, key):
 
         if not isinstance(key, tuple):
             # If only one index is handed over, convert key to tuple
             key = (key,)
 
-        if np.ndim(self.idx_obj) == 1:
-            # In case, it's only a 1D array, always return the whole
-            # array
-            idx = slice(None, None, None)
-        elif np.ndim(self.idx_obj) == 2 and self.idx_obj.shape[1] == 1:
-            # Keep mono signals 2D when indexing channels.
-            idx = (slice(None, None, None), slice(0, 1, None))
-        else:
-            # return only the slice
-            idx = (slice(None, None, None),) + key
+        channel_ndim = max(self.idx_obj.ndim - 1, 0)
+        if channel_ndim == 0:
+            return tuple()
 
-        return self.idx_obj[idx]
+        if sum(item is Ellipsis for item in key) > 1:
+            raise IndexError("an index can only have a single ellipsis")
+
+        normalized = []
+        for item in key:
+            if item is Ellipsis:
+                remaining = channel_ndim - (len(key) - 1)
+                normalized.extend([slice(None)] * max(remaining, 0))
+            else:
+                normalized.append(item)
+
+        if len(normalized) > channel_ndim:
+            raise IndexError(
+                f"too many channel indices for signal with {channel_ndim} "
+                f"channel dimension{'s' if channel_ndim != 1 else ''}"
+            )
+
+        if len(normalized) < channel_ndim:
+            normalized.extend([slice(None)] * (channel_ndim - len(normalized)))
+
+        return tuple(normalized)
+
+    def _channel_index(self, key):
+
+        if np.ndim(self.idx_obj) == 1:
+            return slice(None, None, None)
+        return (slice(None, None, None),) + self._normalize_channel_key(key)
+
+    def _normalize_channel_view(self, out):
+
+        if not isinstance(out, np.ndarray):
+            return out
+
+        if out.ndim == 1:
+            return out[:, np.newaxis]
+
+        if out.ndim > 2 and np.prod(out.shape[1:]) == 1:
+            return out.reshape(out.shape[0], 1)
+
+        return out
+
+    def __getitem__(self, key) -> Any:
+
+        idx = self._channel_index(key)
+        return self._normalize_channel_view(self.idx_obj[idx])
 
     def __setitem__(self, key, value):
-
-        if not isinstance(key, tuple):
-            # If only one index is handed over, convert key to tuple
-            key = (key,)
-
-        if np.ndim(self.idx_obj) == 1:
-            # In case, it's only a 1D array, always return the whole
-            # array
-            idx = slice(None, None, None)
-        elif np.ndim(self.idx_obj) == 2 and self.idx_obj.shape[1] == 1:
-            # Keep mono signals 2D when indexing channels.
-            idx = (slice(None, None, None), slice(0, 1, None))
-        else:
-            # return only the slice
-            idx = (slice(None, None, None),) + key
-
+        idx = self._channel_index(key)
         self.idx_obj[idx] = value
         return self.idx_obj

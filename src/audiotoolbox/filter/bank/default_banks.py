@@ -6,6 +6,7 @@ if TYPE_CHECKING:
     from ...audiotoolbox.filter.bank.filterbank import GammaToneBank
 
 
+# TODO: #2 Check what's up with complex return by filterbank.
 def auditory_gamma_bank(
     fs: float, flow: float = 16, fhigh: float = 16000, step: float = 1, **kwargs
 ) -> "GammaToneBank":

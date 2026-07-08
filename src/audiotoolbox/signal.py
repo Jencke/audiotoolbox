@@ -1,8 +1,9 @@
 """Definition for the Signal class."""
 
-from typing import Type, cast, Union
+from typing import Any, Type, cast, Union
 
 import numpy as np
+from scipy.signal import hilbert
 
 from . import base_signal
 from .freqdomain_signal import FrequencyDomainSignal
@@ -62,7 +63,7 @@ class Signal(
         n_channels: Union[int, tuple, list],
         duration: float,
         fs: int,
-        dtype=float,
+        dtype: Any = float,
     ):
         """Create new objects."""
         obj = super().__new__(cls, n_channels, duration, fs, dtype)
@@ -103,7 +104,9 @@ class Signal(
         return time
 
     def plot(self, ax=None):
-        warnings.warn("Use sig.viz.plot() instead of sig.plot()", DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "Use sig.viz.plot() instead of sig.plot()", DeprecationWarning, stacklevel=2
+        )
         fig, ax = self.viz.plot(ax=ax)
         return fig, ax
 
@@ -142,9 +145,12 @@ class Signal(
         The analytical signal : Signal
 
         """
-        fd_signal = self.to_freqdomain()
-        a_signal = fd_signal.to_analytical().to_timedomain()
-        return a_signal
+        if np.iscomplexobj(self):
+            fd_signal = self.to_freqdomain()
+            return fd_signal.to_analytical().to_timedomain()
+
+        analytical = hilbert(np.asarray(self), axis=0)
+        return as_signal(analytical, self.fs)
 
 
 def as_signal(signal, fs) -> Signal:

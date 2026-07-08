@@ -1,4 +1,4 @@
-from typing import Type, cast, Union
+from typing import Any, Type, cast, Union
 
 import numpy as np
 import audiotoolbox as audio
@@ -33,7 +33,7 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
         n_channels: Union[int, tuple, list],
         duration: float,
         fs: int,
-        dtype=complex,
+        dtype: Any = complex,
     ):
 
         obj = super().__new__(cls, n_channels, duration, fs, dtype)
@@ -174,7 +174,7 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
         self /= signal.n_samples
         return self
 
-    def to_timedomain(self):
+    def to_timedomain(self) -> "audio.Signal":
         """Convert to timedomain.
 
         Convert to timedomain by means of inverse DFT. If the complex
@@ -199,7 +199,7 @@ class FrequencyDomainSignal(base_signal.BaseSignal):
         signal[:] = wv
         return signal
 
-    def to_analytical(self):
+    def to_analytical(self) -> "FrequencyDomainSignal":
         """Convert spectrum to analytical signal
 
         Converts the spectrum to that of the equivalent analytical
