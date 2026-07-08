@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Head-related impulse responses (audiotoolbox.HRIRSet) &mdash; audiotoolbox  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Core functions" href="api_core.html" />
+    <link rel="prev" title="Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)" href="api_fluent_frequencydomainsignal.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/logo_white.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api.html">API reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api_fluent_signal.html">Signals in the time domain (audiotoolbox.Signal)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_fluent_frequencydomainsignal.html">Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Head-related impulse responses (audiotoolbox.HRIRSet)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#audiotoolbox.HRIRSet"><code class="docutils literal notranslate"><span class="pre">HRIRSet</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.HRIRSet.azimuth"><code class="docutils literal notranslate"><span class="pre">HRIRSet.azimuth</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.HRIRSet.distance"><code class="docutils literal notranslate"><span class="pre">HRIRSet.distance</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.HRIRSet.elevation"><code class="docutils literal notranslate"><span class="pre">HRIRSet.elevation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.HRIRSet.from_sofa"><code class="docutils literal notranslate"><span class="pre">HRIRSet.from_sofa()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.HRIRSet.fs"><code class="docutils literal notranslate"><span class="pre">HRIRSet.fs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.HRIRSet.interpolate"><code class="docutils literal notranslate"><span class="pre">HRIRSet.interpolate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.HRIRSet.n_directions"><code class="docutils literal notranslate"><span class="pre">HRIRSet.n_directions</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.HRIRSet.n_taps"><code class="docutils literal notranslate"><span class="pre">HRIRSet.n_taps</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.HRIRSet.nearest"><code class="docutils literal notranslate"><span class="pre">HRIRSet.nearest()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.HRIRSet.render"><code class="docutils literal notranslate"><span class="pre">HRIRSet.render()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.HRIRSet.summary"><code class="docutils literal notranslate"><span class="pre">HRIRSet.summary()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#audiotoolbox.HRIRSet.to_hrtf"><code class="docutils literal notranslate"><span class="pre">HRIRSet.to_hrtf()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api_core.html">Core functions</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">audiotoolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="api.html">API reference</a></li>
+      <li class="breadcrumb-item active">Head-related impulse responses (audiotoolbox.HRIRSet)</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api_hrtf.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="head-related-impulse-responses-audiotoolbox-hrirset">
+<h1>Head-related impulse responses (audiotoolbox.HRIRSet)<a class="headerlink" href="#head-related-impulse-responses-audiotoolbox-hrirset" title="Link to this heading"></a></h1>
+<p>The <cite>HRIRSet</cite> class holds a set of head-related impulse responses (HRIRs)
+measured over a number of spatial directions. The impulse responses are
+stored as a regular <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">audiotoolbox.Signal</span></code></a> of shape
+<code class="docutils literal notranslate"><span class="pre">(n_taps,</span> <span class="pre">n_directions,</span> <span class="pre">2)</span></code> while the source directions are kept in a
+separate position table. It provides direction lookup, interpolation, and
+binaural rendering, and can load measurements from SOFA files.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="audiotoolbox.HRIRSet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">audiotoolbox.</span></span><span class="sig-name descname"><span class="pre">HRIRSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hrirs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.signal.Signal"><span class="pre">Signal</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'spherical'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.HRIRSet" title="Link to this definition"></a></dt>
+<dd><p>A set of head-related impulse responses measured over directions.</p>
+<p>The impulse responses are stored time-domain in a
+<a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">audiotoolbox.Signal</span></code></a> of shape <code class="docutils literal notranslate"><span class="pre">(n_taps,</span> <span class="pre">2,</span> <span class="pre">n_directions)</span></code> where
+the first channel axis holds the (left, right) ear. The associated source
+directions are kept in a separate position table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hrirs</strong> (<a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><em>Signal</em></a>) – Time-domain impulse responses of shape <code class="docutils literal notranslate"><span class="pre">(n_taps,</span> <span class="pre">2,</span> <span class="pre">n_directions)</span></code>.</p></li>
+<li><p><strong>positions</strong> (<em>array_like</em>) – Source directions of shape <code class="docutils literal notranslate"><span class="pre">(n_directions,</span> <span class="pre">2)</span></code> or
+<code class="docutils literal notranslate"><span class="pre">(n_directions,</span> <span class="pre">3)</span></code> given as <code class="docutils literal notranslate"><span class="pre">(azimuth,</span> <span class="pre">elevation[,</span> <span class="pre">distance])</span></code>.
+Angles are in degrees.</p></li>
+<li><p><strong>coordinate_system</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the coordinate system the positions are given in
+(default = <code class="docutils literal notranslate"><span class="pre">&quot;spherical&quot;</span></code>).</p></li>
+<li><p><strong>units</strong> (<em>str</em><em>, </em><em>optional</em>) – Free-form description of the position units (e.g. the SOFA
+<code class="docutils literal notranslate"><span class="pre">SourcePosition_Units</span></code> string). Stored for reference only.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span><span class="o">,</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hrirs</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="mi">128</span> <span class="o">/</span> <span class="mi">48000</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>  <span class="c1"># L/R x 4 directions</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">90</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">180</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">270</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hrir_set</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">HRIRSet</span><span class="p">(</span><span class="n">hrirs</span><span class="p">,</span> <span class="n">positions</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hrir_set</span><span class="o">.</span><span class="n">n_directions</span>
+<span class="go">4</span>
+</pre></div>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="audiotoolbox.HRIRSet.azimuth">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">azimuth</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#audiotoolbox.HRIRSet.azimuth" title="Link to this definition"></a></dt>
+<dd><p>Azimuth of every measured direction in degrees.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="audiotoolbox.HRIRSet.distance">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">distance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#audiotoolbox.HRIRSet.distance" title="Link to this definition"></a></dt>
+<dd><p>Measurement distance per direction, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if not stored.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="audiotoolbox.HRIRSet.elevation">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">elevation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#audiotoolbox.HRIRSet.elevation" title="Link to this definition"></a></dt>
+<dd><p>Elevation of every measured direction in degrees.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.HRIRSet.from_sofa">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_sofa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#audiotoolbox.HRIRSet" title="audiotoolbox.hrtf.HRIRSet"><span class="pre">HRIRSet</span></a></span></span><a class="headerlink" href="#audiotoolbox.HRIRSet.from_sofa" title="Link to this definition"></a></dt>
+<dd><p>Load an HRIR set from a SOFA file.</p>
+<p>Reads a SOFA file (the standard interchange format for HRTFs) using
+the <code class="xref py py-mod docutils literal notranslate"><span class="pre">sofar</span></code> library. The convention is expected to store the
+impulse responses in <code class="docutils literal notranslate"><span class="pre">Data_IR</span></code> with shape
+<code class="docutils literal notranslate"><span class="pre">(n_directions,</span> <span class="pre">2,</span> <span class="pre">n_taps)</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">SimpleFreeFieldHRIR</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – Path to the <code class="docutils literal notranslate"><span class="pre">.sofa</span></code> file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The loaded HRIR set.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotoolbox.HRIRSet" title="audiotoolbox.HRIRSet">HRIRSet</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ImportError</strong> – If the optional <code class="xref py py-mod docutils literal notranslate"><span class="pre">sofar</span></code> dependency is not installed.</p></li>
+<li><p><strong>ValueError</strong> – If the file does not provide two-receiver impulse responses.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="audiotoolbox.HRIRSet.fs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#audiotoolbox.HRIRSet.fs" title="Link to this definition"></a></dt>
+<dd><p>Sampling rate in Hz.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.HRIRSet.interpolate">
+<span class="sig-name descname"><span class="pre">interpolate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">azimuth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elevation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#audiotoolbox.HRIRSet" title="audiotoolbox.hrtf.HRIRSet"><span class="pre">HRIRSet</span></a></span></span><a class="headerlink" href="#audiotoolbox.HRIRSet.interpolate" title="Link to this definition"></a></dt>
+<dd><p>Return an interpolated HRIR for an arbitrary direction.</p>
+<p>For a fully three-dimensional measurement grid the impulse responses
+of the three directions forming the surrounding spherical triangle
+are combined using barycentric weights. For a planar grid (e.g. a
+horizontal ring) the two angularly adjacent directions are
+interpolated instead. If the requested direction lies outside the
+measured region, the nearest measured HRIR is returned.</p>
+<p>Note that this performs a straight linear combination of the impulse
+responses; for widely spaced measurements time-alignment before
+interpolation would reduce comb-filtering artefacts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>azimuth</strong> (<em>float</em>) – Query azimuth in degrees.</p></li>
+<li><p><strong>elevation</strong> (<em>float</em>) – Query elevation in degrees.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Single-direction HRIRSet containing the interpolated HRIR.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotoolbox.HRIRSet" title="audiotoolbox.HRIRSet">HRIRSet</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="audiotoolbox.HRIRSet.n_directions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_directions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#audiotoolbox.HRIRSet.n_directions" title="Link to this definition"></a></dt>
+<dd><p>Number of measured directions.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="audiotoolbox.HRIRSet.n_taps">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_taps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#audiotoolbox.HRIRSet.n_taps" title="Link to this definition"></a></dt>
+<dd><p>Length of each impulse response in samples.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.HRIRSet.nearest">
+<span class="sig-name descname"><span class="pre">nearest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">azimuth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elevation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#audiotoolbox.HRIRSet" title="audiotoolbox.hrtf.HRIRSet"><span class="pre">HRIRSet</span></a></span></span><a class="headerlink" href="#audiotoolbox.HRIRSet.nearest" title="Link to this definition"></a></dt>
+<dd><p>Return the HRIR of the closest measured direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>azimuth</strong> (<em>float</em><em> or </em><em>array_like</em>) – Query azimuth(s) in degrees.</p></li>
+<li><p><strong>elevation</strong> (<em>float</em><em> or </em><em>array_like</em>) – Query elevation(s) in degrees.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Subset of one (scalar query) or many (vectorized query)
+nearest measured directions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#audiotoolbox.HRIRSet" title="audiotoolbox.HRIRSet">HRIRSet</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.HRIRSet.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">azimuth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elevation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'full'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'same'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'valid'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'full'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.signal.Signal"><span class="pre">Signal</span></a></span></span><a class="headerlink" href="#audiotoolbox.HRIRSet.render" title="Link to this definition"></a></dt>
+<dd><p>Spatialize a signal with one or many HRIR directions.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">azimuth</span></code>/<code class="docutils literal notranslate"><span class="pre">elevation</span></code> are provided, a single direction is
+selected (nearest or interpolated) and rendered as binaural output.</p>
+<p>If no direction is provided, this HRIRSet is used directly:
+- mono input <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">1)</span></code> is rendered against all stored directions
+- multichannel input <code class="docutils literal notranslate"><span class="pre">(n,</span> <span class="pre">K)</span></code> must match <code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">==</span> <span class="pre">n_directions</span></code> and</p>
+<blockquote>
+<div><p>is rendered channel-wise against matching HRIR directions.</p>
+</div></blockquote>
+<p>Batched set rendering returns output with channel shape <code class="docutils literal notranslate"><span class="pre">(2,</span> <span class="pre">K)</span></code>
+i.e. array shape <code class="docutils literal notranslate"><span class="pre">(n_out,</span> <span class="pre">2,</span> <span class="pre">K)</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>signal</strong> (<a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><em>Signal</em></a><em> or </em><em>ndarray</em>) – The mono source signal. If an ndarray is passed it is wrapped
+using the HRIR set’s sampling rate.</p></li>
+<li><p><strong>azimuth</strong> (<em>float</em><em>, </em><em>optional</em>) – Source azimuth in degrees.</p></li>
+<li><p><strong>elevation</strong> (<em>float</em><em>, </em><em>optional</em>) – Source elevation in degrees.</p></li>
+<li><p><strong>interpolate</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True (default) the HRIR is barycentrically interpolated,
+otherwise the nearest measured HRIR is used.</p></li>
+<li><p><strong>mode</strong> (<em>{'full'</em><em>, </em><em>'same'</em><em>, </em><em>'valid'}</em><em>, </em><em>optional</em>) – Convolution mode passed to <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.convolve" title="audiotoolbox.Signal.convolve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.convolve()</span></code></a>
+(default = <code class="docutils literal notranslate"><span class="pre">'full'</span></code>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Binaural output. Single-direction rendering returns shape
+<code class="docutils literal notranslate"><span class="pre">(n_out,</span> <span class="pre">2)</span></code>; batched set rendering returns <code class="docutils literal notranslate"><span class="pre">(n_out,</span> <span class="pre">2,</span> <span class="pre">K)</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal">Signal</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.HRIRSet.summary">
+<span class="sig-name descname"><span class="pre">summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#audiotoolbox.HRIRSet.summary" title="Link to this definition"></a></dt>
+<dd><p>Short human-readable description of the HRIR set.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="audiotoolbox.HRIRSet.to_hrtf">
+<span class="sig-name descname"><span class="pre">to_hrtf</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.HRIRSet.to_hrtf" title="Link to this definition"></a></dt>
+<dd><p>Return the frequency-domain transfer functions.</p>
+<p>Converts the stored impulse responses to the frequency domain. As
+with <a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal.to_freqdomain" title="audiotoolbox.Signal.to_freqdomain"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.to_freqdomain()</span></code></a> this is not done in
+place; a new <a class="reference internal" href="api_fluent_frequencydomainsignal.html#audiotoolbox.FrequencyDomainSignal" title="audiotoolbox.FrequencyDomainSignal"><code class="xref py py-class docutils literal notranslate"><span class="pre">audiotoolbox.FrequencyDomainSignal</span></code></a> of shape
+<code class="docutils literal notranslate"><span class="pre">(n_taps,</span> <span class="pre">2,</span> <span class="pre">n_directions)</span></code> is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The head-related transfer functions.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="api_fluent_frequencydomainsignal.html#audiotoolbox.FrequencyDomainSignal" title="audiotoolbox.FrequencyDomainSignal">FrequencyDomainSignal</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_fluent_frequencydomainsignal.html" class="btn btn-neutral float-left" title="Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_core.html" class="btn btn-neutral float-right" title="Core functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Jörg Encke.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

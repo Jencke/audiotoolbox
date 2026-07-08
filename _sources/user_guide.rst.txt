@@ -18,10 +18,11 @@ For a detailed description of all functions and classes, please see the
    user_guide/modifications
    user_guide/noise
    user_guide/levels_and_stats
-    user_guide/coherence
+   user_guide/coherence
    user_guide/filtering
    user_guide/time_frequency
    user_guide/convolution
+   user_guide/hrtf
    user_guide/input_output
    user_guide/playback
    user_guide/visualization

@@ -22,7 +22,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)" href="api_fluent_frequencydomainsignal.html" /> 
+    <link rel="prev" title="Head-related impulse responses (audiotoolbox.HRIRSet)" href="api_hrtf.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -52,6 +52,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="api.html">API reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="api_fluent_signal.html">Signals in the time domain (audiotoolbox.Signal)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_fluent_frequencydomainsignal.html">Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_hrtf.html">Head-related impulse responses (audiotoolbox.HRIRSet)</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Core functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#audiotoolbox.crossfade"><code class="docutils literal notranslate"><span class="pre">crossfade()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#audiotoolbox.dbspl_to_phon"><code class="docutils literal notranslate"><span class="pre">dbspl_to_phon()</span></code></a></li>
@@ -499,7 +500,7 @@ sufficient to result in a Class 1 filter following IEC 61672-1.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="audiotoolbox.filter.gammatone">
-<span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">gammatone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attenuation_db</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'erb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_complex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.filter.gammatone" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">audiotoolbox.filter.</span></span><span class="sig-name descname"><span class="pre">gammatone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">signal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attenuation_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'erb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_complex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#audiotoolbox.filter.gammatone" title="Link to this definition"></a></dt>
 <dd><p>Apply a gammatone filter to the signal.</p>
 <p>Applies a gammatone filter following <a class="reference internal" href="#hohmann2002" id="id5"><span>[Hohmann2002]</span></a> to the input
 signal and returns the filtered signal.</p>
@@ -683,7 +684,7 @@ used for all filters.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="api_fluent_frequencydomainsignal.html" class="btn btn-neutral float-left" title="Signals in the frequency domain (audiotoolbox.FrequencyDomainSignal)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_hrtf.html" class="btn btn-neutral float-left" title="Head-related impulse responses (audiotoolbox.HRIRSet)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

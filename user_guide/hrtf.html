@@ -1,0 +1,229 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Head-Related Transfer Functions &mdash; audiotoolbox  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Loading and Saving Audio Files" href="input_output.html" />
+    <link rel="prev" title="Convolution" href="convolution.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo_white.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../user_guide.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="basics.html">Signal Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scales.html">Frequency Scales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modifications.html">Basic Signal Modifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modifications.html#resampling">Resampling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modifications.html#trimming-signals">Trimming Signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modifications.html#crossfading-signals">Crossfading Signals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="noise.html">Generating Noise</a></li>
+<li class="toctree-l2"><a class="reference internal" href="levels_and_stats.html">Levels and Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coherence.html">Coherence and Correlation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filtering.html">Filtering</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_frequency.html">Time-Frequency Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="convolution.html">Convolution</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Head-Related Transfer Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#loading-a-sofa-file">Loading a SOFA file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-a-set-manually">Building a set manually</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#looking-up-and-interpolating-directions">Looking up and interpolating directions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rendering-a-source">Rendering a source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#working-in-the-frequency-domain">Working in the frequency domain</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="input_output.html">Loading and Saving Audio Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="playback.html">Playback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">Stimulus visualization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">audiotoolbox</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../user_guide.html">User Guide</a></li>
+      <li class="breadcrumb-item active">Head-Related Transfer Functions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/user_guide/hrtf.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="head-related-transfer-functions">
+<span id="guide-hrtf"></span><h1>Head-Related Transfer Functions<a class="headerlink" href="#head-related-transfer-functions" title="Link to this heading"></a></h1>
+<p>A head-related transfer function (HRTF), or its time-domain counterpart
+the head-related impulse response (HRIR), describes how a sound arriving
+from a given direction is filtered by the head, torso, and outer ears
+before it reaches the eardrums. Convolving a mono source with the
+left/right HRIR for a direction places that source at the corresponding
+position in a binaural (two-channel) signal.</p>
+<p>The <a class="reference internal" href="../api_hrtf.html#audiotoolbox.HRIRSet" title="audiotoolbox.HRIRSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">audiotoolbox.HRIRSet</span></code></a> class holds a set of HRIRs measured over
+many directions and provides direction lookup, interpolation, and
+rendering. The impulse responses are stored as a regular
+<a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.Signal"><code class="xref py py-class docutils literal notranslate"><span class="pre">audiotoolbox.Signal</span></code></a> of shape <code class="docutils literal notranslate"><span class="pre">(n_taps,</span> <span class="pre">n_directions,</span> <span class="pre">2)</span></code> (the
+last axis being the left and right ear), while the measured directions are
+kept in a separate position table.</p>
+<section id="loading-a-sofa-file">
+<h2>Loading a SOFA file<a class="headerlink" href="#loading-a-sofa-file" title="Link to this heading"></a></h2>
+<p>SOFA (Spatially Oriented Format for Acoustics) is the standard interchange
+format for HRTFs. <a class="reference internal" href="../api_hrtf.html#audiotoolbox.HRIRSet.from_sofa" title="audiotoolbox.HRIRSet.from_sofa"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.HRIRSet.from_sofa()</span></code></a> reads such files
+using the optional <a class="reference external" href="https://pypi.org/project/sofar/">sofar</a> package,
+which you can install with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">audiotoolbox</span><span class="p">[</span><span class="n">hrtf</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">audiotoolbox</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">audio</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hrir_set</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">HRIRSet</span><span class="o">.</span><span class="n">from_sofa</span><span class="p">(</span><span class="s1">&#39;subject_003.sofa&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hrir_set</span><span class="o">.</span><span class="n">n_directions</span>
+<span class="go">1250</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hrir_set</span><span class="o">.</span><span class="n">fs</span>
+<span class="go">44100</span>
+</pre></div>
+</div>
+<p>The measured directions are available as the <code class="docutils literal notranslate"><span class="pre">azimuth</span></code> and <code class="docutils literal notranslate"><span class="pre">elevation</span></code>
+attributes (in degrees, following the SOFA convention where azimuth
+increases counter-clockwise and elevation is measured from the horizontal
+plane).</p>
+</section>
+<section id="building-a-set-manually">
+<h2>Building a set manually<a class="headerlink" href="#building-a-set-manually" title="Link to this heading"></a></h2>
+<p>An <code class="docutils literal notranslate"><span class="pre">HRIRSet</span></code> can also be constructed directly from a <code class="docutils literal notranslate"><span class="pre">Signal</span></code> and a
+table of source positions given as <code class="docutils literal notranslate"><span class="pre">(azimuth,</span> <span class="pre">elevation[,</span> <span class="pre">distance])</span></code>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">90</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">180</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">270</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hrirs</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">128</span> <span class="o">/</span> <span class="mi">48000</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span>  <span class="c1"># 4 directions, L/R</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hrir_set</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">HRIRSet</span><span class="p">(</span><span class="n">hrirs</span><span class="p">,</span> <span class="n">positions</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hrir_set</span><span class="o">.</span><span class="n">n_directions</span>
+<span class="go">4</span>
+</pre></div>
+</div>
+</section>
+<section id="looking-up-and-interpolating-directions">
+<h2>Looking up and interpolating directions<a class="headerlink" href="#looking-up-and-interpolating-directions" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../api_hrtf.html#audiotoolbox.HRIRSet.nearest" title="audiotoolbox.HRIRSet.nearest"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.HRIRSet.nearest()</span></code></a> returns the HRIR of the closest
+measured direction as a two-channel <code class="docutils literal notranslate"><span class="pre">Signal</span></code>, while
+<a class="reference internal" href="../api_hrtf.html#audiotoolbox.HRIRSet.interpolate" title="audiotoolbox.HRIRSet.interpolate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.HRIRSet.interpolate()</span></code></a> synthesizes an HRIR for an
+arbitrary direction. For a fully three-dimensional measurement grid the
+three directions surrounding the query are combined using barycentric
+weights on the sphere; for a planar grid (such as a horizontal ring) the
+two adjacent directions are interpolated instead. Directions outside the
+measured region fall back to the nearest measurement.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hrir</span> <span class="o">=</span> <span class="n">hrir_set</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="mi">45</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hrir</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(128, 2)</span>
+</pre></div>
+</div>
+</section>
+<section id="rendering-a-source">
+<h2>Rendering a source<a class="headerlink" href="#rendering-a-source" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../api_hrtf.html#audiotoolbox.HRIRSet.render" title="audiotoolbox.HRIRSet.render"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.HRIRSet.render()</span></code></a> spatializes a mono signal by convolving
+it with the (left, right) HRIR for the requested direction. The input
+signal is left untouched and a new two-channel signal is returned.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">source</span> <span class="o">=</span> <span class="n">audio</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaural</span> <span class="o">=</span> <span class="n">hrir_set</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">azimuth</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">elevation</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">binaural</span><span class="o">.</span><span class="n">n_channels</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+<p>Set <code class="docutils literal notranslate"><span class="pre">interpolate=False</span></code> to use the nearest measured HRIR instead of an
+interpolated one.</p>
+</section>
+<section id="working-in-the-frequency-domain">
+<h2>Working in the frequency domain<a class="headerlink" href="#working-in-the-frequency-domain" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../api_hrtf.html#audiotoolbox.HRIRSet.to_hrtf" title="audiotoolbox.HRIRSet.to_hrtf"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.HRIRSet.to_hrtf()</span></code></a> returns the frequency-domain transfer
+functions as a <a class="reference internal" href="../api_fluent_frequencydomainsignal.html#audiotoolbox.FrequencyDomainSignal" title="audiotoolbox.FrequencyDomainSignal"><code class="xref py py-class docutils literal notranslate"><span class="pre">audiotoolbox.FrequencyDomainSignal</span></code></a>. As with
+<a class="reference internal" href="../api_fluent_signal.html#audiotoolbox.Signal.to_freqdomain" title="audiotoolbox.Signal.to_freqdomain"><code class="xref py py-meth docutils literal notranslate"><span class="pre">audiotoolbox.Signal.to_freqdomain()</span></code></a>, this is not done in place; a new
+object is returned.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">hrtf</span> <span class="o">=</span> <span class="n">hrir_set</span><span class="o">.</span><span class="n">to_hrtf</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hrtf</span><span class="o">.</span><span class="n">n_samples</span>
+<span class="go">128</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="convolution.html" class="btn btn-neutral float-left" title="Convolution" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="input_output.html" class="btn btn-neutral float-right" title="Loading and Saving Audio Files" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Jörg Encke.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

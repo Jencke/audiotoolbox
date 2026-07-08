@@ -22,7 +22,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Core functions" href="api_core.html" />
+    <link rel="next" title="Head-related impulse responses (audiotoolbox.HRIRSet)" href="api_hrtf.html" />
     <link rel="prev" title="Signals in the time domain (audiotoolbox.Signal)" href="api_fluent_signal.html" /> 
 </head>
 
@@ -73,6 +73,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="api_hrtf.html">Head-related impulse responses (audiotoolbox.HRIRSet)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api_core.html">Core functions</a></li>
 </ul>
 </li>
@@ -119,7 +120,7 @@ size=&quot;8.0, 12.0&quot;;
 }
 <dl class="py class">
 <dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">audiotoolbox.</span></span><span class="sig-name descname"><span class="pre">FrequencyDomainSignal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_channels:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">tuple</span> <span class="pre">|</span> <span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration:</span> <span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'complex'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">audiotoolbox.</span></span><span class="sig-name descname"><span class="pre">FrequencyDomainSignal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_channels:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">tuple</span> <span class="pre">|</span> <span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration:</span> <span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs:</span> <span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype:</span> <span class="pre">~typing.Any</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'complex'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal" title="Link to this definition"></a></dt>
 <dd><p>Base class for signals in the frequency domain.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -146,7 +147,7 @@ size=&quot;8.0, 12.0&quot;;
 
 <dl class="py method">
 <dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.add">
-<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.add" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">BaseSignal</span></span></span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.add" title="Link to this definition"></a></dt>
 <dd><p>In-place summation</p>
 <p>This function allows for in-place summation.</p>
 <dl class="field-list simple">
@@ -171,10 +172,18 @@ size=&quot;8.0, 12.0&quot;;
 <dd><p>Direct channel indexer</p>
 <p>Returns an indexer class which enables direct indexing and
 slicing of the channels independent of samples.</p>
+<p>Channel indices address only the trailing channel axes; the
+sample axis is always preserved as the leading axis. If a
+selection resolves to a single logical channel, the result is
+normalized to the canonical mono shape <code class="docutils literal notranslate"><span class="pre">(n_samples,</span> <span class="pre">1)</span></code>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sig</span> <span class="o">=</span> <span class="n">audiotoolbox</span><span class="o">.</span><span class="n">Signal</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">48000</span><span class="p">)</span><span class="o">.</span><span class="n">add_noise</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="ow">is</span> <span class="n">sig</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span>
-<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(48000, 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(48000, 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sig</span><span class="o">.</span><span class="n">ch</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(48000, 2)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -238,7 +247,7 @@ signal.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.multiply">
-<span class="sig-name descname"><span class="pre">multiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.multiply" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">multiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">BaseSignal</span></span></span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.multiply" title="Link to this definition"></a></dt>
 <dd><p>In-place multiplication</p>
 <p>This function allows for in-place multiplication</p>
 <dl class="field-list simple">
@@ -337,7 +346,7 @@ circular frequency and <span class="math notranslate nohighlight">\(\Delta t\)</
 
 <dl class="py method">
 <dt class="sig sig-object py" id="audiotoolbox.FrequencyDomainSignal.to_timedomain">
-<span class="sig-name descname"><span class="pre">to_timedomain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.to_timedomain" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_timedomain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="api_fluent_signal.html#audiotoolbox.Signal" title="audiotoolbox.signal.Signal"><span class="pre">Signal</span></a></span></span><a class="headerlink" href="#audiotoolbox.FrequencyDomainSignal.to_timedomain" title="Link to this definition"></a></dt>
 <dd><p>Convert to timedomain.</p>
 <p>Convert to timedomain by means of inverse DFT. If the complex
 part after DFT is small (&lt; 222e-16), it is neglected. This
@@ -358,7 +367,7 @@ method is not applied in-place but a new
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="api_fluent_signal.html" class="btn btn-neutral float-left" title="Signals in the time domain (audiotoolbox.Signal)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="api_core.html" class="btn btn-neutral float-right" title="Core functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="api_hrtf.html" class="btn btn-neutral float-right" title="Head-related impulse responses (audiotoolbox.HRIRSet)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
